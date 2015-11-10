@@ -1,0 +1,10 @@
+{
+  "name": "my-publications",
+  "description": "",
+  "homepage": "",
+  "dependencies": {},
+  "devDependencies": {
+    "fetch": "~0.10.1",
+    "lodash": "~3.10.1"
+  }
+}

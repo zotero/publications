@@ -1,0 +1,17 @@
+{
+	"rules": {
+		"quotes": [2, "single", "avoid-escape"]
+	},
+	"globals": {
+		"require": false
+	},
+	"env": {
+		"browser": true,
+		"es6": true
+	},
+	"ecmaFeatures": {
+		"modules": true,
+		"classes": true,
+		"templateStrings": true
+	}
+}

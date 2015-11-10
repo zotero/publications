@@ -1,0 +1,37 @@
+{
+  "name": "my-publications",
+  "license": "",
+  "version": "0.1.0",
+  "description": "",
+  "repository": "",
+  "main": "dist/my-publications.js",
+  "scripts": {
+    "prestart": "npm install",
+    "pretest": "npm install",
+    "build": "./node_modules/.bin/gulp"
+  },
+  "devDependencies": {
+    "babelify": "^6.3.0",
+    "bower": "^1.5.2",
+    "browserify": "^11.1.0",
+    "gulp": "^3.9.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-uglify": "^1.4.1",
+    "gulp-util": "^3.0.6",
+    "jasmine-core": "^2.3.4",
+    "jstify": "^0.13.0",
+    "karma": "^0.13.15",
+    "karma-babel-preprocessor": "^6.0.1",
+    "karma-browserify": "^4.4.0",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-coverage": "^0.5.3",
+    "karma-coveralls": "^1.1.2",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-jasmine": "^0.3.6",
+    "karma-source-map-support": "^1.1.0",
+    "preprocessor": "^1.4.0",
+    "rimraf": "^2.4.3",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
