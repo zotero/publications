@@ -1,6 +1,7 @@
 /*eslint-env node */
 module.exports = function(config) {
 	var reporters = process.env.COVERALLS_REPO_TOKEN ? ['dots', 'coverage', 'coveralls'] : ['dots', 'coverage'];
+	// var stringifyTransform = require('stringify')(['html']);
 
 	config.set({
 	basePath: '',
@@ -21,15 +22,18 @@ module.exports = function(config) {
 	],
 	preprocessors: {
 		'src/js/*.js': ['browserify', 'coverage'],
-		'test/*.js': ['browserify']
+		'test/*.js': ['browserify'],
+		'test/fixtures/*.html': ['browserify']
 	},
 	browserify: {
 		debug: true,
 		transform: [
 			'babelify',
 			['node-underscorify', {
-                'extensions': ['tpl']
-            }]
+                'extensions': ['tpl'],
+                requires: [{variable: '_', module: 'lodash'}]
+            }],
+			['stringify', {extensions: ['.html']}]
 		]
 	},
 	babelPreprocessor: {
@@ -39,7 +43,8 @@ module.exports = function(config) {
 	},
 	files: [
 		'src/js/*.js',
-		'test/*.js'
+		'test/*.js',
+		'test/fixtures/*.html'
 	],
 
 	reporters: reporters,

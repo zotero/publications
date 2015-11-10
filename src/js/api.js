@@ -1,21 +1,30 @@
+import fetch from '../../bower_components/fetch/fetch.js';
+import Promise from '../../bower_components/es6-promise/promise.js';
 
-function parseResponse(response) {
-	let rawData = response.json();
-	let childElements = [];
-
-	for(let i = 0, itemsCount = rawData.length; i < itemsCount; i++) {
-			rawData.push();
-	}
-}
-
-function getPublications(apiBase, userId, limit, style) {
+export function getPublications(apiBase, userId, limit, style) {
 	let url = `//{$apiBase}/users/{$userId}/publications/items?
-			include=data,bib&limit=$limit&linkwrap=1&order=dateModified&
-			sort=desc&start=0&style={$style}`,
-		options = {
-			headers: {
-				'Accept': 'application/json'
+	include=data,bib&limit=$limit&linkwrap=1&order=dateModified&
+	sort=desc&start=0&style={$style}`,
+	options = {
+		headers: {
+			'Accept': 'application/json'
+		}
+	};
+
+	return new Promise(function(resolve, reject) {
+		fetch(url, options)
+		.then(function(response) {
+			if(response.status >= 200 && response.status < 300) {
+				return response;
+			} else {
+				reject(response.statusText);
 			}
-		};
-	window.fetch(url, options).then(parseResponse);
+		})
+		.then(function(response) {
+			return response.json();
+		})
+		.then(function(responseJson) {
+			resolve(responseJson);
+		});
+	});
 }

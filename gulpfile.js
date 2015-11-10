@@ -11,6 +11,7 @@ var gutil = require('gulp-util');
 var uglify = require('gulp-uglify');
 var rename = require('gulp-rename');
 var babelify = require('babelify');
+var stringify = require('stringify')(['html']);
 var tplTransform = require('node-underscorify').transform({
     extensions: ['tpl']
 });
@@ -20,17 +21,18 @@ gulp.task('default', function () {
 	var b = browserify({
 		entries: 'src/js/app.js',
 		debug: true,
-		standalone: 'zoteroMyPublications'
+		standalone: 'zoteroPublications'
 	});
 
 	b.transform(babelify);
 	b.transform(tplTransform);
+	b.transform(stringify);
 	
 	rimraf.sync('dist/');
 
 	return b.bundle()
 		.on('error', gutil.log)
-		.pipe(source('mypub.js'))
+		.pipe(source('zotero-publications.js'))
 		.pipe(buffer())
 		.pipe(gulp.dest('./dist/'))
 		.pipe(uglify())
