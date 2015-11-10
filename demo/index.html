@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Zotero Publications Demo</title>
+		<link rel="stylesheet" href="dist/zotero-publications.css">
+		<script src="dist/zotero-publications.js"></script>
+	</head>
+<body>
+	<h1>Zotero Publications Demo</h1>
+	<div id="container"></div>
+</body>
+<script>
+	zoteroPublications(
+		document.getElementById('container'), {
+			userId: 23862
+	});
+</script>
+</html>

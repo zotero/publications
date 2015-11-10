@@ -13,11 +13,28 @@ var rename = require('gulp-rename');
 var babelify = require('babelify');
 var stringify = require('stringify')(['html']);
 var tplTransform = require('node-underscorify').transform({
-    extensions: ['tpl']
+    extensions: ['tpl'],
+    requires: [{variable: '_', module: 'lodash'}]
 });
 var _ = require('lodash');
+var sourcemaps = require('gulp-sourcemaps');
+var less = require('gulp-less');
+var autoprefixer = require('gulp-autoprefixer');
 
-gulp.task('default', function () {
+gulp.task('less', function() {
+	gulp.src('./src/less/zotero-publications.less')
+		.pipe(sourcemaps.init())
+		.pipe(less().on('error', function(msg) {
+			gutil.log(gutil.colors.red(msg));
+		}))
+		.pipe(autoprefixer({
+            browsers: ['last 2 versions']
+        }))
+		.pipe(sourcemaps.write())
+		.pipe(gulp.dest('./dist'));
+});
+
+gulp.task('js', function() {
 	var b = browserify({
 		entries: 'src/js/app.js',
 		debug: true,
@@ -39,3 +56,5 @@ gulp.task('default', function () {
 		.pipe(rename({ extname: '.min.js' }))
 		.pipe(gulp.dest('./dist/'));
 });
+
+gulp.task('default', ['js', 'less']);
