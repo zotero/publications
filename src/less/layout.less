@@ -15,3 +15,20 @@ html, body {
 	width: 90%;
 	margin: 0.5em auto;
 }
+
+.zotero-abstract-short + .zotero-abstract {
+	display: none;
+}
+
+.zotero-abstract-short.zotero-abstract-expanded {
+	display: none;
+}
+
+.zotero-abstract-short.zotero-abstract-expanded + .zotero-abstract {
+	display: block;
+}
+
+.zotero-abstract-toggle {
+	color: @accentColor;
+	cursor: pointer;
+}

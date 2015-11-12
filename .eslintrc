@@ -11,7 +11,6 @@
 	},
 	"ecmaFeatures": {
 		"modules": true,
-		"classes": true,
 		"templateStrings": true
 	}
 }

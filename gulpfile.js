@@ -38,7 +38,7 @@ gulp.task('js', function() {
 	var b = browserify({
 		entries: 'src/js/app.js',
 		debug: true,
-		standalone: 'zoteroPublications'
+		standalone: 'ZoteroPublications'
 	});
 
 	b.transform(babelify);

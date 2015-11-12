@@ -20,4 +20,12 @@ export function renderCollection(zoteroItems, template) {
 export function renderPublications(container, data) {
 	let collectionMarkup = renderCollection(data);
 	container.innerHTML = collectionMarkup;
+	container.addEventListener('click', function(ev) {
+		if(ev.target.classList.contains('zotero-abstract-toggle')) {
+			let abstractShortEl = ev.target.parentNode.parentNode.querySelector('.zotero-abstract-short');
+			let abstractEl = ev.target.parentNode.parentNode.querySelector('.zotero-abstract');
+			let expanded = abstractShortEl.classList.toggle('zotero-abstract-expanded');
+			abstractEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+		}
+	});
 }
