@@ -16,7 +16,11 @@ ZoteroPublications.prototype.defaults = {
 
 ZoteroPublications.prototype.processResponse = function(response) {
 	if(response) {
-		for (let item of response) {
+		let childItems = [];
+		let index = {};
+
+		for(var i = response.length; i--; ) {
+			let item = response[i];
 			if(item.data && item.data.abstractNote) {
 				let abstractNoteShort = item.data.abstractNote.substr(0, this.config.shortenedAbstractLenght);
 				abstractNoteShort = abstractNoteShort.substr(
@@ -25,6 +29,19 @@ ZoteroPublications.prototype.processResponse = function(response) {
 				);
 				item.data.abstractNoteShort = abstractNoteShort;
 			}
+			if(item.data && item.data.parentItem) {
+				response.splice(i, 1);
+				childItems.push(item);
+			} else {
+				index[item.key] = item;
+			}
+		}
+
+		for(let item of childItems) {
+			if(!index[item.data.parentItem].childItems) {
+				index[item.data.parentItem].childItems = [];
+			}
+			index[item.data.parentItem].childItems.push(item);
 		}
 	}
 	return response;

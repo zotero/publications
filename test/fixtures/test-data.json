@@ -14,5 +14,23 @@
       "abstractNote": "Lorem ipsum Occaecat velit ad aute ut qui do labore laborum proident eu id reprehenderit fugiat ea proident aute ex ea quis velit pariatur ut aliquip proident in dolore commodo sunt consectetur enim anim mollit laboris Ut Excepteur in in est ut irure cupidatat in sint Excepteur culpa ut minim irure deserunt ad mollit occaecat incididunt dolor non sint mollit ullamco cillum voluptate culpa eiusmod veniam adipisicing ea tempor amet incididunt labore magna ut reprehenderit Ut tempor commodo consectetur tempor pariatur nostrud incididunt aliqua labore commodo in in ad tempor fugiat pariatur ad id veniam nisi do culpa sint non esse ullamco voluptate consectetur ea ut Ut et nisi exercitation consequat veniam Ut consequat in labore ea sunt aute laborum commodo officia sunt laborum proident incididunt sunt in nostrud nostrud anim dolore dolore ea magna in dolor nulla cillum exercitation minim labore cupidatat aliqua deserunt cupidatat in irure eiusmod est deserunt veniam amet quis exercitation do Excepteur cupidatat eu id ex consectetur sit veniam aute in in incididunt reprehenderit Excepteur amet velit proident cupidatat ullamco do eiusmod elit commodo deserunt consequat minim in culpa sunt velit sit occaecat aliqua enim cupidatat ex pariatur laborum ad dolore ut velit aliqua exercitation cillum."
     },
     "citation": "<em>J.J. Binks</em>, <strong>Difference between the dark and light side of force</strong>"
+  },
+  {
+    "key": "IJKL",
+    "data": {
+      "itemType": "attachment",
+      "linkMode": "imported_file",
+      "title": "gnawing_panda.jpg",
+      "parentItem": "ABCD"
+    },
+     "links": {
+        "enclosure": {
+          "type": "image/jpeg",
+          "href": "https://apidev.zotero.org/users/10150/publications/items/4ENMCLQ7/file/view",
+          "title": "gnawing_panda.jpg",
+          "length": 403890
+        }
+    },
+    "citation": "<em>gnawing_panda.jpg</em>. (n.d.)."
   }
 ]

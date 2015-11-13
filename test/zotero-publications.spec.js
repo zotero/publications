@@ -56,4 +56,12 @@ describe('Zotero Publications', function() {
 		expect(testData[1].data.abstractNote.length).toBeGreaterThan(20);
 	});
 
+	it('should move child items underneath the main item', function() {
+		let zp = new ZoteroPublications({
+			userId: 1234
+		});
+		zp.processResponse(testData);
+		expect(testData.length).toBeDefined(2);
+		expect(testData[0].childItems).toBeDefined();
+	});
 });
