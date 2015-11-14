@@ -6,9 +6,11 @@
   "repository": "",
   "main": "dist/my-publications.js",
   "scripts": {
-    "prestart": "npm install",
-    "pretest": "npm install",
-    "build": "./node_modules/.bin/gulp"
+    "start": "./node_modules/gulp/bin/gulp.js",
+    "postinstall": "./node_modules/bower/bin/bower install",
+    "build": "./node_modules/gulp/bin/gulp.js build",
+    "test": "./node_modules/.bin/karma start",
+    "test-once": "./node_modules/.bin/karma start --single-run"
   },
   "devDependencies": {
     "babelify": "^6.3.0",
