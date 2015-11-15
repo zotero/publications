@@ -2,6 +2,7 @@
 module.exports = function(config) {
 	var reporters = process.env.COVERALLS_REPO_TOKEN ? ['dots', 'coverage', 'coveralls'] : ['dots', 'coverage'];
 	// var stringifyTransform = require('stringify')(['html']);
+	// var istanbul = require('browserify-istanbul');
 
 	config.set({
 	basePath: '',
@@ -21,7 +22,7 @@ module.exports = function(config) {
 		'source-map-support'
 	],
 	preprocessors: {
-		'src/js/*.js': ['browserify', 'coverage'],
+		'src/js/*.js': ['browserify'],
 		'test/*.js': ['browserify'],
 		'test/fixtures/*.html': ['browserify']
 	},
@@ -33,7 +34,8 @@ module.exports = function(config) {
                 'extensions': ['tpl'],
                 requires: [{variable: '_', module: 'lodash'}]
             }],
-			['stringify', {extensions: ['.html']}]
+			['stringify', {extensions: ['.html']}],
+			'browserify-istanbul'
 		]
 	},
 	babelPreprocessor: {
@@ -49,7 +51,9 @@ module.exports = function(config) {
 
 	reporters: reporters,
 	coverageReporter: {
-		type: 'lcov',
+		//would be lcov but https://github.com/karma-runner/karma-coverage/issues/157
+		//					https://github.com/karma-runner/karma-coverage/issues/167
+		type: 'text',
 		dir: 'coverage/'
 	},
 	port: 9876,
