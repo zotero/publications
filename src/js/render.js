@@ -1,20 +1,47 @@
 import itemTpl from './tpl/publication-item.tpl';
 import listTpl from './tpl/publication-collection.tpl';
+import childItemsTpl from './tpl/publication-child-items.tpl';
+import childItemTpl from './tpl/publication-child-item.tpl';
 
-export function renderItem(itemData, template) {
-	template = template || itemTpl;
-	return template(itemData);
+export function renderItem(zoteroItem, childItemsMarkup) {
+	return itemTpl({
+		'item': zoteroItem,
+		'data': zoteroItem.data,
+		'childItemsMarkup': childItemsMarkup || ''
+	});
 }
 
-export function renderCollection(zoteroItems, template) {
-	template = template || listTpl;
+export function renderCollection(zoteroItems) {
 	let itemsMarkup = '';
 
 	for (let item of zoteroItems) {
-		itemsMarkup += renderItem(item);
+		let childItemsMarkup = renderChildItems(item);
+		itemsMarkup += renderItem(item, childItemsMarkup);
 	}
 
-	return template({'zoteroItems': itemsMarkup});
+	return listTpl({
+		'zoteroItems': itemsMarkup
+	});
+}
+
+export function renderChildItem(zoteroChildItem) {
+	return childItemTpl({
+		'item': zoteroChildItem
+	});
+}
+
+export function renderChildItems(zoteroItem) {
+	let childItemsMarkup = '';
+
+	if(zoteroItem.childItems && zoteroItem.childItems.length > 0) {
+		for (let childItem of zoteroItem.childItems) {
+			childItemsMarkup += renderChildItem(childItem);
+		}
+	}
+
+	return childItemsTpl({
+		'childItemsMarkup': childItemsMarkup
+	});
 }
 
 export function renderPublications(container, data) {

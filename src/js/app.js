@@ -7,7 +7,7 @@ function ZoteroPublications(config) {
 }
 
 ZoteroPublications.prototype.defaults = {
-	apiBase: 'apidev.zotero.org',
+	apiBase: 'api.zotero.org',
 	limit: 100,
 	citationStyle: 'apa-annotated-bibliography',
 	include: ['data', 'citation'],
@@ -38,6 +38,11 @@ ZoteroPublications.prototype.processResponse = function(response) {
 		}
 
 		for(let item of childItems) {
+			if(!index[item.data.parentItem]) {
+				console.warn(`item ${item.data.key} has parentItem ${item.data.parentItem} that does not exist in the dataset`);
+				continue;
+			}
+
 			if(!index[item.data.parentItem].childItems) {
 				index[item.data.parentItem].childItems = [];
 			}
@@ -48,16 +53,16 @@ ZoteroPublications.prototype.processResponse = function(response) {
 };
 
 ZoteroPublications.prototype.getPublications = function() {
-	if(!this.config.userId) {
+	if(!this.config.apiEndpoint) {
 		throw new Error('User id needs to be defined');
 	}
 
 	let apiBase = this.config.apiBase,
-		userId = this.config.userId,
+		apiEndpoint = this.config.apiEndpoint,
 		limit = this.config.limit,
 		style = this.config.citationStyle,
 		include = this.config.include.join(','),
-		url = `//${apiBase}/users/${userId}/publications/items?
+		url = `//${apiBase}/${apiEndpoint}?
 			include=${include}&limit=${limit}&linkwrap=1&order=dateModified&
 			sort=desc&start=0&style=${style}`,
 		options = {
