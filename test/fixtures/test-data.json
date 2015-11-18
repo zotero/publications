@@ -16,21 +16,29 @@
     "citation": "<em>J.J. Binks</em>, <strong>Difference between the dark and light side of force</strong>"
   },
   {
+    "key": "MNOP",
+    "data": {
+      "itemType": "book",
+      "abstractNote": ""
+    },
+    "citation": "<em>L. Skywalker</em>, <strong>Who's your daddy?</strong>"
+  },
+  {
     "key": "IJKL",
     "data": {
       "itemType": "attachment",
       "linkMode": "imported_file",
-      "title": "gnawing_panda.jpg",
+      "title": "lorem-pixel.jpg",
       "parentItem": "ABCD"
     },
      "links": {
         "enclosure": {
           "type": "image/jpeg",
-          "href": "https://apidev.zotero.org/users/10150/publications/items/4ENMCLQ7/file/view",
-          "title": "gnawing_panda.jpg",
+          "href": "http://lorempixel.com/640/480/city/",
+          "title": "lorem-pixel.jpg",
           "length": 403890
         }
     },
-    "citation": "<em>gnawing_panda.jpg</em>. (n.d.)."
+    "citation": "<em>lorem-pixel.jpg</em>. (n.d.)."
   }
 ]

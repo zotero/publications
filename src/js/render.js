@@ -1,7 +1,10 @@
-import itemTpl from './tpl/publication-item.tpl';
-import listTpl from './tpl/publication-collection.tpl';
-import childItemsTpl from './tpl/publication-child-items.tpl';
-import childItemTpl from './tpl/publication-child-item.tpl';
+import _ from '../../bower_components/lodash/lodash.js';
+import itemTpl from './tpl/item.tpl';
+import itemsTpl from './tpl/items.tpl';
+import groupTpl from './tpl/group.tpl';
+import groupsTpl from './tpl/groups.tpl';
+import childItemsTpl from './tpl/child-items.tpl';
+import childItemTpl from './tpl/child-item.tpl';
 
 export function renderItem(zoteroItem, childItemsMarkup) {
 	return itemTpl({
@@ -19,7 +22,7 @@ export function renderCollection(zoteroItems) {
 		itemsMarkup += renderItem(item, childItemsMarkup);
 	}
 
-	return listTpl({
+	return itemsTpl({
 		'zoteroItems': itemsMarkup
 	});
 }
@@ -44,6 +47,26 @@ export function renderChildItems(zoteroItem) {
 	});
 }
 
+export function renderGroup(title, itemsMarkup) {
+	return groupTpl({
+		'title': title,
+		'itemsMarkup': itemsMarkup
+	});
+}
+
+export function renderGrouped(data) {
+	let groupsMarkup = '';
+
+	_.forEach(data, function(items, groupTitle) {
+		let itemsMarkup = renderCollection(items);
+		groupsMarkup += renderGroup(groupTitle, itemsMarkup);
+	});
+
+	return groupsTpl({
+		'groupsMarkup': groupsMarkup
+	});
+}
+
 export function renderPublications(container, data) {
 	let collectionMarkup = renderCollection(data);
 	container.innerHTML = collectionMarkup;
@@ -55,4 +78,9 @@ export function renderPublications(container, data) {
 			abstractEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 		}
 	});
+}
+
+export function renderGroupedPublications(container, data) {
+	let markup = renderGrouped(data);
+	container.innerHTML = markup;
 }

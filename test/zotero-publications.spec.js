@@ -11,25 +11,17 @@ import {
  import ZoteroPublications from '../src/js/app.js';
 
 describe('Zotero Publications', function() {
+
+	beforeEach(function() {
+		spyOn(window, 'fetch').and.returnValue(testData);
+	});
+
 	it('should render single item', function() {
 		let renderedItem = renderItem(testData[0]);
 		expect(renderedItem).toBeDefined();
 		expect(renderedItem).toMatch(/^<li.*zotero-item zotero-book.*>[\s\S]*<\/li>$/);
 		expect(renderedItem).toContain(testData[0].citation);
 	});
-
-	// it('should render single item with abstract', function() {
-	// 	let renderedItem = renderItem(testData[0]);
-	// 	//TODO
-	// });
-
-	// probably won't allow that
-	// it('should render single item using custom template', function() {
-	// 	let renderedItem = renderItem(testData[0], _.template('<b><%= citation %></b>'));
-	// 	expect(renderedItem).toBeDefined();
-	// 	expect(renderedItem).toMatch(/^<b>[\s\S]*<\/b>$/);
-	// 	expect(renderedItem).toContain(testData[0].citation);
-	// });
 
 	it('should render a collection of items', function() {
 		let renderedCollection = renderCollection(testData);
@@ -46,9 +38,15 @@ describe('Zotero Publications', function() {
 		expect(container.innerHTML).toMatch(/^<ul.*zotero-collection.*>[\s\S]*(<li.*zotero-item.*>[\s\S]*<\/li>){2}[\s\S]*<\/ul>[\s\S]*<div.*zotero-branding.*>[\s\S]*<\/div>$/);
 	});
 
+	it('should request items from desired enpoint', function() {
+		let zp = new ZoteroPublications();
+		zp.getItems('some/endpoint');
+		expect(window.fetch).toHaveBeenCalled();
+		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/some\/endpoint\?.*$/);
+	});
+
 	it('should should generate shortened version of the abstract', function() {
 		let zp = new ZoteroPublications({
-			userId: 1234,
 			shortenedAbstractLenght: 20
 		});
 		zp.processResponse(testData);
@@ -57,11 +55,18 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should move child items underneath the main item', function() {
-		let zp = new ZoteroPublications({
-			userId: 1234
-		});
+		let zp = new ZoteroPublications();
 		zp.processResponse(testData);
-		expect(testData.length).toBeDefined(2);
+		expect(testData instanceof Array).toBe(true);
+		expect(testData.length).toBe(3);
 		expect(testData[0].childItems).toBeDefined();
+	});
+
+	it('should group items by type', function() {
+		let zp = new ZoteroPublications();
+		zp.processResponse(testData);
+		let data = zp.groupByType(testData);
+		expect(data instanceof Array).toBe(false);
+		expect(Object.keys(data)).toEqual(['book', 'journalArticle']);
 	});
 });

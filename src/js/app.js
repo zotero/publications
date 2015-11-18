@@ -1,5 +1,8 @@
 import _ from '../../bower_components/lodash/lodash.js';
-import { renderPublications } from './render.js';
+import { 
+	renderPublications,
+	renderGroupedPublications
+} from './render.js';
 
 
 function ZoteroPublications(config) {
@@ -52,19 +55,12 @@ ZoteroPublications.prototype.processResponse = function(response) {
 	return response;
 };
 
-ZoteroPublications.prototype.getPublications = function() {
-	if(!this.config.apiEndpoint) {
-		throw new Error('User id needs to be defined');
-	}
-
+ZoteroPublications.prototype.getItems = function(endpoint) {
 	let apiBase = this.config.apiBase,
-		apiEndpoint = this.config.apiEndpoint,
 		limit = this.config.limit,
 		style = this.config.citationStyle,
 		include = this.config.include.join(','),
-		url = `//${apiBase}/${apiEndpoint}?
-			include=${include}&limit=${limit}&linkwrap=1&order=dateModified&
-			sort=desc&start=0&style=${style}`,
+		url = `//${apiBase}/${endpoint}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`,
 		options = {
 			headers: {
 				'Accept': 'application/json'
@@ -89,9 +85,28 @@ ZoteroPublications.prototype.getPublications = function() {
 	}.bind(this));
 };
 
-ZoteroPublications.prototype.render = function(container) {
-	this.getPublications().then(
-		_.partial(renderPublications, container)
+ZoteroPublications.prototype.groupByType = function(data) {
+	let groupedData = {};
+	for(let item of data) {
+		if(!groupedData[item.data.itemType]) {
+			groupedData[item.data.itemType] = [];
+		}
+		groupedData[item.data.itemType].push(item);
+	}
+	return groupedData;
+};
+
+ZoteroPublications.prototype.render = function(endpoint, container, options) {
+	options = options || {};
+	this.getItems(endpoint).then(
+		function(data) {
+			if(options.groupByType) {
+				data = this.groupByType(data);
+				renderGroupedPublications(container, data);
+			} else {
+				renderPublications(container, data);
+			}
+		}.bind(this)
 	);
 };
 
