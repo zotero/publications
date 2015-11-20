@@ -5,6 +5,7 @@ import groupTpl from './tpl/group.tpl';
 import groupsTpl from './tpl/groups.tpl';
 import childItemsTpl from './tpl/child-items.tpl';
 import childItemTpl from './tpl/child-item.tpl';
+import brandingTpl from './tpl/branding.tpl';
 
 export function renderItem(zoteroItem, childItemsMarkup) {
 	return itemTpl({
@@ -68,7 +69,7 @@ export function renderGrouped(data) {
 }
 
 export function renderPublications(container, data) {
-	let collectionMarkup = renderCollection(data);
+	let collectionMarkup = renderCollection(data) + brandingTpl();
 	container.innerHTML = collectionMarkup;
 	container.addEventListener('click', function(ev) {
 		if(ev.target.classList.contains('zotero-abstract-toggle')) {
@@ -81,6 +82,6 @@ export function renderPublications(container, data) {
 }
 
 export function renderGroupedPublications(container, data) {
-	let markup = renderGrouped(data);
+	let markup = renderGrouped(data) + brandingTpl();
 	container.innerHTML = markup;
 }

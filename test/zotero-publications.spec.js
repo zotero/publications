@@ -23,10 +23,10 @@ describe('Zotero Publications', function() {
 		expect(renderedItem).toContain(testData[0].citation);
 	});
 
-	it('should render a collection of items', function() {
+	it('should render a list of items', function() {
 		let renderedCollection = renderCollection(testData);
 		expect(renderedCollection).toBeDefined();
-		expect(renderedCollection).toMatch(/^<ul.*zotero-collection.*>[\s\S]*(<li.*zotero-item.*>[\s\S]*<\/li>){2}[\s\S]*<\/ul>[\s\S]*<div.*zotero-branding.*>[\s\S]*<\/div>$/);
+		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>[\s\S]*(<li.*zotero-item.*>[\s\S]*<\/li>){2}[\s\S]*<\/ul>$/);
 	});
 
 	it('should replace contents of a container', function() {
@@ -35,7 +35,7 @@ describe('Zotero Publications', function() {
 		expect(container.innerHTML).toBe('<span>Hello World</span>');
 		renderPublications(container, testData);
 		expect(container.innerHTML).not.toBe('<span>Hello World</span>');
-		expect(container.innerHTML).toMatch(/^<ul.*zotero-collection.*>[\s\S]*(<li.*zotero-item.*>[\s\S]*<\/li>){2}[\s\S]*<\/ul>[\s\S]*<div.*zotero-branding.*>[\s\S]*<\/div>$/);
+		expect(container.innerHTML).toMatch(/^<ul.*zotero-items.*>[\s\S]*(<li.*zotero-item.*>[\s\S]*<\/li>){2}[\s\S]*<\/ul>[\s\S]*<div.*zotero-branding.*>[\s\S]*<\/div>$/);
 	});
 
 	it('should request items from desired enpoint', function() {
