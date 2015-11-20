@@ -1,0 +1,39 @@
+{
+  "book": [
+    {
+      "key": "ABCD",
+      "data": {
+      "itemType": "book",
+      "abstractNote": ""
+      },
+      "citation": "<strong>Cooking with Yoda</strong>"
+    }, {
+      "key": "MNOP",
+      "data": {
+        "itemType": "book",
+        "abstractNote": ""
+      },
+      "citation": "<em>L. Skywalker</em>, <strong>Who's your daddy?</strong>"
+    }
+  ],
+  "journalArticle": [
+    {
+      "key": "IJKL",
+      "data": {
+        "itemType": "attachment",
+        "linkMode": "imported_file",
+        "title": "lorem-pixel.jpg",
+        "parentItem": "ABCD"
+      },
+       "links": {
+          "enclosure": {
+            "type": "image/jpeg",
+            "href": "http://lorempixel.com/640/480/city/",
+            "title": "lorem-pixel.jpg",
+            "length": 403890
+          }
+      },
+      "citation": "<em>lorem-pixel.jpg</em>. (n.d.)."
+    }
+  ]
+}

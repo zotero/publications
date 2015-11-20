@@ -3,9 +3,11 @@
 
 import _ from 'lodash';
 import testData from './fixtures/test-data.json';
+import testDataGrouped from './fixtures/test-data-grouped.json';
 import {
 	renderItem,
 	renderCollection,
+	renderGrouped,
 	renderPublications
  } from '../src/js/render.js';
  import ZoteroPublications from '../src/js/app.js';
@@ -27,6 +29,20 @@ describe('Zotero Publications', function() {
 		let renderedCollection = renderCollection(testData);
 		expect(renderedCollection).toBeDefined();
 		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>[\s\S]*(<li.*zotero-item.*>[\s\S]*<\/li>){2}[\s\S]*<\/ul>$/);
+	});
+
+	it('should render group of items', function() {
+		let renderedCollection = renderGrouped(testDataGrouped);
+		expect(renderedCollection).toBeDefined();
+		expect(renderedCollection).toMatch(/^<ul.*zotero-groups.*>[\s\S]*<ul.*zotero-items.*>[\s\S]*(<li.*zotero-item.*>[\s\S]*<\/li>){2}[\s\S]*<\/ul>$/);
+	});
+
+	it('should render child items', function() {
+		let zp = new ZoteroPublications();
+		zp.processResponse(testData);
+		let renderedCollection = renderCollection(testData);
+		expect(renderedCollection).toBeDefined();
+		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>[\s\S]*<li.*zotero-item.*>[\s\S]*<ul.*class="zotero-child-items".*>[\s\S]*<\/ul>[\s\S]*<\/li>[\s\S]*<\/ul>$/);
 	});
 
 	it('should replace contents of a container', function() {

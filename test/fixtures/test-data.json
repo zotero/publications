@@ -31,14 +31,25 @@
       "title": "lorem-pixel.jpg",
       "parentItem": "ABCD"
     },
-     "links": {
-        "enclosure": {
-          "type": "image/jpeg",
-          "href": "http://lorempixel.com/640/480/city/",
-          "title": "lorem-pixel.jpg",
-          "length": 403890
-        }
+    "links": {
+      "enclosure": {
+        "type": "image/jpeg",
+        "href": "http://lorempixel.com/640/480/city/",
+        "title": "lorem-pixel.jpg",
+        "length": 403890
+      }
     },
     "citation": "<em>lorem-pixel.jpg</em>. (n.d.)."
+  },
+  {
+    "key": "NOTE",
+    "version": 2,
+    "citation": "<span>“Hello World.”</span>",
+    "data": {
+      "version": 2,
+      "parentItem": "IJKL",
+      "itemType": "note",
+      "note": "<p>Hello <strong>world</strong></p>\n<p></p>"
+    }
   }
 ]
