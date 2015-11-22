@@ -1,5 +1,5 @@
 import _ from '../../bower_components/lodash/lodash.js';
-import { 
+import {
 	renderPublications,
 	renderGroupedPublications
 } from './render.js';
@@ -55,6 +55,36 @@ ZoteroPublications.prototype.processResponse = function(response) {
 	return response;
 };
 
+function fetchUntilExhausted(url, options, jsondata) {
+	let regex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
+	jsondata = jsondata || [];
+
+	return new Promise(function(resolve, reject) {
+		fetch(url, options).then(function(response) {
+			if(response.status >= 200 && response.status < 300) {
+				if(response.headers.has('Link')) {
+					let matches = response.headers.get('Link').match(regex);
+					if(matches && matches.length >= 2) {
+						response.json().then(function(jsonDataPart) {
+							resolve(fetchUntilExhausted(matches[1], options, _.union(jsondata, jsonDataPart)));
+						});
+					} else {
+						response.json().then(function(jsonDataPart) {
+							resolve(_.union(jsondata, jsonDataPart));
+						});
+					}
+				} else {
+					response.json().then(function(jsonDataPart) {
+						resolve(_.union(jsondata, jsonDataPart));
+					});
+				}
+			} else {
+				reject(`Unexpected status code ${response.status} when requesting ${url}`);
+			}
+		});
+	});
+}
+
 ZoteroPublications.prototype.getItems = function(endpoint) {
 	let apiBase = this.config.apiBase,
 		limit = this.config.limit,
@@ -67,18 +97,11 @@ ZoteroPublications.prototype.getItems = function(endpoint) {
 			}
 		};
 
-	return new Promise(function(resolve, reject) {
-		fetch(url, options)
-		.then(function(response) {
-			if(response.status >= 200 && response.status < 300) {
-				return response;
-			} else {
-				reject(response.statusText);
-			}
-		})
-		.then(function(response) {
-			return response.json();
-		})
+	return new Promise(function(resolve) {
+		fetchUntilExhausted(url, options)
+		// .then(function(response) {
+		// 	return response.json();
+		// })
 		.then(function(responseJson) {
 			resolve(this.processResponse(responseJson));
 		}.bind(this));

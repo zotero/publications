@@ -14,10 +14,6 @@ import {
 
 describe('Zotero Publications', function() {
 
-	beforeEach(function() {
-		spyOn(window, 'fetch').and.returnValue(testData);
-	});
-
 	it('should render single item', function() {
 		let renderedItem = renderItem(testData[0]);
 		expect(renderedItem).toBeDefined();
@@ -55,6 +51,7 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should request items from desired enpoint', function() {
+		spyOn(window, 'fetch');
 		let zp = new ZoteroPublications();
 		zp.getItems('some/endpoint');
 		expect(window.fetch).toHaveBeenCalled();
@@ -84,5 +81,39 @@ describe('Zotero Publications', function() {
 		let data = zp.groupByType(testData);
 		expect(data instanceof Array).toBe(false);
 		expect(Object.keys(data)).toEqual(['book', 'journalArticle']);
+	});
+
+	it('should recursively batch-fetch all data', function(done) {
+		var isFirstResponse = true;
+
+		spyOn(window, 'fetch').and.callFake(function() {
+			let headers = new Headers({
+				'Link': '<https://second-batch-url.com/>; rel="next"'
+			});
+			let responseProperties = {
+				'status': 200
+			};
+
+			if(isFirstResponse) {
+				responseProperties = _.extend({}, responseProperties, {
+					'headers': headers
+				});
+				isFirstResponse = false;
+				return Promise.resolve(new Response(JSON.stringify([{
+					'key1': 'value1'
+				}]), responseProperties));
+			} else {
+				return Promise.resolve(new Response(JSON.stringify([{
+					'key2': 'value2'
+				}]), responseProperties));
+			}
+		});
+
+		let zp = new ZoteroPublications();
+
+		zp.getItems('some/endpoint').then(function() {
+			expect(window.fetch.calls.count()).toEqual(2);
+			done();
+		});
 	});
 });
