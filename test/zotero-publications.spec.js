@@ -10,7 +10,14 @@ import {
 	renderGrouped,
 	renderPublications
  } from '../src/js/render.js';
- import ZoteroPublications from '../src/js/app.js';
+import {
+	processResponse
+} from '../src/js/api.js';
+import {
+	ZoteroData
+} from '../src/js/data.js';
+import ZoteroPublications from '../src/js/app.js';
+
 
 describe('Zotero Publications', function() {
 
@@ -35,7 +42,7 @@ describe('Zotero Publications', function() {
 
 	it('should render child items', function() {
 		let zp = new ZoteroPublications();
-		zp.processResponse(testData);
+		processResponse(testData, zp.config);
 		let renderedCollection = renderCollection(testData);
 		expect(renderedCollection).toBeDefined();
 		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>[\s\S]*<li.*zotero-item.*>[\s\S]*<ul.*class="zotero-child-items".*>[\s\S]*<\/ul>[\s\S]*<\/li>[\s\S]*<\/ul>$/);
@@ -62,14 +69,14 @@ describe('Zotero Publications', function() {
 		let zp = new ZoteroPublications({
 			shortenedAbstractLenght: 20
 		});
-		zp.processResponse(testData);
+		processResponse(testData, zp.config);
 		expect(testData[1].data.abstractNoteShort.length).not.toBeGreaterThan(20);
 		expect(testData[1].data.abstractNote.length).toBeGreaterThan(20);
 	});
 
 	it('should move child items underneath the main item', function() {
 		let zp = new ZoteroPublications();
-		zp.processResponse(testData);
+		processResponse(testData, zp.config);
 		expect(testData instanceof Array).toBe(true);
 		expect(testData.length).toBe(3);
 		expect(testData[0].childItems).toBeDefined();
@@ -77,10 +84,9 @@ describe('Zotero Publications', function() {
 
 	it('should group items by type', function() {
 		let zp = new ZoteroPublications();
-		zp.processResponse(testData);
-		let data = zp.groupByType(testData);
-		expect(data instanceof Array).toBe(false);
-		expect(Object.keys(data)).toEqual(['book', 'journalArticle']);
+		let data = new ZoteroData(processResponse(testData, zp.config));
+		data.groupByType();
+		expect(Object.keys(data.data)).toEqual(['book', 'journalArticle']);
 	});
 
 	it('should recursively batch-fetch all data', function(done) {

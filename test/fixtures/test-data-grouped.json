@@ -1,5 +1,5 @@
-{
-  "book": [
+[
+  ["book", [
     {
       "key": "ABCD",
       "data": {
@@ -15,8 +15,8 @@
       },
       "citation": "<em>L. Skywalker</em>, <strong>Who's your daddy?</strong>"
     }
-  ],
-  "journalArticle": [
+  ]],
+  ["journalArticle", [
     {
       "key": "IJKL",
       "data": {
@@ -35,5 +35,5 @@
       },
       "citation": "<em>lorem-pixel.jpg</em>. (n.d.)."
     }
-  ]
-}
+  ]]
+]

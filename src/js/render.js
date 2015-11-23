@@ -58,10 +58,10 @@ export function renderGroup(title, itemsMarkup) {
 export function renderGrouped(data) {
 	let groupsMarkup = '';
 
-	_.forEach(data, function(items, groupTitle) {
-		let itemsMarkup = renderCollection(items);
+	for(let [ groupTitle, group ] of data) {
+		let itemsMarkup = renderCollection(group);
 		groupsMarkup += renderGroup(groupTitle, itemsMarkup);
-	});
+	}
 
 	return groupsTpl({
 		'groupsMarkup': groupsMarkup
@@ -69,8 +69,15 @@ export function renderGrouped(data) {
 }
 
 export function renderPublications(container, data) {
-	let collectionMarkup = renderCollection(data) + brandingTpl();
-	container.innerHTML = collectionMarkup;
+	var markup;
+
+	if(data.grouped > 0) {
+		markup = renderGrouped(data) + brandingTpl();
+	} else {
+		markup = renderCollection(data) + brandingTpl();
+	}
+
+	container.innerHTML = markup;
 	container.addEventListener('click', function(ev) {
 		if(ev.target.classList.contains('zotero-abstract-toggle')) {
 			let abstractShortEl = ev.target.parentNode.parentNode.querySelector('.zotero-abstract-short');
@@ -79,9 +86,4 @@ export function renderPublications(container, data) {
 			abstractEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 		}
 	});
-}
-
-export function renderGroupedPublications(container, data) {
-	let markup = renderGrouped(data) + brandingTpl();
-	container.innerHTML = markup;
 }
