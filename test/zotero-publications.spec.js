@@ -111,8 +111,9 @@ describe('Zotero Publications', function() {
 
 		let zp = new ZoteroPublications();
 
-		zp.getItems('some/endpoint').then(function() {
+		zp.getItems('some/endpoint').then(function(data) {
 			expect(window.fetch.calls.count()).toEqual(2);
+			expect(data.length).toEqual(2);
 			done();
 		});
 	});
