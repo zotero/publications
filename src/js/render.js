@@ -5,6 +5,9 @@ import groupsTpl from './tpl/groups.tpl';
 import childItemsTpl from './tpl/child-items.tpl';
 import childItemTpl from './tpl/child-item.tpl';
 import brandingTpl from './tpl/branding.tpl';
+import {
+	addHandlers
+} from './ui.js';
 
 export function renderItem(zoteroItem, childItemsMarkup) {
 	return itemTpl({
@@ -77,12 +80,5 @@ export function renderPublications(container, data) {
 	}
 
 	container.innerHTML = markup;
-	container.addEventListener('click', function(ev) {
-		if(ev.target.classList.contains('zotero-abstract-toggle')) {
-			let abstractShortEl = ev.target.parentNode.parentNode.querySelector('.zotero-abstract-short');
-			let abstractEl = ev.target.parentNode.parentNode.querySelector('.zotero-abstract');
-			let expanded = abstractShortEl.classList.toggle('zotero-abstract-expanded');
-			abstractEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-		}
-	});
+	addHandlers(container);
 }

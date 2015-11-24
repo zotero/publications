@@ -32,3 +32,32 @@ html, body {
 	color: @accentColor;
 	cursor: pointer;
 }
+
+.zotero-group {
+	.zotero-items {
+		display: none;
+	}
+
+	&.zotero-group-expanded {
+		.zotero-items {
+			display: block;
+		}
+	}
+}
+
+.zotero-group-title {
+	cursor: pointer;
+	position: relative;
+
+	&:after {
+		content: "+";
+		display: block;
+		position: absolute;
+		right: 20px;
+		top: 5px;
+		
+		.zotero-group-expanded & 
+			content: "-";
+		}
+	}
+}
