@@ -35,9 +35,9 @@ ZoteroData.prototype.groupByCollections = function() {
 };
 
 ZoteroData.prototype[Symbol.iterator] = function() {
+	let i = 0;
 	if(this.grouped > 0) {
 		let keys = Object.keys(this.data);
-		let i = 0;
 		return {
 			next: function() {
 				return {
@@ -47,7 +47,6 @@ ZoteroData.prototype[Symbol.iterator] = function() {
 			}.bind(this)
 		};
 	} else {
-		let i = 0;
 		return {
 			next: function() {
 				return {

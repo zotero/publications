@@ -11,7 +11,6 @@
 </body>
 <script src="zotero-publications.js"></script>
 <script>
-	var zp = new ZoteroPublications();
-	zp.render('groups/430961/items', document.getElementById('container'), { 'groupByType': true});
+	new ZoteroPublications({ 'group': 'type'}).render('groups/430961/items', document.getElementById('container'));
 </script>
 </html>

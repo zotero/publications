@@ -1,4 +1,3 @@
-import _ from '../../bower_components/lodash/lodash.js';
 import itemTpl from './tpl/item.tpl';
 import itemsTpl from './tpl/items.tpl';
 import groupTpl from './tpl/group.tpl';

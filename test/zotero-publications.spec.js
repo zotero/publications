@@ -60,7 +60,7 @@ describe('Zotero Publications', function() {
 	it('should request items from desired enpoint', function() {
 		spyOn(window, 'fetch');
 		let zp = new ZoteroPublications();
-		zp.getItems('some/endpoint');
+		zp.get('some/endpoint');
 		expect(window.fetch).toHaveBeenCalled();
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/some\/endpoint\?.*$/);
 	});
@@ -117,7 +117,7 @@ describe('Zotero Publications', function() {
 
 		let zp = new ZoteroPublications();
 
-		zp.getItems('some/endpoint').then(function(data) {
+		zp.get('some/endpoint').then(function(data) {
 			expect(window.fetch.calls.count()).toEqual(2);
 			expect(data.length).toEqual(2);
 			done();
