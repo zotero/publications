@@ -1,4 +1,7 @@
 import _ from '../../bower_components/lodash/lodash.js';
+import {
+	CHILD_ITEMS_SYMBOL
+} from './data.js'
 
 export function processResponse(response, config) {
 	if(response) {
@@ -29,10 +32,10 @@ export function processResponse(response, config) {
 				continue;
 			}
 
-			if(!index[item.data.parentItem].childItems) {
-				index[item.data.parentItem].childItems = [];
+			if(!index[item.data.parentItem][CHILD_ITEMS_SYMBOL]) {
+				index[item.data.parentItem][CHILD_ITEMS_SYMBOL] = [];
 			}
-			index[item.data.parentItem].childItems.push(item);
+			index[item.data.parentItem][CHILD_ITEMS_SYMBOL].push(item);
 		}
 	}
 	return response;

@@ -1,6 +1,10 @@
+import _ from '../../bower_components/lodash/lodash.js';
+
 export const GROUPED_NONE = 0;
 export const GROUPED_BY_TYPE = 1;
 export const GROUPED_BY_COLLECTION = 2;
+export const CHILD_ITEMS_SYMBOL = Symbol("childItems");
+export const GROUP_EXPANDED_SUMBOL = Symbol("groupExpanded");
 
 export function ZoteroData(data) {
 	this.raw = data;
@@ -16,8 +20,9 @@ export function ZoteroData(data) {
 	});
 }
 
-ZoteroData.prototype.groupByType = function() {
+ZoteroData.prototype.groupByType = function(expand) {
 	let groupedData = {};
+	expand = expand || [];
 	for(let i = this.raw.length; i--; ) {
 		let item = this.raw[i];
 
@@ -25,6 +30,7 @@ ZoteroData.prototype.groupByType = function() {
 			groupedData[item.data.itemType] = [];
 		}
 		groupedData[item.data.itemType].push(item);
+		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _.contains(expand, item.data.itemType);
 	}
 	this.data = groupedData;
 	this.grouped = GROUPED_BY_TYPE;

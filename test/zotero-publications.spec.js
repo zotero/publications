@@ -14,7 +14,9 @@ import {
 	processResponse
 } from '../src/js/api.js';
 import {
-	ZoteroData
+	ZoteroData,
+	CHILD_ITEMS_SYMBOL,
+	GROUP_EXPANDED_SUMBOL
 } from '../src/js/data.js';
 import ZoteroPublications from '../src/js/app.js';
 
@@ -79,7 +81,7 @@ describe('Zotero Publications', function() {
 		processResponse(testData, zp.config);
 		expect(testData instanceof Array).toBe(true);
 		expect(testData.length).toBe(3);
-		expect(testData[0].childItems).toBeDefined();
+		expect(testData[0][CHILD_ITEMS_SYMBOL]).toBeDefined();
 	});
 
 	it('should group items by type', function() {
@@ -87,6 +89,14 @@ describe('Zotero Publications', function() {
 		let data = new ZoteroData(processResponse(testData, zp.config));
 		data.groupByType();
 		expect(Object.keys(data.data)).toEqual(['book', 'journalArticle']);
+	});
+
+	it('should pre-expand selected groups', function() {
+		let zp = new ZoteroPublications();
+		let data = new ZoteroData(processResponse(testData, zp.config));
+		data.groupByType(['book']);
+		expect(data.data.book[GROUP_EXPANDED_SUMBOL]).toBe(true);
+		expect(data.data.journalArticle[GROUP_EXPANDED_SUMBOL]).toBe(false);
 	});
 
 	it('should recursively batch-fetch all data', function(done) {

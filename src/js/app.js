@@ -20,7 +20,8 @@ ZoteroPublications.prototype.defaults = {
 	citationStyle: 'apa-annotated-bibliography',
 	include: ['data', 'citation'],
 	shortenedAbstractLenght: 250,
-	group: false
+	group: false,
+	expand: 'all'
 };
 
 ZoteroPublications.prototype.get = function(endpoint) {
@@ -41,7 +42,7 @@ ZoteroPublications.prototype.get = function(endpoint) {
 			responseJson = processResponse(responseJson, this.config);
 			let data = new ZoteroData(responseJson);
 			if(this.config.group === 'type') {
-				data.groupByType();
+				data.groupByType(this.config.expand);
 			}
 			resolve(data);
 		}.bind(this));

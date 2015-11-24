@@ -8,6 +8,10 @@ import brandingTpl from './tpl/branding.tpl';
 import {
 	addHandlers
 } from './ui.js';
+import {
+	CHILD_ITEMS_SYMBOL,
+	GROUP_EXPANDED_SUMBOL
+} from './data.js';
 
 export function renderItem(zoteroItem, childItemsMarkup) {
 	return itemTpl({
@@ -39,8 +43,8 @@ export function renderChildItem(zoteroChildItem) {
 export function renderChildItems(zoteroItem) {
 	let childItemsMarkup = '';
 
-	if(zoteroItem.childItems && zoteroItem.childItems.length > 0) {
-		for (let childItem of zoteroItem.childItems) {
+	if(zoteroItem[CHILD_ITEMS_SYMBOL] && zoteroItem[CHILD_ITEMS_SYMBOL].length > 0) {
+		for (let childItem of zoteroItem[CHILD_ITEMS_SYMBOL]) {
 			childItemsMarkup += renderChildItem(childItem);
 		}
 	}
@@ -50,10 +54,11 @@ export function renderChildItems(zoteroItem) {
 	});
 }
 
-export function renderGroup(title, itemsMarkup) {
+export function renderGroup(title, expand, itemsMarkup) {
 	return groupTpl({
 		'title': title,
-		'itemsMarkup': itemsMarkup
+		'itemsMarkup': itemsMarkup,
+		'expand': expand
 	});
 }
 
@@ -62,7 +67,8 @@ export function renderGrouped(data) {
 
 	for(let [ groupTitle, group ] of data) {
 		let itemsMarkup = renderCollection(group);
-		groupsMarkup += renderGroup(groupTitle, itemsMarkup);
+		let expand = group[GROUP_EXPANDED_SUMBOL];
+		groupsMarkup += renderGroup(groupTitle, expand, itemsMarkup);
 	}
 
 	return groupsTpl({
