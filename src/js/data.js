@@ -1,4 +1,4 @@
-import _ from '../../bower_components/lodash/lodash.js';
+import _ from 'lodash';
 
 export const GROUPED_NONE = 0;
 export const GROUPED_BY_TYPE = 1;

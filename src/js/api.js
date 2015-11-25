@@ -1,4 +1,4 @@
-import _ from '../../bower_components/lodash/lodash.js';
+import _ from 'lodash';
 import {
 	CHILD_ITEMS_SYMBOL
 } from './data.js'

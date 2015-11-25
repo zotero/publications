@@ -17,6 +17,7 @@ var tplTransform = require('node-underscorify').transform({
 	extensions: ['tpl'],
 	requires: [{variable: '_', module: 'lodash'}]
 	});
+var shim = require('browserify-shim');
 var sourcemaps = require('gulp-sourcemaps');
 var less = require('gulp-less');
 var autoprefixer = require('gulp-autoprefixer');
@@ -24,6 +25,7 @@ var connect = require('gulp-connect');
 var gulpif = require('gulp-if');
 var watchify = require('watchify');
 var runSequence = require('run-sequence');
+var merge = require('merge-stream');
 var fs = require('fs');
 var watch;
 var buildDir;
@@ -49,10 +51,11 @@ gulp.task('js', function() {
 			debug: true,
 			standalone: 'ZoteroPublications'
 	});
-
+	
 	b.transform(babelify);
 	b.transform(tplTransform);
 	b.transform(stringify);
+	b.transform(shim);
 
 	if(watch) {
     	b = watchify(b);
@@ -77,9 +80,13 @@ gulp.task('less', function() {
 	.pipe(gulp.dest(buildDir));
 });
 
-gulp.task('html', function() {
-	return gulp.src('src/demo/index.html')
-		.pipe(symlink('tmp/index.html'));
+gulp.task('demo', function() {
+	return merge(
+		gulp.src('src/demo/index.html')
+			.pipe(symlink('tmp/index.html')),
+		gulp.src('bower_components/lodash/lodash.js')
+			.pipe(symlink('tmp/lodash.js'))
+		);
 });
 
 gulp.task('setup-dist', function(done) {
@@ -94,7 +101,6 @@ gulp.task('setup-dev', function(done) {
 	rimraf(buildDir, done);
 });
 
-
 gulp.task('build', function(done) {
 	runSequence('setup-dist', ['js', 'less'], done);
 });
@@ -107,7 +113,7 @@ gulp.task('dev', function(done) {
 	});
 
 	gulp.watch('./src/less/*.less', ['less']);
-	runSequence('setup-dev', ['html', 'js', 'less'], done);
+	runSequence('setup-dev', ['demo', 'js', 'less'], done);
 });
 
 gulp.task('default', ['setup-dev'], function() {
