@@ -30,10 +30,32 @@ var fs = require('fs');
 var watch;
 var buildDir;
 
-function bundleShare(b) {
+var shimConfigs = {
+	'nodeps': {
+		"browser": {
+			"lodash": "./bower_components/lodash/lodash.js"
+		},
+		"shim": {
+			"lodash": "global:_"
+		}
+	},
+	'lodash': {
+		"browser": {
+			"lodash": "./bower_components/lodash/lodash.js"
+		}
+	}
+}
+
+function bundleShare(b, variant) {
+	var filename;
+	if(variant) {
+		filename = `zotero-publications.${variant}.js`;
+	} else {
+		filename = 'zotero-publications.js';
+	}
 	return b.bundle()
 		.on('error', gutil.log)
-		.pipe(source('zotero-publications.js'))
+		.pipe(source(filename))
 		.pipe(buffer())
 		.pipe(gulp.dest(buildDir))
 		.pipe(gulpif(!watch, uglify()))
@@ -42,29 +64,43 @@ function bundleShare(b) {
 		.pipe(gulpif(watch, connect.reload()));
 }
 
-gulp.task('js', function() {
+function getBrowserify(debug, shimConfig) {
 	var b = browserify({
 			cache: {},
 			packageCache: {},
 			fullPaths: true,
 			entries: 'src/js/app.js',
-			debug: true,
+			debug: debug,
 			standalone: 'ZoteroPublications'
 	});
 	
 	b.transform(babelify);
 	b.transform(tplTransform);
 	b.transform(stringify);
-	b.transform(shim);
+	b.transform(shim, shimConfig);
+	return b;
+}
 
+gulp.task('js', function() {
+	let b = getBrowserify(watch, shimConfigs.nodeps);
+	
 	if(watch) {
     	b = watchify(b);
     	b.on('update', function() {
     		bundleShare(b);
     	});
 	}
-	
 	return bundleShare(b);
+});
+
+gulp.task('multi-js', function() {
+	let bnodeps = getBrowserify(false, shimConfigs.nodeps),
+		blodash = getBrowserify(false, shimConfigs.lodash);
+
+	return merge(
+		bundleShare(bnodeps),
+		bundleShare(blodash, 'lodash')
+	);
 });
 
 gulp.task('less', function() {
@@ -102,7 +138,7 @@ gulp.task('setup-dev', function(done) {
 });
 
 gulp.task('build', function(done) {
-	runSequence('setup-dist', ['js', 'less'], done);
+	runSequence('setup-dist', ['multi-js', 'less'], done);
 });
 
 gulp.task('dev', function(done) {
