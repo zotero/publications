@@ -26,7 +26,10 @@ var gulpif = require('gulp-if');
 var watchify = require('watchify');
 var runSequence = require('run-sequence');
 var merge = require('merge-stream');
+var insert = require('gulp-insert');
 var fs = require('fs');
+var promisePF = fs.readFileSync('./bower_components/es6-promise/promise.js', "utf8");
+var fetchPF = fs.readFileSync('./bower_components/fetch/fetch.js', "utf8");
 var watch;
 var buildDir;
 
@@ -58,9 +61,6 @@ function bundleShare(b, variant) {
 		.pipe(source(filename))
 		.pipe(buffer())
 		.pipe(gulp.dest(buildDir))
-		.pipe(gulpif(!watch, uglify()))
-		.pipe(gulpif(!watch, rename({ extname: '.min.js' })))
-		.pipe(gulpif(!watch, gulp.dest(buildDir)))
 		.pipe(gulpif(watch, connect.reload()));
 }
 
@@ -98,8 +98,30 @@ gulp.task('multi-js', function() {
 		blodash = getBrowserify(false, shimConfigs.lodash);
 
 	return merge(
-		bundleShare(bnodeps),
+		bundleShare(bnodeps)
+			.pipe(uglify())
+			.pipe(rename({ extname: '.min.js' }))
+			.pipe(gulp.dest(buildDir)),
+		bundleShare(bnodeps)
+			.pipe(rename({ suffix: '-compat' }))
+			.pipe(insert.prepend(promisePF))
+			.pipe(insert.prepend(fetchPF))
+			.pipe(gulp.dest(buildDir))
+			.pipe(uglify())
+			.pipe(rename({ extname: '.min.js' }))
+			.pipe(gulp.dest(buildDir)),
 		bundleShare(blodash, 'lodash')
+			.pipe(uglify())
+			.pipe(rename({ extname: '.min.js' }))
+			.pipe(gulp.dest(buildDir)),
+		bundleShare(blodash, 'lodash')
+			.pipe(rename({ suffix: '-compat' }))
+			.pipe(insert.prepend(promisePF))
+			.pipe(insert.prepend(fetchPF))
+			.pipe(gulp.dest(buildDir))
+			.pipe(uglify())
+			.pipe(rename({ extname: '.min.js' }))
+			.pipe(gulp.dest(buildDir))
 	);
 });
 

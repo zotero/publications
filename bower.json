@@ -6,6 +6,7 @@
   "devDependencies": {
     "fetch": "~0.10.1",
     "lodash": "~3.10.1",
-    "normalize-css": "normalize.css#~3.0.3"
+    "normalize-css": "normalize.css#~3.0.3",
+    "es6-promise": "~3.0.2"
   }
 }
