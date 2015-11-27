@@ -1,3 +1,3 @@
 <div class="zotero-branding">
-	Powered by Zotero
+	Powered by <span class="zotero-logo"></span>
 </div>
