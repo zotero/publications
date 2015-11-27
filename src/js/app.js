@@ -9,6 +9,9 @@ import {
 import {
 	ZoteroData
 } from './data.js';
+import {
+	toggleSpinner
+} from './ui.js';
 
 function ZoteroPublications(config) {
 	this.config = _.extend({}, this.defaults, config);
@@ -56,7 +59,11 @@ ZoteroPublications.prototype.render = function(endpointOrData, container) {
 		renderPublications(container, data);
 	} else {
 		let endpoint = endpointOrData;
-		this.get(endpoint).then(_.partial(renderPublications, container));
+		toggleSpinner(container, true);
+		this.get(endpoint).then(function(data) {
+			toggleSpinner(container, false);
+			renderPublications(container, data);
+		});
 	}
 };
 

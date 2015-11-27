@@ -45,6 +45,24 @@ html, body {
 	}
 }
 
+.zotero-loading {
+	display: block;
+	position: relative;
+	
+	&:after {
+		bottom: 0;
+		content: "Loading...";
+		display: block;
+		height: 100%;
+		left: 0;
+		position: absolute;
+		right: 0;
+		top: 0;
+		width: 100%;
+		text-align: center;
+	}
+}
+
 .zotero-group-title {
 	cursor: pointer;
 	position: relative;

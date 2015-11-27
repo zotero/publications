@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import {
 	CHILD_ITEMS_SYMBOL
-} from './data.js'
+} from './data.js';
 
 export function processResponse(response, config) {
 	if(response) {
