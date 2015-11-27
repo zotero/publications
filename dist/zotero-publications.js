@@ -128,6 +128,8 @@ var _apiJs = require('./api.js');
 
 var _dataJs = require('./data.js');
 
+var _uiJs = require('./ui.js');
+
 function ZoteroPublications(config) {
 	this.config = _lodash2['default'].extend({}, this.defaults, config);
 }
@@ -172,7 +174,11 @@ ZoteroPublications.prototype.render = function (endpointOrData, container) {
 		(0, _renderJs.renderPublications)(container, data);
 	} else {
 		var endpoint = endpointOrData;
-		this.get(endpoint).then(_lodash2['default'].partial(_renderJs.renderPublications, container));
+		(0, _uiJs.toggleSpinner)(container, true);
+		this.get(endpoint).then(function (data) {
+			(0, _uiJs.toggleSpinner)(container, false);
+			(0, _renderJs.renderPublications)(container, data);
+		});
 	}
 };
 
@@ -180,7 +186,7 @@ module.exports = ZoteroPublications;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","./data.js":"/srv/zotero/my-publications/src/js/data.js","./render.js":"/srv/zotero/my-publications/src/js/render.js"}],"/srv/zotero/my-publications/src/js/data.js":[function(require,module,exports){
+},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","./data.js":"/srv/zotero/my-publications/src/js/data.js","./render.js":"/srv/zotero/my-publications/src/js/render.js","./ui.js":"/srv/zotero/my-publications/src/js/ui.js"}],"/srv/zotero/my-publications/src/js/data.js":[function(require,module,exports){
 (function (global){
 (function (global){
 "use strict";
@@ -504,7 +510,7 @@ var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefi
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='var _ = (typeof window !== "undefined" ? window[\'_\'] : typeof global !== "undefined" ? global[\'_\'] : null);\nmodule.exports = function(obj){\nvar __t,__p=\'\',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,\'\');};\nwith(obj||{}){\n__p+=\'<div class="zotero-branding">\\n\\tPowered by Zotero\\n</div>\';\n}\nreturn __p;\n};\n';
+__p+='var _ = (typeof window !== "undefined" ? window[\'_\'] : typeof global !== "undefined" ? global[\'_\'] : null);\nmodule.exports = function(obj){\nvar __t,__p=\'\',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,\'\');};\nwith(obj||{}){\n__p+=\'<div class="zotero-branding">\\n\\tPowered by <span class="zotero-logo"></span>\\n</div>\';\n}\nreturn __p;\n};\n';
 }
 return __p;
 };
@@ -602,10 +608,10 @@ Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 exports.addHandlers = addHandlers;
+exports.toggleSpinner = toggleSpinner;
 
 function addHandlers(container) {
 	container.addEventListener('click', function (ev) {
-		console.info(ev);
 		if (ev.target.classList.contains('zotero-abstract-toggle')) {
 			var abstractShortEl = ev.target.parentNode.parentNode.querySelector('.zotero-abstract-short');
 			var abstractEl = ev.target.parentNode.parentNode.querySelector('.zotero-abstract');
@@ -618,6 +624,11 @@ function addHandlers(container) {
 			groupEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
 		}
 	});
+}
+
+function toggleSpinner(container, activate) {
+	var method = activate === null ? container.classList.toggle : activate ? container.classList.add : container.classList.remove;
+	method.call(container.classList, 'zotero-loading');
 }
 
 },{}]},{},["/srv/zotero/my-publications/src/js/app.js"])("/srv/zotero/my-publications/src/js/app.js")
