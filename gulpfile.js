@@ -21,6 +21,7 @@ var shim = require('browserify-shim');
 var sourcemaps = require('gulp-sourcemaps');
 var less = require('gulp-less');
 var autoprefixer = require('gulp-autoprefixer');
+var cssminify = require('gulp-minify-css');
 var connect = require('gulp-connect');
 var gulpif = require('gulp-if');
 var watchify = require('watchify');
@@ -127,15 +128,18 @@ gulp.task('multi-js', function() {
 
 gulp.task('less', function() {
 	gulp.src('./src/less/zotero-publications.less')
-	.pipe(sourcemaps.init())
+	.pipe(gulpif(watch, sourcemaps.init()))
 	.pipe(less().on('error', function(msg) {
 		gutil.log(gutil.colors.red(msg));
 	}))
 	.pipe(autoprefixer({
 		browsers: ['last 2 versions']
 	}))
-	.pipe(sourcemaps.write())
-	.pipe(gulp.dest(buildDir));
+	.pipe(gulpif(watch, sourcemaps.write()))
+	.pipe(gulp.dest(buildDir))
+	.pipe(gulpif(!watch, rename({ extname: '.min.css' })))
+	.pipe(gulpif(!watch, cssminify()))
+	.pipe(gulpif(!watch, gulp.dest(buildDir)));
 });
 
 gulp.task('demo', function() {
