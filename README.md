@@ -63,7 +63,7 @@ Finally if you need more control over what happens while data is being retrieved
     </script>
 
 
-See `src/demo/index.html` for a complete example.
+See [src/demo/index.html](src/demo/index.html) for a complete example.
 
 Config Options
 --------------
@@ -99,19 +99,15 @@ Builds
 We offer minified **.min.js** and **.min.css** builds for use in production and **.js** and **.css** builds to use for debug/development. Furthermore we offer following variants of incremental size:
 
 **zotero-publications.min.js** (~4KB zipped)
-
 This is the smallest build containing only Zotero Publication code for very modern browsers. To use this build **you need to include [underscore.js](http://underscorejs.org/) or [lodash.js](https://lodash.com/) manually**. Furthermore this build **will only work in very recent browsers**, i.e. latest Firefox and Chrome/Chromium.
 
 **zotero-publications-compat.min.js** (~8KB zipped)
-
 This build contains only Zotero Publications and few polyfills to make it work in all common browers. To use this build **you need to include [underscore.js](http://underscorejs.org/) or [lodash.js](https://lodash.com/) manually**.
 
 **zotero-publications.lodash.min.js** (~22KB zipped)
-
 This build contains only Zotero Publications and lodash. Because it lacks polyfills it **will only work in very recent browsers**, i.e. latest Firefox and Chrome/Chromium.
 
 **dist/zotero-publications.lodash-compat.min.js** (~26KB zipped)
-
 This build contains Zotero Publications, lodash and polyfills. **This is the safest build to use**.
 
 Development & Contributing
