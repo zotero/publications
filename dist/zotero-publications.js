@@ -19,6 +19,16 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _dataJs = require('./data.js');
 
+var ABSTRACT_NOTE_SHORT_SYMBOL = Symbol['for']('abstractNoteShort');
+
+exports.ABSTRACT_NOTE_SHORT_SYMBOL = ABSTRACT_NOTE_SHORT_SYMBOL;
+/**
+ * Process raw API response
+ * @param  {Object[]} response - The raw API response
+ * @param  {Object} config     - Global ZoteroPublications config
+ * @return {Object[]}          - Processed API response
+ */
+
 function processResponse(response, config) {
 	if (response) {
 		var childItems = [];
@@ -29,14 +39,13 @@ function processResponse(response, config) {
 			if (item.data && item.data.abstractNote) {
 				var abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
 				abstractNoteShort = abstractNoteShort.substr(0, Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' ')));
-				item.data.abstractNoteShort = abstractNoteShort;
+				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
 			}
 			if (item.data && item.data.parentItem) {
 				response.splice(i, 1);
 				childItems.push(item);
-			} else {
-				index[item.key] = item;
 			}
+			index[item.key] = item;
 		}
 
 		var _iteratorNormalCompletion = true;
@@ -48,7 +57,7 @@ function processResponse(response, config) {
 				var item = _step.value;
 
 				if (!index[item.data.parentItem]) {
-					console.warn('item ' + item.data.key + ' has parentItem ' + item.data.parentItem + ' that does not exist in the dataset');
+					console.warn('item ' + item.key + ' has parentItem ' + item.data.parentItem + ' that does not exist in the dataset');
 					continue;
 				}
 
@@ -74,6 +83,14 @@ function processResponse(response, config) {
 	}
 	return response;
 }
+
+/**
+ * Recursively fetch data until there's no more rel="next" url in Link header
+ * @param  {String} url             - An url for initial data request
+ * @param  {Object} [options]       - Custom settings (e.g. headers) passed over to fetch() for each request
+ * @param  {Object[]} [jsondata=[]] - Used for data aggregation in recursive calls
+ * @return {Promise}                - Resolved with complete dataset or rejected on error
+ */
 
 function fetchUntilExhausted(url, options, jsondata) {
 	var relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
@@ -103,6 +120,8 @@ function fetchUntilExhausted(url, options, jsondata) {
 			} else {
 				reject('Unexpected status code ' + response.status + ' when requesting ' + url);
 			}
+		})['catch'](function () {
+			reject('Unexpected error when requesting ' + url);
 		});
 	});
 }
@@ -130,10 +149,18 @@ var _dataJs = require('./data.js');
 
 var _uiJs = require('./ui.js');
 
+/**
+ * Application entry point
+ * @param {Object} [config] - Configuration object that will selectively override the defaults
+ */
 function ZoteroPublications(config) {
 	this.config = _lodash2['default'].extend({}, this.defaults, config);
 }
 
+/**
+ * Default configuration object
+ * @type {Object}
+ */
 ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
 	limit: 100,
@@ -144,6 +171,12 @@ ZoteroPublications.prototype.defaults = {
 	expand: 'all'
 };
 
+/**
+ * Build url for an endpoint then fetch entire dataset recursively
+ * @param  {String} endpoint - An API endpoint from which data should be obtained
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
 ZoteroPublications.prototype.get = function (endpoint) {
 	var apiBase = this.config.apiBase,
 	    limit = this.config.limit,
@@ -156,31 +189,53 @@ ZoteroPublications.prototype.get = function (endpoint) {
 		}
 	};
 
-	return new Promise((function (resolve) {
-		(0, _apiJs.fetchUntilExhausted)(url, options).then((function (responseJson) {
-			responseJson = (0, _apiJs.processResponse)(responseJson, this.config);
-			var data = new _dataJs.ZoteroData(responseJson);
+	return new Promise((function (resolve, reject) {
+		var promise = (0, _apiJs.fetchUntilExhausted)(url, options);
+		promise.then((function (responseJson) {
+			var data = new _dataJs.ZoteroData(responseJson, this.config);
 			if (this.config.group === 'type') {
 				data.groupByType(this.config.expand);
 			}
 			resolve(data);
 		}).bind(this));
+		promise['catch'](reject);
 	}).bind(this));
 };
 
+/**
+ * Render local or remote items.
+ * @param  {String|ZoteroData} endpointOrData - Data containung publications to be rendered
+ * @param  {HTMLElement} container            - A DOM element where publications will be rendered
+ * @return {Promise}                          - Resolved when rendered or rejected on error.
+ */
 ZoteroPublications.prototype.render = function (endpointOrData, container) {
-	if (endpointOrData instanceof _dataJs.ZoteroData) {
-		var data = endpointOrData;
-		(0, _renderJs.renderPublications)(container, data);
-	} else {
-		var endpoint = endpointOrData;
-		(0, _uiJs.toggleSpinner)(container, true);
-		this.get(endpoint).then(function (data) {
-			(0, _uiJs.toggleSpinner)(container, false);
+	return new Promise((function (resolve, reject) {
+		if (endpointOrData instanceof _dataJs.ZoteroData) {
+			var data = endpointOrData;
 			(0, _renderJs.renderPublications)(container, data);
-		});
-	}
+			resolve();
+		} else {
+			var endpoint = endpointOrData;
+			(0, _uiJs.toggleSpinner)(container, true);
+			var promise = this.get(endpoint);
+			promise.then(function (data) {
+				(0, _uiJs.toggleSpinner)(container, false);
+				(0, _renderJs.renderPublications)(container, data);
+				resolve();
+			});
+			promise['catch'](function () {
+				(0, _uiJs.toggleSpinner)(container, false);
+				reject();
+			});
+		}
+	}).bind(this));
 };
+
+/**
+ * Make ZoteroData publicly accessible underneath ZoteroPublications
+ * @type {ZoteroData}
+ */
+ZoteroPublications.ZoteroData = _dataJs.ZoteroData;
 
 module.exports = ZoteroPublications;
 
@@ -189,20 +244,22 @@ module.exports = ZoteroPublications;
 },{"./api.js":"/srv/zotero/my-publications/src/js/api.js","./data.js":"/srv/zotero/my-publications/src/js/data.js","./render.js":"/srv/zotero/my-publications/src/js/render.js","./ui.js":"/srv/zotero/my-publications/src/js/ui.js"}],"/srv/zotero/my-publications/src/js/data.js":[function(require,module,exports){
 (function (global){
 (function (global){
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", {
+Object.defineProperty(exports, '__esModule', {
 	value: true
 });
 exports.ZoteroData = ZoteroData;
 
 function _interopRequireDefault(obj) {
-	return obj && obj.__esModule ? obj : { "default": obj };
+	return obj && obj.__esModule ? obj : { 'default': obj };
 }
 
 var _lodash = typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null;
 
 var _lodash2 = _interopRequireDefault(_lodash);
+
+var _apiJs = require('./api.js');
 
 var GROUPED_NONE = 0;
 exports.GROUPED_NONE = GROUPED_NONE;
@@ -210,15 +267,19 @@ var GROUPED_BY_TYPE = 1;
 exports.GROUPED_BY_TYPE = GROUPED_BY_TYPE;
 var GROUPED_BY_COLLECTION = 2;
 exports.GROUPED_BY_COLLECTION = GROUPED_BY_COLLECTION;
-var CHILD_ITEMS_SYMBOL = Symbol("childItems");
+var CHILD_ITEMS_SYMBOL = Symbol['for']('childItems');
 exports.CHILD_ITEMS_SYMBOL = CHILD_ITEMS_SYMBOL;
-var GROUP_EXPANDED_SUMBOL = Symbol("groupExpanded");
+var GROUP_EXPANDED_SUMBOL = Symbol['for']('groupExpanded');
 
 exports.GROUP_EXPANDED_SUMBOL = GROUP_EXPANDED_SUMBOL;
+/**
+ * Store, Encapsulate and Manipulate Zotero API data
+ * @param {Object[]} data   - Zotero API data to encapsulate
+ * @param {Object} [config] - ZoteroPublications config
+ */
 
-function ZoteroData(data) {
-	this.raw = data;
-	this.data = data;
+function ZoteroData(data, config) {
+	this.raw = this.data = (0, _apiJs.processResponse)(data, config);
 	this.grouped = GROUPED_NONE;
 
 	Object.defineProperty(this, 'length', {
@@ -230,6 +291,11 @@ function ZoteroData(data) {
 	});
 }
 
+/**
+ * Group data by type
+ * @param  {String|String[]} [expand=[]] - List of types which should appear pre-expanded.
+ *                                         Alternatively string "all" is accepted.
+ */
 ZoteroData.prototype.groupByType = function (expand) {
 	var groupedData = {};
 	expand = expand || [];
@@ -240,16 +306,24 @@ ZoteroData.prototype.groupByType = function (expand) {
 			groupedData[item.data.itemType] = [];
 		}
 		groupedData[item.data.itemType].push(item);
-		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2["default"].contains(expand, item.data.itemType);
+		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2['default'].contains(expand, item.data.itemType);
 	}
 	this.data = groupedData;
 	this.grouped = GROUPED_BY_TYPE;
 };
 
+/**
+ * Group data by top-level collections
+ */
 ZoteroData.prototype.groupByCollections = function () {
 	throw new Error('groupByCollections is not implemented yet.');
 };
 
+/**
+ * Custom iterator to allow for..of interation regardless of whether data is grouped or not.
+ * For ungrouped data each interation returns single Zotero item
+ * For grouped data each interationr returns an a pair of group title and an Array of Zotero items
+ */
 ZoteroData.prototype[Symbol.iterator] = function () {
 	var _this = this;
 
@@ -269,7 +343,7 @@ ZoteroData.prototype[Symbol.iterator] = function () {
 			};
 		})();
 
-		if (typeof _ret === "object") return _ret.v;
+		if (typeof _ret === 'object') return _ret.v;
 	} else {
 		return {
 			next: (function () {
@@ -284,7 +358,7 @@ ZoteroData.prototype[Symbol.iterator] = function () {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/src/js/render.js":[function(require,module,exports){
+},{"./api.js":"/srv/zotero/my-publications/src/js/api.js"}],"/srv/zotero/my-publications/src/js/render.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -318,7 +392,7 @@ var _slicedToArray = (function () {
 })();
 
 exports.renderItem = renderItem;
-exports.renderCollection = renderCollection;
+exports.renderItems = renderItems;
 exports.renderChildItem = renderChildItem;
 exports.renderChildItems = renderChildItems;
 exports.renderGroup = renderGroup;
@@ -361,6 +435,13 @@ var _uiJs = require('./ui.js');
 
 var _dataJs = require('./data.js');
 
+/**
+ * Render single Zotero item
+ * @param  {Object} zoteroItem       - Single Zotero item data
+ * @param  {String} childItemsMarkup - Rendered markup of a list of Zotero child items
+ * @return {String}                  - Rendered markup of a Zotero item
+ */
+
 function renderItem(zoteroItem, childItemsMarkup) {
 	return (0, _tplItemTpl2['default'])({
 		'item': zoteroItem,
@@ -369,7 +450,13 @@ function renderItem(zoteroItem, childItemsMarkup) {
 	});
 }
 
-function renderCollection(zoteroItems) {
+/**
+ * Render a list of Zotero items
+ * @param  {ZoteroData|Object[]} zoteroItems - List of Zotero items
+ * @return {String}                          - Rendered markup of a list of Zotero items
+ */
+
+function renderItems(zoteroItems) {
 	var itemsMarkup = '';
 
 	var _iteratorNormalCompletion = true;
@@ -403,11 +490,23 @@ function renderCollection(zoteroItems) {
 	});
 }
 
+/**
+ * Render single Zotero child item
+ * @param  {Object[]} zoteroChildItem - List of Zotero child items
+ * @return {String}                   - Rendered markup of a Zotero child item
+ */
+
 function renderChildItem(zoteroChildItem) {
 	return (0, _tplChildItemTpl2['default'])({
 		'item': zoteroChildItem
 	});
 }
+
+/**
+ * Render list of Zotero child items
+ * @param  {Object} zoteroItem - Parent Zotero item
+ * @return {String}            - Rendered markup of a list of Zotero child items
+ */
 
 function renderChildItems(zoteroItem) {
 	var childItemsMarkup = '';
@@ -444,6 +543,14 @@ function renderChildItems(zoteroItem) {
 	});
 }
 
+/**
+ * Render an expandable group of Zotero items
+ * @param  {String} title       - A title of a group
+ * @param  {boolean} expand     - Indicates whether group should appear pre-expanded
+ * @param  {String} itemsMarkup - Rendered markup of underlying list of Zotero items
+ * @return {String}             - Rendered markup of a group
+ */
+
 function renderGroup(title, expand, itemsMarkup) {
 	return (0, _tplGroupTpl2['default'])({
 		'title': title,
@@ -451,6 +558,13 @@ function renderGroup(title, expand, itemsMarkup) {
 		'expand': expand
 	});
 }
+
+/**
+ * Render a list of groups of Zotero items
+ * @param  {ZoteroData|Object} data - Grouped data where each key is a group titles and
+ *                                    each value is an array Zotero items
+ * @return {String}                 - Rendered markup of a list of groups
+ */
 
 function renderGrouped(data) {
 	var groupsMarkup = '';
@@ -466,7 +580,7 @@ function renderGrouped(data) {
 			var groupTitle = _step3$value[0];
 			var group = _step3$value[1];
 
-			var itemsMarkup = renderCollection(group);
+			var itemsMarkup = renderItems(group);
 			var expand = group[_dataJs.GROUP_EXPANDED_SUMBOL];
 			groupsMarkup += renderGroup(groupTitle, expand, itemsMarkup);
 		}
@@ -490,13 +604,19 @@ function renderGrouped(data) {
 	});
 }
 
+/**
+ * Render Zotero publications into a DOM element
+ * @param  {HTMLElement} container - DOM element of which contents is to be replaced
+ * @param  {ZoteroData} data       - Source of publications to be rendered
+ */
+
 function renderPublications(container, data) {
 	var markup;
 
 	if (data.grouped > 0) {
 		markup = renderGrouped(data) + (0, _tplBrandingTpl2['default'])();
 	} else {
-		markup = renderCollection(data) + (0, _tplBrandingTpl2['default'])();
+		markup = renderItems(data) + (0, _tplBrandingTpl2['default'])();
 	}
 
 	container.innerHTML = markup;
@@ -580,7 +700,7 @@ var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefi
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='var _ = (typeof window !== "undefined" ? window[\'_\'] : typeof global !== "undefined" ? global[\'_\'] : null);\nmodule.exports = function(obj){\nvar __t,__p=\'\',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,\'\');};\nwith(obj||{}){\n__p+=\'<li class="zotero-item zotero-\'+\n((__t=( data.itemType ))==null?\'\':_.escape(__t))+\n\'">\\n\\t\'+\n((__t=( item.citation ))==null?\'\':__t)+\n\'\\n\\t\';\n if (data.abstractNoteShort && data.abstractNoteShort.length) { \n__p+=\'\\n    \\t<p class="zotero-abstract-short">\\n    \\t\\t\'+\n((__t=( data.abstractNoteShort ))==null?\'\':_.escape(__t))+\n\'\\n    \\t\\t<a class="zotero-abstract-toggle" aria-controls="za-\'+\n((__t=( item.key ))==null?\'\':_.escape(__t))+\n\'">...</a>\\n    \\t</p>\\n\\t\';\n } \n__p+=\'\\n\\t\';\n if (data.abstractNote && data.abstractNote.length) { \n__p+=\'\\n    \\t<p id="za-\'+\n((__t=( item.key ))==null?\'\':_.escape(__t))+\n\'" class="zotero-abstract" aria-expanded="false">\\n    \\t\\t\'+\n((__t=( data.abstractNote ))==null?\'\':_.escape(__t))+\n\'\\n    \\t\\t<a class="zotero-abstract-toggle">...</a>\\n    \\t</p>\\n\\t\';\n } \n__p+=\'\\n    \'+\n((__t=( childItemsMarkup ))==null?\'\':__t)+\n\'\\n</li>\';\n}\nreturn __p;\n};\n';
+__p+='var _ = (typeof window !== "undefined" ? window[\'_\'] : typeof global !== "undefined" ? global[\'_\'] : null);\nmodule.exports = function(obj){\nvar __t,__p=\'\',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,\'\');};\nwith(obj||{}){\n__p+=\'<li class="zotero-item zotero-\'+\n((__t=( data.itemType ))==null?\'\':_.escape(__t))+\n\'">\\n\\t\'+\n((__t=( item.citation ))==null?\'\':__t)+\n\'\\n\\t\';\n if (data[Symbol.for(\'abstractNoteShort\')] && data[Symbol.for(\'abstractNoteShort\')].length) { \n__p+=\'\\n    \\t<p class="zotero-abstract-short">\\n    \\t\\t\'+\n((__t=( data[Symbol.for(\'abstractNoteShort\')] ))==null?\'\':_.escape(__t))+\n\'\\n    \\t\\t<a class="zotero-abstract-toggle" aria-controls="za-\'+\n((__t=( item.key ))==null?\'\':_.escape(__t))+\n\'">...</a>\\n    \\t</p>\\n\\t\';\n } \n__p+=\'\\n\\t\';\n if (data.abstractNote && data.abstractNote.length) { \n__p+=\'\\n    \\t<p id="za-\'+\n((__t=( item.key ))==null?\'\':_.escape(__t))+\n\'" class="zotero-abstract" aria-expanded="false">\\n    \\t\\t\'+\n((__t=( data.abstractNote ))==null?\'\':_.escape(__t))+\n\'\\n    \\t\\t<a class="zotero-abstract-toggle">...</a>\\n    \\t</p>\\n\\t\';\n } \n__p+=\'\\n    \'+\n((__t=( childItemsMarkup ))==null?\'\':__t)+\n\'\\n</li>\';\n}\nreturn __p;\n};\n';
 }
 return __p;
 };
@@ -602,6 +722,10 @@ return __p;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/srv/zotero/my-publications/src/js/ui.js":[function(require,module,exports){
+/**
+ * Attach interaction handlers for expanding groups and shortened abstracts.
+ * @param {HTMLElement} container - A top-level DOM element (e.g. container) that contains Zotero items.
+ */
 'use strict';
 
 Object.defineProperty(exports, '__esModule', {
@@ -625,6 +749,13 @@ function addHandlers(container) {
 		}
 	});
 }
+
+/**
+ * Toggle CSS class that gives a visual loading feedback. Optionally allows to explicetly specify
+ * whether to display or hide visual feedback.
+ * @param  {HTMLElement} container - A DOM element to which visual feedback class should be attached
+ * @param  {boolean} [activate]    - Explicitely indicate whether to add or remove visual feedback
+ */
 
 function toggleSpinner(container, activate) {
 	var method = activate === null ? container.classList.toggle : activate ? container.classList.add : container.classList.remove;
