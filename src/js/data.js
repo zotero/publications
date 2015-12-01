@@ -3,8 +3,8 @@ import _ from 'lodash';
 export const GROUPED_NONE = 0;
 export const GROUPED_BY_TYPE = 1;
 export const GROUPED_BY_COLLECTION = 2;
-export const CHILD_ITEMS_SYMBOL = Symbol("childItems");
-export const GROUP_EXPANDED_SUMBOL = Symbol("groupExpanded");
+export const CHILD_ITEMS_SYMBOL = Symbol('childItems');
+export const GROUP_EXPANDED_SUMBOL = Symbol('groupExpanded');
 
 export function ZoteroData(data) {
 	this.raw = data;

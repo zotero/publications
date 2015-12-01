@@ -39,9 +39,9 @@ ZoteroPublications.prototype.get = function(endpoint) {
 			}
 		};
 
-	return new Promise(function(resolve) {
-		fetchUntilExhausted(url, options)
-		.then(function(responseJson) {
+	return new Promise(function(resolve, reject) {
+		let promise = fetchUntilExhausted(url, options);
+		promise.then(function(responseJson) {
 			responseJson = processResponse(responseJson, this.config);
 			let data = new ZoteroData(responseJson);
 			if(this.config.group === 'type') {
@@ -49,22 +49,31 @@ ZoteroPublications.prototype.get = function(endpoint) {
 			}
 			resolve(data);
 		}.bind(this));
+		promise.catch(reject);
 	}.bind(this));
 };
 
 
 ZoteroPublications.prototype.render = function(endpointOrData, container) {
-	if(endpointOrData instanceof ZoteroData) {
-		let data = endpointOrData;
-		renderPublications(container, data);
-	} else {
-		let endpoint = endpointOrData;
-		toggleSpinner(container, true);
-		this.get(endpoint).then(function(data) {
-			toggleSpinner(container, false);
+	return new Promise(function(resolve, reject) {
+		if(endpointOrData instanceof ZoteroData) {
+			let data = endpointOrData;
 			renderPublications(container, data);
-		});
-	}
+			resolve();
+		} else {
+			let endpoint = endpointOrData;
+			toggleSpinner(container, true);
+			let promise = this.get(endpoint);
+			promise.then(function(data) {
+				toggleSpinner(container, false);
+				renderPublications(container, data);
+				resolve();
+			});
+			promise.catch(reject);
+		}
+	}.bind(this));
 };
+
+ZoteroPublications.ZoteroData = ZoteroData;
 
 module.exports = ZoteroPublications;

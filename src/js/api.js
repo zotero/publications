@@ -21,14 +21,13 @@ export function processResponse(response, config) {
 			if(item.data && item.data.parentItem) {
 				response.splice(i, 1);
 				childItems.push(item);
-			} else {
-				index[item.key] = item;
 			}
+			index[item.key] = item;
 		}
 
 		for(let item of childItems) {
 			if(!index[item.data.parentItem]) {
-				console.warn(`item ${item.data.key} has parentItem ${item.data.parentItem} that does not exist in the dataset`);
+				console.warn(`item ${item.key} has parentItem ${item.data.parentItem} that does not exist in the dataset`);
 				continue;
 			}
 
@@ -67,6 +66,8 @@ export function fetchUntilExhausted(url, options, jsondata) {
 			} else {
 				reject(`Unexpected status code ${response.status} when requesting ${url}`);
 			}
+		}).catch(function() {
+			reject(`Unexpected error when requesting ${url}`);
 		});
 	});
 }

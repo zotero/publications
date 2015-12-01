@@ -45,8 +45,7 @@ module.exports = function(config) {
 	},
 	files: [
 		'src/js/*.js',
-		'test/*.js',
-		'test/fixtures/*.html'
+		'test/*.js'
 	],
 
 	reporters: reporters,
