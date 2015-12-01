@@ -3,8 +3,7 @@ import {
 	renderPublications
 } from './render.js';
 import {
-	fetchUntilExhausted,
-	processResponse
+	fetchUntilExhausted
 } from './api.js';
 import {
 	ZoteroData
@@ -56,8 +55,7 @@ ZoteroPublications.prototype.get = function(endpoint) {
 	return new Promise(function(resolve, reject) {
 		let promise = fetchUntilExhausted(url, options);
 		promise.then(function(responseJson) {
-			responseJson = processResponse(responseJson, this.config);
-			let data = new ZoteroData(responseJson);
+			let data = new ZoteroData(responseJson, this.config);
 			if(this.config.group === 'type') {
 				data.groupByType(this.config.expand);
 			}
