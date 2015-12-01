@@ -6,6 +6,10 @@ export const GROUPED_BY_COLLECTION = 2;
 export const CHILD_ITEMS_SYMBOL = Symbol.for('childItems');
 export const GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
 
+/**
+ * Store, Encapsulate and Manipulate Zotero API data
+ * @param {Object[]} data - Zotero API data to encapsulate
+ */
 export function ZoteroData(data) {
 	this.raw = data;
 	this.data = data;
@@ -20,6 +24,11 @@ export function ZoteroData(data) {
 	});
 }
 
+/**
+ * Group data by type
+ * @param  {String|String[]} [expand=[]] - List of types which should appear pre-expanded.
+ *                                         Alternatively string "all" is accepted.
+ */
 ZoteroData.prototype.groupByType = function(expand) {
 	let groupedData = {};
 	expand = expand || [];
@@ -36,10 +45,18 @@ ZoteroData.prototype.groupByType = function(expand) {
 	this.grouped = GROUPED_BY_TYPE;
 };
 
+/**
+ * Group data by top-level collections
+ */
 ZoteroData.prototype.groupByCollections = function() {
 	throw new Error('groupByCollections is not implemented yet.');
 };
 
+/**
+ * Custom iterator to allow for..of interation regardless of whether data is grouped or not.
+ * For ungrouped data each interation returns single Zotero item
+ * For grouped data each interationr returns an a pair of group title and an Array of Zotero items
+ */
 ZoteroData.prototype[Symbol.iterator] = function() {
 	let i = 0;
 	if(this.grouped > 0) {

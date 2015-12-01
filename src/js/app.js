@@ -13,10 +13,18 @@ import {
 	toggleSpinner
 } from './ui.js';
 
+/**
+ * Application entry point
+ * @param {Object} [config] - Configuration object that will selectively override the defaults
+ */
 function ZoteroPublications(config) {
 	this.config = _.extend({}, this.defaults, config);
 }
 
+/**
+ * Default configuration object
+ * @type {Object}
+ */
 ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
 	limit: 100,
@@ -27,6 +35,12 @@ ZoteroPublications.prototype.defaults = {
 	expand: 'all'
 };
 
+/**
+ * Build url for an endpoint then fetch entire dataset recursively
+ * @param  {String} endpoint - An API endpoint from which data should be obtained
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
 ZoteroPublications.prototype.get = function(endpoint) {
 	let apiBase = this.config.apiBase,
 		limit = this.config.limit,
@@ -53,7 +67,12 @@ ZoteroPublications.prototype.get = function(endpoint) {
 	}.bind(this));
 };
 
-
+/**
+ * Render local or remote items.
+ * @param  {String|ZoteroData} endpointOrData - Data containung publications to be rendered
+ * @param  {HTMLElement} container            - A DOM element where publications will be rendered
+ * @return {Promise}                          - Resolved when rendered or rejected on error.
+ */
 ZoteroPublications.prototype.render = function(endpointOrData, container) {
 	return new Promise(function(resolve, reject) {
 		if(endpointOrData instanceof ZoteroData) {
@@ -69,11 +88,18 @@ ZoteroPublications.prototype.render = function(endpointOrData, container) {
 				renderPublications(container, data);
 				resolve();
 			});
-			promise.catch(reject);
+			promise.catch(function() {
+				toggleSpinner(container, false);
+				reject();
+			});
 		}
 	}.bind(this));
 };
 
+/**
+ * Make ZoteroData publicly accessible underneath ZoteroPublications
+ * @type {ZoteroData}
+ */
 ZoteroPublications.ZoteroData = ZoteroData;
 
 module.exports = ZoteroPublications;
