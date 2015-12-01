@@ -3,6 +3,14 @@ import {
 	CHILD_ITEMS_SYMBOL
 } from './data.js';
 
+export const ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
+
+/**
+ * Process raw API response
+ * @param  {Object[]} response - The raw API response
+ * @param  {Object} config     - Global ZoteroPublications config
+ * @return {Object[]}          - Processed API response
+ */
 export function processResponse(response, config) {
 	if(response) {
 		let childItems = [];
@@ -16,7 +24,7 @@ export function processResponse(response, config) {
 					0,
 					Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' '))
 				);
-				item.data.abstractNoteShort = abstractNoteShort;
+				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
 			}
 			if(item.data && item.data.parentItem) {
 				response.splice(i, 1);
@@ -40,6 +48,13 @@ export function processResponse(response, config) {
 	return response;
 }
 
+/**
+ * Recursively fetch data until there's no more rel="next" url in Link header
+ * @param  {String} url             - An url for initial data request
+ * @param  {Object} [options]       - Custom settings (e.g. headers) passed over to fetch() for each request
+ * @param  {Object[]} [jsondata=[]] - Used for data aggregation in recursive calls
+ * @return {Promise}                - Resolved with complete dataset or rejected on error
+ */
 export function fetchUntilExhausted(url, options, jsondata) {
 	let relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
 	jsondata = jsondata || [];

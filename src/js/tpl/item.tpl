@@ -1,8 +1,8 @@
 <li class="zotero-item zotero-<%- data.itemType %>">
 	<%= item.citation %>
-	<% if (data.abstractNoteShort && data.abstractNoteShort.length) { %>
+	<% if (data[Symbol.for('abstractNoteShort')] && data[Symbol.for('abstractNoteShort')].length) { %>
     	<p class="zotero-abstract-short">
-    		<%- data.abstractNoteShort %>
+    		<%- data[Symbol.for('abstractNoteShort')] %>
     		<a class="zotero-abstract-toggle" aria-controls="za-<%- item.key %>">...</a>
     	</p>
 	<% } %>

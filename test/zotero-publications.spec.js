@@ -11,7 +11,8 @@ import {
 	renderPublications
  } from '../src/js/render.js';
 import {
-	processResponse
+	processResponse,
+	ABSTRACT_NOTE_SHORT_SYMBOL
 } from '../src/js/api.js';
 import {
 	ZoteroData,
@@ -91,7 +92,7 @@ describe('Zotero Publications', function() {
 			shortenedAbstractLenght: 20
 		});
 		processResponse(testData, zp.config);
-		expect(testData[1].data.abstractNoteShort.length).not.toBeGreaterThan(20);
+		expect(testData[1].data[ABSTRACT_NOTE_SHORT_SYMBOL].length).not.toBeGreaterThan(20);
 		expect(testData[1].data.abstractNote.length).toBeGreaterThan(20);
 	});
 
