@@ -144,8 +144,8 @@ gulp.task('less', function() {
 
 gulp.task('demo', function() {
 	return merge(
-		gulp.src('src/demo/index.html')
-			.pipe(symlink('tmp/index.html')),
+		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html'])
+			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html'])),
 		gulp.src('bower_components/lodash/lodash.js')
 			.pipe(symlink('tmp/lodash.js'))
 		);

@@ -1,4 +1,7 @@
 import _ from 'lodash';
+import {
+	processResponse
+} from './api.js';
 
 export const GROUPED_NONE = 0;
 export const GROUPED_BY_TYPE = 1;
@@ -8,11 +11,11 @@ export const GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
- * @param {Object[]} data - Zotero API data to encapsulate
+ * @param {Object[]} data   - Zotero API data to encapsulate
+ * @param {Object} [config] - ZoteroPublications config
  */
-export function ZoteroData(data) {
-	this.raw = data;
-	this.data = data;
+export function ZoteroData(data, config) {
+	this.raw = this.data = processResponse(data, config);
 	this.grouped = GROUPED_NONE;
 
 	Object.defineProperty(this, 'length', {

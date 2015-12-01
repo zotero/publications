@@ -109,14 +109,14 @@ describe('Zotero Publications', function() {
 
 	it('should group items by type', function() {
 		let zp = new ZoteroPublications();
-		let data = new ZoteroData(processResponse(testData, zp.config));
+		let data = new ZoteroData(testData, zp.config);
 		data.groupByType();
 		expect(Object.keys(data.data)).toEqual(['book', 'journalArticle']);
 	});
 
 	it('should pre-expand selected groups', function() {
 		let zp = new ZoteroPublications();
-		let data = new ZoteroData(processResponse(testData, zp.config));
+		let data = new ZoteroData(testData, zp.config);
 		data.groupByType(['book']);
 		expect(data.data.book[GROUP_EXPANDED_SUMBOL]).toBe(true);
 		expect(data.data.journalArticle[GROUP_EXPANDED_SUMBOL]).toBe(false);
@@ -188,8 +188,9 @@ describe('Zotero Publications', function() {
 	it('should render local items using Zotero object and render() method', function(done) {
 		spyOn(window, 'fetch');
 		let container = document.createElement('div');
-		let zd = new ZoteroPublications.ZoteroData(testData);
-		new ZoteroPublications().render(zd, container).then(function() {
+		let zp = new ZoteroPublications();
+		let zd = new ZoteroPublications.ZoteroData(testData, zp.config);
+		zp.render(zd, container).then(function() {
 			expect(window.fetch).not.toHaveBeenCalled();
 			expect(container.innerHTML).toMatch(/^<ul.*zotero-items.*>[\s\S]*$/);
 			done();
