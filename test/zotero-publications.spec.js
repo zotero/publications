@@ -6,7 +6,7 @@ import testData from './fixtures/test-data.json';
 import testDataGrouped from './fixtures/test-data-grouped.json';
 import {
 	renderItem,
-	renderCollection,
+	renderItems,
 	renderGrouped,
 	renderPublications
  } from '../src/js/render.js';
@@ -31,7 +31,7 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should render a list of items', function() {
-		let renderedCollection = renderCollection(testData);
+		let renderedCollection = renderItems(testData);
 		expect(renderedCollection).toBeDefined();
 		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>[\s\S]*(<li.*zotero-item.*>[\s\S]*<\/li>){2}[\s\S]*<\/ul>$/);
 	});
@@ -45,7 +45,7 @@ describe('Zotero Publications', function() {
 	it('should render child items', function() {
 		let zp = new ZoteroPublications();
 		processResponse(testData, zp.config);
-		let renderedCollection = renderCollection(testData);
+		let renderedCollection = renderItems(testData);
 		expect(renderedCollection).toBeDefined();
 		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>[\s\S]*<li.*zotero-item.*>[\s\S]*<ul.*class="zotero-child-items".*>[\s\S]*<\/ul>[\s\S]*<\/li>[\s\S]*<\/ul>$/);
 	});
