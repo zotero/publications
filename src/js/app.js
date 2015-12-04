@@ -16,8 +16,18 @@ import {
  * Application entry point
  * @param {Object} [config] - Configuration object that will selectively override the defaults
  */
-function ZoteroPublications(config) {
-	this.config = _.extend({}, this.defaults, config);
+function ZoteroPublications() {
+	console.log(arguments.length, arguments);
+	if(arguments.length <= 1) {
+		this.config = _.extend({}, this.defaults, arguments ? arguments[0] : {});
+	} else if(arguments.length <= 3) {
+		this.config = _.extend({}, this.defaults, arguments[2]);
+		return this.render(arguments[0], arguments[1]);
+	} else {
+		return Promise.reject(
+			new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.')
+		);
+	}
 }
 
 /**
@@ -27,7 +37,7 @@ function ZoteroPublications(config) {
 ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
 	limit: 100,
-	citationStyle: 'apa-annotated-bibliography',
+	citationStyle: '',
 	include: ['data', 'citation'],
 	shortenedAbstractLenght: 250,
 	group: false,
@@ -73,11 +83,14 @@ ZoteroPublications.prototype.get = function(endpoint) {
  */
 ZoteroPublications.prototype.render = function(endpointOrData, container) {
 	return new Promise(function(resolve, reject) {
+		if(!(container instanceof HTMLElement)) {
+			reject(new Error('Second argument to render() method must be a DOM element'));
+		}
 		if(endpointOrData instanceof ZoteroData) {
 			let data = endpointOrData;
 			renderPublications(container, data);
 			resolve();
-		} else {
+		} else if(typeof endpointOrData === 'string') {
 			let endpoint = endpointOrData;
 			toggleSpinner(container, true);
 			let promise = this.get(endpoint);
@@ -88,8 +101,10 @@ ZoteroPublications.prototype.render = function(endpointOrData, container) {
 			});
 			promise.catch(function() {
 				toggleSpinner(container, false);
-				reject();
+				reject(arguments[0]);
 			});
+		} else {
+			reject(new Error('First argument to render() method must be an endpoint or an instance of ZoteroData'));
 		}
 	}.bind(this));
 };
