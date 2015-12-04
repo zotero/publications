@@ -217,4 +217,61 @@ describe('Zotero Publications', function() {
 				done();
 		});
 	});
+
+	it('should render remote itmes using shortcut syntax', function(done) {
+		spyOn(window, 'fetch').and.returnValue(
+			Promise.resolve(
+				new Response(
+					JSON.stringify(testData),
+					{ status: 200,
+					'headers': new Headers({
+						'Link': 'blah'
+					})}
+				)
+			)
+		);
+		let container = document.createElement('div');
+		expect(container.classList.contains('zotero-loading')).toBe(false);
+
+		let promise = new ZoteroPublications('some/endpoint', container, {});
+		expect(container.classList.contains('zotero-loading')).toBe(true);
+
+		promise.then(function() {
+			expect(window.fetch).toHaveBeenCalled();
+			expect(container.classList.contains('zotero-loading')).toBe(false);
+			expect(container.innerHTML).toMatch(/^<ul.*zotero-items.*>[\s\S]*$/);
+			done();
+		});
+	});
+
+	it('should throw error when called with invalid first argument', function(done) {
+		new ZoteroPublications({}, document.createElement('div'), {}).then(function() {
+			fail();
+			done();
+		}).catch(function(err) {
+			expect(err instanceof Error).toBe(true);
+			done();
+		});
+	});
+
+	it('should throw error when called with invalid second argument', function(done) {
+		new ZoteroPublications('', '', '').then(function() {
+			fail();
+			done();
+		}).catch(function(err) {
+			expect(err instanceof Error).toBe(true);
+			done();
+		});
+	});
+
+	it('should throw error when called with invalid number of arguments', function(done) {
+		new ZoteroPublications('/endpoint', document.createElement('div'), {}, '').then(function() {
+			fail();
+			done();
+		}).catch(function(err) {
+			console.warn(err);
+			expect(err instanceof Error).toBe(true);
+			done();
+		});
+	});
 });
