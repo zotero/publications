@@ -79,10 +79,10 @@ export function fetchUntilExhausted(url, options, jsondata) {
 					});
 				}
 			} else {
-				reject(`Unexpected status code ${response.status} when requesting ${url}`);
+				reject(new Error(`Unexpected status code ${response.status} when requesting ${url}`));
 			}
 		}).catch(function() {
-			reject(`Unexpected error when requesting ${url}`);
+			reject(new Error(`Unexpected error when requesting ${url}`));
 		});
 	});
 }

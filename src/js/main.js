@@ -16,8 +16,7 @@ import {
  * Application entry point
  * @param {Object} [config] - Configuration object that will selectively override the defaults
  */
-function ZoteroPublications() {
-	console.log(arguments.length, arguments);
+export function ZoteroPublications() {
 	if(arguments.length <= 1) {
 		this.config = _.extend({}, this.defaults, arguments ? arguments[0] : {});
 	} else if(arguments.length <= 3) {
@@ -55,7 +54,7 @@ ZoteroPublications.prototype.get = function(endpoint) {
 		limit = this.config.limit,
 		style = this.config.citationStyle,
 		include = this.config.include.join(','),
-		url = `//${apiBase}/${endpoint}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`,
+		url = `https://${apiBase}/${endpoint}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`,
 		options = {
 			headers: {
 				'Accept': 'application/json'
@@ -114,5 +113,3 @@ ZoteroPublications.prototype.render = function(endpointOrData, container) {
  * @type {ZoteroData}
  */
 ZoteroPublications.ZoteroData = ZoteroData;
-
-module.exports = ZoteroPublications;
