@@ -13,10 +13,11 @@ var rename = require('gulp-rename');
 var babelify = require('babelify');
 var stringify = require('stringify')(['html']);
 var symlink = require('gulp-symlink');
-var tplTransform = require('node-underscorify').transform({
-	extensions: ['tpl'],
-	requires: [{variable: '_', module: 'lodash'}]
-	});
+//var tplTransform = require('node-underscorify').transform({
+//	extensions: ['tpl'],
+//	requires: [{variable: '_', module: 'lodash'}]
+//	});
+var jstify = require('jstify');
 var shim = require('browserify-shim');
 var sourcemaps = require('gulp-sourcemaps');
 var less = require('gulp-less');
@@ -31,6 +32,7 @@ var insert = require('gulp-insert');
 var fs = require('fs');
 var promisePF = fs.readFileSync('./bower_components/es6-promise/promise.js', "utf8");
 var fetchPF = fs.readFileSync('./bower_components/fetch/fetch.js', "utf8");
+var symbolPF = fs.readFileSync('bower_components/es-symbol/dist/symbol.js', "utf8");
 var watch;
 var buildDir;
 
@@ -65,25 +67,30 @@ function bundleShare(b, variant) {
 		.pipe(gulpif(watch, connect.reload()));
 }
 
-function getBrowserify(debug, shimConfig) {
+function getBrowserify(debug, entry, shimConfig) {
 	var b = browserify({
 			cache: {},
 			packageCache: {},
 			fullPaths: true,
-			entries: 'src/js/app.js',
+			entries: `src/js/${entry}.js`,
 			debug: debug,
-			standalone: 'ZoteroPublications'
+			standalone: 'ZoteroPublications',
+			transform: [
+			'babelify',
+			['node-underscorify', {
+                'extensions': ['tpl'],
+                requires: [{variable: '_', module: 'lodash'}]
+            }],
+			['stringify', {extensions: ['.html']}],
+			['browserify-shim', shimConfig]
+		]
 	});
 	
-	b.transform(babelify);
-	b.transform(tplTransform);
-	b.transform(stringify);
-	b.transform(shim, shimConfig);
 	return b;
 }
 
 gulp.task('js', function() {
-	let b = getBrowserify(watch, shimConfigs.nodeps);
+	let b = getBrowserify(watch, 'main-modern', shimConfigs.nodeps);
 	
 	if(watch) {
     	b = watchify(b);
@@ -95,18 +102,21 @@ gulp.task('js', function() {
 });
 
 gulp.task('multi-js', function() {
-	let bnodeps = getBrowserify(false, shimConfigs.nodeps),
-		blodash = getBrowserify(false, shimConfigs.lodash);
+	let bnodeps = getBrowserify(false, 'main-modern', shimConfigs.nodeps),
+		bnodepsCompat = getBrowserify(false, 'main-compat', shimConfigs.nodeps),
+		blodash = getBrowserify(false, 'main-modern', shimConfigs.lodash),
+		blodashComapt = getBrowserify(false, 'main-compat', shimConfigs.lodash);
 
 	return merge(
 		bundleShare(bnodeps)
 			.pipe(uglify())
 			.pipe(rename({ extname: '.min.js' }))
 			.pipe(gulp.dest(buildDir)),
-		bundleShare(bnodeps)
+		bundleShare(bnodepsCompat)
 			.pipe(rename({ suffix: '-compat' }))
-			.pipe(insert.prepend(promisePF))
-			.pipe(insert.prepend(fetchPF))
+			//.pipe(insert.prepend(symbolPF))
+			//.pipe(insert.prepend(fetchPF))
+			//.pipe(insert.prepend(promisePF))
 			.pipe(gulp.dest(buildDir))
 			.pipe(uglify())
 			.pipe(rename({ extname: '.min.js' }))
@@ -115,10 +125,11 @@ gulp.task('multi-js', function() {
 			.pipe(uglify())
 			.pipe(rename({ extname: '.min.js' }))
 			.pipe(gulp.dest(buildDir)),
-		bundleShare(blodash, 'lodash')
+		bundleShare(blodashComapt, 'lodash')
 			.pipe(rename({ suffix: '-compat' }))
-			.pipe(insert.prepend(promisePF))
-			.pipe(insert.prepend(fetchPF))
+			//.pipe(insert.prepend(symbolPF))
+			//.pipe(insert.prepend(fetchPF))
+			//.pipe(insert.prepend(promisePF))
 			.pipe(gulp.dest(buildDir))
 			.pipe(uglify())
 			.pipe(rename({ extname: '.min.js' }))
