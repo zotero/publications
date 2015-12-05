@@ -1,4 +1,1764 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/srv/zotero/my-publications/src/js/api.js":[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js":[function(require,module,exports){
+require('../modules/es6.object.to-string');
+require('../modules/es6.string.iterator');
+require('../modules/web.dom.iterable');
+require('../modules/es6.promise');
+module.exports = require('../modules/$.core').Promise;
+},{"../modules/$.core":"/srv/zotero/my-publications/node_modules/core-js/modules/$.core.js","../modules/es6.object.to-string":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.object.to-string.js","../modules/es6.promise":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.promise.js","../modules/es6.string.iterator":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js","../modules/web.dom.iterable":"/srv/zotero/my-publications/node_modules/core-js/modules/web.dom.iterable.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.a-function.js":[function(require,module,exports){
+module.exports = function(it){
+  if(typeof it != 'function')throw TypeError(it + ' is not a function!');
+  return it;
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.add-to-unscopables.js":[function(require,module,exports){
+// 22.1.3.31 Array.prototype[@@unscopables]
+var UNSCOPABLES = require('./$.wks')('unscopables')
+  , ArrayProto  = Array.prototype;
+if(ArrayProto[UNSCOPABLES] == undefined)require('./$.hide')(ArrayProto, UNSCOPABLES, {});
+module.exports = function(key){
+  ArrayProto[UNSCOPABLES][key] = true;
+};
+},{"./$.hide":"/srv/zotero/my-publications/node_modules/core-js/modules/$.hide.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.an-object.js":[function(require,module,exports){
+var isObject = require('./$.is-object');
+module.exports = function(it){
+  if(!isObject(it))throw TypeError(it + ' is not an object!');
+  return it;
+};
+},{"./$.is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.classof.js":[function(require,module,exports){
+// getting tag from 19.1.3.6 Object.prototype.toString()
+var cof = require('./$.cof')
+  , TAG = require('./$.wks')('toStringTag')
+  // ES3 wrong here
+  , ARG = cof(function(){ return arguments; }()) == 'Arguments';
+
+module.exports = function(it){
+  var O, T, B;
+  return it === undefined ? 'Undefined' : it === null ? 'Null'
+    // @@toStringTag case
+    : typeof (T = (O = Object(it))[TAG]) == 'string' ? T
+    // builtinTag case
+    : ARG ? cof(O)
+    // ES3 arguments fallback
+    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
+};
+},{"./$.cof":"/srv/zotero/my-publications/node_modules/core-js/modules/$.cof.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.cof.js":[function(require,module,exports){
+var toString = {}.toString;
+
+module.exports = function(it){
+  return toString.call(it).slice(8, -1);
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.core.js":[function(require,module,exports){
+var core = module.exports = {version: '1.2.6'};
+if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.ctx.js":[function(require,module,exports){
+// optional / simple context binding
+var aFunction = require('./$.a-function');
+module.exports = function(fn, that, length){
+  aFunction(fn);
+  if(that === undefined)return fn;
+  switch(length){
+    case 1: return function(a){
+      return fn.call(that, a);
+    };
+    case 2: return function(a, b){
+      return fn.call(that, a, b);
+    };
+    case 3: return function(a, b, c){
+      return fn.call(that, a, b, c);
+    };
+  }
+  return function(/* ...args */){
+    return fn.apply(that, arguments);
+  };
+};
+},{"./$.a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/$.a-function.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.defined.js":[function(require,module,exports){
+// 7.2.1 RequireObjectCoercible(argument)
+module.exports = function(it){
+  if(it == undefined)throw TypeError("Can't call method on  " + it);
+  return it;
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.descriptors.js":[function(require,module,exports){
+// Thank's IE8 for his funny defineProperty
+module.exports = !require('./$.fails')(function(){
+  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
+});
+},{"./$.fails":"/srv/zotero/my-publications/node_modules/core-js/modules/$.fails.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.dom-create.js":[function(require,module,exports){
+var isObject = require('./$.is-object')
+  , document = require('./$.global').document
+  // in old IE typeof document.createElement is 'object'
+  , is = isObject(document) && isObject(document.createElement);
+module.exports = function(it){
+  return is ? document.createElement(it) : {};
+};
+},{"./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.export.js":[function(require,module,exports){
+var global    = require('./$.global')
+  , core      = require('./$.core')
+  , hide      = require('./$.hide')
+  , redefine  = require('./$.redefine')
+  , ctx       = require('./$.ctx')
+  , PROTOTYPE = 'prototype';
+
+var $export = function(type, name, source){
+  var IS_FORCED = type & $export.F
+    , IS_GLOBAL = type & $export.G
+    , IS_STATIC = type & $export.S
+    , IS_PROTO  = type & $export.P
+    , IS_BIND   = type & $export.B
+    , target    = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE]
+    , exports   = IS_GLOBAL ? core : core[name] || (core[name] = {})
+    , expProto  = exports[PROTOTYPE] || (exports[PROTOTYPE] = {})
+    , key, own, out, exp;
+  if(IS_GLOBAL)source = name;
+  for(key in source){
+    // contains in native
+    own = !IS_FORCED && target && key in target;
+    // export native or passed
+    out = (own ? target : source)[key];
+    // bind timers to global for call from export context
+    exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
+    // extend global
+    if(target && !own)redefine(target, key, out);
+    // export
+    if(exports[key] != out)hide(exports, key, exp);
+    if(IS_PROTO && expProto[key] != out)expProto[key] = out;
+  }
+};
+global.core = core;
+// type bitmap
+$export.F = 1;  // forced
+$export.G = 2;  // global
+$export.S = 4;  // static
+$export.P = 8;  // proto
+$export.B = 16; // bind
+$export.W = 32; // wrap
+module.exports = $export;
+},{"./$.core":"/srv/zotero/my-publications/node_modules/core-js/modules/$.core.js","./$.ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/$.ctx.js","./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.hide":"/srv/zotero/my-publications/node_modules/core-js/modules/$.hide.js","./$.redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/$.redefine.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.fails.js":[function(require,module,exports){
+module.exports = function(exec){
+  try {
+    return !!exec();
+  } catch(e){
+    return true;
+  }
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.for-of.js":[function(require,module,exports){
+var ctx         = require('./$.ctx')
+  , call        = require('./$.iter-call')
+  , isArrayIter = require('./$.is-array-iter')
+  , anObject    = require('./$.an-object')
+  , toLength    = require('./$.to-length')
+  , getIterFn   = require('./core.get-iterator-method');
+module.exports = function(iterable, entries, fn, that){
+  var iterFn = getIterFn(iterable)
+    , f      = ctx(fn, that, entries ? 2 : 1)
+    , index  = 0
+    , length, step, iterator;
+  if(typeof iterFn != 'function')throw TypeError(iterable + ' is not iterable!');
+  // fast case for arrays with default iterator
+  if(isArrayIter(iterFn))for(length = toLength(iterable.length); length > index; index++){
+    entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
+  } else for(iterator = iterFn.call(iterable); !(step = iterator.next()).done; ){
+    call(iterator, f, step.value, entries);
+  }
+};
+},{"./$.an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.an-object.js","./$.ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/$.ctx.js","./$.is-array-iter":"/srv/zotero/my-publications/node_modules/core-js/modules/$.is-array-iter.js","./$.iter-call":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-call.js","./$.to-length":"/srv/zotero/my-publications/node_modules/core-js/modules/$.to-length.js","./core.get-iterator-method":"/srv/zotero/my-publications/node_modules/core-js/modules/core.get-iterator-method.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js":[function(require,module,exports){
+// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
+var global = module.exports = typeof window != 'undefined' && window.Math == Math
+  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
+if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.has.js":[function(require,module,exports){
+var hasOwnProperty = {}.hasOwnProperty;
+module.exports = function(it, key){
+  return hasOwnProperty.call(it, key);
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.hide.js":[function(require,module,exports){
+var $          = require('./$')
+  , createDesc = require('./$.property-desc');
+module.exports = require('./$.descriptors') ? function(object, key, value){
+  return $.setDesc(object, key, createDesc(1, value));
+} : function(object, key, value){
+  object[key] = value;
+  return object;
+};
+},{"./$":"/srv/zotero/my-publications/node_modules/core-js/modules/$.js","./$.descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/$.descriptors.js","./$.property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/$.property-desc.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.html.js":[function(require,module,exports){
+module.exports = require('./$.global').document && document.documentElement;
+},{"./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.invoke.js":[function(require,module,exports){
+// fast apply, http://jsperf.lnkit.com/fast-apply/5
+module.exports = function(fn, args, that){
+  var un = that === undefined;
+  switch(args.length){
+    case 0: return un ? fn()
+                      : fn.call(that);
+    case 1: return un ? fn(args[0])
+                      : fn.call(that, args[0]);
+    case 2: return un ? fn(args[0], args[1])
+                      : fn.call(that, args[0], args[1]);
+    case 3: return un ? fn(args[0], args[1], args[2])
+                      : fn.call(that, args[0], args[1], args[2]);
+    case 4: return un ? fn(args[0], args[1], args[2], args[3])
+                      : fn.call(that, args[0], args[1], args[2], args[3]);
+  } return              fn.apply(that, args);
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.iobject.js":[function(require,module,exports){
+// fallback for non-array-like ES3 and non-enumerable old V8 strings
+var cof = require('./$.cof');
+module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
+  return cof(it) == 'String' ? it.split('') : Object(it);
+};
+},{"./$.cof":"/srv/zotero/my-publications/node_modules/core-js/modules/$.cof.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.is-array-iter.js":[function(require,module,exports){
+// check on default Array iterator
+var Iterators  = require('./$.iterators')
+  , ITERATOR   = require('./$.wks')('iterator')
+  , ArrayProto = Array.prototype;
+
+module.exports = function(it){
+  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
+};
+},{"./$.iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iterators.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.is-object.js":[function(require,module,exports){
+module.exports = function(it){
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-call.js":[function(require,module,exports){
+// call something on iterator step with safe closing on error
+var anObject = require('./$.an-object');
+module.exports = function(iterator, fn, value, entries){
+  try {
+    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
+  // 7.4.6 IteratorClose(iterator, completion)
+  } catch(e){
+    var ret = iterator['return'];
+    if(ret !== undefined)anObject(ret.call(iterator));
+    throw e;
+  }
+};
+},{"./$.an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.an-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-create.js":[function(require,module,exports){
+'use strict';
+var $              = require('./$')
+  , descriptor     = require('./$.property-desc')
+  , setToStringTag = require('./$.set-to-string-tag')
+  , IteratorPrototype = {};
+
+// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
+require('./$.hide')(IteratorPrototype, require('./$.wks')('iterator'), function(){ return this; });
+
+module.exports = function(Constructor, NAME, next){
+  Constructor.prototype = $.create(IteratorPrototype, {next: descriptor(1, next)});
+  setToStringTag(Constructor, NAME + ' Iterator');
+};
+},{"./$":"/srv/zotero/my-publications/node_modules/core-js/modules/$.js","./$.hide":"/srv/zotero/my-publications/node_modules/core-js/modules/$.hide.js","./$.property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/$.property-desc.js","./$.set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/$.set-to-string-tag.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-define.js":[function(require,module,exports){
+'use strict';
+var LIBRARY        = require('./$.library')
+  , $export        = require('./$.export')
+  , redefine       = require('./$.redefine')
+  , hide           = require('./$.hide')
+  , has            = require('./$.has')
+  , Iterators      = require('./$.iterators')
+  , $iterCreate    = require('./$.iter-create')
+  , setToStringTag = require('./$.set-to-string-tag')
+  , getProto       = require('./$').getProto
+  , ITERATOR       = require('./$.wks')('iterator')
+  , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
+  , FF_ITERATOR    = '@@iterator'
+  , KEYS           = 'keys'
+  , VALUES         = 'values';
+
+var returnThis = function(){ return this; };
+
+module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED){
+  $iterCreate(Constructor, NAME, next);
+  var getMethod = function(kind){
+    if(!BUGGY && kind in proto)return proto[kind];
+    switch(kind){
+      case KEYS: return function keys(){ return new Constructor(this, kind); };
+      case VALUES: return function values(){ return new Constructor(this, kind); };
+    } return function entries(){ return new Constructor(this, kind); };
+  };
+  var TAG        = NAME + ' Iterator'
+    , DEF_VALUES = DEFAULT == VALUES
+    , VALUES_BUG = false
+    , proto      = Base.prototype
+    , $native    = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT]
+    , $default   = $native || getMethod(DEFAULT)
+    , methods, key;
+  // Fix native
+  if($native){
+    var IteratorPrototype = getProto($default.call(new Base));
+    // Set @@toStringTag to native iterators
+    setToStringTag(IteratorPrototype, TAG, true);
+    // FF fix
+    if(!LIBRARY && has(proto, FF_ITERATOR))hide(IteratorPrototype, ITERATOR, returnThis);
+    // fix Array#{values, @@iterator}.name in V8 / FF
+    if(DEF_VALUES && $native.name !== VALUES){
+      VALUES_BUG = true;
+      $default = function values(){ return $native.call(this); };
+    }
+  }
+  // Define iterator
+  if((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])){
+    hide(proto, ITERATOR, $default);
+  }
+  // Plug for library
+  Iterators[NAME] = $default;
+  Iterators[TAG]  = returnThis;
+  if(DEFAULT){
+    methods = {
+      values:  DEF_VALUES  ? $default : getMethod(VALUES),
+      keys:    IS_SET      ? $default : getMethod(KEYS),
+      entries: !DEF_VALUES ? $default : getMethod('entries')
+    };
+    if(FORCED)for(key in methods){
+      if(!(key in proto))redefine(proto, key, methods[key]);
+    } else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
+  }
+  return methods;
+};
+},{"./$":"/srv/zotero/my-publications/node_modules/core-js/modules/$.js","./$.export":"/srv/zotero/my-publications/node_modules/core-js/modules/$.export.js","./$.has":"/srv/zotero/my-publications/node_modules/core-js/modules/$.has.js","./$.hide":"/srv/zotero/my-publications/node_modules/core-js/modules/$.hide.js","./$.iter-create":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-create.js","./$.iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iterators.js","./$.library":"/srv/zotero/my-publications/node_modules/core-js/modules/$.library.js","./$.redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/$.redefine.js","./$.set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/$.set-to-string-tag.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-detect.js":[function(require,module,exports){
+var ITERATOR     = require('./$.wks')('iterator')
+  , SAFE_CLOSING = false;
+
+try {
+  var riter = [7][ITERATOR]();
+  riter['return'] = function(){ SAFE_CLOSING = true; };
+  Array.from(riter, function(){ throw 2; });
+} catch(e){ /* empty */ }
+
+module.exports = function(exec, skipClosing){
+  if(!skipClosing && !SAFE_CLOSING)return false;
+  var safe = false;
+  try {
+    var arr  = [7]
+      , iter = arr[ITERATOR]();
+    iter.next = function(){ safe = true; };
+    arr[ITERATOR] = function(){ return iter; };
+    exec(arr);
+  } catch(e){ /* empty */ }
+  return safe;
+};
+},{"./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-step.js":[function(require,module,exports){
+module.exports = function(done, value){
+  return {value: value, done: !!done};
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.iterators.js":[function(require,module,exports){
+module.exports = {};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.js":[function(require,module,exports){
+var $Object = Object;
+module.exports = {
+  create:     $Object.create,
+  getProto:   $Object.getPrototypeOf,
+  isEnum:     {}.propertyIsEnumerable,
+  getDesc:    $Object.getOwnPropertyDescriptor,
+  setDesc:    $Object.defineProperty,
+  setDescs:   $Object.defineProperties,
+  getKeys:    $Object.keys,
+  getNames:   $Object.getOwnPropertyNames,
+  getSymbols: $Object.getOwnPropertySymbols,
+  each:       [].forEach
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.library.js":[function(require,module,exports){
+module.exports = false;
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.microtask.js":[function(require,module,exports){
+var global    = require('./$.global')
+  , macrotask = require('./$.task').set
+  , Observer  = global.MutationObserver || global.WebKitMutationObserver
+  , process   = global.process
+  , Promise   = global.Promise
+  , isNode    = require('./$.cof')(process) == 'process'
+  , head, last, notify;
+
+var flush = function(){
+  var parent, domain, fn;
+  if(isNode && (parent = process.domain)){
+    process.domain = null;
+    parent.exit();
+  }
+  while(head){
+    domain = head.domain;
+    fn     = head.fn;
+    if(domain)domain.enter();
+    fn(); // <- currently we use it only for Promise - try / catch not required
+    if(domain)domain.exit();
+    head = head.next;
+  } last = undefined;
+  if(parent)parent.enter();
+};
+
+// Node.js
+if(isNode){
+  notify = function(){
+    process.nextTick(flush);
+  };
+// browsers with MutationObserver
+} else if(Observer){
+  var toggle = 1
+    , node   = document.createTextNode('');
+  new Observer(flush).observe(node, {characterData: true}); // eslint-disable-line no-new
+  notify = function(){
+    node.data = toggle = -toggle;
+  };
+// environments with maybe non-completely correct, but existent Promise
+} else if(Promise && Promise.resolve){
+  notify = function(){
+    Promise.resolve().then(flush);
+  };
+// for other environments - macrotask based on:
+// - setImmediate
+// - MessageChannel
+// - window.postMessag
+// - onreadystatechange
+// - setTimeout
+} else {
+  notify = function(){
+    // strange IE + webpack dev server bug - use .call(global)
+    macrotask.call(global, flush);
+  };
+}
+
+module.exports = function asap(fn){
+  var task = {fn: fn, next: undefined, domain: isNode && process.domain};
+  if(last)last.next = task;
+  if(!head){
+    head = task;
+    notify();
+  } last = task;
+};
+},{"./$.cof":"/srv/zotero/my-publications/node_modules/core-js/modules/$.cof.js","./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.task":"/srv/zotero/my-publications/node_modules/core-js/modules/$.task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.property-desc.js":[function(require,module,exports){
+module.exports = function(bitmap, value){
+  return {
+    enumerable  : !(bitmap & 1),
+    configurable: !(bitmap & 2),
+    writable    : !(bitmap & 4),
+    value       : value
+  };
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.redefine-all.js":[function(require,module,exports){
+var redefine = require('./$.redefine');
+module.exports = function(target, src){
+  for(var key in src)redefine(target, key, src[key]);
+  return target;
+};
+},{"./$.redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/$.redefine.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.redefine.js":[function(require,module,exports){
+// add fake Function#toString
+// for correct work wrapped methods / constructors with methods like LoDash isNative
+var global    = require('./$.global')
+  , hide      = require('./$.hide')
+  , SRC       = require('./$.uid')('src')
+  , TO_STRING = 'toString'
+  , $toString = Function[TO_STRING]
+  , TPL       = ('' + $toString).split(TO_STRING);
+
+require('./$.core').inspectSource = function(it){
+  return $toString.call(it);
+};
+
+(module.exports = function(O, key, val, safe){
+  if(typeof val == 'function'){
+    val.hasOwnProperty(SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
+    val.hasOwnProperty('name') || hide(val, 'name', key);
+  }
+  if(O === global){
+    O[key] = val;
+  } else {
+    if(!safe)delete O[key];
+    hide(O, key, val);
+  }
+})(Function.prototype, TO_STRING, function toString(){
+  return typeof this == 'function' && this[SRC] || $toString.call(this);
+});
+},{"./$.core":"/srv/zotero/my-publications/node_modules/core-js/modules/$.core.js","./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.hide":"/srv/zotero/my-publications/node_modules/core-js/modules/$.hide.js","./$.uid":"/srv/zotero/my-publications/node_modules/core-js/modules/$.uid.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.same-value.js":[function(require,module,exports){
+// 7.2.9 SameValue(x, y)
+module.exports = Object.is || function is(x, y){
+  return x === y ? x !== 0 || 1 / x === 1 / y : x != x && y != y;
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.set-proto.js":[function(require,module,exports){
+// Works with __proto__ only. Old v8 can't work with null proto objects.
+/* eslint-disable no-proto */
+var getDesc  = require('./$').getDesc
+  , isObject = require('./$.is-object')
+  , anObject = require('./$.an-object');
+var check = function(O, proto){
+  anObject(O);
+  if(!isObject(proto) && proto !== null)throw TypeError(proto + ": can't set as prototype!");
+};
+module.exports = {
+  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
+    function(test, buggy, set){
+      try {
+        set = require('./$.ctx')(Function.call, getDesc(Object.prototype, '__proto__').set, 2);
+        set(test, []);
+        buggy = !(test instanceof Array);
+      } catch(e){ buggy = true; }
+      return function setPrototypeOf(O, proto){
+        check(O, proto);
+        if(buggy)O.__proto__ = proto;
+        else set(O, proto);
+        return O;
+      };
+    }({}, false) : undefined),
+  check: check
+};
+},{"./$":"/srv/zotero/my-publications/node_modules/core-js/modules/$.js","./$.an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.an-object.js","./$.ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/$.ctx.js","./$.is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.set-species.js":[function(require,module,exports){
+'use strict';
+var global      = require('./$.global')
+  , $           = require('./$')
+  , DESCRIPTORS = require('./$.descriptors')
+  , SPECIES     = require('./$.wks')('species');
+
+module.exports = function(KEY){
+  var C = global[KEY];
+  if(DESCRIPTORS && C && !C[SPECIES])$.setDesc(C, SPECIES, {
+    configurable: true,
+    get: function(){ return this; }
+  });
+};
+},{"./$":"/srv/zotero/my-publications/node_modules/core-js/modules/$.js","./$.descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/$.descriptors.js","./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.set-to-string-tag.js":[function(require,module,exports){
+var def = require('./$').setDesc
+  , has = require('./$.has')
+  , TAG = require('./$.wks')('toStringTag');
+
+module.exports = function(it, tag, stat){
+  if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
+};
+},{"./$":"/srv/zotero/my-publications/node_modules/core-js/modules/$.js","./$.has":"/srv/zotero/my-publications/node_modules/core-js/modules/$.has.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.shared.js":[function(require,module,exports){
+var global = require('./$.global')
+  , SHARED = '__core-js_shared__'
+  , store  = global[SHARED] || (global[SHARED] = {});
+module.exports = function(key){
+  return store[key] || (store[key] = {});
+};
+},{"./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.species-constructor.js":[function(require,module,exports){
+// 7.3.20 SpeciesConstructor(O, defaultConstructor)
+var anObject  = require('./$.an-object')
+  , aFunction = require('./$.a-function')
+  , SPECIES   = require('./$.wks')('species');
+module.exports = function(O, D){
+  var C = anObject(O).constructor, S;
+  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
+};
+},{"./$.a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/$.a-function.js","./$.an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.an-object.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.strict-new.js":[function(require,module,exports){
+module.exports = function(it, Constructor, name){
+  if(!(it instanceof Constructor))throw TypeError(name + ": use the 'new' operator!");
+  return it;
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.string-at.js":[function(require,module,exports){
+var toInteger = require('./$.to-integer')
+  , defined   = require('./$.defined');
+// true  -> String#at
+// false -> String#codePointAt
+module.exports = function(TO_STRING){
+  return function(that, pos){
+    var s = String(defined(that))
+      , i = toInteger(pos)
+      , l = s.length
+      , a, b;
+    if(i < 0 || i >= l)return TO_STRING ? '' : undefined;
+    a = s.charCodeAt(i);
+    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
+      ? TO_STRING ? s.charAt(i) : a
+      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
+  };
+};
+},{"./$.defined":"/srv/zotero/my-publications/node_modules/core-js/modules/$.defined.js","./$.to-integer":"/srv/zotero/my-publications/node_modules/core-js/modules/$.to-integer.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.task.js":[function(require,module,exports){
+var ctx                = require('./$.ctx')
+  , invoke             = require('./$.invoke')
+  , html               = require('./$.html')
+  , cel                = require('./$.dom-create')
+  , global             = require('./$.global')
+  , process            = global.process
+  , setTask            = global.setImmediate
+  , clearTask          = global.clearImmediate
+  , MessageChannel     = global.MessageChannel
+  , counter            = 0
+  , queue              = {}
+  , ONREADYSTATECHANGE = 'onreadystatechange'
+  , defer, channel, port;
+var run = function(){
+  var id = +this;
+  if(queue.hasOwnProperty(id)){
+    var fn = queue[id];
+    delete queue[id];
+    fn();
+  }
+};
+var listner = function(event){
+  run.call(event.data);
+};
+// Node.js 0.9+ & IE10+ has setImmediate, otherwise:
+if(!setTask || !clearTask){
+  setTask = function setImmediate(fn){
+    var args = [], i = 1;
+    while(arguments.length > i)args.push(arguments[i++]);
+    queue[++counter] = function(){
+      invoke(typeof fn == 'function' ? fn : Function(fn), args);
+    };
+    defer(counter);
+    return counter;
+  };
+  clearTask = function clearImmediate(id){
+    delete queue[id];
+  };
+  // Node.js 0.8-
+  if(require('./$.cof')(process) == 'process'){
+    defer = function(id){
+      process.nextTick(ctx(run, id, 1));
+    };
+  // Browsers with MessageChannel, includes WebWorkers
+  } else if(MessageChannel){
+    channel = new MessageChannel;
+    port    = channel.port2;
+    channel.port1.onmessage = listner;
+    defer = ctx(port.postMessage, port, 1);
+  // Browsers with postMessage, skip WebWorkers
+  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
+  } else if(global.addEventListener && typeof postMessage == 'function' && !global.importScripts){
+    defer = function(id){
+      global.postMessage(id + '', '*');
+    };
+    global.addEventListener('message', listner, false);
+  // IE8-
+  } else if(ONREADYSTATECHANGE in cel('script')){
+    defer = function(id){
+      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function(){
+        html.removeChild(this);
+        run.call(id);
+      };
+    };
+  // Rest old browsers
+  } else {
+    defer = function(id){
+      setTimeout(ctx(run, id, 1), 0);
+    };
+  }
+}
+module.exports = {
+  set:   setTask,
+  clear: clearTask
+};
+},{"./$.cof":"/srv/zotero/my-publications/node_modules/core-js/modules/$.cof.js","./$.ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/$.ctx.js","./$.dom-create":"/srv/zotero/my-publications/node_modules/core-js/modules/$.dom-create.js","./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.html":"/srv/zotero/my-publications/node_modules/core-js/modules/$.html.js","./$.invoke":"/srv/zotero/my-publications/node_modules/core-js/modules/$.invoke.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.to-integer.js":[function(require,module,exports){
+// 7.1.4 ToInteger
+var ceil  = Math.ceil
+  , floor = Math.floor;
+module.exports = function(it){
+  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.to-iobject.js":[function(require,module,exports){
+// to indexed object, toObject with fallback for non-array-like ES3 strings
+var IObject = require('./$.iobject')
+  , defined = require('./$.defined');
+module.exports = function(it){
+  return IObject(defined(it));
+};
+},{"./$.defined":"/srv/zotero/my-publications/node_modules/core-js/modules/$.defined.js","./$.iobject":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iobject.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.to-length.js":[function(require,module,exports){
+// 7.1.15 ToLength
+var toInteger = require('./$.to-integer')
+  , min       = Math.min;
+module.exports = function(it){
+  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
+};
+},{"./$.to-integer":"/srv/zotero/my-publications/node_modules/core-js/modules/$.to-integer.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.uid.js":[function(require,module,exports){
+var id = 0
+  , px = Math.random();
+module.exports = function(key){
+  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
+};
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js":[function(require,module,exports){
+var store  = require('./$.shared')('wks')
+  , uid    = require('./$.uid')
+  , Symbol = require('./$.global').Symbol;
+module.exports = function(name){
+  return store[name] || (store[name] =
+    Symbol && Symbol[name] || (Symbol || uid)('Symbol.' + name));
+};
+},{"./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.shared":"/srv/zotero/my-publications/node_modules/core-js/modules/$.shared.js","./$.uid":"/srv/zotero/my-publications/node_modules/core-js/modules/$.uid.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/core.get-iterator-method.js":[function(require,module,exports){
+var classof   = require('./$.classof')
+  , ITERATOR  = require('./$.wks')('iterator')
+  , Iterators = require('./$.iterators');
+module.exports = require('./$.core').getIteratorMethod = function(it){
+  if(it != undefined)return it[ITERATOR]
+    || it['@@iterator']
+    || Iterators[classof(it)];
+};
+},{"./$.classof":"/srv/zotero/my-publications/node_modules/core-js/modules/$.classof.js","./$.core":"/srv/zotero/my-publications/node_modules/core-js/modules/$.core.js","./$.iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iterators.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.array.iterator.js":[function(require,module,exports){
+'use strict';
+var addToUnscopables = require('./$.add-to-unscopables')
+  , step             = require('./$.iter-step')
+  , Iterators        = require('./$.iterators')
+  , toIObject        = require('./$.to-iobject');
+
+// 22.1.3.4 Array.prototype.entries()
+// 22.1.3.13 Array.prototype.keys()
+// 22.1.3.29 Array.prototype.values()
+// 22.1.3.30 Array.prototype[@@iterator]()
+module.exports = require('./$.iter-define')(Array, 'Array', function(iterated, kind){
+  this._t = toIObject(iterated); // target
+  this._i = 0;                   // next index
+  this._k = kind;                // kind
+// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
+}, function(){
+  var O     = this._t
+    , kind  = this._k
+    , index = this._i++;
+  if(!O || index >= O.length){
+    this._t = undefined;
+    return step(1);
+  }
+  if(kind == 'keys'  )return step(0, index);
+  if(kind == 'values')return step(0, O[index]);
+  return step(0, [index, O[index]]);
+}, 'values');
+
+// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
+Iterators.Arguments = Iterators.Array;
+
+addToUnscopables('keys');
+addToUnscopables('values');
+addToUnscopables('entries');
+},{"./$.add-to-unscopables":"/srv/zotero/my-publications/node_modules/core-js/modules/$.add-to-unscopables.js","./$.iter-define":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-define.js","./$.iter-step":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-step.js","./$.iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iterators.js","./$.to-iobject":"/srv/zotero/my-publications/node_modules/core-js/modules/$.to-iobject.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.object.to-string.js":[function(require,module,exports){
+'use strict';
+// 19.1.3.6 Object.prototype.toString()
+var classof = require('./$.classof')
+  , test    = {};
+test[require('./$.wks')('toStringTag')] = 'z';
+if(test + '' != '[object z]'){
+  require('./$.redefine')(Object.prototype, 'toString', function toString(){
+    return '[object ' + classof(this) + ']';
+  }, true);
+}
+},{"./$.classof":"/srv/zotero/my-publications/node_modules/core-js/modules/$.classof.js","./$.redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/$.redefine.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.promise.js":[function(require,module,exports){
+'use strict';
+var $          = require('./$')
+  , LIBRARY    = require('./$.library')
+  , global     = require('./$.global')
+  , ctx        = require('./$.ctx')
+  , classof    = require('./$.classof')
+  , $export    = require('./$.export')
+  , isObject   = require('./$.is-object')
+  , anObject   = require('./$.an-object')
+  , aFunction  = require('./$.a-function')
+  , strictNew  = require('./$.strict-new')
+  , forOf      = require('./$.for-of')
+  , setProto   = require('./$.set-proto').set
+  , same       = require('./$.same-value')
+  , SPECIES    = require('./$.wks')('species')
+  , speciesConstructor = require('./$.species-constructor')
+  , asap       = require('./$.microtask')
+  , PROMISE    = 'Promise'
+  , process    = global.process
+  , isNode     = classof(process) == 'process'
+  , P          = global[PROMISE]
+  , Wrapper;
+
+var testResolve = function(sub){
+  var test = new P(function(){});
+  if(sub)test.constructor = Object;
+  return P.resolve(test) === test;
+};
+
+var USE_NATIVE = function(){
+  var works = false;
+  function P2(x){
+    var self = new P(x);
+    setProto(self, P2.prototype);
+    return self;
+  }
+  try {
+    works = P && P.resolve && testResolve();
+    setProto(P2, P);
+    P2.prototype = $.create(P.prototype, {constructor: {value: P2}});
+    // actual Firefox has broken subclass support, test that
+    if(!(P2.resolve(5).then(function(){}) instanceof P2)){
+      works = false;
+    }
+    // actual V8 bug, https://code.google.com/p/v8/issues/detail?id=4162
+    if(works && require('./$.descriptors')){
+      var thenableThenGotten = false;
+      P.resolve($.setDesc({}, 'then', {
+        get: function(){ thenableThenGotten = true; }
+      }));
+      works = thenableThenGotten;
+    }
+  } catch(e){ works = false; }
+  return works;
+}();
+
+// helpers
+var sameConstructor = function(a, b){
+  // library wrapper special case
+  if(LIBRARY && a === P && b === Wrapper)return true;
+  return same(a, b);
+};
+var getConstructor = function(C){
+  var S = anObject(C)[SPECIES];
+  return S != undefined ? S : C;
+};
+var isThenable = function(it){
+  var then;
+  return isObject(it) && typeof (then = it.then) == 'function' ? then : false;
+};
+var PromiseCapability = function(C){
+  var resolve, reject;
+  this.promise = new C(function($$resolve, $$reject){
+    if(resolve !== undefined || reject !== undefined)throw TypeError('Bad Promise constructor');
+    resolve = $$resolve;
+    reject  = $$reject;
+  });
+  this.resolve = aFunction(resolve),
+  this.reject  = aFunction(reject)
+};
+var perform = function(exec){
+  try {
+    exec();
+  } catch(e){
+    return {error: e};
+  }
+};
+var notify = function(record, isReject){
+  if(record.n)return;
+  record.n = true;
+  var chain = record.c;
+  asap(function(){
+    var value = record.v
+      , ok    = record.s == 1
+      , i     = 0;
+    var run = function(reaction){
+      var handler = ok ? reaction.ok : reaction.fail
+        , resolve = reaction.resolve
+        , reject  = reaction.reject
+        , result, then;
+      try {
+        if(handler){
+          if(!ok)record.h = true;
+          result = handler === true ? value : handler(value);
+          if(result === reaction.promise){
+            reject(TypeError('Promise-chain cycle'));
+          } else if(then = isThenable(result)){
+            then.call(result, resolve, reject);
+          } else resolve(result);
+        } else reject(value);
+      } catch(e){
+        reject(e);
+      }
+    };
+    while(chain.length > i)run(chain[i++]); // variable length - can't use forEach
+    chain.length = 0;
+    record.n = false;
+    if(isReject)setTimeout(function(){
+      var promise = record.p
+        , handler, console;
+      if(isUnhandled(promise)){
+        if(isNode){
+          process.emit('unhandledRejection', value, promise);
+        } else if(handler = global.onunhandledrejection){
+          handler({promise: promise, reason: value});
+        } else if((console = global.console) && console.error){
+          console.error('Unhandled promise rejection', value);
+        }
+      } record.a = undefined;
+    }, 1);
+  });
+};
+var isUnhandled = function(promise){
+  var record = promise._d
+    , chain  = record.a || record.c
+    , i      = 0
+    , reaction;
+  if(record.h)return false;
+  while(chain.length > i){
+    reaction = chain[i++];
+    if(reaction.fail || !isUnhandled(reaction.promise))return false;
+  } return true;
+};
+var $reject = function(value){
+  var record = this;
+  if(record.d)return;
+  record.d = true;
+  record = record.r || record; // unwrap
+  record.v = value;
+  record.s = 2;
+  record.a = record.c.slice();
+  notify(record, true);
+};
+var $resolve = function(value){
+  var record = this
+    , then;
+  if(record.d)return;
+  record.d = true;
+  record = record.r || record; // unwrap
+  try {
+    if(record.p === value)throw TypeError("Promise can't be resolved itself");
+    if(then = isThenable(value)){
+      asap(function(){
+        var wrapper = {r: record, d: false}; // wrap
+        try {
+          then.call(value, ctx($resolve, wrapper, 1), ctx($reject, wrapper, 1));
+        } catch(e){
+          $reject.call(wrapper, e);
+        }
+      });
+    } else {
+      record.v = value;
+      record.s = 1;
+      notify(record, false);
+    }
+  } catch(e){
+    $reject.call({r: record, d: false}, e); // wrap
+  }
+};
+
+// constructor polyfill
+if(!USE_NATIVE){
+  // 25.4.3.1 Promise(executor)
+  P = function Promise(executor){
+    aFunction(executor);
+    var record = this._d = {
+      p: strictNew(this, P, PROMISE),         // <- promise
+      c: [],                                  // <- awaiting reactions
+      a: undefined,                           // <- checked in isUnhandled reactions
+      s: 0,                                   // <- state
+      d: false,                               // <- done
+      v: undefined,                           // <- value
+      h: false,                               // <- handled rejection
+      n: false                                // <- notify
+    };
+    try {
+      executor(ctx($resolve, record, 1), ctx($reject, record, 1));
+    } catch(err){
+      $reject.call(record, err);
+    }
+  };
+  require('./$.redefine-all')(P.prototype, {
+    // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
+    then: function then(onFulfilled, onRejected){
+      var reaction = new PromiseCapability(speciesConstructor(this, P))
+        , promise  = reaction.promise
+        , record   = this._d;
+      reaction.ok   = typeof onFulfilled == 'function' ? onFulfilled : true;
+      reaction.fail = typeof onRejected == 'function' && onRejected;
+      record.c.push(reaction);
+      if(record.a)record.a.push(reaction);
+      if(record.s)notify(record, false);
+      return promise;
+    },
+    // 25.4.5.1 Promise.prototype.catch(onRejected)
+    'catch': function(onRejected){
+      return this.then(undefined, onRejected);
+    }
+  });
+}
+
+$export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: P});
+require('./$.set-to-string-tag')(P, PROMISE);
+require('./$.set-species')(PROMISE);
+Wrapper = require('./$.core')[PROMISE];
+
+// statics
+$export($export.S + $export.F * !USE_NATIVE, PROMISE, {
+  // 25.4.4.5 Promise.reject(r)
+  reject: function reject(r){
+    var capability = new PromiseCapability(this)
+      , $$reject   = capability.reject;
+    $$reject(r);
+    return capability.promise;
+  }
+});
+$export($export.S + $export.F * (!USE_NATIVE || testResolve(true)), PROMISE, {
+  // 25.4.4.6 Promise.resolve(x)
+  resolve: function resolve(x){
+    // instanceof instead of internal slot check because we should fix it without replacement native Promise core
+    if(x instanceof P && sameConstructor(x.constructor, this))return x;
+    var capability = new PromiseCapability(this)
+      , $$resolve  = capability.resolve;
+    $$resolve(x);
+    return capability.promise;
+  }
+});
+$export($export.S + $export.F * !(USE_NATIVE && require('./$.iter-detect')(function(iter){
+  P.all(iter)['catch'](function(){});
+})), PROMISE, {
+  // 25.4.4.1 Promise.all(iterable)
+  all: function all(iterable){
+    var C          = getConstructor(this)
+      , capability = new PromiseCapability(C)
+      , resolve    = capability.resolve
+      , reject     = capability.reject
+      , values     = [];
+    var abrupt = perform(function(){
+      forOf(iterable, false, values.push, values);
+      var remaining = values.length
+        , results   = Array(remaining);
+      if(remaining)$.each.call(values, function(promise, index){
+        var alreadyCalled = false;
+        C.resolve(promise).then(function(value){
+          if(alreadyCalled)return;
+          alreadyCalled = true;
+          results[index] = value;
+          --remaining || resolve(results);
+        }, reject);
+      });
+      else resolve(results);
+    });
+    if(abrupt)reject(abrupt.error);
+    return capability.promise;
+  },
+  // 25.4.4.4 Promise.race(iterable)
+  race: function race(iterable){
+    var C          = getConstructor(this)
+      , capability = new PromiseCapability(C)
+      , reject     = capability.reject;
+    var abrupt = perform(function(){
+      forOf(iterable, false, function(promise){
+        C.resolve(promise).then(capability.resolve, reject);
+      });
+    });
+    if(abrupt)reject(abrupt.error);
+    return capability.promise;
+  }
+});
+},{"./$":"/srv/zotero/my-publications/node_modules/core-js/modules/$.js","./$.a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/$.a-function.js","./$.an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.an-object.js","./$.classof":"/srv/zotero/my-publications/node_modules/core-js/modules/$.classof.js","./$.core":"/srv/zotero/my-publications/node_modules/core-js/modules/$.core.js","./$.ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/$.ctx.js","./$.descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/$.descriptors.js","./$.export":"/srv/zotero/my-publications/node_modules/core-js/modules/$.export.js","./$.for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/$.for-of.js","./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/$.is-object.js","./$.iter-detect":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-detect.js","./$.library":"/srv/zotero/my-publications/node_modules/core-js/modules/$.library.js","./$.microtask":"/srv/zotero/my-publications/node_modules/core-js/modules/$.microtask.js","./$.redefine-all":"/srv/zotero/my-publications/node_modules/core-js/modules/$.redefine-all.js","./$.same-value":"/srv/zotero/my-publications/node_modules/core-js/modules/$.same-value.js","./$.set-proto":"/srv/zotero/my-publications/node_modules/core-js/modules/$.set-proto.js","./$.set-species":"/srv/zotero/my-publications/node_modules/core-js/modules/$.set-species.js","./$.set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/$.set-to-string-tag.js","./$.species-constructor":"/srv/zotero/my-publications/node_modules/core-js/modules/$.species-constructor.js","./$.strict-new":"/srv/zotero/my-publications/node_modules/core-js/modules/$.strict-new.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js":[function(require,module,exports){
+'use strict';
+var $at  = require('./$.string-at')(true);
+
+// 21.1.3.27 String.prototype[@@iterator]()
+require('./$.iter-define')(String, 'String', function(iterated){
+  this._t = String(iterated); // target
+  this._i = 0;                // next index
+// 21.1.5.2.1 %StringIteratorPrototype%.next()
+}, function(){
+  var O     = this._t
+    , index = this._i
+    , point;
+  if(index >= O.length)return {value: undefined, done: true};
+  point = $at(O, index);
+  this._i += point.length;
+  return {value: point, done: false};
+});
+},{"./$.iter-define":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iter-define.js","./$.string-at":"/srv/zotero/my-publications/node_modules/core-js/modules/$.string-at.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/web.dom.iterable.js":[function(require,module,exports){
+require('./es6.array.iterator');
+var global      = require('./$.global')
+  , hide        = require('./$.hide')
+  , Iterators   = require('./$.iterators')
+  , ITERATOR    = require('./$.wks')('iterator')
+  , NL          = global.NodeList
+  , HTC         = global.HTMLCollection
+  , NLProto     = NL && NL.prototype
+  , HTCProto    = HTC && HTC.prototype
+  , ArrayValues = Iterators.NodeList = Iterators.HTMLCollection = Iterators.Array;
+if(NLProto && !NLProto[ITERATOR])hide(NLProto, ITERATOR, ArrayValues);
+if(HTCProto && !HTCProto[ITERATOR])hide(HTCProto, ITERATOR, ArrayValues);
+},{"./$.global":"/srv/zotero/my-publications/node_modules/core-js/modules/$.global.js","./$.hide":"/srv/zotero/my-publications/node_modules/core-js/modules/$.hide.js","./$.iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/$.iterators.js","./$.wks":"/srv/zotero/my-publications/node_modules/core-js/modules/$.wks.js","./es6.array.iterator":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.array.iterator.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js":[function(require,module,exports){
+'use strict';
+
+if (!require('./is-implemented')()) {
+	Object.defineProperty(require('es5-ext/global'), 'Symbol',
+		{ value: require('./polyfill'), configurable: true, enumerable: false,
+			writable: true });
+}
+
+},{"./is-implemented":"/srv/zotero/my-publications/node_modules/es6-symbol/is-implemented.js","./polyfill":"/srv/zotero/my-publications/node_modules/es6-symbol/polyfill.js","es5-ext/global":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/global.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/is-implemented.js":[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	var symbol;
+	if (typeof Symbol !== 'function') return false;
+	symbol = Symbol('test symbol');
+	try { String(symbol); } catch (e) { return false; }
+	if (typeof Symbol.iterator === 'symbol') return true;
+
+	// Return 'true' for polyfills
+	if (typeof Symbol.isConcatSpreadable !== 'object') return false;
+	if (typeof Symbol.iterator !== 'object') return false;
+	if (typeof Symbol.toPrimitive !== 'object') return false;
+	if (typeof Symbol.toStringTag !== 'object') return false;
+	if (typeof Symbol.unscopables !== 'object') return false;
+
+	return true;
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js":[function(require,module,exports){
+'use strict';
+
+module.exports = function (x) {
+	return (x && ((typeof x === 'symbol') || (x['@@toStringTag'] === 'Symbol'))) || false;
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/d/index.js":[function(require,module,exports){
+'use strict';
+
+var assign        = require('es5-ext/object/assign')
+  , normalizeOpts = require('es5-ext/object/normalize-options')
+  , isCallable    = require('es5-ext/object/is-callable')
+  , contains      = require('es5-ext/string/#/contains')
+
+  , d;
+
+d = module.exports = function (dscr, value/*, options*/) {
+	var c, e, w, options, desc;
+	if ((arguments.length < 2) || (typeof dscr !== 'string')) {
+		options = value;
+		value = dscr;
+		dscr = null;
+	} else {
+		options = arguments[2];
+	}
+	if (dscr == null) {
+		c = w = true;
+		e = false;
+	} else {
+		c = contains.call(dscr, 'c');
+		e = contains.call(dscr, 'e');
+		w = contains.call(dscr, 'w');
+	}
+
+	desc = { value: value, configurable: c, enumerable: e, writable: w };
+	return !options ? desc : assign(normalizeOpts(options), desc);
+};
+
+d.gs = function (dscr, get, set/*, options*/) {
+	var c, e, options, desc;
+	if (typeof dscr !== 'string') {
+		options = set;
+		set = get;
+		get = dscr;
+		dscr = null;
+	} else {
+		options = arguments[3];
+	}
+	if (get == null) {
+		get = undefined;
+	} else if (!isCallable(get)) {
+		options = get;
+		get = set = undefined;
+	} else if (set == null) {
+		set = undefined;
+	} else if (!isCallable(set)) {
+		options = set;
+		set = undefined;
+	}
+	if (dscr == null) {
+		c = true;
+		e = false;
+	} else {
+		c = contains.call(dscr, 'c');
+		e = contains.call(dscr, 'e');
+	}
+
+	desc = { get: get, set: set, configurable: c, enumerable: e };
+	return !options ? desc : assign(normalizeOpts(options), desc);
+};
+
+},{"es5-ext/object/assign":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/assign/index.js","es5-ext/object/is-callable":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/is-callable.js","es5-ext/object/normalize-options":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/normalize-options.js","es5-ext/string/#/contains":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/string/#/contains/index.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/global.js":[function(require,module,exports){
+'use strict';
+
+module.exports = new Function("return this")();
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/assign/index.js":[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')()
+	? Object.assign
+	: require('./shim');
+
+},{"./is-implemented":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/assign/is-implemented.js","./shim":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/assign/shim.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/assign/is-implemented.js":[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	var assign = Object.assign, obj;
+	if (typeof assign !== 'function') return false;
+	obj = { foo: 'raz' };
+	assign(obj, { bar: 'dwa' }, { trzy: 'trzy' });
+	return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/assign/shim.js":[function(require,module,exports){
+'use strict';
+
+var keys  = require('../keys')
+  , value = require('../valid-value')
+
+  , max = Math.max;
+
+module.exports = function (dest, src/*, …srcn*/) {
+	var error, i, l = max(arguments.length, 2), assign;
+	dest = Object(value(dest));
+	assign = function (key) {
+		try { dest[key] = src[key]; } catch (e) {
+			if (!error) error = e;
+		}
+	};
+	for (i = 1; i < l; ++i) {
+		src = arguments[i];
+		keys(src).forEach(assign);
+	}
+	if (error !== undefined) throw error;
+	return dest;
+};
+
+},{"../keys":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/keys/index.js","../valid-value":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/valid-value.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/is-callable.js":[function(require,module,exports){
+// Deprecated
+
+'use strict';
+
+module.exports = function (obj) { return typeof obj === 'function'; };
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/keys/index.js":[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')()
+	? Object.keys
+	: require('./shim');
+
+},{"./is-implemented":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/keys/is-implemented.js","./shim":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/keys/shim.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/keys/is-implemented.js":[function(require,module,exports){
+'use strict';
+
+module.exports = function () {
+	try {
+		Object.keys('primitive');
+		return true;
+	} catch (e) { return false; }
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/keys/shim.js":[function(require,module,exports){
+'use strict';
+
+var keys = Object.keys;
+
+module.exports = function (object) {
+	return keys(object == null ? object : Object(object));
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/normalize-options.js":[function(require,module,exports){
+'use strict';
+
+var forEach = Array.prototype.forEach, create = Object.create;
+
+var process = function (src, obj) {
+	var key;
+	for (key in src) obj[key] = src[key];
+};
+
+module.exports = function (options/*, …options*/) {
+	var result = create(null);
+	forEach.call(arguments, function (options) {
+		if (options == null) return;
+		process(Object(options), result);
+	});
+	return result;
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/object/valid-value.js":[function(require,module,exports){
+'use strict';
+
+module.exports = function (value) {
+	if (value == null) throw new TypeError("Cannot use null or undefined");
+	return value;
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/string/#/contains/index.js":[function(require,module,exports){
+'use strict';
+
+module.exports = require('./is-implemented')()
+	? String.prototype.contains
+	: require('./shim');
+
+},{"./is-implemented":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/string/#/contains/is-implemented.js","./shim":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/string/#/contains/shim.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/string/#/contains/is-implemented.js":[function(require,module,exports){
+'use strict';
+
+var str = 'razdwatrzy';
+
+module.exports = function () {
+	if (typeof str.contains !== 'function') return false;
+	return ((str.contains('dwa') === true) && (str.contains('foo') === false));
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/es5-ext/string/#/contains/shim.js":[function(require,module,exports){
+'use strict';
+
+var indexOf = String.prototype.indexOf;
+
+module.exports = function (searchString/*, position*/) {
+	return indexOf.call(this, searchString, arguments[1]) > -1;
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/polyfill.js":[function(require,module,exports){
+'use strict';
+
+var d              = require('d')
+  , validateSymbol = require('./validate-symbol')
+
+  , create = Object.create, defineProperties = Object.defineProperties
+  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
+  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null);
+
+if (typeof Symbol === 'function') NativeSymbol = Symbol;
+
+var generateName = (function () {
+	var created = create(null);
+	return function (desc) {
+		var postfix = 0, name, ie11BugWorkaround;
+		while (created[desc + (postfix || '')]) ++postfix;
+		desc += (postfix || '');
+		created[desc] = true;
+		name = '@@' + desc;
+		defineProperty(objPrototype, name, d.gs(null, function (value) {
+			// For IE11 issue see:
+			// https://connect.microsoft.com/IE/feedbackdetail/view/1928508/
+			//    ie11-broken-getters-on-dom-objects
+			// https://github.com/medikoo/es6-symbol/issues/12
+			if (ie11BugWorkaround) return;
+			ie11BugWorkaround = true;
+			defineProperty(this, name, d(value));
+			ie11BugWorkaround = false;
+		}));
+		return name;
+	};
+}());
+
+HiddenSymbol = function Symbol(description) {
+	if (this instanceof HiddenSymbol) throw new TypeError('TypeError: Symbol is not a constructor');
+	return SymbolPolyfill(description);
+};
+module.exports = SymbolPolyfill = function Symbol(description) {
+	var symbol;
+	if (this instanceof Symbol) throw new TypeError('TypeError: Symbol is not a constructor');
+	symbol = create(HiddenSymbol.prototype);
+	description = (description === undefined ? '' : String(description));
+	return defineProperties(symbol, {
+		__description__: d('', description),
+		__name__: d('', generateName(description))
+	});
+};
+defineProperties(SymbolPolyfill, {
+	for: d(function (key) {
+		if (globalSymbols[key]) return globalSymbols[key];
+		return (globalSymbols[key] = SymbolPolyfill(String(key)));
+	}),
+	keyFor: d(function (s) {
+		var key;
+		validateSymbol(s);
+		for (key in globalSymbols) if (globalSymbols[key] === s) return key;
+	}),
+	hasInstance: d('', (NativeSymbol && NativeSymbol.hasInstance) || SymbolPolyfill('hasInstance')),
+	isConcatSpreadable: d('', (NativeSymbol && NativeSymbol.isConcatSpreadable) ||
+		SymbolPolyfill('isConcatSpreadable')),
+	iterator: d('', (NativeSymbol && NativeSymbol.iterator) || SymbolPolyfill('iterator')),
+	match: d('', (NativeSymbol && NativeSymbol.match) || SymbolPolyfill('match')),
+	replace: d('', (NativeSymbol && NativeSymbol.replace) || SymbolPolyfill('replace')),
+	search: d('', (NativeSymbol && NativeSymbol.search) || SymbolPolyfill('search')),
+	species: d('', (NativeSymbol && NativeSymbol.species) || SymbolPolyfill('species')),
+	split: d('', (NativeSymbol && NativeSymbol.split) || SymbolPolyfill('split')),
+	toPrimitive: d('', (NativeSymbol && NativeSymbol.toPrimitive) || SymbolPolyfill('toPrimitive')),
+	toStringTag: d('', (NativeSymbol && NativeSymbol.toStringTag) || SymbolPolyfill('toStringTag')),
+	unscopables: d('', (NativeSymbol && NativeSymbol.unscopables) || SymbolPolyfill('unscopables'))
+});
+defineProperties(HiddenSymbol.prototype, {
+	constructor: d(SymbolPolyfill),
+	toString: d('', function () { return this.__name__; })
+});
+
+defineProperties(SymbolPolyfill.prototype, {
+	toString: d(function () { return 'Symbol (' + validateSymbol(this).__description__ + ')'; }),
+	valueOf: d(function () { return validateSymbol(this); })
+});
+defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('',
+	function () { return validateSymbol(this); }));
+defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d('c', 'Symbol'));
+
+defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
+	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
+defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
+	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
+
+},{"./validate-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/validate-symbol.js","d":"/srv/zotero/my-publications/node_modules/es6-symbol/node_modules/d/index.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/validate-symbol.js":[function(require,module,exports){
+'use strict';
+
+var isSymbol = require('./is-symbol');
+
+module.exports = function (value) {
+	if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
+	return value;
+};
+
+},{"./is-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js"}],"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js":[function(require,module,exports){
+(function() {
+  'use strict';
+
+  if (self.fetch) {
+    return
+  }
+
+  function normalizeName(name) {
+    if (typeof name !== 'string') {
+      name = String(name)
+    }
+    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
+      throw new TypeError('Invalid character in header field name')
+    }
+    return name.toLowerCase()
+  }
+
+  function normalizeValue(value) {
+    if (typeof value !== 'string') {
+      value = String(value)
+    }
+    return value
+  }
+
+  function Headers(headers) {
+    this.map = {}
+
+    if (headers instanceof Headers) {
+      headers.forEach(function(value, name) {
+        this.append(name, value)
+      }, this)
+
+    } else if (headers) {
+      Object.getOwnPropertyNames(headers).forEach(function(name) {
+        this.append(name, headers[name])
+      }, this)
+    }
+  }
+
+  Headers.prototype.append = function(name, value) {
+    name = normalizeName(name)
+    value = normalizeValue(value)
+    var list = this.map[name]
+    if (!list) {
+      list = []
+      this.map[name] = list
+    }
+    list.push(value)
+  }
+
+  Headers.prototype['delete'] = function(name) {
+    delete this.map[normalizeName(name)]
+  }
+
+  Headers.prototype.get = function(name) {
+    var values = this.map[normalizeName(name)]
+    return values ? values[0] : null
+  }
+
+  Headers.prototype.getAll = function(name) {
+    return this.map[normalizeName(name)] || []
+  }
+
+  Headers.prototype.has = function(name) {
+    return this.map.hasOwnProperty(normalizeName(name))
+  }
+
+  Headers.prototype.set = function(name, value) {
+    this.map[normalizeName(name)] = [normalizeValue(value)]
+  }
+
+  Headers.prototype.forEach = function(callback, thisArg) {
+    Object.getOwnPropertyNames(this.map).forEach(function(name) {
+      this.map[name].forEach(function(value) {
+        callback.call(thisArg, value, name, this)
+      }, this)
+    }, this)
+  }
+
+  function consumed(body) {
+    if (body.bodyUsed) {
+      return Promise.reject(new TypeError('Already read'))
+    }
+    body.bodyUsed = true
+  }
+
+  function fileReaderReady(reader) {
+    return new Promise(function(resolve, reject) {
+      reader.onload = function() {
+        resolve(reader.result)
+      }
+      reader.onerror = function() {
+        reject(reader.error)
+      }
+    })
+  }
+
+  function readBlobAsArrayBuffer(blob) {
+    var reader = new FileReader()
+    reader.readAsArrayBuffer(blob)
+    return fileReaderReady(reader)
+  }
+
+  function readBlobAsText(blob) {
+    var reader = new FileReader()
+    reader.readAsText(blob)
+    return fileReaderReady(reader)
+  }
+
+  var support = {
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob();
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  }
+
+  function Body() {
+    this.bodyUsed = false
+
+
+    this._initBody = function(body) {
+      this._bodyInit = body
+      if (typeof body === 'string') {
+        this._bodyText = body
+      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
+        this._bodyBlob = body
+      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
+        this._bodyFormData = body
+      } else if (!body) {
+        this._bodyText = ''
+      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
+        // Only support ArrayBuffers for POST method.
+        // Receiving ArrayBuffers happens via Blobs, instead.
+      } else {
+        throw new Error('unsupported BodyInit type')
+      }
+    }
+
+    if (support.blob) {
+      this.blob = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return Promise.resolve(this._bodyBlob)
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as blob')
+        } else {
+          return Promise.resolve(new Blob([this._bodyText]))
+        }
+      }
+
+      this.arrayBuffer = function() {
+        return this.blob().then(readBlobAsArrayBuffer)
+      }
+
+      this.text = function() {
+        var rejected = consumed(this)
+        if (rejected) {
+          return rejected
+        }
+
+        if (this._bodyBlob) {
+          return readBlobAsText(this._bodyBlob)
+        } else if (this._bodyFormData) {
+          throw new Error('could not read FormData body as text')
+        } else {
+          return Promise.resolve(this._bodyText)
+        }
+      }
+    } else {
+      this.text = function() {
+        var rejected = consumed(this)
+        return rejected ? rejected : Promise.resolve(this._bodyText)
+      }
+    }
+
+    if (support.formData) {
+      this.formData = function() {
+        return this.text().then(decode)
+      }
+    }
+
+    this.json = function() {
+      return this.text().then(JSON.parse)
+    }
+
+    return this
+  }
+
+  // HTTP methods whose capitalization should be normalized
+  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
+
+  function normalizeMethod(method) {
+    var upcased = method.toUpperCase()
+    return (methods.indexOf(upcased) > -1) ? upcased : method
+  }
+
+  function Request(input, options) {
+    options = options || {}
+    var body = options.body
+    if (Request.prototype.isPrototypeOf(input)) {
+      if (input.bodyUsed) {
+        throw new TypeError('Already read')
+      }
+      this.url = input.url
+      this.credentials = input.credentials
+      if (!options.headers) {
+        this.headers = new Headers(input.headers)
+      }
+      this.method = input.method
+      this.mode = input.mode
+      if (!body) {
+        body = input._bodyInit
+        input.bodyUsed = true
+      }
+    } else {
+      this.url = input
+    }
+
+    this.credentials = options.credentials || this.credentials || 'omit'
+    if (options.headers || !this.headers) {
+      this.headers = new Headers(options.headers)
+    }
+    this.method = normalizeMethod(options.method || this.method || 'GET')
+    this.mode = options.mode || this.mode || null
+    this.referrer = null
+
+    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
+      throw new TypeError('Body not allowed for GET or HEAD requests')
+    }
+    this._initBody(body)
+  }
+
+  Request.prototype.clone = function() {
+    return new Request(this)
+  }
+
+  function decode(body) {
+    var form = new FormData()
+    body.trim().split('&').forEach(function(bytes) {
+      if (bytes) {
+        var split = bytes.split('=')
+        var name = split.shift().replace(/\+/g, ' ')
+        var value = split.join('=').replace(/\+/g, ' ')
+        form.append(decodeURIComponent(name), decodeURIComponent(value))
+      }
+    })
+    return form
+  }
+
+  function headers(xhr) {
+    var head = new Headers()
+    var pairs = xhr.getAllResponseHeaders().trim().split('\n')
+    pairs.forEach(function(header) {
+      var split = header.trim().split(':')
+      var key = split.shift().trim()
+      var value = split.join(':').trim()
+      head.append(key, value)
+    })
+    return head
+  }
+
+  Body.call(Request.prototype)
+
+  function Response(bodyInit, options) {
+    if (!options) {
+      options = {}
+    }
+
+    this._initBody(bodyInit)
+    this.type = 'default'
+    this.status = options.status
+    this.ok = this.status >= 200 && this.status < 300
+    this.statusText = options.statusText
+    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
+    this.url = options.url || ''
+  }
+
+  Body.call(Response.prototype)
+
+  Response.prototype.clone = function() {
+    return new Response(this._bodyInit, {
+      status: this.status,
+      statusText: this.statusText,
+      headers: new Headers(this.headers),
+      url: this.url
+    })
+  }
+
+  Response.error = function() {
+    var response = new Response(null, {status: 0, statusText: ''})
+    response.type = 'error'
+    return response
+  }
+
+  var redirectStatuses = [301, 302, 303, 307, 308]
+
+  Response.redirect = function(url, status) {
+    if (redirectStatuses.indexOf(status) === -1) {
+      throw new RangeError('Invalid status code')
+    }
+
+    return new Response(null, {status: status, headers: {location: url}})
+  }
+
+  self.Headers = Headers;
+  self.Request = Request;
+  self.Response = Response;
+
+  self.fetch = function(input, init) {
+    return new Promise(function(resolve, reject) {
+      var request
+      if (Request.prototype.isPrototypeOf(input) && !init) {
+        request = input
+      } else {
+        request = new Request(input, init)
+      }
+
+      var xhr = new XMLHttpRequest()
+
+      function responseURL() {
+        if ('responseURL' in xhr) {
+          return xhr.responseURL
+        }
+
+        // Avoid security warnings on getResponseHeader when not allowed by CORS
+        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
+          return xhr.getResponseHeader('X-Request-URL')
+        }
+
+        return;
+      }
+
+      xhr.onload = function() {
+        var status = (xhr.status === 1223) ? 204 : xhr.status
+        if (status < 100 || status > 599) {
+          reject(new TypeError('Network request failed'))
+          return
+        }
+        var options = {
+          status: status,
+          statusText: xhr.statusText,
+          headers: headers(xhr),
+          url: responseURL()
+        }
+        var body = 'response' in xhr ? xhr.response : xhr.responseText;
+        resolve(new Response(body, options))
+      }
+
+      xhr.onerror = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.open(request.method, request.url, true)
+
+      if (request.credentials === 'include') {
+        xhr.withCredentials = true
+      }
+
+      if ('responseType' in xhr && support.blob) {
+        xhr.responseType = 'blob'
+      }
+
+      request.headers.forEach(function(value, name) {
+        xhr.setRequestHeader(name, value)
+      })
+
+      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
+    })
+  }
+  self.fetch.polyfill = true
+})();
+
+},{}],"/srv/zotero/my-publications/src/js/api.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -16,6 +1776,7 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _dataJs = require('./data.js');
 
+require('es6-symbol/implement');
 var ABSTRACT_NOTE_SHORT_SYMBOL = Symbol['for']('abstractNoteShort');
 
 exports.ABSTRACT_NOTE_SHORT_SYMBOL = ABSTRACT_NOTE_SHORT_SYMBOL;
@@ -124,8 +1885,7 @@ function fetchUntilExhausted(url, options, jsondata) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js"}],"/srv/zotero/my-publications/src/js/data.js":[function(require,module,exports){
+},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/data.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -142,6 +1902,7 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _apiJs = require('./api.js');
 
+require('es6-symbol/implement');
 var GROUPED_NONE = 0;
 exports.GROUPED_NONE = GROUPED_NONE;
 var GROUPED_BY_TYPE = 1;
@@ -238,15 +1999,21 @@ ZoteroData.prototype[Symbol.iterator] = function () {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/main-compat.js":[function(require,module,exports){
+// require('core-js/es5');
 
-},{"./api.js":"/srv/zotero/my-publications/src/js/api.js"}],"/srv/zotero/my-publications/src/js/main-modern.js":[function(require,module,exports){
+// doesn't seem to work very well in IE
+// require('es6-promise').polyfill();
 'use strict';
 
 var _mainJs = require('./main.js');
 
+require('core-js/es6/promise');
+require('whatwg-fetch');
+
 module.exports = _mainJs.ZoteroPublications;
 
-},{"./main.js":"/srv/zotero/my-publications/src/js/main.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
+},{"./main.js":"/srv/zotero/my-publications/src/js/main.js","core-js/es6/promise":"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js","whatwg-fetch":"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -371,7 +2138,6 @@ ZoteroPublications.prototype.render = function (endpointOrData, container) {
 ZoteroPublications.ZoteroData = _dataJs.ZoteroData;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{"./api.js":"/srv/zotero/my-publications/src/js/api.js","./data.js":"/srv/zotero/my-publications/src/js/data.js","./render.js":"/srv/zotero/my-publications/src/js/render.js","./ui.js":"/srv/zotero/my-publications/src/js/ui.js"}],"/srv/zotero/my-publications/src/js/render.js":[function(require,module,exports){
 'use strict';
 
@@ -623,7 +2389,6 @@ return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],"/srv/zotero/my-publications/src/js/tpl/child-item.tpl":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
@@ -640,7 +2405,6 @@ return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],"/srv/zotero/my-publications/src/js/tpl/child-items.tpl":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
@@ -655,7 +2419,6 @@ return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],"/srv/zotero/my-publications/src/js/tpl/group.tpl":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
@@ -676,7 +2439,6 @@ return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],"/srv/zotero/my-publications/src/js/tpl/groups.tpl":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
@@ -691,7 +2453,6 @@ return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],"/srv/zotero/my-publications/src/js/tpl/item.tpl":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
@@ -726,7 +2487,6 @@ return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],"/srv/zotero/my-publications/src/js/tpl/items.tpl":[function(require,module,exports){
 (function (global){
 var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
@@ -741,7 +2501,6 @@ return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-
 },{}],"/srv/zotero/my-publications/src/js/ui.js":[function(require,module,exports){
 /**
  * Attach interaction handlers for expanding groups and shortened abstracts.
@@ -783,6 +2542,5 @@ function toggleSpinner(container, activate) {
 	method.call(container.classList, 'zotero-loading');
 }
 
-},{}]},{},["/srv/zotero/my-publications/src/js/main-modern.js"])("/srv/zotero/my-publications/src/js/main-modern.js")
+},{}]},{},["/srv/zotero/my-publications/src/js/main-compat.js"])("/srv/zotero/my-publications/src/js/main-compat.js")
 });
-//# sourceMappingURL=data:application/json;charset:utf-8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm5vZGVfbW9kdWxlcy9icm93c2VyaWZ5L25vZGVfbW9kdWxlcy9icm93c2VyLXBhY2svX3ByZWx1ZGUuanMiLCIvc3J2L3pvdGVyby9teS1wdWJsaWNhdGlvbnMvc3JjL2pzL2FwaS5qcyIsIi9zcnYvem90ZXJvL215LXB1YmxpY2F0aW9ucy9zcmMvanMvZGF0YS5qcyIsIi9zcnYvem90ZXJvL215LXB1YmxpY2F0aW9ucy9zcmMvanMvbWFpbi1tb2Rlcm4uanMiLCIvc3J2L3pvdGVyby9teS1wdWJsaWNhdGlvbnMvc3JjL2pzL21haW4uanMiLCIvc3J2L3pvdGVyby9teS1wdWJsaWNhdGlvbnMvc3JjL2pzL3JlbmRlci5qcyIsInNyYy9qcy90cGwvYnJhbmRpbmcudHBsIiwic3JjL2pzL3RwbC9jaGlsZC1pdGVtLnRwbCIsInNyYy9qcy90cGwvY2hpbGQtaXRlbXMudHBsIiwic3JjL2pzL3RwbC9ncm91cC50cGwiLCJzcmMvanMvdHBsL2dyb3Vwcy50cGwiLCJzcmMvanMvdHBsL2l0ZW0udHBsIiwic3JjL2pzL3RwbC9pdGVtcy50cGwiLCIvc3J2L3pvdGVyby9teS1wdWJsaWNhdGlvbnMvc3JjL2pzL3VpLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBOzs7Ozs7Ozs7Ozs7c0JDQWMsUUFBUTs7OztzQkFHZixXQUFXOztBQUVYLElBQU0sMEJBQTBCLEdBQUcsTUFBTSxPQUFJLENBQUMsbUJBQW1CLENBQUMsQ0FBQzs7Ozs7Ozs7OztBQVFuRSxTQUFTLGVBQWUsQ0FBQyxRQUFRLEVBQUUsTUFBTSxFQUFFO0FBQ2pELEtBQUcsUUFBUSxFQUFFO0FBQ1osTUFBSSxVQUFVLEdBQUcsRUFBRSxDQUFDO0FBQ3BCLE1BQUksS0FBSyxHQUFHLEVBQUUsQ0FBQzs7QUFFZixPQUFJLElBQUksQ0FBQyxHQUFHLFFBQVEsQ0FBQyxNQUFNLEVBQUUsQ0FBQyxFQUFFLEdBQUk7QUFDbkMsT0FBSSxJQUFJLEdBQUcsUUFBUSxDQUFDLENBQUMsQ0FBQyxDQUFDO0FB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QUFDLFlBQVksQ0FBQyxlQUFlLEVBQUUsUUFBUSxHQUFHLE1BQU0sR0FBRyxPQUFPLENBQUMsQ0FBQztHQUN0RTtBQUNELE1BQUcsRUFBRSxDQUFDLE1BQU0sQ0FBQyxTQUFTLENBQUMsUUFBUSxDQUFDLG9CQUFvQixDQUFDLEVBQUU7QUFDdEQsT0FBSSxPQUFPLEdBQUcsRUFBRSxDQUFDLE1BQU0sQ0FBQyxVQUFVLENBQUM7QUFDbkMsT0FBSSxRQUFRLEdBQUcsT0FBTyxDQUFDLFNBQVMsQ0FBQyxNQUFNLENBQUMsdUJBQXVCLENBQUMsQ0FBQztBQUNqRSxVQUFPLENBQUMsWUFBWSxDQUFDLGVBQWUsRUFBRSxRQUFRLEdBQUcsTUFBTSxHQUFHLE9BQU8sQ0FBQyxDQUFDO0dBQ25FO0VBQ0QsQ0FBQyxDQUFDO0NBQ0g7Ozs7Ozs7OztBQVFNLFNBQVMsYUFBYSxDQUFDLFNBQVMsRUFBRSxRQUFRLEVBQUU7QUFDbEQsS0FBSSxNQUFNLEdBQUcsUUFBUSxLQUFLLElBQUksR0FBRyxTQUFTLENBQUMsU0FBUyxDQUFDLE1BQU0sR0FBRyxRQUFRLEdBQUcsU0FBUyxDQUFDLFNBQVMsQ0FBQyxHQUFHLEdBQUcsU0FBUyxDQUFDLFNBQVMsQ0FBQyxNQUFNLENBQUM7QUFDOUgsT0FBTSxDQUFDLElBQUksQ0FBQyxTQUFTLENBQUMsU0FBUyxFQUFFLGdCQUFnQixDQUFDLENBQUM7Q0FDbkQiLCJmaWxlIjoiZ2VuZXJhdGVkLmpzIiwic291cmNlUm9vdCI6IiIsInNvdXJjZXNDb250ZW50IjpbIihmdW5jdGlvbiBlKHQsbixyKXtmdW5jdGlvbiBzKG8sdSl7aWYoIW5bb10pe2lmKCF0W29dKXt2YXIgYT10eXBlb2YgcmVxdWlyZT09XCJmdW5jdGlvblwiJiZyZXF1aXJlO2lmKCF1JiZhKXJldHVybiBhKG8sITApO2lmKGkpcmV0dXJuIGkobywhMCk7dmFyIGY9bmV3IEVycm9yKFwiQ2Fubm90IGZpbmQgbW9kdWxlICdcIitvK1wiJ1wiKTt0aHJvdyBmLmNvZGU9XCJNT0RVTEVfTk9UX0ZPVU5EXCIsZn12YXIgbD1uW29dPXtleHBvcnRzOnt9fTt0W29dWzBdLmNhbGwobC5leHBvcnRzLGZ1bmN0aW9uKGUpe3ZhciBuPXRbb11bMV1bZV07cmV0dXJuIHMobj9uOmUpfSxsLGwuZXhwb3J0cyxlLHQsbixyKX1yZXR1cm4gbltvXS5leHBvcnRzfXZhciBpPXR5cGVvZiByZXF1aXJlPT1cImZ1bmN0aW9uXCImJnJlcXVpcmU7Zm9yKHZhciBvPTA7bzxyLmxlbmd0aDtvKyspcyhyW29dKTtyZXR1cm4gc30pIiwiaW1wb3J0IF8gZnJvbSAnbG9kYXNoJztcbmltcG9ydCB7XG5cdENISUxEX0lURU1TX1NZTUJPTFxufSBmcm9tICcuL2RhdGEuanMnO1xuXG5leHBvcnQgY29uc3QgQUJTVFJBQ1RfTk9URV9TSE9SVF9TWU1CT0wgPSBTeW1ib2wuZm9yKCdhYnN0cmFjdE5vdGVTaG9ydCcpO1xuXG4vKipcbiAqIFByb2Nlc3MgcmF3IEFQSSByZXNwb25zZVxuICogQHBhcmFtICB7T2JqZWN0W119IHJlc3BvbnNlIC0gVGhlIHJhdyBBUEkgcmVzcG9uc2VcbiAqIEBwYXJhbSAge09iamVjdH0gY29uZmlnICAgICAtIEdsb2JhbCBab3Rlcm9QdWJsaWNhdGlvbnMgY29uZmlnXG4gKiBAcmV0dXJuIHtPYmplY3RbXX0gICAgICAgICAgLSBQcm9jZXNzZWQgQVBJIHJlc3BvbnNlXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiBwcm9jZXNzUmVzcG9uc2UocmVzcG9uc2UsIGNvbmZpZykge1xuXHRpZihyZXNwb25zZSkge1xuXHRcdGxldCBjaGlsZEl0ZW1zID0gW107XG5cdFx0bGV0IGluZGV4ID0ge307XG5cblx0XHRmb3IodmFyIGkgPSByZXNwb25zZS5sZW5ndGg7IGktLTsgKSB7XG5cdFx0XHRsZXQgaXRlbSA9IHJlc3BvbnNlW2ldO1xuXHRcdFx0aWYoaXRlbS5kYXRhICYmIGl0ZW0uZGF0YS5hYnN0cmFjdE5vdGUpIHtcblx0XHRcdFx0bGV0IGFic3RyYWN0Tm90ZVNob3J0ID0gaXRlbS5kYXRhLmFic3RyYWN0Tm90ZS5zdWJzdHIoMCwgY29uZmlnLnNob3J0ZW5lZEFic3RyYWN0TGVuZ2h0KTtcblx0XHRcdFx0YWJzdHJhY3ROb3RlU2hvcnQgPSBhYnN0cmFjdE5vdGVTaG9ydC5zdWJzdHIoXG5cdFx0XHRcdFx0MCxcblx0XHRcdFx0XHRNYXRoLm1pbihhYnN0cmFjdE5vdGVTaG9ydC5sZW5ndGgsIGFic3RyYWN0Tm90ZVNob3J0Lmxhc3RJbmRleE9mKCcgJykpXG5cdFx0XHRcdCk7XG5cdFx0XHRcdGl0ZW0uZGF0YVtBQlNUUkFDVF9OT1RFX1NIT1JUX1NZTUJPTF0gPSBhYnN0cmFjdE5vdGVTaG9ydDtcblx0XHRcdH1cblx0XHRcdGlmKGl0ZW0uZGF0YSAmJiBpdGVtLmRhdGEucGFyZW50SXRlbSkge1xuXHRcdFx0XHRyZXNwb25zZS5zcGxpY2UoaSwgMSk7XG5cdFx0XHRcdGNoaWxkSXRlbXMucHVzaChpdGVtKTtcblx0XHRcdH1cblx0XHRcdGluZGV4W2l0ZW0ua2V5XSA9IGl0ZW07XG5cdFx0fVxuXG5cdFx0Zm9yKGxldCBpdGVtIG9mIGNoaWxkSXRlbXMpIHtcblx0XHRcdGlmKCFpbmRleFtpdGVtLmRhdGEucGFyZW50SXRlbV0pIHtcblx0XHRcdFx0Y29uc29sZS53YXJuKGBpdGVtICR7aXRlbS5rZXl9IGhhcyBwYXJlbnRJdGVtICR7aXRlbS5kYXRhLnBhcmVudEl0ZW19IHRoYXQgZG9lcyBub3QgZXhpc3QgaW4gdGhlIGRhdGFzZXRgKTtcblx0XHRcdFx0Y29udGludWU7XG5cdFx0XHR9XG5cblx0XHRcdGlmKCFpbmRleFtpdGVtLmRhdGEucGFyZW50SXRlbV1bQ0hJTERfSVRFTVNfU1lNQk9MXSkge1xuXHRcdFx0XHRpbmRleFtpdGVtLmRhdGEucGFyZW50SXRlbV1bQ0hJTERfSVRFTVNfU1lNQk9MXSA9IFtdO1xuXHRcdFx0fVxuXHRcdFx0aW5kZXhbaXRlbS5kYXRhLnBhcmVudEl0ZW1dW0NISUxEX0lURU1TX1NZTUJPTF0ucHVzaChpdGVtKTtcblx0XHR9XG5cdH1cblx0cmV0dXJuIHJlc3BvbnNlO1xufVxuXG4vKipcbiAqIFJlY3Vyc2l2ZWx5IGZldGNoIGRhdGEgdW50aWwgdGhlcmUncyBubyBtb3JlIHJlbD1cIm5leHRcIiB1cmwgaW4gTGluayBoZWFkZXJcbiAqIEBwYXJhbSAge1N0cmluZ30gdXJsICAgICAgICAgICAgIC0gQW4gdXJsIGZvciBpbml0aWFsIGRhdGEgcmVxdWVzdFxuICogQHBhcmFtICB7T2JqZWN0fSBbb3B0aW9uc10gICAgICAgLSBDdXN0b20gc2V0dGluZ3MgKGUuZy4gaGVhZGVycykgcGFzc2VkIG92ZXIgdG8gZmV0Y2goKSBmb3IgZWFjaCByZXF1ZXN0XG4gKiBAcGFyYW0gIHtPYmplY3RbXX0gW2pzb25kYXRhPVtdXSAtIFVzZWQgZm9yIGRhdGEgYWdncmVnYXRpb24gaW4gcmVjdXJzaXZlIGNhbGxzXG4gKiBAcmV0dXJuIHtQcm9taXNlfSAgICAgICAgICAgICAgICAtIFJlc29sdmVkIHdpdGggY29tcGxldGUgZGF0YXNldCBvciByZWplY3RlZCBvbiBlcnJvclxuICovXG5leHBvcnQgZnVuY3Rpb24gZmV0Y2hVbnRpbEV4aGF1c3RlZCh1cmwsIG9wdGlvbnMsIGpzb25kYXRhKSB7XG5cdGxldCByZWxSZWdleCA9IC88KGh0dHBzPzpcXC9cXC8od3d3XFwuKT9bLWEtekEtWjAtOUA6JS5fXFwrfiM9XXsyLDI1Nn1cXC5bYS16XXsyLDZ9XFxiKFstYS16QS1aMC05QDolX1xcKy5+Iz8mLy89XSopKT47XFxzKnJlbD1cIm5leHRcIi87XG5cdGpzb25kYXRhID0ganNvbmRhdGEgfHwgW107XG5cblx0cmV0dXJuIG5ldyBQcm9taXNlKGZ1bmN0aW9uKHJlc29sdmUsIHJlamVjdCkge1xuXHRcdGZldGNoKHVybCwgb3B0aW9ucykudGhlbihmdW5jdGlvbihyZXNwb25zZSkge1xuXHRcdFx0aWYocmVzcG9uc2Uuc3RhdHVzID49IDIwMCAmJiByZXNwb25zZS5zdGF0dXMgPCAzMDApIHtcblx0XHRcdFx0aWYocmVzcG9uc2UuaGVhZGVycy5oYXMoJ0xpbmsnKSkge1xuXHRcdFx0XHRcdGxldCBtYXRjaGVzID0gcmVzcG9uc2UuaGVhZGVycy5nZXQoJ0xpbmsnKS5tYXRjaChyZWxSZWdleCk7XG5cdFx0XHRcdFx0aWYobWF0Y2hlcyAmJiBtYXRjaGVzLmxlbmd0aCA+PSAyKSB7XG5cdFx0XHRcdFx0XHRyZXNwb25zZS5qc29uKCkudGhlbihmdW5jdGlvbihqc29uRGF0YVBhcnQpIHtcblx0XHRcdFx0XHRcdFx0cmVzb2x2ZShmZXRjaFVudGlsRXhoYXVzdGVkKG1hdGNoZXNbMV0sIG9wdGlvbnMsIF8udW5pb24oanNvbmRhdGEsIGpzb25EYXRhUGFydCkpKTtcblx0XHRcdFx0XHRcdH0pO1xuXHRcdFx0XHRcdH0gZWxzZSB7XG5cdFx0XHRcdFx0XHRyZXNwb25zZS5qc29uKCkudGhlbihmdW5jdGlvbihqc29uRGF0YVBhcnQpIHtcblx0XHRcdFx0XHRcdFx0cmVzb2x2ZShfLnVuaW9uKGpzb25kYXRhLCBqc29uRGF0YVBhcnQpKTtcblx0XHRcdFx0XHRcdH0pO1xuXHRcdFx0XHRcdH1cblx0XHRcdFx0fSBlbHNlIHtcblx0XHRcdFx0XHRyZXNwb25zZS5qc29uKCkudGhlbihmdW5jdGlvbihqc29uRGF0YVBhcnQpIHtcblx0XHRcdFx0XHRcdHJlc29sdmUoXy51bmlvbihqc29uZGF0YSwganNvbkRhdGFQYXJ0KSk7XG5cdFx0XHRcdFx0fSk7XG5cdFx0XHRcdH1cblx0XHRcdH0gZWxzZSB7XG5cdFx0XHRcdHJlamVjdChuZXcgRXJyb3IoYFVuZXhwZWN0ZWQgc3RhdHVzIGNvZGUgJHtyZXNwb25zZS5zdGF0dXN9IHdoZW4gcmVxdWVzdGluZyAke3VybH1gKSk7XG5cdFx0XHR9XG5cdFx0fSkuY2F0Y2goZnVuY3Rpb24oKSB7XG5cdFx0XHRyZWplY3QobmV3IEVycm9yKGBVbmV4cGVjdGVkIGVycm9yIHdoZW4gcmVxdWVzdGluZyAke3VybH1gKSk7XG5cdFx0fSk7XG5cdH0pO1xufVxuIiwiaW1wb3J0IF8gZnJvbSAnbG9kYXNoJztcbmltcG9ydCB7XG5cdHByb2Nlc3NSZXNwb25zZVxufSBmcm9tICcuL2FwaS5qcyc7XG5cbmV4cG9ydCBjb25zdCBHUk9VUEVEX05PTkUgPSAwO1xuZXhwb3J0IGNvbnN0IEdST1VQRURfQllfVFlQRSA9IDE7XG5leHBvcnQgY29uc3QgR1JPVVBFRF9CWV9DT0xMRUNUSU9OID0gMjtcbmV4cG9ydCBjb25zdCBDSElMRF9JVEVNU19TWU1CT0wgPSBTeW1ib2wuZm9yKCdjaGlsZEl0ZW1zJyk7XG5leHBvcnQgY29uc3QgR1JPVVBfRVhQQU5ERURfU1VNQk9MID0gU3ltYm9sLmZvcignZ3JvdXBFeHBhbmRlZCcpO1xuXG4vKipcbiAqIFN0b3JlLCBFbmNhcHN1bGF0ZSBhbmQgTWFuaXB1bGF0ZSBab3Rlcm8gQVBJIGRhdGFcbiAqIEBwYXJhbSB7T2JqZWN0W119IGRhdGEgICAtIFpvdGVybyBBUEkgZGF0YSB0byBlbmNhcHN1bGF0ZVxuICogQHBhcmFtIHtPYmplY3R9IFtjb25maWddIC0gWm90ZXJvUHVibGljYXRpb25zIGNvbmZpZ1xuICovXG5leHBvcnQgZnVuY3Rpb24gWm90ZXJvRGF0YShkYXRhLCBjb25maWcpIHtcblx0dGhpcy5yYXcgPSB0aGlzLmRhdGEgPSBwcm9jZXNzUmVzcG9uc2UoZGF0YSwgY29uZmlnKTtcblx0dGhpcy5ncm91cGVkID0gR1JPVVBFRF9OT05FO1xuXG5cdE9iamVjdC5kZWZpbmVQcm9wZXJ0eSh0aGlzLCAnbGVuZ3RoJywge1xuXHRcdGVudW1lcmFibGU6IGZhbHNlLFxuXHRcdGNvbmZpZ3VyYWJsZTogZmFsc2UsXG5cdFx0Z2V0OiBmdW5jdGlvbigpIHtcblx0XHRcdHJldHVybiB0aGlzLmRhdGEubGVuZ3RoO1xuXHRcdH1cblx0fSk7XG59XG5cbi8qKlxuICogR3JvdXAgZGF0YSBieSB0eXBlXG4gKiBAcGFyYW0gIHtTdHJpbmd8U3RyaW5nW119IFtleHBhbmQ9W11dIC0gTGlzdCBvZiB0eXBlcyB3aGljaCBzaG91bGQgYXBwZWFyIHByZS1leHBhbmRlZC5cbiAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBBbHRlcm5hdGl2ZWx5IHN0cmluZyBcImFsbFwiIGlzIGFjY2VwdGVkLlxuICovXG5ab3Rlcm9EYXRhLnByb3RvdHlwZS5ncm91cEJ5VHlwZSA9IGZ1bmN0aW9uKGV4cGFuZCkge1xuXHRsZXQgZ3JvdXBlZERhdGEgPSB7fTtcblx0ZXhwYW5kID0gZXhwYW5kIHx8IFtdO1xuXHRmb3IobGV0IGkgPSB0aGlzLnJhdy5sZW5ndGg7IGktLTsgKSB7XG5cdFx0bGV0IGl0ZW0gPSB0aGlzLnJhd1tpXTtcblxuXHRcdGlmKCFncm91cGVkRGF0YVtpdGVtLmRhdGEuaXRlbVR5cGVdKSB7XG5cdFx0XHRncm91cGVkRGF0YVtpdGVtLmRhdGEuaXRlbVR5cGVdID0gW107XG5cdFx0fVxuXHRcdGdyb3VwZWREYXRhW2l0ZW0uZGF0YS5pdGVtVHlwZV0ucHVzaChpdGVtKTtcblx0XHRncm91cGVkRGF0YVtpdGVtLmRhdGEuaXRlbVR5cGVdW0dST1VQX0VYUEFOREVEX1NVTUJPTF0gPSBleHBhbmQgPT09ICdhbGwnIHx8IF8uY29udGFpbnMoZXhwYW5kLCBpdGVtLmRhdGEuaXRlbVR5cGUpO1xuXHR9XG5cdHRoaXMuZGF0YSA9IGdyb3VwZWREYXRhO1xuXHR0aGlzLmdyb3VwZWQgPSBHUk9VUEVEX0JZX1RZUEU7XG59O1xuXG4vKipcbiAqIEdyb3VwIGRhdGEgYnkgdG9wLWxldmVsIGNvbGxlY3Rpb25zXG4gKi9cblpvdGVyb0RhdGEucHJvdG90eXBlLmdyb3VwQnlDb2xsZWN0aW9ucyA9IGZ1bmN0aW9uKCkge1xuXHR0aHJvdyBuZXcgRXJyb3IoJ2dyb3VwQnlDb2xsZWN0aW9ucyBpcyBub3QgaW1wbGVtZW50ZWQgeWV0LicpO1xufTtcblxuLyoqXG4gKiBDdXN0b20gaXRlcmF0b3IgdG8gYWxsb3cgZm9yLi5vZiBpbnRlcmF0aW9uIHJlZ2FyZGxlc3Mgb2Ygd2hldGhlciBkYXRhIGlzIGdyb3VwZWQgb3Igbm90LlxuICogRm9yIHVuZ3JvdXBlZCBkYXRhIGVhY2ggaW50ZXJhdGlvbiByZXR1cm5zIHNpbmdsZSBab3Rlcm8gaXRlbVxuICogRm9yIGdyb3VwZWQgZGF0YSBlYWNoIGludGVyYXRpb25yIHJldHVybnMgYW4gYSBwYWlyIG9mIGdyb3VwIHRpdGxlIGFuZCBhbiBBcnJheSBvZiBab3Rlcm8gaXRlbXNcbiAqL1xuWm90ZXJvRGF0YS5wcm90b3R5cGVbU3ltYm9sLml0ZXJhdG9yXSA9IGZ1bmN0aW9uKCkge1xuXHRsZXQgaSA9IDA7XG5cdGlmKHRoaXMuZ3JvdXBlZCA+IDApIHtcblx0XHRsZXQga2V5cyA9IE9iamVjdC5rZXlzKHRoaXMuZGF0YSk7XG5cdFx0cmV0dXJuIHtcblx0XHRcdG5leHQ6IGZ1bmN0aW9uKCkge1xuXHRcdFx0XHRyZXR1cm4ge1xuXHRcdFx0XHRcdHZhbHVlOiBpIDwga2V5cy5sZW5ndGggPyBba2V5c1tpXSwgdGhpcy5kYXRhW2tleXNbaV1dXSA6IG51bGwsXG5cdFx0XHRcdFx0ZG9uZTogaSsrID49IGtleXMubGVuZ3RoXG5cdFx0XHRcdH07XG5cdFx0XHR9LmJpbmQodGhpcylcblx0XHR9O1xuXHR9IGVsc2Uge1xuXHRcdHJldHVybiB7XG5cdFx0XHRuZXh0OiBmdW5jdGlvbigpIHtcblx0XHRcdFx0cmV0dXJuIHtcblx0XHRcdFx0XHR2YWx1ZTogaSA8IHRoaXMuZGF0YS5sZW5ndGggPyB0aGlzLmRhdGFbaV0gOiBudWxsLFxuXHRcdFx0XHRcdGRvbmU6IGkrKyA+PSB0aGlzLmRhdGEubGVuZ3RoXG5cdFx0XHRcdH07XG5cdFx0XHR9LmJpbmQodGhpcylcblx0XHR9O1xuXHR9XG59O1xuIiwiaW1wb3J0IHsgWm90ZXJvUHVibGljYXRpb25zIH0gZnJvbSAnLi9tYWluLmpzJztcblxubW9kdWxlLmV4cG9ydHMgPSBab3Rlcm9QdWJsaWNhdGlvbnM7IiwiaW1wb3J0IF8gZnJvbSAnbG9kYXNoJztcbmltcG9ydCB7XG5cdHJlbmRlclB1YmxpY2F0aW9uc1xufSBmcm9tICcuL3JlbmRlci5qcyc7XG5pbXBvcnQge1xuXHRmZXRjaFVudGlsRXhoYXVzdGVkXG59IGZyb20gJy4vYXBpLmpzJztcbmltcG9ydCB7XG5cdFpvdGVyb0RhdGFcbn0gZnJvbSAnLi9kYXRhLmpzJztcbmltcG9ydCB7XG5cdHRvZ2dsZVNwaW5uZXJcbn0gZnJvbSAnLi91aS5qcyc7XG5cbi8qKlxuICogQXBwbGljYXRpb24gZW50cnkgcG9pbnRcbiAqIEBwYXJhbSB7T2JqZWN0fSBbY29uZmlnXSAtIENvbmZpZ3VyYXRpb24gb2JqZWN0IHRoYXQgd2lsbCBzZWxlY3RpdmVseSBvdmVycmlkZSB0aGUgZGVmYXVsdHNcbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIFpvdGVyb1B1YmxpY2F0aW9ucygpIHtcblx0aWYoYXJndW1lbnRzLmxlbmd0aCA8PSAxKSB7XG5cdFx0dGhpcy5jb25maWcgPSBfLmV4dGVuZCh7fSwgdGhpcy5kZWZhdWx0cywgYXJndW1lbnRzID8gYXJndW1lbnRzWzBdIDoge30pO1xuXHR9IGVsc2UgaWYoYXJndW1lbnRzLmxlbmd0aCA8PSAzKSB7XG5cdFx0dGhpcy5jb25maWcgPSBfLmV4dGVuZCh7fSwgdGhpcy5kZWZhdWx0cywgYXJndW1lbnRzWzJdKTtcblx0XHRyZXR1cm4gdGhpcy5yZW5kZXIoYXJndW1lbnRzWzBdLCBhcmd1bWVudHNbMV0pO1xuXHR9IGVsc2Uge1xuXHRcdHJldHVybiBQcm9taXNlLnJlamVjdChcblx0XHRcdG5ldyBFcnJvcignWm90ZXJvUHVibGljYXRpb25zIHRha2VzIGJldHdlZW4gb25lIGFuZCB0aHJlZSBhcmd1bWVudHMuICR7YXJndW1lbnRzLmxlbmd0aH0gaXMgdG9vIG1hbnkuJylcblx0XHQpO1xuXHR9XG59XG5cbi8qKlxuICogRGVmYXVsdCBjb25maWd1cmF0aW9uIG9iamVjdFxuICogQHR5cGUge09iamVjdH1cbiAqL1xuWm90ZXJvUHVibGljYXRpb25zLnByb3RvdHlwZS5kZWZhdWx0cyA9IHtcblx0YXBpQmFzZTogJ2FwaS56b3Rlcm8ub3JnJyxcblx0bGltaXQ6IDEwMCxcblx0Y2l0YXRpb25TdHlsZTogJycsXG5cdGluY2x1ZGU6IFsnZGF0YScsICdjaXRhdGlvbiddLFxuXHRzaG9ydGVuZWRBYnN0cmFjdExlbmdodDogMjUwLFxuXHRncm91cDogZmFsc2UsXG5cdGV4cGFuZDogJ2FsbCdcbn07XG5cbi8qKlxuICogQnVpbGQgdXJsIGZvciBhbiBlbmRwb2ludCB0aGVuIGZldGNoIGVudGlyZSBkYXRhc2V0IHJlY3Vyc2l2ZWx5XG4gKiBAcGFyYW0gIHtTdHJpbmd9IGVuZHBvaW50IC0gQW4gQVBJIGVuZHBvaW50IGZyb20gd2hpY2ggZGF0YSBzaG91bGQgYmUgb2J0YWluZWRcbiAqIEByZXR1cm4ge1Byb21pc2V9ICAgICAgICAgLSBSZXNvbHZlZCB3aXRoIFpvdGVyb0RhdGEgb2JqZWN0IG9uIHN1Y2Nlc3MsIHJlamVjdGVkXG4gKiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgaW4gY2FzZSBvZiBhbnkgbmV0d29yay9yZXNwb25zZSBwcm9ibGVtc1xuICovXG5ab3Rlcm9QdWJsaWNhdGlvbnMucHJvdG90eXBlLmdldCA9IGZ1bmN0aW9uKGVuZHBvaW50KSB7XG5cdGxldCBhcGlCYXNlID0gdGhpcy5jb25maWcuYXBpQmFzZSxcblx0XHRsaW1pdCA9IHRoaXMuY29uZmlnLmxpbWl0LFxuXHRcdHN0eWxlID0gdGhpcy5jb25maWcuY2l0YXRpb25TdHlsZSxcblx0XHRpbmNsdWRlID0gdGhpcy5jb25maWcuaW5jbHVkZS5qb2luKCcsJyksXG5cdFx0dXJsID0gYGh0dHBzOi8vJHthcGlCYXNlfS8ke2VuZHBvaW50fT9pbmNsdWRlPSR7aW5jbHVkZX0mbGltaXQ9JHtsaW1pdH0mbGlua3dyYXA9MSZvcmRlcj1kYXRlTW9kaWZpZWQmc29ydD1kZXNjJnN0YXJ0PTAmc3R5bGU9JHtzdHlsZX1gLFxuXHRcdG9wdGlvbnMgPSB7XG5cdFx0XHRoZWFkZXJzOiB7XG5cdFx0XHRcdCdBY2NlcHQnOiAnYXBwbGljYXRpb24vanNvbidcblx0XHRcdH1cblx0XHR9O1xuXG5cdHJldHVybiBuZXcgUHJvbWlzZShmdW5jdGlvbihyZXNvbHZlLCByZWplY3QpIHtcblx0XHRsZXQgcHJvbWlzZSA9IGZldGNoVW50aWxFeGhhdXN0ZWQodXJsLCBvcHRpb25zKTtcblx0XHRwcm9taXNlLnRoZW4oZnVuY3Rpb24ocmVzcG9uc2VKc29uKSB7XG5cdFx0XHRsZXQgZGF0YSA9IG5ldyBab3Rlcm9EYXRhKHJlc3BvbnNlSnNvbiwgdGhpcy5jb25maWcpO1xuXHRcdFx0aWYodGhpcy5jb25maWcuZ3JvdXAgPT09ICd0eXBlJykge1xuXHRcdFx0XHRkYXRhLmdyb3VwQnlUeXBlKHRoaXMuY29uZmlnLmV4cGFuZCk7XG5cdFx0XHR9XG5cdFx0XHRyZXNvbHZlKGRhdGEpO1xuXHRcdH0uYmluZCh0aGlzKSk7XG5cdFx0cHJvbWlzZS5jYXRjaChyZWplY3QpO1xuXHR9LmJpbmQodGhpcykpO1xufTtcblxuLyoqXG4gKiBSZW5kZXIgbG9jYWwgb3IgcmVtb3RlIGl0ZW1zLlxuICogQHBhcmFtICB7U3RyaW5nfFpvdGVyb0RhdGF9IGVuZHBvaW50T3JEYXRhIC0gRGF0YSBjb250YWludW5nIHB1YmxpY2F0aW9ucyB0byBiZSByZW5kZXJlZFxuICogQHBhcmFtICB7SFRNTEVsZW1lbnR9IGNvbnRhaW5lciAgICAgICAgICAgIC0gQSBET00gZWxlbWVudCB3aGVyZSBwdWJsaWNhdGlvbnMgd2lsbCBiZSByZW5kZXJlZFxuICogQHJldHVybiB7UHJvbWlzZX0gICAgICAgICAgICAgICAgICAgICAgICAgIC0gUmVzb2x2ZWQgd2hlbiByZW5kZXJlZCBvciByZWplY3RlZCBvbiBlcnJvci5cbiAqL1xuWm90ZXJvUHVibGljYXRpb25zLnByb3RvdHlwZS5yZW5kZXIgPSBmdW5jdGlvbihlbmRwb2ludE9yRGF0YSwgY29udGFpbmVyKSB7XG5cdHJldHVybiBuZXcgUHJvbWlzZShmdW5jdGlvbihyZXNvbHZlLCByZWplY3QpIHtcblx0XHRpZighKGNvbnRhaW5lciBpbnN0YW5jZW9mIEhUTUxFbGVtZW50KSkge1xuXHRcdFx0cmVqZWN0KG5ldyBFcnJvcignU2Vjb25kIGFyZ3VtZW50IHRvIHJlbmRlcigpIG1ldGhvZCBtdXN0IGJlIGEgRE9NIGVsZW1lbnQnKSk7XG5cdFx0fVxuXHRcdGlmKGVuZHBvaW50T3JEYXRhIGluc3RhbmNlb2YgWm90ZXJvRGF0YSkge1xuXHRcdFx0bGV0IGRhdGEgPSBlbmRwb2ludE9yRGF0YTtcblx0XHRcdHJlbmRlclB1YmxpY2F0aW9ucyhjb250YWluZXIsIGRhdGEpO1xuXHRcdFx0cmVzb2x2ZSgpO1xuXHRcdH0gZWxzZSBpZih0eXBlb2YgZW5kcG9pbnRPckRhdGEgPT09ICdzdHJpbmcnKSB7XG5cdFx0XHRsZXQgZW5kcG9pbnQgPSBlbmRwb2ludE9yRGF0YTtcblx0XHRcdHRvZ2dsZVNwaW5uZXIoY29udGFpbmVyLCB0cnVlKTtcblx0XHRcdGxldCBwcm9taXNlID0gdGhpcy5nZXQoZW5kcG9pbnQpO1xuXHRcdFx0cHJvbWlzZS50aGVuKGZ1bmN0aW9uKGRhdGEpIHtcblx0XHRcdFx0dG9nZ2xlU3Bpbm5lcihjb250YWluZXIsIGZhbHNlKTtcblx0XHRcdFx0cmVuZGVyUHVibGljYXRpb25zKGNvbnRhaW5lciwgZGF0YSk7XG5cdFx0XHRcdHJlc29sdmUoKTtcblx0XHRcdH0pO1xuXHRcdFx0cHJvbWlzZS5jYXRjaChmdW5jdGlvbigpIHtcblx0XHRcdFx0dG9nZ2xlU3Bpbm5lcihjb250YWluZXIsIGZhbHNlKTtcblx0XHRcdFx0cmVqZWN0KGFyZ3VtZW50c1swXSk7XG5cdFx0XHR9KTtcblx0XHR9IGVsc2Uge1xuXHRcdFx0cmVqZWN0KG5ldyBFcnJvcignRmlyc3QgYXJndW1lbnQgdG8gcmVuZGVyKCkgbWV0aG9kIG11c3QgYmUgYW4gZW5kcG9pbnQgb3IgYW4gaW5zdGFuY2Ugb2YgWm90ZXJvRGF0YScpKTtcblx0XHR9XG5cdH0uYmluZCh0aGlzKSk7XG59O1xuXG4vKipcbiAqIE1ha2UgWm90ZXJvRGF0YSBwdWJsaWNseSBhY2Nlc3NpYmxlIHVuZGVybmVhdGggWm90ZXJvUHVibGljYXRpb25zXG4gKiBAdHlwZSB7Wm90ZXJvRGF0YX1cbiAqL1xuWm90ZXJvUHVibGljYXRpb25zLlpvdGVyb0RhdGEgPSBab3Rlcm9EYXRhO1xuIiwiaW1wb3J0IGl0ZW1UcGwgZnJvbSAnLi90cGwvaXRlbS50cGwnO1xuaW1wb3J0IGl0ZW1zVHBsIGZyb20gJy4vdHBsL2l0ZW1zLnRwbCc7XG5pbXBvcnQgZ3JvdXBUcGwgZnJvbSAnLi90cGwvZ3JvdXAudHBsJztcbmltcG9ydCBncm91cHNUcGwgZnJvbSAnLi90cGwvZ3JvdXBzLnRwbCc7XG5pbXBvcnQgY2hpbGRJdGVtc1RwbCBmcm9tICcuL3RwbC9jaGlsZC1pdGVtcy50cGwnO1xuaW1wb3J0IGNoaWxkSXRlbVRwbCBmcm9tICcuL3RwbC9jaGlsZC1pdGVtLnRwbCc7XG5pbXBvcnQgYnJhbmRpbmdUcGwgZnJvbSAnLi90cGwvYnJhbmRpbmcudHBsJztcbmltcG9ydCB7XG5cdGFkZEhhbmRsZXJzXG59IGZyb20gJy4vdWkuanMnO1xuaW1wb3J0IHtcblx0Q0hJTERfSVRFTVNfU1lNQk9MLFxuXHRHUk9VUF9FWFBBTkRFRF9TVU1CT0xcbn0gZnJvbSAnLi9kYXRhLmpzJztcblxuLyoqXG4gKiBSZW5kZXIgc2luZ2xlIFpvdGVybyBpdGVtXG4gKiBAcGFyYW0gIHtPYmplY3R9IHpvdGVyb0l0ZW0gICAgICAgLSBTaW5nbGUgWm90ZXJvIGl0ZW0gZGF0YVxuICogQHBhcmFtICB7U3RyaW5nfSBjaGlsZEl0ZW1zTWFya3VwIC0gUmVuZGVyZWQgbWFya3VwIG9mIGEgbGlzdCBvZiBab3Rlcm8gY2hpbGQgaXRlbXNcbiAqIEByZXR1cm4ge1N0cmluZ30gICAgICAgICAgICAgICAgICAtIFJlbmRlcmVkIG1hcmt1cCBvZiBhIFpvdGVybyBpdGVtXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiByZW5kZXJJdGVtKHpvdGVyb0l0ZW0sIGNoaWxkSXRlbXNNYXJrdXApIHtcblx0cmV0dXJuIGl0ZW1UcGwoe1xuXHRcdCdpdGVtJzogem90ZXJvSXRlbSxcblx0XHQnZGF0YSc6IHpvdGVyb0l0ZW0uZGF0YSxcblx0XHQnY2hpbGRJdGVtc01hcmt1cCc6IGNoaWxkSXRlbXNNYXJrdXAgfHwgJydcblx0fSk7XG59XG5cbi8qKlxuICogUmVuZGVyIGEgbGlzdCBvZiBab3Rlcm8gaXRlbXNcbiAqIEBwYXJhbSAge1pvdGVyb0RhdGF8T2JqZWN0W119IHpvdGVyb0l0ZW1zIC0gTGlzdCBvZiBab3Rlcm8gaXRlbXNcbiAqIEByZXR1cm4ge1N0cmluZ30gICAgICAgICAgICAgICAgICAgICAgICAgIC0gUmVuZGVyZWQgbWFya3VwIG9mIGEgbGlzdCBvZiBab3Rlcm8gaXRlbXNcbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIHJlbmRlckl0ZW1zKHpvdGVyb0l0ZW1zKSB7XG5cdGxldCBpdGVtc01hcmt1cCA9ICcnO1xuXG5cdGZvciAobGV0IGl0ZW0gb2Ygem90ZXJvSXRlbXMpIHtcblx0XHRsZXQgY2hpbGRJdGVtc01hcmt1cCA9IHJlbmRlckNoaWxkSXRlbXMoaXRlbSk7XG5cdFx0aXRlbXNNYXJrdXAgKz0gcmVuZGVySXRlbShpdGVtLCBjaGlsZEl0ZW1zTWFya3VwKTtcblx0fVxuXG5cdHJldHVybiBpdGVtc1RwbCh7XG5cdFx0J3pvdGVyb0l0ZW1zJzogaXRlbXNNYXJrdXBcblx0fSk7XG59XG5cbi8qKlxuICogUmVuZGVyIHNpbmdsZSBab3Rlcm8gY2hpbGQgaXRlbVxuICogQHBhcmFtICB7T2JqZWN0W119IHpvdGVyb0NoaWxkSXRlbSAtIExpc3Qgb2YgWm90ZXJvIGNoaWxkIGl0ZW1zXG4gKiBAcmV0dXJuIHtTdHJpbmd9ICAgICAgICAgICAgICAgICAgIC0gUmVuZGVyZWQgbWFya3VwIG9mIGEgWm90ZXJvIGNoaWxkIGl0ZW1cbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIHJlbmRlckNoaWxkSXRlbSh6b3Rlcm9DaGlsZEl0ZW0pIHtcblx0cmV0dXJuIGNoaWxkSXRlbVRwbCh7XG5cdFx0J2l0ZW0nOiB6b3Rlcm9DaGlsZEl0ZW1cblx0fSk7XG59XG5cbi8qKlxuICogUmVuZGVyIGxpc3Qgb2YgWm90ZXJvIGNoaWxkIGl0ZW1zXG4gKiBAcGFyYW0gIHtPYmplY3R9IHpvdGVyb0l0ZW0gLSBQYXJlbnQgWm90ZXJvIGl0ZW1cbiAqIEByZXR1cm4ge1N0cmluZ30gICAgICAgICAgICAtIFJlbmRlcmVkIG1hcmt1cCBvZiBhIGxpc3Qgb2YgWm90ZXJvIGNoaWxkIGl0ZW1zXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiByZW5kZXJDaGlsZEl0ZW1zKHpvdGVyb0l0ZW0pIHtcblx0bGV0IGNoaWxkSXRlbXNNYXJrdXAgPSAnJztcblxuXHRpZih6b3Rlcm9JdGVtW0NISUxEX0lURU1TX1NZTUJPTF0gJiYgem90ZXJvSXRlbVtDSElMRF9JVEVNU19TWU1CT0xdLmxlbmd0aCA+IDApIHtcblx0XHRmb3IgKGxldCBjaGlsZEl0ZW0gb2Ygem90ZXJvSXRlbVtDSElMRF9JVEVNU19TWU1CT0xdKSB7XG5cdFx0XHRjaGlsZEl0ZW1zTWFya3VwICs9IHJlbmRlckNoaWxkSXRlbShjaGlsZEl0ZW0pO1xuXHRcdH1cblx0fVxuXG5cdHJldHVybiBjaGlsZEl0ZW1zVHBsKHtcblx0XHQnY2hpbGRJdGVtc01hcmt1cCc6IGNoaWxkSXRlbXNNYXJrdXBcblx0fSk7XG59XG5cbi8qKlxuICogUmVuZGVyIGFuIGV4cGFuZGFibGUgZ3JvdXAgb2YgWm90ZXJvIGl0ZW1zXG4gKiBAcGFyYW0gIHtTdHJpbmd9IHRpdGxlICAgICAgIC0gQSB0aXRsZSBvZiBhIGdyb3VwXG4gKiBAcGFyYW0gIHtib29sZWFufSBleHBhbmQgICAgIC0gSW5kaWNhdGVzIHdoZXRoZXIgZ3JvdXAgc2hvdWxkIGFwcGVhciBwcmUtZXhwYW5kZWRcbiAqIEBwYXJhbSAge1N0cmluZ30gaXRlbXNNYXJrdXAgLSBSZW5kZXJlZCBtYXJrdXAgb2YgdW5kZXJseWluZyBsaXN0IG9mIFpvdGVybyBpdGVtc1xuICogQHJldHVybiB7U3RyaW5nfSAgICAgICAgICAgICAtIFJlbmRlcmVkIG1hcmt1cCBvZiBhIGdyb3VwXG4gKi9cbmV4cG9ydCBmdW5jdGlvbiByZW5kZXJHcm91cCh0aXRsZSwgZXhwYW5kLCBpdGVtc01hcmt1cCkge1xuXHRyZXR1cm4gZ3JvdXBUcGwoe1xuXHRcdCd0aXRsZSc6IHRpdGxlLFxuXHRcdCdpdGVtc01hcmt1cCc6IGl0ZW1zTWFya3VwLFxuXHRcdCdleHBhbmQnOiBleHBhbmRcblx0fSk7XG59XG5cbi8qKlxuICogUmVuZGVyIGEgbGlzdCBvZiBncm91cHMgb2YgWm90ZXJvIGl0ZW1zXG4gKiBAcGFyYW0gIHtab3Rlcm9EYXRhfE9iamVjdH0gZGF0YSAtIEdyb3VwZWQgZGF0YSB3aGVyZSBlYWNoIGtleSBpcyBhIGdyb3VwIHRpdGxlcyBhbmRcbiAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZWFjaCB2YWx1ZSBpcyBhbiBhcnJheSBab3Rlcm8gaXRlbXNcbiAqIEByZXR1cm4ge1N0cmluZ30gICAgICAgICAgICAgICAgIC0gUmVuZGVyZWQgbWFya3VwIG9mIGEgbGlzdCBvZiBncm91cHNcbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIHJlbmRlckdyb3VwZWQoZGF0YSkge1xuXHRsZXQgZ3JvdXBzTWFya3VwID0gJyc7XG5cblx0Zm9yKGxldCBbIGdyb3VwVGl0bGUsIGdyb3VwIF0gb2YgZGF0YSkge1xuXHRcdGxldCBpdGVtc01hcmt1cCA9IHJlbmRlckl0ZW1zKGdyb3VwKTtcblx0XHRsZXQgZXhwYW5kID0gZ3JvdXBbR1JPVVBfRVhQQU5ERURfU1VNQk9MXTtcblx0XHRncm91cHNNYXJrdXAgKz0gcmVuZGVyR3JvdXAoZ3JvdXBUaXRsZSwgZXhwYW5kLCBpdGVtc01hcmt1cCk7XG5cdH1cblxuXHRyZXR1cm4gZ3JvdXBzVHBsKHtcblx0XHQnZ3JvdXBzTWFya3VwJzogZ3JvdXBzTWFya3VwXG5cdH0pO1xufVxuXG4vKipcbiAqIFJlbmRlciBab3Rlcm8gcHVibGljYXRpb25zIGludG8gYSBET00gZWxlbWVudFxuICogQHBhcmFtICB7SFRNTEVsZW1lbnR9IGNvbnRhaW5lciAtIERPTSBlbGVtZW50IG9mIHdoaWNoIGNvbnRlbnRzIGlzIHRvIGJlIHJlcGxhY2VkXG4gKiBAcGFyYW0gIHtab3Rlcm9EYXRhfSBkYXRhICAgICAgIC0gU291cmNlIG9mIHB1YmxpY2F0aW9ucyB0byBiZSByZW5kZXJlZFxuICovXG5leHBvcnQgZnVuY3Rpb24gcmVuZGVyUHVibGljYXRpb25zKGNvbnRhaW5lciwgZGF0YSkge1xuXHR2YXIgbWFya3VwO1xuXG5cdGlmKGRhdGEuZ3JvdXBlZCA+IDApIHtcblx0XHRtYXJrdXAgPSByZW5kZXJHcm91cGVkKGRhdGEpICsgYnJhbmRpbmdUcGwoKTtcblx0fSBlbHNlIHtcblx0XHRtYXJrdXAgPSByZW5kZXJJdGVtcyhkYXRhKSArIGJyYW5kaW5nVHBsKCk7XG5cdH1cblxuXHRjb250YWluZXIuaW5uZXJIVE1MID0gbWFya3VwO1xuXHRhZGRIYW5kbGVycyhjb250YWluZXIpO1xufVxuIiwidmFyIF8gPSAodHlwZW9mIHdpbmRvdyAhPT0gXCJ1bmRlZmluZWRcIiA/IHdpbmRvd1snXyddIDogdHlwZW9mIGdsb2JhbCAhPT0gXCJ1bmRlZmluZWRcIiA/IGdsb2JhbFsnXyddIDogbnVsbCk7XG5tb2R1bGUuZXhwb3J0cyA9IGZ1bmN0aW9uKG9iail7XG52YXIgX190LF9fcD0nJyxfX2o9QXJyYXkucHJvdG90eXBlLmpvaW4scHJpbnQ9ZnVuY3Rpb24oKXtfX3ArPV9fai5jYWxsKGFyZ3VtZW50cywnJyk7fTtcbndpdGgob2JqfHx7fSl7XG5fX3ArPSc8ZGl2IGNsYXNzPVwiem90ZXJvLWJyYW5kaW5nXCI+XFxuXFx0UG93ZXJlZCBieSA8c3BhbiBjbGFzcz1cInpvdGVyby1sb2dvXCI+PC9zcGFuPlxcbjwvZGl2Pic7XG59XG5yZXR1cm4gX19wO1xufTtcbiIsInZhciBfID0gKHR5cGVvZiB3aW5kb3cgIT09IFwidW5kZWZpbmVkXCIgPyB3aW5kb3dbJ18nXSA6IHR5cGVvZiBnbG9iYWwgIT09IFwidW5kZWZpbmVkXCIgPyBnbG9iYWxbJ18nXSA6IG51bGwpO1xubW9kdWxlLmV4cG9ydHMgPSBmdW5jdGlvbihvYmope1xudmFyIF9fdCxfX3A9JycsX19qPUFycmF5LnByb3RvdHlwZS5qb2luLHByaW50PWZ1bmN0aW9uKCl7X19wKz1fX2ouY2FsbChhcmd1bWVudHMsJycpO307XG53aXRoKG9ianx8e30pe1xuX19wKz0nPGxpPlxcblxcdCcrXG4oKF9fdD0oIGl0ZW0uZGF0YS5rZXkgKSk9PW51bGw/Jyc6Xy5lc2NhcGUoX190KSkrXG4nOiAnK1xuKChfX3Q9KCBpdGVtLmRhdGEuaXRlbVR5cGUgKSk9PW51bGw/Jyc6Xy5lc2NhcGUoX190KSkrXG4nIFxcbjwvbGk+Jztcbn1cbnJldHVybiBfX3A7XG59O1xuIiwidmFyIF8gPSAodHlwZW9mIHdpbmRvdyAhPT0gXCJ1bmRlZmluZWRcIiA/IHdpbmRvd1snXyddIDogdHlwZW9mIGdsb2JhbCAhPT0gXCJ1bmRlZmluZWRcIiA/IGdsb2JhbFsnXyddIDogbnVsbCk7XG5tb2R1bGUuZXhwb3J0cyA9IGZ1bmN0aW9uKG9iail7XG52YXIgX190LF9fcD0nJyxfX2o9QXJyYXkucHJvdG90eXBlLmpvaW4scHJpbnQ9ZnVuY3Rpb24oKXtfX3ArPV9fai5jYWxsKGFyZ3VtZW50cywnJyk7fTtcbndpdGgob2JqfHx7fSl7XG5fX3ArPSc8dWwgY2xhc3M9XCJ6b3Rlcm8tY2hpbGQtaXRlbXNcIj5cXG5cXHQnK1xuKChfX3Q9KCBjaGlsZEl0ZW1zTWFya3VwICkpPT1udWxsPycnOl9fdCkrXG4nXFxuPC91bD4nO1xufVxucmV0dXJuIF9fcDtcbn07XG4iLCJ2YXIgXyA9ICh0eXBlb2Ygd2luZG93ICE9PSBcInVuZGVmaW5lZFwiID8gd2luZG93WydfJ10gOiB0eXBlb2YgZ2xvYmFsICE9PSBcInVuZGVmaW5lZFwiID8gZ2xvYmFsWydfJ10gOiBudWxsKTtcbm1vZHVsZS5leHBvcnRzID0gZnVuY3Rpb24ob2JqKXtcbnZhciBfX3QsX19wPScnLF9faj1BcnJheS5wcm90b3R5cGUuam9pbixwcmludD1mdW5jdGlvbigpe19fcCs9X19qLmNhbGwoYXJndW1lbnRzLCcnKTt9O1xud2l0aChvYmp8fHt9KXtcbl9fcCs9JzxsaSBjbGFzcz1cInpvdGVyby1ncm91cCcrXG4oKF9fdD0oIGV4cGFuZCA/ICcgem90ZXJvLWdyb3VwLWV4cGFuZGVkJyA6ICcnICkpPT1udWxsPycnOl8uZXNjYXBlKF9fdCkpK1xuJ1wiIGFyaWEtZXhwYW5kZWQ9XCInK1xuKChfX3Q9KCBleHBhbmQgPyAnIHRydWUnIDogJ2ZhbHNlJyApKT09bnVsbD8nJzpfLmVzY2FwZShfX3QpKStcbidcIiA+XFxuXFx0PGgzIGNsYXNzPVwiem90ZXJvLWdyb3VwLXRpdGxlXCI+JytcbigoX190PSggdGl0bGUgKSk9PW51bGw/Jyc6Xy5lc2NhcGUoX190KSkrXG4nPC9oMz5cXG5cXHQnK1xuKChfX3Q9KCBpdGVtc01hcmt1cCApKT09bnVsbD8nJzpfX3QpK1xuJ1xcbjwvbGk+Jztcbn1cbnJldHVybiBfX3A7XG59O1xuIiwidmFyIF8gPSAodHlwZW9mIHdpbmRvdyAhPT0gXCJ1bmRlZmluZWRcIiA/IHdpbmRvd1snXyddIDogdHlwZW9mIGdsb2JhbCAhPT0gXCJ1bmRlZmluZWRcIiA/IGdsb2JhbFsnXyddIDogbnVsbCk7XG5tb2R1bGUuZXhwb3J0cyA9IGZ1bmN0aW9uKG9iail7XG52YXIgX190LF9fcD0nJyxfX2o9QXJyYXkucHJvdG90eXBlLmpvaW4scHJpbnQ9ZnVuY3Rpb24oKXtfX3ArPV9fai5jYWxsKGFyZ3VtZW50cywnJyk7fTtcbndpdGgob2JqfHx7fSl7XG5fX3ArPSc8dWwgY2xhc3M9XCJ6b3Rlcm8tZ3JvdXBzXCI+XFxuXFx0JytcbigoX190PSggZ3JvdXBzTWFya3VwICkpPT1udWxsPycnOl9fdCkrXG4nXFxuPC91bD4nO1xufVxucmV0dXJuIF9fcDtcbn07XG4iLCJ2YXIgXyA9ICh0eXBlb2Ygd2luZG93ICE9PSBcInVuZGVmaW5lZFwiID8gd2luZG93WydfJ10gOiB0eXBlb2YgZ2xvYmFsICE9PSBcInVuZGVmaW5lZFwiID8gZ2xvYmFsWydfJ10gOiBudWxsKTtcbm1vZHVsZS5leHBvcnRzID0gZnVuY3Rpb24ob2JqKXtcbnZhciBfX3QsX19wPScnLF9faj1BcnJheS5wcm90b3R5cGUuam9pbixwcmludD1mdW5jdGlvbigpe19fcCs9X19qLmNhbGwoYXJndW1lbnRzLCcnKTt9O1xud2l0aChvYmp8fHt9KXtcbl9fcCs9JzxsaSBjbGFzcz1cInpvdGVyby1pdGVtIHpvdGVyby0nK1xuKChfX3Q9KCBkYXRhLml0ZW1UeXBlICkpPT1udWxsPycnOl8uZXNjYXBlKF9fdCkpK1xuJ1wiPlxcblxcdCcrXG4oKF9fdD0oIGl0ZW0uY2l0YXRpb24gKSk9PW51bGw/Jyc6X190KStcbidcXG5cXHQnO1xuIGlmIChkYXRhW1N5bWJvbC5mb3IoJ2Fic3RyYWN0Tm90ZVNob3J0JyldICYmIGRhdGFbU3ltYm9sLmZvcignYWJzdHJhY3ROb3RlU2hvcnQnKV0ubGVuZ3RoKSB7IFxuX19wKz0nXFxuICAgIFxcdDxwIGNsYXNzPVwiem90ZXJvLWFic3RyYWN0LXNob3J0XCI+XFxuICAgIFxcdFxcdCcrXG4oKF9fdD0oIGRhdGFbU3ltYm9sLmZvcignYWJzdHJhY3ROb3RlU2hvcnQnKV0gKSk9PW51bGw/Jyc6Xy5lc2NhcGUoX190KSkrXG4nXFxuICAgIFxcdFxcdDxhIGNsYXNzPVwiem90ZXJvLWFic3RyYWN0LXRvZ2dsZVwiIGFyaWEtY29udHJvbHM9XCJ6YS0nK1xuKChfX3Q9KCBpdGVtLmtleSApKT09bnVsbD8nJzpfLmVzY2FwZShfX3QpKStcbidcIj4uLi48L2E+XFxuICAgIFxcdDwvcD5cXG5cXHQnO1xuIH0gXG5fX3ArPSdcXG5cXHQnO1xuIGlmIChkYXRhLmFic3RyYWN0Tm90ZSAmJiBkYXRhLmFic3RyYWN0Tm90ZS5sZW5ndGgpIHsgXG5fX3ArPSdcXG4gICAgXFx0PHAgaWQ9XCJ6YS0nK1xuKChfX3Q9KCBpdGVtLmtleSApKT09bnVsbD8nJzpfLmVzY2FwZShfX3QpKStcbidcIiBjbGFzcz1cInpvdGVyby1hYnN0cmFjdFwiIGFyaWEtZXhwYW5kZWQ9XCJmYWxzZVwiPlxcbiAgICBcXHRcXHQnK1xuKChfX3Q9KCBkYXRhLmFic3RyYWN0Tm90ZSApKT09bnVsbD8nJzpfLmVzY2FwZShfX3QpKStcbidcXG4gICAgXFx0XFx0PGEgY2xhc3M9XCJ6b3Rlcm8tYWJzdHJhY3QtdG9nZ2xlXCI+Li4uPC9hPlxcbiAgICBcXHQ8L3A+XFxuXFx0JztcbiB9IFxuX19wKz0nXFxuICAgICcrXG4oKF9fdD0oIGNoaWxkSXRlbXNNYXJrdXAgKSk9PW51bGw/Jyc6X190KStcbidcXG48L2xpPic7XG59XG5yZXR1cm4gX19wO1xufTtcbiIsInZhciBfID0gKHR5cGVvZiB3aW5kb3cgIT09IFwidW5kZWZpbmVkXCIgPyB3aW5kb3dbJ18nXSA6IHR5cGVvZiBnbG9iYWwgIT09IFwidW5kZWZpbmVkXCIgPyBnbG9iYWxbJ18nXSA6IG51bGwpO1xubW9kdWxlLmV4cG9ydHMgPSBmdW5jdGlvbihvYmope1xudmFyIF9fdCxfX3A9JycsX19qPUFycmF5LnByb3RvdHlwZS5qb2luLHByaW50PWZ1bmN0aW9uKCl7X19wKz1fX2ouY2FsbChhcmd1bWVudHMsJycpO307XG53aXRoKG9ianx8e30pe1xuX19wKz0nPHVsIGNsYXNzPVwiem90ZXJvLWl0ZW1zXCI+XFxuXFx0JytcbigoX190PSggem90ZXJvSXRlbXMgKSk9PW51bGw/Jyc6X190KStcbidcXG48L3VsPic7XG59XG5yZXR1cm4gX19wO1xufTtcbiIsIi8qKlxuICogQXR0YWNoIGludGVyYWN0aW9uIGhhbmRsZXJzIGZvciBleHBhbmRpbmcgZ3JvdXBzIGFuZCBzaG9ydGVuZWQgYWJzdHJhY3RzLlxuICogQHBhcmFtIHtIVE1MRWxlbWVudH0gY29udGFpbmVyIC0gQSB0b3AtbGV2ZWwgRE9NIGVsZW1lbnQgKGUuZy4gY29udGFpbmVyKSB0aGF0IGNvbnRhaW5zIFpvdGVybyBpdGVtcy5cbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIGFkZEhhbmRsZXJzKGNvbnRhaW5lcikge1xuXHRjb250YWluZXIuYWRkRXZlbnRMaXN0ZW5lcignY2xpY2snLCBmdW5jdGlvbihldikge1xuXHRcdGlmKGV2LnRhcmdldC5jbGFzc0xpc3QuY29udGFpbnMoJ3pvdGVyby1hYnN0cmFjdC10b2dnbGUnKSkge1xuXHRcdFx0bGV0IGFic3RyYWN0U2hvcnRFbCA9IGV2LnRhcmdldC5wYXJlbnROb2RlLnBhcmVudE5vZGUucXVlcnlTZWxlY3RvcignLnpvdGVyby1hYnN0cmFjdC1zaG9ydCcpO1xuXHRcdFx0bGV0IGFic3RyYWN0RWwgPSBldi50YXJnZXQucGFyZW50Tm9kZS5wYXJlbnROb2RlLnF1ZXJ5U2VsZWN0b3IoJy56b3Rlcm8tYWJzdHJhY3QnKTtcblx0XHRcdGxldCBleHBhbmRlZCA9IGFic3RyYWN0U2hvcnRFbC5jbGFzc0xpc3QudG9nZ2xlKCd6b3Rlcm8tYWJzdHJhY3QtZXhwYW5kZWQnKTtcblx0XHRcdGFic3RyYWN0RWwuc2V0QXR0cmlidXRlKCdhcmlhLWV4cGFuZGVkJywgZXhwYW5kZWQgPyAndHJ1ZScgOiAnZmFsc2UnKTtcblx0XHR9XG5cdFx0aWYoZXYudGFyZ2V0LmNsYXNzTGlzdC5jb250YWlucygnem90ZXJvLWdyb3VwLXRpdGxlJykpIHtcblx0XHRcdGxldCBncm91cEVsID0gZXYudGFyZ2V0LnBhcmVudE5vZGU7XG5cdFx0XHRsZXQgZXhwYW5kZWQgPSBncm91cEVsLmNsYXNzTGlzdC50b2dnbGUoJ3pvdGVyby1ncm91cC1leHBhbmRlZCcpO1xuXHRcdFx0Z3JvdXBFbC5zZXRBdHRyaWJ1dGUoJ2FyaWEtZXhwYW5kZWQnLCBleHBhbmRlZCA/ICd0cnVlJyA6ICdmYWxzZScpO1xuXHRcdH1cblx0fSk7XG59XG5cbi8qKlxuICogVG9nZ2xlIENTUyBjbGFzcyB0aGF0IGdpdmVzIGEgdmlzdWFsIGxvYWRpbmcgZmVlZGJhY2suIE9wdGlvbmFsbHkgYWxsb3dzIHRvIGV4cGxpY2V0bHkgc3BlY2lmeVxuICogd2hldGhlciB0byBkaXNwbGF5IG9yIGhpZGUgdmlzdWFsIGZlZWRiYWNrLlxuICogQHBhcmFtICB7SFRNTEVsZW1lbnR9IGNvbnRhaW5lciAtIEEgRE9NIGVsZW1lbnQgdG8gd2hpY2ggdmlzdWFsIGZlZWRiYWNrIGNsYXNzIHNob3VsZCBiZSBhdHRhY2hlZFxuICogQHBhcmFtICB7Ym9vbGVhbn0gW2FjdGl2YXRlXSAgICAtIEV4cGxpY2l0ZWx5IGluZGljYXRlIHdoZXRoZXIgdG8gYWRkIG9yIHJlbW92ZSB2aXN1YWwgZmVlZGJhY2tcbiAqL1xuZXhwb3J0IGZ1bmN0aW9uIHRvZ2dsZVNwaW5uZXIoY29udGFpbmVyLCBhY3RpdmF0ZSkge1xuXHR2YXIgbWV0aG9kID0gYWN0aXZhdGUgPT09IG51bGwgPyBjb250YWluZXIuY2xhc3NMaXN0LnRvZ2dsZSA6IGFjdGl2YXRlID8gY29udGFpbmVyLmNsYXNzTGlzdC5hZGQgOiBjb250YWluZXIuY2xhc3NMaXN0LnJlbW92ZTtcblx0bWV0aG9kLmNhbGwoY29udGFpbmVyLmNsYXNzTGlzdCwgJ3pvdGVyby1sb2FkaW5nJyk7XG59XG5cbiJdfQ==
