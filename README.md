@@ -98,17 +98,26 @@ Builds
 
 We offer minified **.min.js** and **.min.css** builds for use in production and **.js** and **.css** builds to use for debug/development. Furthermore we offer following variants of incremental size:
 
-**zotero-publications.min.js** (~4KB zipped)
+**zotero-publications.min.js** (~6KB zipped)
 This is the smallest build containing only Zotero Publication code for very modern browsers. To use this build **you need to include [underscore.js](http://underscorejs.org/) or [lodash.js](https://lodash.com/) manually**. Furthermore this build **will only work in very recent browsers**, i.e. latest Firefox and Chrome/Chromium.
 
-**zotero-publications-compat.min.js** (~8KB zipped)
+**zotero-publications-compat.min.js** (~14KB zipped)
 This build contains only Zotero Publications and few polyfills to make it work in all common browers. To use this build **you need to include [underscore.js](http://underscorejs.org/) or [lodash.js](https://lodash.com/) manually**.
 
-**zotero-publications.lodash.min.js** (~22KB zipped)
-This build contains only Zotero Publications and lodash. Because it lacks polyfills it **will only work in very recent browsers**, i.e. latest Firefox and Chrome/Chromium.
+**zotero-publications.lodash.min.js** (~24KB zipped)
+This build contains only Zotero Publications and lodash. Because it lacks polyfills it **will only work in very recent browsers**, see see compatiblity table below.
 
-**dist/zotero-publications.lodash-compat.min.js** (~26KB zipped)
+**dist/zotero-publications.lodash-compat.min.js** (~32KB zipped)
 This build contains Zotero Publications, lodash and polyfills. **This is the safest build to use**.
+
+Browser Compatibility
+=====================
+
+Build | ![Chrome](https://raw.github.com/alrra/browser-logos/master/chrome/chrome_48x48.png) | ![EDGE](https://raw.github.com/alrra/browser-logos/master/edge/edge_48x48.png) | ![Firefox](https://raw.github.com/alrra/browser-logos/master/firefox/firefox_48x48.png) | ![IE](https://raw.github.com/alrra/browser-logos/master/internet-explorer/internet-explorer_48x48.png) | ![Opera](https://raw.github.com/alrra/browser-logos/master/opera/opera_48x48.png) | ![Safari](https://raw.github.com/alrra/browser-logos/master/safari/safari_48x48.png)
+--- | --- | --- | --- | --- | --- | --- |
+Modern | Latest ✔ | ✗ | Latest ✔ | ✗ | Latest ✔ | ✗ |
+Compat | Latest ✔ | Latest ✔ | Latest ✔ | 10+ ✔ | 6.1+ ✔ |
+
 
 Development & Contributing
 ===========
