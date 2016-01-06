@@ -32,7 +32,6 @@ var insert = require('gulp-insert');
 var fs = require('fs');
 var promisePF = fs.readFileSync('./bower_components/es6-promise/promise.js', "utf8");
 var fetchPF = fs.readFileSync('./bower_components/fetch/fetch.js', "utf8");
-var symbolPF = fs.readFileSync('bower_components/es-symbol/dist/symbol.js', "utf8");
 var watch;
 var buildDir;
 
@@ -114,9 +113,6 @@ gulp.task('multi-js', function() {
 			.pipe(gulp.dest(buildDir)),
 		bundleShare(bnodepsCompat)
 			.pipe(rename({ suffix: '-compat' }))
-			//.pipe(insert.prepend(symbolPF))
-			//.pipe(insert.prepend(fetchPF))
-			//.pipe(insert.prepend(promisePF))
 			.pipe(gulp.dest(buildDir))
 			.pipe(uglify())
 			.pipe(rename({ extname: '.min.js' }))
@@ -127,9 +123,6 @@ gulp.task('multi-js', function() {
 			.pipe(gulp.dest(buildDir)),
 		bundleShare(blodashComapt, 'lodash')
 			.pipe(rename({ suffix: '-compat' }))
-			//.pipe(insert.prepend(symbolPF))
-			//.pipe(insert.prepend(fetchPF))
-			//.pipe(insert.prepend(promisePF))
 			.pipe(gulp.dest(buildDir))
 			.pipe(uglify())
 			.pipe(rename({ extname: '.min.js' }))
