@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import {
-	renderPublications
+	ZoteroRenderer
 } from './render.js';
 import {
 	fetchUntilExhausted
@@ -19,8 +19,10 @@ import {
 export function ZoteroPublications() {
 	if(arguments.length <= 1) {
 		this.config = _.extend({}, this.defaults, arguments ? arguments[0] : {});
+		this.renderer = new ZoteroRenderer(this.config);
 	} else if(arguments.length <= 3) {
 		this.config = _.extend({}, this.defaults, arguments[2]);
+		this.renderer = new ZoteroRenderer(this.config);
 		return this.render(arguments[0], arguments[1]);
 	} else {
 		return Promise.reject(
@@ -40,6 +42,7 @@ ZoteroPublications.prototype.defaults = {
 	include: ['data', 'citation'],
 	shortenedAbstractLenght: 250,
 	group: false,
+	alwaysUseCitationStyle: false,
 	expand: 'all'
 };
 
@@ -87,7 +90,7 @@ ZoteroPublications.prototype.render = function(endpointOrData, container) {
 		}
 		if(endpointOrData instanceof ZoteroData) {
 			let data = endpointOrData;
-			renderPublications(container, data);
+			this.renderer.renderPublications(container, data, this.config);
 			resolve();
 		} else if(typeof endpointOrData === 'string') {
 			let endpoint = endpointOrData;
@@ -95,9 +98,9 @@ ZoteroPublications.prototype.render = function(endpointOrData, container) {
 			let promise = this.get(endpoint);
 			promise.then(function(data) {
 				toggleSpinner(container, false);
-				renderPublications(container, data);
+				this.renderer.renderPublications(container, data, this.config);
 				resolve();
-			});
+			}.bind(this));
 			promise.catch(function() {
 				toggleSpinner(container, false);
 				reject(arguments[0]);

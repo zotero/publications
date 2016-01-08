@@ -1,3 +1,6 @@
 <ul class="zotero-items">
-	<%= zoteroItems %>
+	<% for (var item of items) { %>
+		<%= renderer.renderItem(item) %>
+	<% } %>
 </ul>
+<%= renderer.renderBranding() %>

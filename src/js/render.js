@@ -2,16 +2,20 @@ import itemTpl from './tpl/item.tpl';
 import itemsTpl from './tpl/items.tpl';
 import groupTpl from './tpl/group.tpl';
 import groupsTpl from './tpl/groups.tpl';
-import childItemsTpl from './tpl/child-items.tpl';
-import childItemTpl from './tpl/child-item.tpl';
+// import childItemsTpl from './tpl/child-items.tpl';
+// import childItemTpl from './tpl/child-item.tpl';
 import brandingTpl from './tpl/branding.tpl';
 import {
 	addHandlers
 } from './ui.js';
 import {
-	CHILD_ITEMS_SYMBOL,
-	GROUP_EXPANDED_SUMBOL
+	GROUP_EXPANDED_SUMBOL,
+	GROUP_TITLE
 } from './data.js';
+
+export function ZoteroRenderer(config) {
+	this.config = config;
+}
 
 /**
  * Render single Zotero item
@@ -19,61 +23,55 @@ import {
  * @param  {String} childItemsMarkup - Rendered markup of a list of Zotero child items
  * @return {String}                  - Rendered markup of a Zotero item
  */
-export function renderItem(zoteroItem, childItemsMarkup) {
+ZoteroRenderer.prototype.renderItem = function(zoteroItem) {
 	return itemTpl({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'childItemsMarkup': childItemsMarkup || ''
+		'renderer': this
 	});
-}
+};
 
 /**
  * Render a list of Zotero items
  * @param  {ZoteroData|Object[]} zoteroItems - List of Zotero items
  * @return {String}                          - Rendered markup of a list of Zotero items
  */
-export function renderItems(zoteroItems) {
-	let itemsMarkup = '';
-
-	for (let item of zoteroItems) {
-		let childItemsMarkup = renderChildItems(item);
-		itemsMarkup += renderItem(item, childItemsMarkup);
-	}
-
+ZoteroRenderer.prototype.renderItems = function(zoteroItems) {
 	return itemsTpl({
-		'zoteroItems': itemsMarkup
+		'items': zoteroItems,
+		'renderer': this
 	});
-}
+};
 
 /**
  * Render single Zotero child item
  * @param  {Object[]} zoteroChildItem - List of Zotero child items
  * @return {String}                   - Rendered markup of a Zotero child item
  */
-export function renderChildItem(zoteroChildItem) {
-	return childItemTpl({
-		'item': zoteroChildItem
-	});
-}
+// ZoteroRenderer.prototype.renderChildItem = function(zoteroChildItem) {
+// 	return childItemTpl({
+// 		'item': zoteroChildItem
+// 	});
+// };
 
 /**
  * Render list of Zotero child items
  * @param  {Object} zoteroItem - Parent Zotero item
  * @return {String}            - Rendered markup of a list of Zotero child items
  */
-export function renderChildItems(zoteroItem) {
-	let childItemsMarkup = '';
+// ZoteroRenderer.prototype.renderChildItems = function(zoteroItem) {
+// 	let childItemsMarkup = '';
 
-	if(zoteroItem[CHILD_ITEMS_SYMBOL] && zoteroItem[CHILD_ITEMS_SYMBOL].length > 0) {
-		for (let childItem of zoteroItem[CHILD_ITEMS_SYMBOL]) {
-			childItemsMarkup += renderChildItem(childItem);
-		}
-	}
+// 	if(zoteroItem[CHILD_ITEMS_SYMBOL] && zoteroItem[CHILD_ITEMS_SYMBOL].length > 0) {
+// 		for (let childItem of zoteroItem[CHILD_ITEMS_SYMBOL]) {
+// 			childItemsMarkup += this.renderChildItem(childItem);
+// 		}
+// 	}
 
-	return childItemsTpl({
-		'childItemsMarkup': childItemsMarkup
-	});
-}
+// 	return childItemsTpl({
+// 		'childItemsMarkup': childItemsMarkup
+// 	});
+// };
 
 /**
  * Render an expandable group of Zotero items
@@ -82,13 +80,15 @@ export function renderChildItems(zoteroItem) {
  * @param  {String} itemsMarkup - Rendered markup of underlying list of Zotero items
  * @return {String}             - Rendered markup of a group
  */
-export function renderGroup(title, expand, itemsMarkup) {
+ZoteroRenderer.prototype.renderGroup = function(items) {
+	console.log(items);
 	return groupTpl({
-		'title': title,
-		'itemsMarkup': itemsMarkup,
-		'expand': expand
+		'title': items[GROUP_TITLE],
+		'items': items,
+		'expand': items[GROUP_EXPANDED_SUMBOL],
+		'renderer': this
 	});
-}
+};
 
 /**
  * Render a list of groups of Zotero items
@@ -96,34 +96,45 @@ export function renderGroup(title, expand, itemsMarkup) {
  *                                    each value is an array Zotero items
  * @return {String}                 - Rendered markup of a list of groups
  */
-export function renderGrouped(data) {
-	let groupsMarkup = '';
+ZoteroRenderer.prototype.renderGroups = function(data) {
+	// let groupsMarkup = '';
 
-	for(let [ groupTitle, group ] of data) {
-		let itemsMarkup = renderItems(group);
-		let expand = group[GROUP_EXPANDED_SUMBOL];
-		groupsMarkup += renderGroup(groupTitle, expand, itemsMarkup);
-	}
+	// for(let [ groupTitle, group ] of data) {
+	// 	let itemsMarkup = this.renderItems(group);
+	// 	let expand = group[GROUP_EXPANDED_SUMBOL];
+	// 	groupsMarkup += this.renderGroup(groupTitle, expand, itemsMarkup);
+	// }
 
+	console.warn(data);
+	
 	return groupsTpl({
-		'groupsMarkup': groupsMarkup
+		'groups': data,
+		'renderer': this
 	});
-}
+};
+
+/**
+ * [renderBranding description]
+ * @return {[type]} [description]
+ */
+ZoteroRenderer.prototype.renderBranding = function() {
+	return brandingTpl();
+};
 
 /**
  * Render Zotero publications into a DOM element
  * @param  {HTMLElement} container - DOM element of which contents is to be replaced
  * @param  {ZoteroData} data       - Source of publications to be rendered
  */
-export function renderPublications(container, data) {
+ZoteroRenderer.prototype.renderPublications = function(container, data) {
 	var markup;
 
 	if(data.grouped > 0) {
-		markup = renderGrouped(data) + brandingTpl();
+		markup = this.renderGroups(data);
 	} else {
-		markup = renderItems(data) + brandingTpl();
+		markup = this.renderItems(data);
 	}
 
 	container.innerHTML = markup;
 	addHandlers(container);
-}
+};

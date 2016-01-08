@@ -1,10 +1,15 @@
 require('es6-symbol/implement');
 import _ from 'lodash';
 import {
+	formatDate
+} from './utils.js';
+import {
 	CHILD_ITEMS_SYMBOL
 } from './data.js';
 
 export const ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
+export const AUTHORS_SYMBOL = Symbol.for('authors');
+export const FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
 
 /**
  * Process raw API response
@@ -26,6 +31,12 @@ export function processResponse(response, config) {
 					Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' '))
 				);
 				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
+			}
+			if(item.data && item.data.creators) {
+				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => author.firstName + ' ' + author.lastName).join(' & ');
+			}
+			if(item.data && item.meta.parsedDate) {
+				item.data[FORMATTED_DATE_SYMBOL] = formatDate(item.meta.parsedDate);
 			}
 			if(item.data && item.data.parentItem) {
 				response.splice(i, 1);

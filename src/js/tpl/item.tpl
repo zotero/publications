@@ -1,16 +1,41 @@
 <li class="zotero-item zotero-<%- data.itemType %>">
-	<%= item.citation %>
-	<% if (data[Symbol.for('abstractNoteShort')] && data[Symbol.for('abstractNoteShort')].length) { %>
-    	<p class="zotero-abstract-short">
-    		<%- data[Symbol.for('abstractNoteShort')] %>
-    		<a class="zotero-abstract-toggle" aria-controls="za-<%- item.key %>">...</a>
-    	</p>
-	<% } %>
-	<% if (data.abstractNote && data.abstractNote.length) { %>
-    	<p id="za-<%- item.key %>" class="zotero-abstract" aria-expanded="false">
-    		<%- data.abstractNote %>
-    		<a class="zotero-abstract-toggle">...</a>
-    	</p>
-	<% } %>
-    <%= childItemsMarkup %>
+    <% if (renderer.config.alwaysUseCitationStyle) { %>
+        <a class="zotero-item-title">
+            <%= item.citation %>
+        </a>
+    <% } else { %>
+        <% if (data.itemType == 'book') { %>
+            <a class="zotero-item-title">
+                <%- data.title %>
+            </a>
+            <p>
+                By <%- data[Symbol.for('authors')] %> (<%- data[Symbol.for('year')] %>)
+            </p>
+        <% } else if (data.itemType == 'journalArticle') { %>
+            <a class="zotero-item-title">
+                <%- data.title %>
+            </a>
+            <p>
+                <%- data.journalAbbreviation %> (<%- data[Symbol.for('year')] %>)
+            </p>
+        <% } else if (data.itemType == 'newspaperArticle' || data.itemType == 'magazineArticle') { %>
+            <a class="zotero-item-title">
+                <%- data.title %>
+            </a>
+            <p>
+                <%- data.publicationTitle %> (<%- data[Symbol.for('year')] %>)
+            </p>
+        <% } else if (data.itemType == 'blogPost') { %>
+            <a class="zotero-item-title">
+                <%- data.title %>
+            </a>
+            <p>
+                <%- data.blogTitle %> (<%- data[Symbol.for('year')] %>)
+            </p>
+        <% } else { %>
+            <a class="zotero-item-title">
+                <%= item.citation %>
+            </a>
+        <% } %>
+    <% } %>
 </li>
