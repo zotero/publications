@@ -1,3 +1,6 @@
 <ul class="zotero-groups">
-	<%= groupsMarkup %>
+	<% for (var group of groups) { %>
+		<%= renderer.renderGroup(group) %>
+	<% } %>
 </ul>
+<%= renderer.renderBranding() %>

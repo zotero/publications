@@ -9,6 +9,7 @@ export const GROUPED_BY_TYPE = 1;
 export const GROUPED_BY_COLLECTION = 2;
 export const CHILD_ITEMS_SYMBOL = Symbol.for('childItems');
 export const GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
+export const GROUP_TITLE = Symbol.for('groupTitle');
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
@@ -61,15 +62,17 @@ ZoteroData.prototype.groupByCollections = function() {
  * For ungrouped data each interation returns single Zotero item
  * For grouped data each interationr returns an a pair of group title and an Array of Zotero items
  */
-ZoteroData.prototype[Symbol.iterator] = function() {
+ZoteroData.prototype[Symbol.iterator] = function () {
 	let i = 0;
 	if(this.grouped > 0) {
 		let keys = Object.keys(this.data);
 		return {
 			next: function() {
+				let group = this.data[keys[i]];
+				group[GROUP_TITLE] = keys[i];
 				return {
-					value: i < keys.length ? [keys[i], this.data[keys[i]]] : null,
-					done: i++ >= keys.length
+					value: group,
+					done: ++i === keys.length
 				};
 			}.bind(this)
 		};
