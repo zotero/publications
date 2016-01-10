@@ -7,7 +7,9 @@ import {
 export const GROUPED_NONE = 0;
 export const GROUPED_BY_TYPE = 1;
 export const GROUPED_BY_COLLECTION = 2;
-export const CHILD_ITEMS_SYMBOL = Symbol.for('childItems');
+export const CHILD_NOTES = Symbol.for('childNotes');
+export const CHILD_ATTACHMENTS = Symbol.for('childAttachments');
+export const CHILD_OTHER = Symbol.for('childOther');
 export const GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
 export const GROUP_TITLE = Symbol.for('groupTitle');
 

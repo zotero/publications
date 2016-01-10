@@ -4,7 +4,9 @@ import {
 	formatDate
 } from './utils.js';
 import {
-	CHILD_ITEMS_SYMBOL
+	CHILD_NOTES,
+	CHILD_ATTACHMENTS,
+	CHILD_OTHER
 } from './data.js';
 
 export const ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
@@ -51,10 +53,22 @@ export function processResponse(response, config) {
 				continue;
 			}
 
-			if(!index[item.data.parentItem][CHILD_ITEMS_SYMBOL]) {
-				index[item.data.parentItem][CHILD_ITEMS_SYMBOL] = [];
+			if(item.data.itemType === 'note') {
+				if(!index[item.data.parentItem][CHILD_NOTES]) {
+					index[item.data.parentItem][CHILD_NOTES] = [];
+				}
+				index[item.data.parentItem][CHILD_NOTES].push(item);
+			} else if(item.data.itemType === 'attachment') {
+				if(!index[item.data.parentItem][CHILD_ATTACHMENTS]) {
+					index[item.data.parentItem][CHILD_ATTACHMENTS] = [];
+				}
+				index[item.data.parentItem][CHILD_ATTACHMENTS].push(item);
+			} else {
+				if(!index[item.data.parentItem][CHILD_OTHER]) {
+					index[item.data.parentItem][CHILD_OTHER] = [];
+				}
+				index[item.data.parentItem][CHILD_OTHER].push(item);
 			}
-			index[item.data.parentItem][CHILD_ITEMS_SYMBOL].push(item);
 		}
 	}
 	return response;
