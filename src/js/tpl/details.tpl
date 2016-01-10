@@ -18,7 +18,7 @@
 
 
 <% if (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) { %>
-	<h3>Notes</h2>
+	<h3>Notes</h3>
 	<ul>
 		<% for(var childItem of item[Symbol.for('childNotes')]) { %>
 			<li>
@@ -31,7 +31,7 @@
 <% } %>
 
 <% if (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length) { %>
-	<h3>Attachments</h2>
+	<h3>Attachments</h3>
 	<ul>
 		<% for(var childItem of item[Symbol.for('childAttachments')]) { %>
 			<li>
