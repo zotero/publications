@@ -1,3 +1,8 @@
+<div>
+	<a data-trigger="details-exit">
+		Back
+	</a>
+</div>
 <h2 class="zotero-heading">
 	<%- data.title %>
 </h2>

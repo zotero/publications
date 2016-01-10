@@ -22,3 +22,12 @@ export function formatDate(isoDate) {
 
 	return date;
 }
+
+export function formatCategoryName(name) {
+	name = name.replace(/(?! )[A-Z]/g, ' $&');
+	return name.charAt(0).toUpperCase() + name.slice(1);
+}
+
+export function closest(el, fn) {
+    return el && (fn(el) ? el : closest(el.parentNode, fn));
+}

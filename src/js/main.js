@@ -8,9 +8,6 @@ import {
 import {
 	ZoteroData
 } from './data.js';
-import {
-	toggleSpinner
-} from './ui.js';
 
 /**
  * Application entry point
@@ -19,10 +16,8 @@ import {
 export function ZoteroPublications() {
 	if(arguments.length <= 1) {
 		this.config = _.extend({}, this.defaults, arguments ? arguments[0] : {});
-		this.renderer = new ZoteroRenderer(this.config);
 	} else if(arguments.length <= 3) {
 		this.config = _.extend({}, this.defaults, arguments[2]);
-		this.renderer = new ZoteroRenderer(this.config);
 		return this.render(arguments[0], arguments[1]);
 	} else {
 		return Promise.reject(
@@ -84,25 +79,26 @@ ZoteroPublications.prototype.get = function(endpoint) {
  * @return {Promise}                          - Resolved when rendered or rejected on error.
  */
 ZoteroPublications.prototype.render = function(endpointOrData, container) {
+	this.renderer = new ZoteroRenderer(container, this.config);
 	return new Promise(function(resolve, reject) {
 		if(!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
 		if(endpointOrData instanceof ZoteroData) {
 			let data = endpointOrData;
-			this.renderer.renderPublications(container, data, this.config);
+			this.renderer.displayPublications(data, this.config);
 			resolve();
 		} else if(typeof endpointOrData === 'string') {
 			let endpoint = endpointOrData;
-			toggleSpinner(container, true);
+			// toggleSpinner(container, true);
 			let promise = this.get(endpoint);
 			promise.then(function(data) {
-				toggleSpinner(container, false);
-				this.renderer.renderPublications(container, data, this.config);
+				// toggleSpinner(container, false);
+				this.renderer.displayPublications(data, this.config);
 				resolve();
 			}.bind(this));
 			promise.catch(function() {
-				toggleSpinner(container, false);
+				// toggleSpinner(container, false);
 				reject(arguments[0]);
 			});
 		} else {
