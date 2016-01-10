@@ -9,7 +9,7 @@ html, body {
 }
 
 .zotero-item {
-	border: 1px solid @primaryColor;
+	border: 1px solid $primary-color;
 	box-sizing: border-box;
 	padding: 1em;
 	width: 90%;
@@ -29,7 +29,7 @@ html, body {
 }
 
 .zotero-abstract-toggle {
-	color: @accentColor;
+	color: $accent-color;
 	cursor: pointer;
 }
 
