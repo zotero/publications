@@ -20,7 +20,7 @@ var symlink = require('gulp-symlink');
 var jstify = require('jstify');
 var shim = require('browserify-shim');
 var sourcemaps = require('gulp-sourcemaps');
-var less = require('gulp-less');
+var sass = require('gulp-sass');
 var autoprefixer = require('gulp-autoprefixer');
 var cssminify = require('gulp-minify-css');
 var connect = require('gulp-connect');
@@ -130,10 +130,10 @@ gulp.task('multi-js', function() {
 	);
 });
 
-gulp.task('less', function() {
-	gulp.src('./src/less/zotero-publications.less')
+gulp.task('scss', function() {
+	gulp.src('./src/scss/zotero-publications.scss')
 	.pipe(gulpif(watch, sourcemaps.init()))
-	.pipe(less().on('error', function(msg) {
+	.pipe(sass().on('error', function(msg) {
 		gutil.log(gutil.colors.red(msg));
 	}))
 	.pipe(autoprefixer({
@@ -168,7 +168,7 @@ gulp.task('setup-dev', function(done) {
 });
 
 gulp.task('build', function(done) {
-	runSequence('setup-dist', ['multi-js', 'less'], done);
+	runSequence('setup-dist', ['multi-js', 'scss'], done);
 });
 
 gulp.task('dev', function(done) {
@@ -178,8 +178,8 @@ gulp.task('dev', function(done) {
 		livereload: true
 	});
 
-	gulp.watch('./src/less/*.less', ['less']);
-	runSequence('setup-dev', ['demo', 'js', 'less'], done);
+	gulp.watch('./src/scss/*.scss', ['sass']);
+	runSequence('setup-dev', ['demo', 'js', 'scss'], done);
 });
 
 gulp.task('default', ['setup-dev'], function() {
