@@ -14,3 +14,31 @@
 		<%- data.abstractNote %>
 	</p>
 <% } %>
+
+
+
+<% if (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) { %>
+	<h3>Notes</h2>
+	<ul>
+		<% for(var childItem of item[Symbol.for('childNotes')]) { %>
+			<li>
+				<a>
+					<%= childItem.data.note %>
+				</a>
+			</li>
+		<% } %>
+	</ul>
+<% } %>
+
+<% if (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length) { %>
+	<h3>Attachments</h2>
+	<ul>
+		<% for(var childItem of item[Symbol.for('childAttachments')]) { %>
+			<li>
+				<a>
+					<%- childItem.data.title %>
+				</a>
+			</li>
+		<% } %>
+	</ul>
+<% } %>
