@@ -178,7 +178,7 @@ gulp.task('dev', function(done) {
 		livereload: true
 	});
 
-	gulp.watch('./src/scss/*.scss', ['sass']);
+	gulp.watch('./src/scss/*.scss', ['scss']);
 	runSequence('setup-dev', ['demo', 'js', 'scss'], done);
 });
 
