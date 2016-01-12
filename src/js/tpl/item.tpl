@@ -1,8 +1,9 @@
 <li class="zotero-item zotero-<%- data.itemType %>">
     <% if (renderer.config.alwaysUseCitationStyle) { %>
-        <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
+        <h3 class="zotero-item-title">
             <%= item.citation %>
-        </a>
+        </h3>
+        <div><a data-trigger="details" data-item="<%- item.key %>">Details</a></div>
     <% } else { %>
         <% if (data.itemType == 'book') { %>
             <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">

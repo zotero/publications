@@ -3,4 +3,3 @@
 		<%= renderer.renderItem(item) %>
 	<% } %>
 </ul>
-<%= renderer.renderBranding() %>
