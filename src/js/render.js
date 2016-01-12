@@ -1,10 +1,9 @@
-import _ from 'lodash';
-import itemTpl from './tpl/item.tpl';
-import itemsTpl from './tpl/items.tpl';
-import groupTpl from './tpl/group.tpl';
-import groupsTpl from './tpl/groups.tpl';
-import brandingTpl from './tpl/branding.tpl';
-import detailsTpl from './tpl/details.tpl';
+import itemTpl from './tpl/partial/item.tpl';
+import itemsTpl from './tpl/partial/items.tpl';
+import groupTpl from './tpl/partial/group.tpl';
+import brandingTpl from './tpl/partial/branding.tpl';
+import groupViewTpl from './tpl/group-view.tpl';
+import plainViewTpl from './tpl/plain-view.tpl';
 import {
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE
@@ -67,9 +66,20 @@ ZoteroRenderer.prototype.renderGroup = function(items) {
  *                                    each value is an array Zotero items
  * @return {String}                 - Rendered markup of a list of groups
  */
-ZoteroRenderer.prototype.renderGroups = function(data) {
-	return groupsTpl({
+ZoteroRenderer.prototype.renderGroupView = function(data) {
+	return groupViewTpl({
 		'groups': data,
+		'renderer': this
+	});
+};
+
+/**
+ * [renderPlainView description]
+ * @return {[type]} [description]
+ */
+ZoteroRenderer.prototype.renderPlainView = function(data) {
+	return plainViewTpl({
+		'items': data,
 		'renderer': this
 	});
 };
@@ -83,28 +93,6 @@ ZoteroRenderer.prototype.renderBranding = function() {
 };
 
 /**
- * Render Zotero item details
- * @param  {[type]} item [description]
- * @return {[type]}      [description]
- */
-ZoteroRenderer.prototype.renderDetails = function(item) {
-	return detailsTpl({
-		'item': item,
-		'data': item.data,
-		'renderer': this
-	});
-};
-
-/**
- * Render Zotero item details into a DOM element
- * @param  {[type]} item [description]
- * @return {[type]}      [description]
- */
-ZoteroRenderer.prototype.displayDetails = function(item) {
-	this.container.innerHTML = this.renderDetails(item);
-};
-
-/**
  * Render Zotero publications into a DOM element
  * @param  {HTMLElement} container - DOM element of which contents is to be replaced
  * @param  {ZoteroData} data       - Source of publications to be rendered
@@ -113,9 +101,9 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
 	var markup;
 
 	if(data.grouped > 0) {
-		markup = this.renderGroups(data);
+		markup = this.renderGroupView(data);
 	} else {
-		markup = this.renderItems(data);
+		markup = this.renderItemView(data);
 	}
 
 	this.data = data;
@@ -132,29 +120,16 @@ ZoteroRenderer.prototype.addHandlers = function() {
 	this.container.addEventListener('click', function(ev) {
 		var target;
 
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'expand-group');
-
-		if(target) {
-			let groupEl = ev.target.parentNode;
-			let expanded = groupEl.classList.toggle('zotero-group-expanded');
-			groupEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-			return;
-		}
-
 		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'details');
 		if(target) {
-			let key = target.dataset.item;
-			let item = _.where(this.data.raw, {'key': key})[0];
-			this.displayDetails(item);
+			let itemEl = closest(target, el => el.dataset && el.dataset.item);
+			let detailsEl = itemEl.querySelector('.zotero-details');
+			if(detailsEl) {
+				detailsEl.classList.toggle('zotero-details-show');
+			}
 			return;
 		}
-
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'details-exit');
-		if(target) {
-			this.container.innerHTML = this.previous;
-			return;
-		}
-	}.bind(this));
+	});
 };
 
 /**
