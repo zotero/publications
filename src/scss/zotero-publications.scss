@@ -107,4 +107,12 @@ $font-size-h3: 8em / 7;
     font-weight: normal;
     margin: 0;
   }
+
+  &-details {
+    display: none;
+
+    &-show {
+      display: block;
+    }
+  }
 }
