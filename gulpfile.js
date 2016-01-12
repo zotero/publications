@@ -131,19 +131,32 @@ gulp.task('multi-js', function() {
 });
 
 gulp.task('scss', function() {
-	gulp.src('./src/scss/zotero-publications.scss')
-	.pipe(gulpif(watch, sourcemaps.init()))
-	.pipe(sass().on('error', function(msg) {
-		gutil.log(gutil.colors.red(msg));
-	}))
-	.pipe(autoprefixer({
-		browsers: ['last 2 versions']
-	}))
-	.pipe(gulpif(watch, sourcemaps.write()))
-	.pipe(gulp.dest(buildDir))
-	.pipe(gulpif(!watch, rename({ extname: '.min.css' })))
-	.pipe(gulpif(!watch, cssminify()))
-	.pipe(gulpif(!watch, gulp.dest(buildDir)));
+	return merge(
+		gulp.src('./src/scss/zotero-publications.scss')
+			.pipe(gulpif(watch, sourcemaps.init()))
+			.pipe(sass().on('error', function(msg) {
+				gutil.log(gutil.colors.red(msg));
+			}))
+			.pipe(autoprefixer({
+				browsers: ['last 2 versions']
+			}))
+			.pipe(gulpif(watch, sourcemaps.write()))
+			.pipe(gulp.dest(buildDir))
+			.pipe(gulpif(!watch, rename({ extname: '.min.css' })))
+			.pipe(gulpif(!watch, cssminify()))
+			.pipe(gulpif(!watch, gulp.dest(buildDir))),
+		gulp.src('./src/scss/demo.scss')
+			.pipe(gulpif(watch, sourcemaps.init()))
+			.pipe(sass().on('error', function(msg) {
+				gutil.log(gutil.colors.red(msg));
+			}))
+			.pipe(autoprefixer({
+				browsers: ['last 2 versions']
+			}))
+			.pipe(gulpif(watch, sourcemaps.write()))
+			.pipe(gulp.dest('./demo/'))
+			.pipe(gulp.dest('./tmp/'))
+	);
 });
 
 gulp.task('demo', function() {
