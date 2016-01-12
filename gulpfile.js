@@ -84,13 +84,13 @@ function getBrowserify(debug, entry, shimConfig) {
 			['browserify-shim', shimConfig]
 		]
 	});
-	
+
 	return b;
 }
 
 gulp.task('js', function() {
 	let b = getBrowserify(watch, 'main-modern', shimConfigs.nodeps);
-	
+
 	if(watch) {
     	b = watchify(b);
     	b.on('update', function() {
@@ -154,15 +154,14 @@ gulp.task('scss', function() {
 				browsers: ['last 2 versions']
 			}))
 			.pipe(gulpif(watch, sourcemaps.write()))
-			.pipe(gulp.dest('./demo/'))
 			.pipe(gulp.dest('./tmp/'))
 	);
 });
 
 gulp.task('demo', function() {
 	return merge(
-		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html'])
-			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html'])),
+		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html', 'src/demo/local-templated.html'])
+			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html', 'tmp/local-templated.html'])),
 		gulp.src('bower_components/lodash/lodash.js')
 			.pipe(symlink('tmp/lodash.js'))
 		);
