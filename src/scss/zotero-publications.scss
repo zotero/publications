@@ -115,4 +115,22 @@ $font-size-h3: 8em / 7;
       display: block;
     }
   }
+
+  &-loading {
+    display: block;
+    position: relative;
+    
+    &:after {
+      bottom: 0;
+      content: "Loading...";
+      display: block;
+      height: 100%;
+      left: 0;
+      position: absolute;
+      right: 0;
+      text-align: center;
+      top: 0;
+      width: 100%;
+    }
+  }
 }

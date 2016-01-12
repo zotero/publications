@@ -16,6 +16,7 @@ import {
 export function ZoteroRenderer(container, config) {
 	this.container = container;
 	this.config = config;
+	this.toggleSpinner(this.container, true);
 }
 
 /**
@@ -99,6 +100,7 @@ ZoteroRenderer.prototype.renderBranding = function() {
  */
 ZoteroRenderer.prototype.displayPublications = function(data) {
 	var markup;
+	this.toggleSpinner(this.container, false);
 
 	if(data.grouped > 0) {
 		markup = this.renderGroupView(data);
