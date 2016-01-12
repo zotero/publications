@@ -1,0 +1,4 @@
+linters:
+  Indentation:
+    character: tab
+    width: 1

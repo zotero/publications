@@ -6,69 +6,68 @@ $font-size-h3: 8em / 7;
 
 
 .zotero {
+	&-publications {
+		margin: 90px 0 120px; // todo
 
-  &-publications {
-    margin: 90px 0 120px; // todo
+		* {
+			box-sizing: border-box;
+		}
 
-    * {
-      box-sizing: border-box;
-    }
+		a {
+			cursor: pointer;
+			text-decoration: none;
 
-    a {
-      text-decoration: none;
-      cursor: pointer;
+			&:hover {
+				text-decoration: underline;
+			}
+		}
+	}
 
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
+	&-groups,
+	&-items {
+		list-style-type: none;
+		padding: 0;
+	}
 
-  &-groups,
-  &-items {
-    list-style-type: none;
-    padding: 0;
-  }
+	&-group-title {
+		font-size: $font-size-h2;
+		line-height: 1.3;
+		margin: 60px 0 .875em;  // todo
+	}
 
-  &-group-title {
-    font-size: $font-size-h2;
-    line-height: 1.3;
-    margin: 60px 0 0.875em;  // todo
-  }
+	&-item {
+		margin-bottom: 1em;
+	}
 
-  &-item {
-    margin-bottom: 1em;
-  }
+	&-item-title {
+		font-size: $font-size-h3;
+		font-weight: normal;
+		margin: 0;
+	}
 
-  &-item-title {
-    font-size: $font-size-h3;
-    font-weight: normal;
-    margin: 0;
-  }
+	&-details {
+		display: none;
 
-  &-details {
-    display: none;
+		&-show {
+			display: block;
+		}
+	}
 
-    &-show {
-      display: block;
-    }
-  }
+	&-loading {
+		display: block;
+		position: relative;
 
-  &-loading {
-    display: block;
-    position: relative;
-    
-    &:after {
-      bottom: 0;
-      content: "Loading...";
-      display: block;
-      height: 100%;
-      left: 0;
-      position: absolute;
-      right: 0;
-      text-align: center;
-      top: 0;
-      width: 100%;
-    }
-  }
+		&:after {
+			bottom: 0;
+			content: 'Loading...';
+			display: block;
+			height: 100%;
+			left: 0;
+			position: absolute;
+			right: 0;
+			text-align: center;
+			top: 0;
+			width: 100%;
+		}
+	}
 }
