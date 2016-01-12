@@ -1,80 +1,18 @@
-//
-// Demo
-// --------------------------------------------------
-
-$text-color: #444;
-$link-color: #38c;
-$font-size-base: 14px;
-$line-height-base: 24 / 14;
-
-$screen-sm-min: 768px;
-$screen-md-min: 970px;
-$screen-lg-min: 1170px;
-
-$container-sm: 750px;
-$container-md: 970px;
-$container-lg: 1170px;
-
-* {
-  box-sizing: border-box;
-}
-
-.container {
-  padding: 0 15px;
-  margin: auto;
-
-  @media(min-width: $screen-sm-min) {
-    width: $container-sm;
-  }
-
-  @media(min-width: $screen-md-min) {
-    width: $container-md;
-  }
-
-  @media(min-width: $screen-lg-min) {
-    width: $container-lg;
-  }
-}
-
-body {
-  margin: 0;
-  font-family: "Lucida Grande", "Lucida Sans Unicode", Verdana, sans-serif;
-  font-size: $font-size-base;
-  line-height: $line-height-base;
-  color: $text-color;
-}
-
-h1 {
-  font-size: 2em * 4 / 3;
-  margin: 120px 0 90px;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.025em;
-  font-weight: bold;
-}
-
-a {
-  color: $link-color;
-}
-
-// --------------------------------------------------
-
-
 // Zotero publications
 // --------------------------------------------------
 
 $font-size-h2: 2em;
 $font-size-h3: 8em / 7;
 
-* {
-  box-sizing: border-box;
-}
 
 .zotero {
 
   &-publications {
     margin: 90px 0 120px; // todo
+
+    * {
+      box-sizing: border-box;
+    }
 
     a {
       text-decoration: none;
