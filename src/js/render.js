@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import itemTpl from './tpl/partial/item.tpl';
 import itemsTpl from './tpl/partial/items.tpl';
 import groupTpl from './tpl/partial/group.tpl';
@@ -115,7 +116,7 @@ ZoteroRenderer.prototype.renderBranding = function() {
  */
 ZoteroRenderer.prototype.displayPublications = function(data) {
 	var markup;
-	this.toggleSpinner(false);
+
 
 	if(data.grouped > 0) {
 		markup = this.renderGroupView(data);
@@ -125,6 +126,14 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
 
 	this.data = data;
 	this.container.innerHTML = markup;
+
+
+	_.each(this.container.querySelectorAll('.zotero-details'), function(element) {
+		element.style.height = element.offsetHeight + 'px';
+		element.classList.add('zotero-details-collapsed');
+	});
+
+	this.toggleSpinner(false);
 	this.previous = markup;
 	this.addHandlers();
 };
@@ -141,7 +150,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			let detailsEl = itemEl.querySelector('.zotero-details');
 			if(detailsEl) {
-				detailsEl.classList.toggle('zotero-details-show');
+				detailsEl.classList.toggle('zotero-details-collapsed');
 			}
 			return;
 		}
