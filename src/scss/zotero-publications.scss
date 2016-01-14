@@ -4,7 +4,13 @@
 
 $font-size-h2: 2em;
 $font-size-h3: 8em / 7;
+$font-size-h4: 1.5em;
 
+$screen-sm-min: 768px;
+$screen-md-min: 970px;
+$screen-lg-min: 1170px;
+
+$details-indent: 3em;
 
 .zotero {
 	&-publications {
@@ -32,7 +38,7 @@ $font-size-h3: 8em / 7;
 	&-group-title {
 		font-size: $font-size-h2;
 		line-height: 1.3;
-		margin: 60px 0 .875em;  // todo
+		margin: 1.6em 0 .9em;
 	}
 
 	&-item {
@@ -41,6 +47,7 @@ $font-size-h3: 8em / 7;
 
 	&-item-title {
 		font-size: $font-size-h3;
+		line-height: 1.5;
 		font-weight: normal;
 		margin: 0;
 	}
@@ -48,8 +55,21 @@ $font-size-h3: 8em / 7;
 	&-details {
 		display: none;
 
+		@media (min-width: $screen-sm-min) {
+      padding-left: $details-indent;
+    }
+
 		&-show {
 			display: block;
+		}
+
+    &-inner {
+      margin: 3.4em 0;
+    }
+
+		h4 {
+  		font-size: $font-size-h4;
+  		margin: 1.4em 0 calc(#{$font-size-h2} / 3); // todo
 		}
 	}
 
@@ -59,7 +79,7 @@ $font-size-h3: 8em / 7;
 
 		&:after {
 			bottom: 0;
-			content: 'Loading...';
+			content: 'Loading …';
 			display: block;
 			height: 100%;
 			left: 0;
