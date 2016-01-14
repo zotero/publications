@@ -22,11 +22,21 @@ $details-indent: 3em;
 
 .zotero {
 	&-publications {
-		margin: 90px 0 120px; // todo
+		margin: 5em 0 120px; // todo margin bottom
 
 		* {
 			box-sizing: border-box;
 		}
+
+		h2, h3 {
+  		font-weight: bold;
+  		line-height: $headings-line-height;
+			letter-spacing: -0.025em;
+		}
+
+    p {
+      margin: 1em 0;
+    }
 
 		a {
 			cursor: pointer;
@@ -37,18 +47,12 @@ $details-indent: 3em;
   		padding: 0;
   		margin: 0;
 		}
-
-		h2, h3 {
-  		font-weight: bold;
-  		line-height: $headings-line-height;
-			letter-spacing: -0.025em;
-		}
 	}
 
-  // Groups
+  // h2
 	&-group-title {
   	font-size: $font-size-h2;
-		margin: 1.6em 0 0.9em;
+		margin: 1.6em 0 (1em * 6 / 7 );
 	}
 
   // Item
@@ -75,12 +79,12 @@ $details-indent: 3em;
 		}
 
     &-inner {
-      margin: 3.4em 0;
+      margin: 3.4em 0 2.4em;
     }
 
     h3 {
       font-size: $font-size-h3;
-      margin: 1.4em 0 calc(#{$font-size-h2} / 3); // todo
+      margin: 1.4em 0 (1em * 2 / 3); // todo
     }
 	}
 
