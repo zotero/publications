@@ -51,14 +51,14 @@
                 <h3>
                     Abstract
                 </h3>
-                <p>
+                <p class="zotero-abstract">
                     <%- data.abstractNote %>
                 </p>
             <% } %>
 
             <% if (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) { %>
                 <h3>Notes</h3>
-                <ul>
+                <ul class="zotero-notes">
                     <% for(var childItem of item[Symbol.for('childNotes')]) { %>
                         <li>
                             <a>
@@ -71,7 +71,7 @@
 
             <% if (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length) { %>
                 <h3>Attachments</h3>
-                <ul>
+                <ul class="zotero-attachments">
                     <% for(var childItem of item[Symbol.for('childAttachments')]) { %>
                         <li>
                             <a>

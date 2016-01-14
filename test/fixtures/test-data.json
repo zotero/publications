@@ -5,6 +5,9 @@
       "itemType": "book",
       "abstractNote": ""
     },
+    "meta": {
+      "parsedDate": "2014-02-01"
+    },
     "citation": "<strong>Cooking with Yoda</strong>"
   },
   {
@@ -13,6 +16,9 @@
       "itemType": "journalArticle",
       "abstractNote": "Lorem ipsum Occaecat velit ad aute ut qui do labore laborum proident eu id reprehenderit fugiat ea proident aute ex ea quis velit pariatur ut aliquip proident in dolore commodo sunt consectetur enim anim mollit laboris Ut Excepteur in in est ut irure cupidatat in sint Excepteur culpa ut minim irure deserunt ad mollit occaecat incididunt dolor non sint mollit ullamco cillum voluptate culpa eiusmod veniam adipisicing ea tempor amet incididunt labore magna ut reprehenderit Ut tempor commodo consectetur tempor pariatur nostrud incididunt aliqua labore commodo in in ad tempor fugiat pariatur ad id veniam nisi do culpa sint non esse ullamco voluptate consectetur ea ut Ut et nisi exercitation consequat veniam Ut consequat in labore ea sunt aute laborum commodo officia sunt laborum proident incididunt sunt in nostrud nostrud anim dolore dolore ea magna in dolor nulla cillum exercitation minim labore cupidatat aliqua deserunt cupidatat in irure eiusmod est deserunt veniam amet quis exercitation do Excepteur cupidatat eu id ex consectetur sit veniam aute in in incididunt reprehenderit Excepteur amet velit proident cupidatat ullamco do eiusmod elit commodo deserunt consequat minim in culpa sunt velit sit occaecat aliqua enim cupidatat ex pariatur laborum ad dolore ut velit aliqua exercitation cillum."
     },
+    "meta": {
+      "parsedDate": "2014-03-01"
+    },
     "citation": "<em>J.J. Binks</em>, <strong>Difference between the dark and light side of force</strong>"
   },
   {
@@ -20,6 +26,9 @@
     "data": {
       "itemType": "book",
       "abstractNote": ""
+    },
+    "meta": {
+      "parsedDate": "2014-04-01"
     },
     "citation": "<em>L. Skywalker</em>, <strong>Who's your daddy?</strong>"
   },
@@ -30,6 +39,9 @@
       "linkMode": "imported_file",
       "title": "lorem-pixel.jpg",
       "parentItem": "ABCD"
+    },
+    "meta": {
+      "parsedDate": "2014-05-01"
     },
     "links": {
       "enclosure": {
@@ -47,9 +59,12 @@
     "citation": "<span>“Hello World.”</span>",
     "data": {
       "version": 2,
-      "parentItem": "IJKL",
+      "parentItem": "MNOP",
       "itemType": "note",
       "note": "<p>Hello <strong>world</strong></p>\n<p></p>"
+    },
+    "meta": {
+      "parsedDate": "2014-06-01"
     }
   }
 ]

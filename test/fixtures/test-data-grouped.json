@@ -1,10 +1,9 @@
 [
-  ["book", [
-    {
+  [{
       "key": "ABCD",
       "data": {
-      "itemType": "book",
-      "abstractNote": ""
+        "itemType": "book",
+        "abstractNote": ""
       },
       "citation": "<strong>Cooking with Yoda</strong>"
     }, {
@@ -15,8 +14,8 @@
       },
       "citation": "<em>L. Skywalker</em>, <strong>Who's your daddy?</strong>"
     }
-  ]],
-  ["journalArticle", [
+  ],
+  [
     {
       "key": "IJKL",
       "data": {
@@ -35,5 +34,5 @@
       },
       "citation": "<em>lorem-pixel.jpg</em>. (n.d.)."
     }
-  ]]
+  ]
 ]

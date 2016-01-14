@@ -1,6 +1,7 @@
 import itemTpl from './tpl/partial/item.tpl';
 import itemsTpl from './tpl/partial/items.tpl';
 import groupTpl from './tpl/partial/group.tpl';
+import groupsTpl from './tpl/partial/groups.tpl';
 import brandingTpl from './tpl/partial/branding.tpl';
 import groupViewTpl from './tpl/group-view.tpl';
 import plainViewTpl from './tpl/plain-view.tpl';
@@ -16,7 +17,7 @@ import {
 export function ZoteroRenderer(container, config) {
 	this.container = container;
 	this.config = config;
-	this.toggleSpinner(this.container, true);
+	this.toggleSpinner(true);
 }
 
 /**
@@ -62,6 +63,17 @@ ZoteroRenderer.prototype.renderGroup = function(items) {
 };
 
 /**
+ * [renderGroups description]
+ * @return {[type]} [description]
+ */
+ZoteroRenderer.prototype.renderGroups = function(groups) {
+	return groupsTpl({
+		'groups': groups,
+		'renderer': this
+	});
+};
+
+/**
  * Render a list of groups of Zotero items
  * @param  {ZoteroData|Object} data - Grouped data where each key is a group titles and
  *                                    each value is an array Zotero items
@@ -100,12 +112,12 @@ ZoteroRenderer.prototype.renderBranding = function() {
  */
 ZoteroRenderer.prototype.displayPublications = function(data) {
 	var markup;
-	this.toggleSpinner(this.container, false);
+	this.toggleSpinner(false);
 
 	if(data.grouped > 0) {
 		markup = this.renderGroupView(data);
 	} else {
-		markup = this.renderItemView(data);
+		markup = this.renderPlainView(data);
 	}
 
 	this.data = data;
@@ -140,7 +152,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
  * @param  {HTMLElement} container - A DOM element to which visual feedback class should be attached
  * @param  {boolean} [activate]    - Explicitely indicate whether to add or remove visual feedback
  */
-ZoteroRenderer.prototype.toggleSpinner = function (container, activate) {
-	var method = activate === null ? container.classList.toggle : activate ? container.classList.add : container.classList.remove;
-	method.call(container.classList, 'zotero-loading');
+ZoteroRenderer.prototype.toggleSpinner = function (activate) {
+	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
+	method.call(this.container.classList, 'zotero-loading');
 };
