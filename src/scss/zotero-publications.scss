@@ -2,13 +2,9 @@
 // Zotero publications
 // --------------------------------------------------
 
-$font-size-h2: 2em;
-$font-size-h3: 8em / 7;
-$font-size-h4: 1.5em;
+$font-size-item-title: 1em * 8 / 7;
 
 $screen-sm-min: 768px;
-$screen-md-min: 970px;
-$screen-lg-min: 1170px;
 
 $details-indent: 3em;
 
@@ -36,9 +32,7 @@ $details-indent: 3em;
 	}
 
 	&-group-title {
-		font-size: $font-size-h2;
-		line-height: 1.3;
-		margin: 1.6em 0 .9em;
+		margin: 1.6em 0 0.9em;
 	}
 
 	&-item {
@@ -46,10 +40,8 @@ $details-indent: 3em;
 	}
 
 	&-item-title {
-		font-size: $font-size-h3;
+		font-size: 1em * 8 / 7;
 		line-height: 1.5;
-		font-weight: normal;
-		margin: 0;
 	}
 
 	&-details {
@@ -68,8 +60,7 @@ $details-indent: 3em;
     }
 
 		h4 {
-  		font-size: $font-size-h4;
-  		margin: 1.4em 0 calc(#{$font-size-h2} / 3); // todo
+  		margin: 1.4em 0 calc(1em / 3); // todo
 		}
 	}
 
