@@ -14,6 +14,12 @@ import {
 	closest
 } from './utils.js';
 
+
+/**
+ * Zotero Renderer constructor
+ * @param {HTMLElement} container	- A container where contents is rendered
+ * @param {Object} [config]			- ZoteroPublications config
+ */
 export function ZoteroRenderer(container, config) {
 	this.container = container;
 	this.config = config;
@@ -23,7 +29,6 @@ export function ZoteroRenderer(container, config) {
 /**
  * Render single Zotero item
  * @param  {Object} zoteroItem       - Single Zotero item data
- * @param  {String} childItemsMarkup - Rendered markup of a list of Zotero child items
  * @return {String}                  - Rendered markup of a Zotero item
  */
 ZoteroRenderer.prototype.renderItem = function(zoteroItem) {
@@ -36,7 +41,7 @@ ZoteroRenderer.prototype.renderItem = function(zoteroItem) {
 
 /**
  * Render a list of Zotero items
- * @param  {ZoteroData|Object[]} zoteroItems - List of Zotero items
+ * @param  {Object[]} zoteroItems - List of Zotero items
  * @return {String}                          - Rendered markup of a list of Zotero items
  */
 ZoteroRenderer.prototype.renderItems = function(zoteroItems) {
@@ -47,10 +52,8 @@ ZoteroRenderer.prototype.renderItems = function(zoteroItems) {
 };
 
 /**
- * Render an expandable group of Zotero items
- * @param  {String} title       - A title of a group
- * @param  {boolean} expand     - Indicates whether group should appear pre-expanded
- * @param  {String} itemsMarkup - Rendered markup of underlying list of Zotero items
+ * Render a group of Zotero items
+ * @param  {Object[]} items 	- List of items for this group
  * @return {String}             - Rendered markup of a group
  */
 ZoteroRenderer.prototype.renderGroup = function(items) {
@@ -63,8 +66,9 @@ ZoteroRenderer.prototype.renderGroup = function(items) {
 };
 
 /**
- * [renderGroups description]
- * @return {[type]} [description]
+ * Renders a list of groups of Zotero items
+ * @param {Object[]} 	- List of groups to render
+ * @return {String} 	- Rendered markup of groups
  */
 ZoteroRenderer.prototype.renderGroups = function(groups) {
 	return groupsTpl({
@@ -74,10 +78,9 @@ ZoteroRenderer.prototype.renderGroups = function(groups) {
 };
 
 /**
- * Render a list of groups of Zotero items
- * @param  {ZoteroData|Object} data - Grouped data where each key is a group titles and
- *                                    each value is an array Zotero items
- * @return {String}                 - Rendered markup of a list of groups
+ * Render a Group View
+ * @param {Object[]} 	- List of groups to render
+ * @return {String} 	- Rendered markup of a complete group view
  */
 ZoteroRenderer.prototype.renderGroupView = function(data) {
 	return groupViewTpl({
@@ -87,8 +90,9 @@ ZoteroRenderer.prototype.renderGroupView = function(data) {
 };
 
 /**
- * [renderPlainView description]
- * @return {[type]} [description]
+ * Render a Plain View
+ * @param  {Object[]} zoteroItems - List of Zotero items
+ * @return {String} 	- Rendered markup of a complete plain view
  */
 ZoteroRenderer.prototype.renderPlainView = function(data) {
 	return plainViewTpl({
@@ -98,8 +102,8 @@ ZoteroRenderer.prototype.renderPlainView = function(data) {
 };
 
 /**
- * [renderBranding description]
- * @return {[type]} [description]
+ * Render Zotero branding
+ * @return {String}
  */
 ZoteroRenderer.prototype.renderBranding = function() {
 	return brandingTpl();
@@ -107,7 +111,6 @@ ZoteroRenderer.prototype.renderBranding = function() {
 
 /**
  * Render Zotero publications into a DOM element
- * @param  {HTMLElement} container - DOM element of which contents is to be replaced
  * @param  {ZoteroData} data       - Source of publications to be rendered
  */
 ZoteroRenderer.prototype.displayPublications = function(data) {
@@ -127,8 +130,7 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
 };
 
 /**
- * Attach interaction handlers for expanding groups and shortened abstracts.
- * @param {HTMLElement} container - A top-level DOM element (e.g. container) that contains Zotero items.
+ * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function() {
 	this.container.addEventListener('click', function(ev) {
@@ -149,7 +151,6 @@ ZoteroRenderer.prototype.addHandlers = function() {
 /**
  * Toggle CSS class that gives a visual loading feedback. Optionally allows to explicetly specify
  * whether to display or hide visual feedback.
- * @param  {HTMLElement} container - A DOM element to which visual feedback class should be attached
  * @param  {boolean} [activate]    - Explicitely indicate whether to add or remove visual feedback
  */
 ZoteroRenderer.prototype.toggleSpinner = function (activate) {
