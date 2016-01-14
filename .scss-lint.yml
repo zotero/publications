@@ -2,3 +2,5 @@ linters:
   Indentation:
     character: tab
     width: 1
+  NestingDepth:
+    enabled: false
