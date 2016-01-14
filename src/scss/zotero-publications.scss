@@ -80,11 +80,19 @@ $details-indent: 3em;
 
     &-inner {
       margin: 3.4em 0 2.4em;
+
+      .zotero-item:last-child & {
+        margin-bottom: -1em;
+      }
     }
 
     h3 {
       font-size: $font-size-h3;
       margin: 1.4em 0 (1em * 2 / 3); // todo
+    }
+
+    ul {
+      margin-bottom: 1em;
     }
 	}
 
