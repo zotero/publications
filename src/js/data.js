@@ -62,7 +62,8 @@ ZoteroData.prototype.groupByCollections = function() {
 /**
  * Custom iterator to allow for..of interation regardless of whether data is grouped or not.
  * For ungrouped data each interation returns single Zotero item
- * For grouped data each interationr returns an a pair of group title and an Array of Zotero items
+ * For grouped data each iternation returns a group of Zotero items. Additionaly group name
+ * is available under GROUP_TITLE Symbol
  */
 ZoteroData.prototype[Symbol.iterator] = function () {
 	let i = 0;
