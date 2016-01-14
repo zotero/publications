@@ -45,14 +45,16 @@ $details-indent: 3em;
 	}
 
 	&-details {
-		display: none;
+		transition: height .4s ease-in-out;
+		overflow: hidden;
+
 
 		@media (min-width: $screen-sm-min) {
-      padding-left: $details-indent;
-    }
+			padding-left: $details-indent;
+		}
 
-		&-show {
-			display: block;
+		&-collapsed {
+			height: 0 !important;
 		}
 
     &-inner {
@@ -79,6 +81,7 @@ $details-indent: 3em;
 			text-align: center;
 			top: 0;
 			width: 100%;
+			background: #fff;
 		}
 	}
 }
