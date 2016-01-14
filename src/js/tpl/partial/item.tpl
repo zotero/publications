@@ -5,7 +5,7 @@
         </div>
         <div>
             <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
-                <a data-trigger="details">
+                <a href="" data-trigger="details">
                     Details
                 </a>
             <% } %>
