@@ -1,11 +1,11 @@
-<li class="zotero-item zotero-<%- data.itemType %>" data-item="<%- item.key %>">
+<li class="zotero-item zotero-<%- data.itemType %>" data-item="<%- item.key %>" id="<%- item.key %>">
     <% if (renderer.config.alwaysUseCitationStyle) { %>
         <div class="zotero-item-title">
             <%= item.citation %>
         </div>
         <div>
             <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
-                <a href="" data-trigger="details">
+                <a href="#<%- item.key %>" data-trigger="details">
                     Details
                 </a>
             <% } %>
