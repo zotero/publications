@@ -10,6 +10,10 @@ $link-color: #38c;
 $font-size-base: 14px;
 $line-height-base: 24 / 14;
 
+$font-size-h1: 2em * 4 / 3;
+$font-size-h2: 2em;
+$font-size-h3: 1.5em;
+
 $screen-sm-min: 768px;
 $screen-md-min: 970px;
 $screen-lg-min: 1170px;
@@ -47,6 +51,14 @@ h6 {
 h1 {
 	font-size: 2em * 4 / 3;
 	margin: 120px 0 90px;
+}
+
+h2 {
+  font-size: $font-size-h2;
+}
+
+h3 {
+  font-size: $font-size-h3;
 }
 
 a {
