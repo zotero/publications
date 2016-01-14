@@ -45,7 +45,7 @@
             </a>
         <% } %>
     <% } %>
-   <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
+    <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
         <div class="zotero-details">
             <% if (data.abstractNote && data.abstractNote.length) { %>
                 <h3>
