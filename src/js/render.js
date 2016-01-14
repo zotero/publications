@@ -152,6 +152,8 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			if(detailsEl) {
 				detailsEl.classList.toggle('zotero-details-collapsed');
 			}
+			window.history.pushState(null, null, `#${itemEl.dataset.item}`);
+			ev.preventDefault();
 			return;
 		}
 	});
