@@ -1,3 +1,4 @@
+//
 // Zotero publications
 // --------------------------------------------------
 
@@ -21,12 +22,11 @@ $font-size-h3: 8em / 7;
 				text-decoration: underline;
 			}
 		}
-	}
 
-	&-groups,
-	&-items {
-		list-style-type: none;
-		padding: 0;
+		ul {
+  		list-style-type: none;
+  		padding: 0;
+		}
 	}
 
 	&-group-title {
