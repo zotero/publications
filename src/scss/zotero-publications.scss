@@ -22,7 +22,7 @@ $details-indent: 3em;
 
 .zotero {
 	&-publications {
-		margin: 5em 0 120px; // todo margin bottom
+		margin: 5em 0 6.2em; // todo margin bottom
 
 		* {
 			box-sizing: border-box;
@@ -95,6 +95,31 @@ $details-indent: 3em;
       margin-bottom: 1em;
     }
 	}
+
+  // Branding
+  &-branding {
+    margin-top: 3.8em;
+  }
+
+  &-logo {
+    display: inline-block;
+    vertical-align: top;
+
+    path {
+      fill: #ccc;
+      transition: fill 0.2s ease;
+    }
+
+    &:hover {
+      path {
+        fill: #222;
+      }
+
+      .zotero-z {
+        fill: #900;
+      }
+    }
+  }
 
   // Loader
 	&-loading {
