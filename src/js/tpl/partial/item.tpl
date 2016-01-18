@@ -12,7 +12,7 @@
       <div class="zotero-item-title">
         <a href="#"><%- data.title %></a>
       </div>
-      <div>
+      <div class="zotoero-item-subline">
         By <%- data[Symbol.for('authors')] %> (<%- data[Symbol.for('year')] %>)
       </div>
 
@@ -20,7 +20,7 @@
       <div class="zotero-item-title">
         <a href="#"><%- data.title %></a>
       </div>
-      <div>
+      <div class="zotoero-item-subline">
         <%- data.journalAbbreviation %> (<%- data[Symbol.for('year')] %>)
       </div>
 
@@ -28,7 +28,7 @@
       <div class="zotero-item-title">
         <a href="#"><%- data.title %></a>
       </div>
-      <div>
+      <div class="zotoero-item-subline">
         <%- data.publicationTitle %> (<%- data[Symbol.for('year')] %>)
       </div>
 
@@ -36,7 +36,7 @@
       <div class="zotero-item-title">
         <a href="#"><%- data.title %></a>
       </div>
-      <div>
+      <div class="zotoero-item-subline">
         <%- data.blogTitle %> (<%- data[Symbol.for('year')] %>)
       </div>
 
