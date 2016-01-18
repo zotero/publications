@@ -3,13 +3,13 @@
     <div class="zotero-item-title">
       <%= item.citation %>
     </div>
-    <div>
       <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
-        <a href="#<%- item.key %>" data-trigger="details">
-          Details
-        </a>
+        <div>
+          <a href="#<%- item.key %>" data-trigger="details">
+            Details
+          </a>
+        </div>
       <% } %>
-    </div>
   <% } else { %>
     <% if (data.itemType == 'book') { %>
       <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
