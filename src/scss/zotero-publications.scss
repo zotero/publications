@@ -10,7 +10,9 @@ $headings-line-height: 1.3;
 
 $screen-sm-min: 768px;
 
-$details-indent: 3em;
+$details-indent-xs: 15px;
+$details-indent-sm: 3em;
+
 
 /* Inherits:
 		* font-family
@@ -77,9 +79,10 @@ $details-indent: 3em;
 	&-details {
 		transition: height .4s ease-out;
 		overflow: hidden;
+		padding-left: $details-indent-xs;
 
 		@media (min-width: $screen-sm-min) {
-			padding-left: $details-indent;
+			padding-left: $details-indent-sm;
 		}
 
 		&-collapsed {
