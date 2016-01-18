@@ -13,11 +13,11 @@ $screen-sm-min: 768px;
 $details-indent: 3em;
 
 /* Inherits:
-   * font-family
-   * color
-   * body font-size
-   * body line-height
-   * link styles
+		* font-family
+		* color
+		* body font-size
+		* body line-height
+		* link styles
 */
 
 .zotero {
@@ -29,42 +29,42 @@ $details-indent: 3em;
 		}
 
 		h2, h3 {
-  		font-weight: bold;
-  		line-height: $headings-line-height;
+			font-weight: bold;
+			line-height: $headings-line-height;
 			letter-spacing: -0.025em;
 		}
 
-    p {
-      margin: 1em 0;
-    }
+		p {
+			margin: 1em 0;
+		}
 
 		a {
 			cursor: pointer;
 		}
 
 		ul {
-  		list-style-type: none;
-  		padding: 0;
-  		margin: 0;
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
 		}
 	}
 
-  // Reference
+	// Reference
 
-  &-reference {
-    font-size: $font-size-h3;
-    line-height: $headings-line-height;
-    margin-bottom: 2.28em;
-    opacity: 0.7;
-  }
+	&-reference {
+		font-size: $font-size-h3;
+		line-height: $headings-line-height;
+		margin-bottom: 2.28em;
+		opacity: 0.7;
+	}
 
-  // h2
+	// h2
 	&-group-title {
-  	font-size: $font-size-h2;
+		font-size: $font-size-h2;
 		margin: 1.6em 0 (1em * 6 / 7 );
 	}
 
-  // Item
+	// Item
 	&-item {
 		margin-bottom: 1em;
 	}
@@ -74,7 +74,7 @@ $details-indent: 3em;
 		line-height: 1.5;
 	}
 
-  // Details
+	// Details
 	&-details {
 		transition: height .4s ease-out;
 		overflow: hidden;
@@ -87,50 +87,50 @@ $details-indent: 3em;
 			height: 0 !important;
 		}
 
-    &-inner {
-      margin: 3.4em 0 2.4em;
+		&-inner {
+			margin: 3.4em 0 2.4em;
 
-      .zotero-item:last-child & {
-        margin-bottom: -1em;
-      }
-    }
+			.zotero-item:last-child & {
+				margin-bottom: -1em;
+			}
+		}
 
-    h3 {
-      font-size: $font-size-h3;
-      margin: 1.4em 0 (1em * 2 / 3); // todo
-    }
+		h3 {
+			font-size: $font-size-h3;
+			margin: 1.4em 0 (1em * 2 / 3); // todo
+		}
 
-    ul {
-      margin-bottom: 1em;
-    }
+		ul {
+			margin-bottom: 1em;
+		}
 	}
 
-  // Branding
-  &-branding {
-    margin-top: 3.8em;
-  }
+	// Branding
+	&-branding {
+		margin-top: 3.8em;
+	}
 
-  &-logo {
-    display: inline-block;
-    vertical-align: top;
+	&-logo {
+		display: inline-block;
+		vertical-align: top;
 
-    path {
-      fill: #ccc;
-      transition: fill 0.2s ease;
-    }
+		path {
+			fill: #ccc;
+			transition: fill 0.2s ease;
+		}
 
-    &:hover {
-      path {
-        fill: #222;
-      }
+		&:hover {
+			path {
+				fill: #222;
+			}
 
-      .zotero-z {
-        fill: #900;
-      }
-    }
-  }
+			.zotero-z {
+				fill: #900;
+			}
+		}
+	}
 
-  // Loader
+	// Loader
 	&-loading {
 		display: block;
 		position: relative;
