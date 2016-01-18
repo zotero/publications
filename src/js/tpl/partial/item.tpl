@@ -13,7 +13,10 @@
 				<a href="#"><%- data.title %></a>
 			</div>
 			<div class="zotoero-item-subline">
-				By <%- data[Symbol.for('authors')] %> (<%- data[Symbol.for('year')] %>)
+				By <%- data[Symbol.for('authors')] %>
+				<% if (data[Symbol.for('formattedDate')]) { %>
+				(<%- data[Symbol.for('formattedDate')] %>)
+				<% } %>
 			</div>
 
 		<% } else if (data.itemType == 'journalArticle') { %>
@@ -21,7 +24,10 @@
 				<a href="#"><%- data.title %></a>
 			</div>
 			<div class="zotoero-item-subline">
-				<%- data.journalAbbreviation %> (<%- data[Symbol.for('year')] %>)
+				<%- data.journalAbbreviation %>
+				<% if (data[Symbol.for('formattedDate')]) { %>
+				(<%- data[Symbol.for('formattedDate')] %>)
+				<% } %>
 			</div>
 
 		<% } else if (data.itemType == 'newspaperArticle' || data.itemType == 'magazineArticle') { %>
@@ -29,7 +35,10 @@
 				<a href="#"><%- data.title %></a>
 			</div>
 			<div class="zotoero-item-subline">
-				<%- data.publicationTitle %> (<%- data[Symbol.for('year')] %>)
+				<%- data.publicationTitle %>
+				<% if (data[Symbol.for('formattedDate')]) { %>
+				(<%- data[Symbol.for('formattedDate')] %>)
+				<% } %>
 			</div>
 
 		<% } else if (data.itemType == 'blogPost') { %>
@@ -37,7 +46,10 @@
 				<a href="#"><%- data.title %></a>
 			</div>
 			<div class="zotoero-item-subline">
-				<%- data.blogTitle %> (<%- data[Symbol.for('year')] %>)
+				<%- data.blogTitle %>
+				<% if (data[Symbol.for('formattedDate')]) { %>
+				(<%- data[Symbol.for('formattedDate')] %>)
+				<% } %>
 			</div>
 
 		<% } else { %>
