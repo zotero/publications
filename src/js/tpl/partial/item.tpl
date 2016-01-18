@@ -1,88 +1,88 @@
 <li class="zotero-item zotero-<%- data.itemType %>" data-item="<%- item.key %>" id="<%- item.key %>">
-    <% if (renderer.config.alwaysUseCitationStyle) { %>
-        <div class="zotero-item-title">
-            <%= item.citation %>
-        </div>
-        <div>
-            <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
-                <a href="#<%- item.key %>" data-trigger="details">
-                    Details
-                </a>
-            <% } %>
-        </div>
+  <% if (renderer.config.alwaysUseCitationStyle) { %>
+    <div class="zotero-item-title">
+      <%= item.citation %>
+    </div>
+    <div>
+      <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
+        <a href="#<%- item.key %>" data-trigger="details">
+          Details
+        </a>
+      <% } %>
+    </div>
+  <% } else { %>
+    <% if (data.itemType == 'book') { %>
+      <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
+        <%- data.title %>
+      </a>
+      <p>
+        By <%- data[Symbol.for('authors')] %> (<%- data[Symbol.for('year')] %>)
+      </p>
+    <% } else if (data.itemType == 'journalArticle') { %>
+      <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
+        <%- data.title %>
+      </a>
+      <p>
+        <%- data.journalAbbreviation %> (<%- data[Symbol.for('year')] %>)
+      </p>
+    <% } else if (data.itemType == 'newspaperArticle' || data.itemType == 'magazineArticle') { %>
+      <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
+        <%- data.title %>
+      </a>
+      <p>
+        <%- data.publicationTitle %> (<%- data[Symbol.for('year')] %>)
+      </p>
+    <% } else if (data.itemType == 'blogPost') { %>
+      <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
+        <%- data.title %>
+      </a>
+      <p>
+        <%- data.blogTitle %> (<%- data[Symbol.for('year')] %>)
+      </p>
     <% } else { %>
-        <% if (data.itemType == 'book') { %>
-            <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
-                <%- data.title %>
-            </a>
-            <p>
-                By <%- data[Symbol.for('authors')] %> (<%- data[Symbol.for('year')] %>)
-            </p>
-        <% } else if (data.itemType == 'journalArticle') { %>
-            <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
-                <%- data.title %>
-            </a>
-            <p>
-                <%- data.journalAbbreviation %> (<%- data[Symbol.for('year')] %>)
-            </p>
-        <% } else if (data.itemType == 'newspaperArticle' || data.itemType == 'magazineArticle') { %>
-            <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
-                <%- data.title %>
-            </a>
-            <p>
-                <%- data.publicationTitle %> (<%- data[Symbol.for('year')] %>)
-            </p>
-        <% } else if (data.itemType == 'blogPost') { %>
-            <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
-                <%- data.title %>
-            </a>
-            <p>
-                <%- data.blogTitle %> (<%- data[Symbol.for('year')] %>)
-            </p>
-        <% } else { %>
-            <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
-                <%= item.citation %>
-            </a>
+      <a class="zotero-item-title" data-trigger="details" data-item="<%- item.key %>">
+        <%= item.citation %>
+      </a>
+    <% } %>
+  <% } %>
+  <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
+    <div class="zotero-details">
+      <div class="zotero-details-inner">
+        <% if (data.abstractNote && data.abstractNote.length) { %>
+          <h3>
+            Abstract
+          </h3>
+          <p class="zotero-abstract">
+            <%- data.abstractNote %>
+          </p>
         <% } %>
-    <% } %>
-    <% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
-        <div class="zotero-details">
-            <div class="zotero-details-inner">
-                <% if (data.abstractNote && data.abstractNote.length) { %>
-                    <h3>
-                        Abstract
-                    </h3>
-                    <p class="zotero-abstract">
-                        <%- data.abstractNote %>
-                    </p>
-                <% } %>
 
-                <% if (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) { %>
-                    <h3>Notes</h3>
-                    <ul class="zotero-notes">
-                        <% for(var childItem of item[Symbol.for('childNotes')]) { %>
-                            <li>
-                                <a>
-                                    <%= childItem.data.note %>
-                                </a>
-                            </li>
-                        <% } %>
-                    </ul>
-                <% } %>
+        <% if (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) { %>
+          <h3>Notes</h3>
+          <ul class="zotero-notes">
+            <% for(var childItem of item[Symbol.for('childNotes')]) { %>
+              <li>
+                <a>
+                  <%= childItem.data.note %>
+                </a>
+              </li>
+            <% } %>
+          </ul>
+        <% } %>
 
-                <% if (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length) { %>
-                    <h3>Attachments</h3>
-                    <ul class="zotero-attachments">
-                        <% for(var childItem of item[Symbol.for('childAttachments')]) { %>
-                            <li>
-                                <a>
-                                    <%- childItem.data.title %>
-                                </a>
-                            </li>
-                        <% } %>
-                    </ul>
-                <% } %>
-            </div>
-        </div>
-    <% } %>
+        <% if (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length) { %>
+          <h3>Attachments</h3>
+          <ul class="zotero-attachments">
+            <% for(var childItem of item[Symbol.for('childAttachments')]) { %>
+              <li>
+                <a>
+                  <%- childItem.data.title %>
+                </a>
+              </li>
+            <% } %>
+          </ul>
+        <% } %>
+      </div>
+    </div>
+  <% } %>
 </li>
