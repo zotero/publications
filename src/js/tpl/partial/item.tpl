@@ -103,8 +103,9 @@
 					<ul class="zotero-attachments">
 						<% for(var childItem of item[Symbol.for('childAttachments')]) { %>
 							<li>
-								<a>
-									<%- childItem.data.title %>
+								<a href="#">
+									<span class="zotero-icon zotero-icon-paperclip"></span><!--
+									--><%- childItem.data.title %>
 								</a>
 							</li>
 						<% } %>
