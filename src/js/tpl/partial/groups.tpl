@@ -3,4 +3,3 @@
 		<%= renderer.renderGroup(group) %>
 	<% } %>
 </ul>
-<%= renderer.renderBranding() %>
