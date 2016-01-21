@@ -84,13 +84,13 @@ function getBrowserify(debug, entry, shimConfig) {
 			['browserify-shim', shimConfig]
 		]
 	});
-	
+
 	return b;
 }
 
 gulp.task('js', function() {
 	let b = getBrowserify(watch, 'main-modern', shimConfigs.nodeps);
-	
+
 	if(watch) {
     	b = watchify(b);
     	b.on('update', function() {
@@ -131,25 +131,37 @@ gulp.task('multi-js', function() {
 });
 
 gulp.task('scss', function() {
-	gulp.src('./src/scss/zotero-publications.scss')
-	.pipe(gulpif(watch, sourcemaps.init()))
-	.pipe(sass().on('error', function(msg) {
-		gutil.log(gutil.colors.red(msg));
-	}))
-	.pipe(autoprefixer({
-		browsers: ['last 2 versions']
-	}))
-	.pipe(gulpif(watch, sourcemaps.write()))
-	.pipe(gulp.dest(buildDir))
-	.pipe(gulpif(!watch, rename({ extname: '.min.css' })))
-	.pipe(gulpif(!watch, cssminify()))
-	.pipe(gulpif(!watch, gulp.dest(buildDir)));
+	return merge(
+		gulp.src('./src/scss/zotero-publications.scss')
+			.pipe(gulpif(watch, sourcemaps.init()))
+			.pipe(sass().on('error', function(msg) {
+				gutil.log(gutil.colors.red(msg));
+			}))
+			.pipe(autoprefixer({
+				browsers: ['last 2 versions']
+			}))
+			.pipe(gulpif(watch, sourcemaps.write()))
+			.pipe(gulp.dest(buildDir))
+			.pipe(gulpif(!watch, rename({ extname: '.min.css' })))
+			.pipe(gulpif(!watch, cssminify()))
+			.pipe(gulpif(!watch, gulp.dest(buildDir))),
+		gulp.src('./src/scss/demo.scss')
+			.pipe(gulpif(watch, sourcemaps.init()))
+			.pipe(sass().on('error', function(msg) {
+				gutil.log(gutil.colors.red(msg));
+			}))
+			.pipe(autoprefixer({
+				browsers: ['last 2 versions']
+			}))
+			.pipe(gulpif(watch, sourcemaps.write()))
+			.pipe(gulp.dest('./tmp/'))
+	);
 });
 
 gulp.task('demo', function() {
 	return merge(
-		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html'])
-			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html'])),
+		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html', 'src/demo/local-templated.html'])
+			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html', 'tmp/local-templated.html'])),
 		gulp.src('bower_components/lodash/lodash.js')
 			.pipe(symlink('tmp/lodash.js'))
 		);
@@ -178,7 +190,7 @@ gulp.task('dev', function(done) {
 		livereload: true
 	});
 
-	gulp.watch('./src/scss/*.scss', ['sass']);
+	gulp.watch('./src/scss/*.scss', ['scss']);
 	runSequence('setup-dev', ['demo', 'js', 'scss'], done);
 });
 

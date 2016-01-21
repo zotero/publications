@@ -1,10 +1,11 @@
 import _ from 'lodash';
-import itemTpl from './tpl/item.tpl';
-import itemsTpl from './tpl/items.tpl';
-import groupTpl from './tpl/group.tpl';
-import groupsTpl from './tpl/groups.tpl';
-import brandingTpl from './tpl/branding.tpl';
-import detailsTpl from './tpl/details.tpl';
+import itemTpl from './tpl/partial/item.tpl';
+import itemsTpl from './tpl/partial/items.tpl';
+import groupTpl from './tpl/partial/group.tpl';
+import groupsTpl from './tpl/partial/groups.tpl';
+import brandingTpl from './tpl/partial/branding.tpl';
+import groupViewTpl from './tpl/group-view.tpl';
+import plainViewTpl from './tpl/plain-view.tpl';
 import {
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE
@@ -14,15 +15,21 @@ import {
 	closest
 } from './utils.js';
 
+
+/**
+ * Zotero Renderer constructor
+ * @param {HTMLElement} container	- A container where contents is rendered
+ * @param {Object} [config]			- ZoteroPublications config
+ */
 export function ZoteroRenderer(container, config) {
 	this.container = container;
 	this.config = config;
+	this.toggleSpinner(true);
 }
 
 /**
  * Render single Zotero item
  * @param  {Object} zoteroItem       - Single Zotero item data
- * @param  {String} childItemsMarkup - Rendered markup of a list of Zotero child items
  * @return {String}                  - Rendered markup of a Zotero item
  */
 ZoteroRenderer.prototype.renderItem = function(zoteroItem) {
@@ -35,7 +42,7 @@ ZoteroRenderer.prototype.renderItem = function(zoteroItem) {
 
 /**
  * Render a list of Zotero items
- * @param  {ZoteroData|Object[]} zoteroItems - List of Zotero items
+ * @param  {Object[]} zoteroItems - List of Zotero items
  * @return {String}                          - Rendered markup of a list of Zotero items
  */
 ZoteroRenderer.prototype.renderItems = function(zoteroItems) {
@@ -46,10 +53,8 @@ ZoteroRenderer.prototype.renderItems = function(zoteroItems) {
 };
 
 /**
- * Render an expandable group of Zotero items
- * @param  {String} title       - A title of a group
- * @param  {boolean} expand     - Indicates whether group should appear pre-expanded
- * @param  {String} itemsMarkup - Rendered markup of underlying list of Zotero items
+ * Render a group of Zotero items
+ * @param  {Object[]} items 	- List of items for this group
  * @return {String}             - Rendered markup of a group
  */
 ZoteroRenderer.prototype.renderGroup = function(items) {
@@ -62,108 +67,104 @@ ZoteroRenderer.prototype.renderGroup = function(items) {
 };
 
 /**
- * Render a list of groups of Zotero items
- * @param  {ZoteroData|Object} data - Grouped data where each key is a group titles and
- *                                    each value is an array Zotero items
- * @return {String}                 - Rendered markup of a list of groups
+ * Renders a list of groups of Zotero items
+ * @param {Object[]} 	- List of groups to render
+ * @return {String} 	- Rendered markup of groups
  */
-ZoteroRenderer.prototype.renderGroups = function(data) {
+ZoteroRenderer.prototype.renderGroups = function(groups) {
 	return groupsTpl({
+		'groups': groups,
+		'renderer': this
+	});
+};
+
+/**
+ * Render a Group View
+ * @param {Object[]} 	- List of groups to render
+ * @return {String} 	- Rendered markup of a complete group view
+ */
+ZoteroRenderer.prototype.renderGroupView = function(data) {
+	return groupViewTpl({
 		'groups': data,
 		'renderer': this
 	});
 };
 
 /**
- * [renderBranding description]
- * @return {[type]} [description]
+ * Render a Plain View
+ * @param  {Object[]} zoteroItems - List of Zotero items
+ * @return {String} 	- Rendered markup of a complete plain view
+ */
+ZoteroRenderer.prototype.renderPlainView = function(data) {
+	return plainViewTpl({
+		'items': data,
+		'renderer': this
+	});
+};
+
+/**
+ * Render Zotero branding
+ * @return {String}
  */
 ZoteroRenderer.prototype.renderBranding = function() {
 	return brandingTpl();
 };
 
 /**
- * Render Zotero item details
- * @param  {[type]} item [description]
- * @return {[type]}      [description]
- */
-ZoteroRenderer.prototype.renderDetails = function(item) {
-	return detailsTpl({
-		'item': item,
-		'data': item.data,
-		'renderer': this
-	});
-};
-
-/**
- * Render Zotero item details into a DOM element
- * @param  {[type]} item [description]
- * @return {[type]}      [description]
- */
-ZoteroRenderer.prototype.displayDetails = function(item) {
-	this.container.innerHTML = this.renderDetails(item);
-};
-
-/**
  * Render Zotero publications into a DOM element
- * @param  {HTMLElement} container - DOM element of which contents is to be replaced
  * @param  {ZoteroData} data       - Source of publications to be rendered
  */
 ZoteroRenderer.prototype.displayPublications = function(data) {
 	var markup;
 
+
 	if(data.grouped > 0) {
-		markup = this.renderGroups(data);
+		markup = this.renderGroupView(data);
 	} else {
-		markup = this.renderItems(data);
+		markup = this.renderPlainView(data);
 	}
 
 	this.data = data;
 	this.container.innerHTML = markup;
+
+
+	_.each(this.container.querySelectorAll('.zotero-details'), function(element) {
+		element.style.height = element.offsetHeight + 'px';
+		element.classList.add('zotero-details-collapsed');
+	});
+
+	this.toggleSpinner(false);
 	this.previous = markup;
 	this.addHandlers();
 };
 
 /**
- * Attach interaction handlers for expanding groups and shortened abstracts.
- * @param {HTMLElement} container - A top-level DOM element (e.g. container) that contains Zotero items.
+ * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function() {
 	this.container.addEventListener('click', function(ev) {
 		var target;
 
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'expand-group');
-
-		if(target) {
-			let groupEl = ev.target.parentNode;
-			let expanded = groupEl.classList.toggle('zotero-group-expanded');
-			groupEl.setAttribute('aria-expanded', expanded ? 'true' : 'false');
-			return;
-		}
-
 		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'details');
 		if(target) {
-			let key = target.dataset.item;
-			let item = _.where(this.data.raw, {'key': key})[0];
-			this.displayDetails(item);
+			let itemEl = closest(target, el => el.dataset && el.dataset.item);
+			let detailsEl = itemEl.querySelector('.zotero-details');
+			if(detailsEl) {
+				detailsEl.classList.toggle('zotero-details-collapsed');
+			}
+			window.history.pushState(null, null, `#${itemEl.dataset.item}`);
+			ev.preventDefault();
 			return;
 		}
-
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'details-exit');
-		if(target) {
-			this.container.innerHTML = this.previous;
-			return;
-		}
-	}.bind(this));
+	});
 };
 
 /**
  * Toggle CSS class that gives a visual loading feedback. Optionally allows to explicetly specify
  * whether to display or hide visual feedback.
- * @param  {HTMLElement} container - A DOM element to which visual feedback class should be attached
  * @param  {boolean} [activate]    - Explicitely indicate whether to add or remove visual feedback
  */
-ZoteroRenderer.prototype.toggleSpinner = function (container, activate) {
-	var method = activate === null ? container.classList.toggle : activate ? container.classList.add : container.classList.remove;
-	method.call(container.classList, 'zotero-loading');
+ZoteroRenderer.prototype.toggleSpinner = function (activate) {
+	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
+	method.call(this.container.classList, 'zotero-loading');
 };

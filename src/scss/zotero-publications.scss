@@ -1,46 +1,165 @@
-$primary-color: #333;
-$primary-text-color: #333;
-$accent-color: #38c;
+//
+// Zotero publications
+// --------------------------------------------------
 
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/variables";
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins";
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/normalize";
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/print";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/glyphicons";
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/scaffolding";
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/type";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/code";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/grid";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/tables";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/forms";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/buttons";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/component-animations";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/dropdowns";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/button-groups";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/input-groups";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/navs";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/navbar";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/breadcrumbs";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/pagination";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/pager";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/labels";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/badges";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/jumbotron";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/thumbnails";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/alerts";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/progress-bars";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/media";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/list-group";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/panels";
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/responsive-embed";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/wells";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/close";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/modals";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/tooltip";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/popovers";
-// @import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/carousel";
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/utilities";
-@import "../../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/responsive-utilities";
+$font-size-h2: 2em;
+$font-size-h3: 1.5em;
+$font-size-item-title: 1em * 8 / 7;
 
-@import "typography";
-@import "layout";
+$headings-line-height: 1.3;
+
+$screen-sm-min: 768px;
+
+$details-indent-xs: 15px;
+$details-indent-sm: 3em;
+
+
+/* Inherits:
+		* font-family
+		* color
+		* body font-size
+		* body line-height
+		* link styles
+*/
+
+.zotero {
+	&-publications {
+		margin: 5em 0 6.2em;
+
+		* {
+			box-sizing: border-box;
+		}
+
+		h2, h3 {
+			font-weight: bold;
+			line-height: $headings-line-height;
+			letter-spacing: -0.025em;
+		}
+
+		p {
+			margin: 1em 0;
+		}
+
+		a {
+			cursor: pointer;
+		}
+
+		ul {
+			list-style-type: none;
+			padding: 0;
+			margin: 0;
+		}
+	}
+
+	// Reference
+	&-reference {
+		font-size: $font-size-h3;
+		line-height: $headings-line-height;
+		margin-bottom: 2.3em;
+		opacity: 0.7;
+	}
+
+	// h2
+	&-group-title {
+		font-size: $font-size-h2;
+		margin: 1.6em 0 (1em * 6 / 7 );
+	}
+
+	// Item
+	&-item {
+		margin-bottom: 1em;
+	}
+
+	&-item-title {
+		font-size: $font-size-item-title;
+		line-height: 1.5;
+	}
+
+	// Details
+	&-details {
+		transition: height .4s ease-out;
+		overflow: hidden;
+		padding-left: $details-indent-xs;
+
+		@media (min-width: $screen-sm-min) {
+			padding-left: $details-indent-sm;
+		}
+
+		&-collapsed {
+			height: 0 !important;
+		}
+
+		&-inner {
+			margin: 3.4em 0 2.4em;
+
+			.zotero-item:last-child & {
+				margin-bottom: -1em;
+			}
+		}
+
+		h3 {
+			font-size: $font-size-h3;
+			margin: 1.4em 0 (1em * 2 / 3); // todo
+		}
+
+		ul {
+			margin-bottom: 1em;
+		}
+	}
+
+	&-icon-paperclip {
+		width: (15em / 14);
+		height: 1em;
+		display: inline-block;
+		vertical-align: (-1em / 14);
+		margin-right: (2em / 7);
+		background:
+			url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZycgeG1sbnM6eGxpbms9J2h0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsnIHg9JzBweCcgeT0nMHB4JyB2aWV3Qm94PScwIDAgMTUgMTQnIGVuYWJsZS1iYWNrZ3JvdW5kPSduZXcgMCAwIDE1IDE0JyB4bWw6c3BhY2U9J3ByZXNlcnZlJz48Zz48cGF0aCBmaWxsPScjNzc3Nzc3JyBkPSdNNi44LDEzbDUuNC01LjRjMC43LTAuNywxLjEtMS40LDEuMS0yLjJjMC4xLTAuOC0wLjEtMS40LTAuNi0ycy0xLjEtMS0xLjgtMS4xYy0wLjIsMC0wLjQsMC0wLjUsMGMtMC4zLDAtMC41LDAtMC44LDAuMUM5LjQsMi40LDkuMiwyLjUsOSwyLjZDOC45LDIuNyw4LjYsMi44LDguNCwzQzguMiwzLjIsOCwzLjQsNy44LDMuNUM3LjcsMy42LDcuNSwzLjgsNy4zLDRDNC40LDYuOSwyLjksOC40LDIuOCw4LjZDMi41LDguOCwyLjMsOC45LDIuMiw5QzIuMSw5LjIsMiw5LjMsMS44LDkuNXMtMC4zLDAuNC0wLjQsMC41Yy0wLjEsMC4yLTAuMSwwLjMtMC4yLDAuNmMtMC4xLDAuMi0wLjEsMC40LDAsMC43YzAuMSwwLjUsMC4zLDAuOCwwLjYsMS4xYzAuMywwLjMsMC43LDAuNCwxLjIsMC40YzAuNiwwLDEuMS0wLjIsMS40LTAuNmw2LjMtNi4zYzAuMy0wLjMsMC40LTAuNiwwLjItMC45Yy0wLjEtMC4xLTAuMS0wLjItMC4yLTAuM2MtMC4xLTAuMS0wLjItMC4xLTAuNC0wLjFjLTAuMiwwLTAuNCwwLjEtMC42LDAuM0M5LjcsNC45LDkuNiw1LDkuNCw1LjJsLTQsMy45QzUuMyw5LjMsNS4yLDkuMyw1LDkuM2MtMC4yLDAtMC4zLDAtMC40LTAuMkM0LjUsOS4xLDQuNCw4LjksNC40LDguOGMwLTAuMiwwLjEtMC4zLDAuMi0wLjRjMi41LTIuNiwzLjktNCw0LjItNC4zYzAuMy0wLjMsMC41LTAuNSwwLjgtMC42YzAuMy0wLjEsMC42LTAuMiwwLjktMC4yYzAuMSwwLDAuMiwwLDAuMywwYzAuMywwLjEsMC42LDAuMiwwLjksMC40YzAuMiwwLjIsMC40LDAuNSwwLjUsMC44YzAuMSwwLjQsMC4xLDAuNywwLDEuMWMtMC4xLDAuNC0wLjMsMC43LTAuNSwxYy0wLjEsMC4xLTAuMiwwLjItMC40LDAuNGMtMC4yLDAuMi0wLjUsMC41LTAuOSwwLjlDOS45LDguNCw5LjUsOC45LDksOS4zcy0wLjksMC45LTEuNCwxLjRjLTAuNSwwLjUtMSwxLTEuNCwxLjRzLTAuOCwwLjctMS4xLDFjLTAuMywwLjMtMC42LDAuNS0wLjcsMC41QzQsMTMuOSwzLjUsMTQsMywxNGMtMC41LDAtMS0wLjEtMS41LTAuNGMtMC41LTAuMi0wLjgtMC42LTEuMS0xYy0wLjQtMC42LTAuNS0xLjMtMC40LTJDMC4xLDkuOCwwLjQsOS4yLDEsOC43bDUuOS01LjljMC41LTAuNiwxLTAuOSwxLjMtMS4xQzguOSwxLjIsOS42LDEsMTAuNSwxYzAuNiwwLDEuMiwwLjEsMS44LDAuNGMwLjYsMC4zLDEuMSwwLjcsMS41LDEuMmMwLjQsMC41LDAuNywxLjEsMC44LDEuOGMwLjEsMC43LDAuMSwxLjQtMC4xLDIuMWMtMC4yLDAuNy0wLjYsMS4zLTEuMSwxLjhsLTUuNiw1LjVDNy42LDEzLjksNy40LDE0LDcuMywxNGMtMC4yLDAtMC4zLDAtMC40LTAuMmMtMC4xLTAuMS0wLjItMC4yLTAuMi0wLjRDNi42LDEzLjMsNi43LDEzLjIsNi44LDEzeicvPjwvZz48L3N2Zz4=")
+			0 0 no-repeat;
+	}
+
+	// Branding
+	&-branding {
+		margin-top: 3.8em;
+	}
+
+	&-logo {
+		display: inline-block;
+		vertical-align: top;
+
+		path {
+			fill: #ccc;
+			transition: fill 0.2s ease;
+		}
+
+		&:hover {
+			path {
+				fill: #222;
+			}
+
+			.zotero-z {
+				fill: #900;
+			}
+		}
+	}
+
+	// Loader
+	&-loading {
+		display: block;
+		position: relative;
+
+		&:after {
+			bottom: 0;
+			content: 'Loading …';
+			display: block;
+			height: 100%;
+			left: 0;
+			position: absolute;
+			right: 0;
+			text-align: center;
+			top: 0;
+			width: 100%;
+			background: #fff;
+		}
+	}
+}
