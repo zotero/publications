@@ -92,15 +92,24 @@ export function fetchUntilExhausted(url, options, jsondata) {
 					let matches = response.headers.get('Link').match(relRegex);
 					if(matches && matches.length >= 2) {
 						response.json().then(function(jsonDataPart) {
+							if(!(jsonDataPart instanceof Array)) {
+								jsonDataPart = [jsonDataPart];
+							}
 							resolve(fetchUntilExhausted(matches[1], options, _.union(jsondata, jsonDataPart)));
 						});
 					} else {
 						response.json().then(function(jsonDataPart) {
+							if(!(jsonDataPart instanceof Array)) {
+								jsonDataPart = [jsonDataPart];
+							}
 							resolve(_.union(jsondata, jsonDataPart));
 						});
 					}
 				} else {
 					response.json().then(function(jsonDataPart) {
+						if(!(jsonDataPart instanceof Array)) {
+							jsonDataPart = [jsonDataPart];
+						}
 						resolve(_.union(jsondata, jsonDataPart));
 					});
 				}

@@ -41,23 +41,12 @@ ZoteroPublications.prototype.defaults = {
 	expand: 'all'
 };
 
-/**
- * Build url for an endpoint then fetch entire dataset recursively
- * @param  {String} endpoint - An API endpoint from which data should be obtained
- * @return {Promise}         - Resolved with ZoteroData object on success, rejected
- *                             in case of any network/response problems
- */
-ZoteroPublications.prototype.get = function(endpoint) {
-	let apiBase = this.config.apiBase,
-		limit = this.config.limit,
-		style = this.config.citationStyle,
-		include = this.config.include.join(','),
-		url = `https://${apiBase}/${endpoint}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`,
-		options = {
-			headers: {
-				'Accept': 'application/json'
-			}
-		};
+ZoteroPublications.prototype.get = function(url, options) {
+	options = options || {
+		headers: {
+			'Accept': 'application/json'
+		}
+	};
 
 	return new Promise(function(resolve, reject) {
 		let promise = fetchUntilExhausted(url, options);
@@ -73,6 +62,46 @@ ZoteroPublications.prototype.get = function(endpoint) {
 };
 
 /**
+ * Build url for an endpoint then fetch entire dataset recursively
+ * @param  {String} endpoint - An API endpoint from which data should be obtained
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.getEndpoint = function(endpoint) {
+	let apiBase = this.config.apiBase,
+		limit = this.config.limit,
+		style = this.config.citationStyle,
+		include = this.config.include.join(','),
+		url = `https://${apiBase}/${endpoint}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
+
+	return this.get(url);
+
+};
+
+ZoteroPublications.prototype.getPublications = function(userId, citationStyle) {
+	let apiBase = this.config.apiBase,
+		limit = this.config.limit,
+		style = citationStyle || this.config.citationStyle,
+		include = this.config.include.join(','),
+		url = `https://${apiBase}/users/${userId}/publications/items?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
+
+	this.userId = userId;
+
+	return this.get(url);
+};
+
+
+ZoteroPublications.prototype.getItem = function(itemId, userId, citationStyle) {
+	let apiBase = this.config.apiBase,
+		limit = this.config.limit,
+		style = citationStyle || this.config.citationStyle,
+		include = this.config.include.join(','),
+		url = `https://${apiBase}/users/${userId}/publications/items/${itemId}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
+
+	return this.get(url);
+};
+
+/**
  * Render local or remote items.
  * @param  {String|ZoteroData} endpointOrData - Data containung publications to be rendered
  * @param  {HTMLElement} container            - A DOM element where publications will be rendered
@@ -84,16 +113,16 @@ ZoteroPublications.prototype.render = function(endpointOrData, container) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
 		if(endpointOrData instanceof ZoteroData) {
-			this.renderer = new ZoteroRenderer(container, this.config);
+			this.renderer = new ZoteroRenderer(container, this);
 			let data = endpointOrData;
-			this.renderer.displayPublications(data, this.config);
+			this.renderer.displayPublications(data);
 			resolve();
 		} else if(typeof endpointOrData === 'string') {
-			this.renderer = new ZoteroRenderer(container, this.config);
+			this.renderer = new ZoteroRenderer(container, this);
 			let endpoint = endpointOrData;
-			let promise = this.get(endpoint);
+			let promise = this.getEndpoint(endpoint);
 			promise.then(function(data) {
-				this.renderer.displayPublications(data, this.config);
+				this.renderer.displayPublications(data);
 				resolve();
 			}.bind(this));
 			promise.catch(function() {
