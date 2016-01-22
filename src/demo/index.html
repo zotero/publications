@@ -16,6 +16,9 @@
 <script src="lodash.js"></script>
 <script src="zotero-publications.js"></script>
 <script>
-	new ZoteroPublications({ 'group': 'type', 'apiBase': 'apidev.zotero.org'}).render('users/10150/publications/items', document.getElementById('container'));
+	var zp = new ZoteroPublications({ 'group': 'type', 'apiBase': 'apidev.zotero.org'});
+	zp.getPublications(10150).then(function(data) {
+		zp.render(data, document.getElementById('container'));
+	});
 </script>
 </html>
