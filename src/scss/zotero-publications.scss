@@ -146,6 +146,7 @@ $gray: #ccc;
 	&-cite-container {
 		transition: height .4s ease-out;
 		overflow: hidden;
+		margin-bottom: 1em;
 
 		&.collapsed {
 			height: 0 !important;
