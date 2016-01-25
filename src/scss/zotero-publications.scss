@@ -162,4 +162,13 @@ $details-indent-sm: 3em;
 			background: #fff;
 		}
 	}
+
+	&-cite-container {
+		transition: height .4s ease-out;
+		overflow: hidden;
+
+		&-collapsed {
+			height: 0 !important;
+		}
+	}
 }

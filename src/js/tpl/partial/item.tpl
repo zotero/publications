@@ -60,53 +60,90 @@
 	<% } %>
 
 	<!-- Details toggle -->
-	<% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
-		<div>
-			<a href="#<%- item.key %>" data-trigger="details">
-				Details
-			</a>
-		</div>
-	<% } %>
+	<div>
+		<a href="#<%- item.key %>" data-trigger="details">
+			Details
+		</a>
+	</div>
 
 	<!-- Details -->
-	<% if ((data.abstractNote && data.abstractNote.length) || (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) || (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length)) { %>
-		<div class="zotero-details">
-			<div class="zotero-details-inner">
+	<div class="zotero-details">
+		<div class="zotero-details-inner">
 
-				<% if (data.abstractNote && data.abstractNote.length) { %>
-					<h3>
-						Abstract
-					</h3>
-					<p class="zotero-abstract">
-						<%- data.abstractNote %>
-					</p>
-				<% } %>
+			<% if (data.abstractNote && data.abstractNote.length) { %>
+				<h3>
+					Abstract
+				</h3>
+				<p class="zotero-abstract">
+					<%- data.abstractNote %>
+				</p>
+			<% } %>
 
-				<% if (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) { %>
-					<h3>Notes</h3>
-					<ul class="zotero-notes">
-						<% for(var childItem of item[Symbol.for('childNotes')]) { %>
-							<li>
-								<%= childItem.data.note %>
-							</li>
-						<% } %>
-					</ul>
-				<% } %>
+			<% if (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) { %>
+				<h3>Notes</h3>
+				<ul class="zotero-notes">
+					<% for(var childItem of item[Symbol.for('childNotes')]) { %>
+						<li>
+							<%= childItem.data.note %>
+						</li>
+					<% } %>
+				</ul>
+			<% } %>
 
-				<% if (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length) { %>
-					<h3>Attachments</h3>
-					<ul class="zotero-attachments">
-						<% for(var childItem of item[Symbol.for('childAttachments')]) { %>
-							<li>
-								<a href="#">
-									<span class="zotero-icon zotero-icon-paperclip"></span><!--
-									--><%- childItem.data.title %>
-								</a>
-							</li>
-						<% } %>
-					</ul>
-				<% } %>
-			</div>
+			<% if (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length) { %>
+				<h3>Attachments</h3>
+				<ul class="zotero-attachments">
+					<% for(var childItem of item[Symbol.for('childAttachments')]) { %>
+						<li>
+							<a href="#">
+								<span class="zotero-icon zotero-icon-paperclip"></span><!--
+								--><%- childItem.data.title %>
+							</a>
+						</li>
+					<% } %>
+				</ul>
+			<% } %>
+			<% if(renderer.zotero.userId) { %>
+				<div>
+					<button class="zotero-cite-button" data-trigger="cite">
+						Cite
+					</button>
+				</div>
+				<div class="zotero-cite-container">
+					<select data-trigger="cite-style-selection">
+						<option value="american-anthropological-association">
+							American Anthropological Association
+						</option>
+						<option value="cell">
+							Cell
+						</option>
+						<option value="chicago-author-date">
+							Chicago Manual of Style 16th edition (author-date)
+						</option>
+						<option value="elsevier-harvard">
+							Elsevier Harvard (with titles)
+						</option>
+						<option value="ieee">
+							IEEE
+						</option>
+						<option value="modern-humanities-research-association-author-date">
+							Modern Humanities Research Association 3rd edition (author-date)
+						</option>
+						<option value="modern-language-association">
+							Modern Language Association 7th edition
+						</option>
+						<option value="nature">
+							Nature
+						</option>
+						<option value="vancouver">
+							Vancouver
+						</option>
+					</select>
+					<textarea class="zotero-citation" cols="30" rows="5">
+						<%= item.citation %>
+					</textarea>
+				</div>
+			<% } %>
 		</div>
-	<% } %>
+	</div>
 </li>
