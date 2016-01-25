@@ -167,7 +167,7 @@ $details-indent-sm: 3em;
 		transition: height .4s ease-out;
 		overflow: hidden;
 
-		&-collapsed {
+		&.collapsed {
 			height: 0 !important;
 		}
 	}

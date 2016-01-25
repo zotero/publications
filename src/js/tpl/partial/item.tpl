@@ -69,7 +69,6 @@
 	<!-- Details -->
 	<div class="zotero-details">
 		<div class="zotero-details-inner">
-
 			<% if (data.abstractNote && data.abstractNote.length) { %>
 				<h3>
 					Abstract
