@@ -161,7 +161,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 		if(target) {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-			citeContainerEl.classList.toggle('zotero-cite-container-collapsed');
+			citeContainerEl.classList.toggle('collapsed');
 		}
 	});
 
