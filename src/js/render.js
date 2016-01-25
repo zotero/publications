@@ -21,9 +21,10 @@ import {
  * @param {HTMLElement} container	- A container where contents is rendered
  * @param {Object} [config]			- ZoteroPublications config
  */
-export function ZoteroRenderer(container, config) {
+export function ZoteroRenderer(container, zotero) {
 	this.container = container;
-	this.config = config;
+	this.zotero = zotero;
+	this.config = zotero.config;
 	this.toggleSpinner(true);
 }
 
@@ -156,7 +157,28 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			ev.preventDefault();
 			return;
 		}
+		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'cite');
+		if(target) {
+			let itemEl = closest(target, el => el.dataset && el.dataset.item);
+			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+			citeContainerEl.classList.toggle('zotero-cite-container-collapsed');
+		}
 	});
+
+	this.container.addEventListener('change', function(ev) {
+		var target;
+
+		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'cite-style-selection');
+		if(target) {
+			let itemEl = closest(target, el => el.dataset && el.dataset.item);
+			let itemId = itemEl.dataset.item;
+			let citationTextareaEl = itemEl.querySelector('.zotero-citation');
+			let citationStyle = target.options[target.selectedIndex].value;
+			this.zotero.getItem(itemId, this.zotero.userId, citationStyle).then(function(item) {
+				citationTextareaEl.value = item.raw[0].citation;
+			});
+		}
+	}.bind(this));
 };
 
 /**
