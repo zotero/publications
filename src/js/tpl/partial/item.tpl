@@ -102,11 +102,12 @@
 					<% } %>
 				</ul>
 			<% } %>
+
+			<!-- Cite -->
 			<% if(renderer.zotero.userId) { %>
+				<h3>Cite</h3>
 				<div>
-					<button class="zotero-cite-button" data-trigger="cite">
-						Cite
-					</button>
+					<button class="zotero-cite-button" data-trigger="cite">Cite</button>
 				</div>
 				<div class="zotero-cite-container">
 					<select data-trigger="cite-style-selection">
