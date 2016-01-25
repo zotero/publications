@@ -2,16 +2,16 @@
 
 	<!-- Reference -->
 	<% if (renderer.config.alwaysUseCitationStyle) { %>
-		<div class="zotero-item-title">
+		<h3 class="zotero-item-title">
 			<%= item.citation %>
-		</div>
+		</h3>
 
 	<!-- Templated -->
 	<% } else { %>
 		<% if (data.itemType == 'book') { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%- data.title %></a>
-			</div>
+			</h3>
 			<div class="zotoero-item-subline">
 				By <%- data[Symbol.for('authors')] %>
 				<% if (data[Symbol.for('formattedDate')]) { %>
@@ -20,9 +20,9 @@
 			</div>
 
 		<% } else if (data.itemType == 'journalArticle') { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%- data.title %></a>
-			</div>
+			</h3>
 			<div class="zotoero-item-subline">
 				<%- data.journalAbbreviation %>
 				<% if (data[Symbol.for('formattedDate')]) { %>
@@ -31,9 +31,9 @@
 			</div>
 
 		<% } else if (data.itemType == 'newspaperArticle' || data.itemType == 'magazineArticle') { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%- data.title %></a>
-			</div>
+			</h3>
 			<div class="zotoero-item-subline">
 				<%- data.publicationTitle %>
 				<% if (data[Symbol.for('formattedDate')]) { %>
@@ -42,9 +42,9 @@
 			</div>
 
 		<% } else if (data.itemType == 'blogPost') { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%- data.title %></a>
-			</div>
+			</h3>
 			<div class="zotoero-item-subline">
 				<%- data.blogTitle %>
 				<% if (data[Symbol.for('formattedDate')]) { %>
@@ -53,9 +53,9 @@
 			</div>
 
 		<% } else { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%= item.citation %></a>
-			</div>
+			</h3>
 		<% } %>
 	<% } %>
 
@@ -70,16 +70,14 @@
 	<div class="zotero-details">
 		<div class="zotero-details-inner">
 			<% if (data.abstractNote && data.abstractNote.length) { %>
-				<h3>
-					Abstract
-				</h3>
+				<h4>Abstract</h4>
 				<p class="zotero-abstract">
 					<%- data.abstractNote %>
 				</p>
 			<% } %>
 
 			<% if (item[Symbol.for('childNotes')] && item[Symbol.for('childNotes')].length) { %>
-				<h3>Notes</h3>
+				<h4>Notes</h4>
 				<ul class="zotero-notes">
 					<% for(var childItem of item[Symbol.for('childNotes')]) { %>
 						<li>
@@ -90,7 +88,7 @@
 			<% } %>
 
 			<% if (item[Symbol.for('childAttachments')] && item[Symbol.for('childAttachments')].length) { %>
-				<h3>Attachments</h3>
+				<h4>Attachments</h4>
 				<ul class="zotero-attachments">
 					<% for(var childItem of item[Symbol.for('childAttachments')]) { %>
 						<li>
@@ -105,7 +103,7 @@
 
 			<!-- Cite -->
 			<% if(renderer.zotero.userId) { %>
-				<h3>Cite</h3>
+				<h4>Cite</h4>
 				<div>
 					<button class="zotero-cite-button" data-trigger="cite">Cite</button>
 				</div>
