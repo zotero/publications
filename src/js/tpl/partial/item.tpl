@@ -103,12 +103,11 @@
 
 			<!-- Cite -->
 			<% if(renderer.zotero.userId) { %>
-				<h4>Cite</h4>
-				<div>
-					<button class="zotero-cite-button" data-trigger="cite">Cite</button>
+				<div class="zotero-toolbar">
+					<a data-trigger="cite">Cite</a>
 				</div>
 				<div class="zotero-cite-container">
-					<select data-trigger="cite-style-selection">
+					<select class="zotero-form-control" data-trigger="cite-style-selection">
 						<option value="american-anthropological-association">
 							American Anthropological Association
 						</option>
@@ -137,9 +136,9 @@
 							Vancouver
 						</option>
 					</select>
-					<textarea class="zotero-citation" cols="30" rows="5">
+					<p class="zotero-citation">
 						<%= item.citation %>
-					</textarea>
+					</p>
 				</div>
 			<% } %>
 		</div>

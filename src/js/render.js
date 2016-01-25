@@ -172,10 +172,10 @@ ZoteroRenderer.prototype.addHandlers = function() {
 		if(target) {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			let itemId = itemEl.dataset.item;
-			let citationTextareaEl = itemEl.querySelector('.zotero-citation');
+			let citationEl = itemEl.querySelector('.zotero-citation');
 			let citationStyle = target.options[target.selectedIndex].value;
 			this.zotero.getItem(itemId, this.zotero.userId, citationStyle).then(function(item) {
-				citationTextareaEl.value = item.raw[0].citation;
+				citationEl.value = item.raw[0].citation;
 			});
 		}
 	}.bind(this));
