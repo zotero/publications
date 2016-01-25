@@ -150,10 +150,10 @@ $gray: #ccc;
 		&.collapsed {
 			height: 0 !important;
 		}
-	}
 
-	&-citation {
-		margin-bottom: 0;
+		.zotero-citation {
+			margin-bottom: 0;
+		}
 	}
 
 	// Branding
