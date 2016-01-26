@@ -2,16 +2,16 @@
 
 	<!-- Reference -->
 	<% if (obj.renderer.config.alwaysUseCitationStyle) { %>
-		<div class="zotero-item-title">
+		<h3 class="zotero-item-title">
 			<%= obj.item.citation %>
-		</div>
+		</h3>
 
 	<!-- Templated -->
 	<% } else { %>
 		<% if (obj.data.itemType == 'book') { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%- obj.data.title %></a>
-			</div>
+			</h3>
 			<div class="zotoero-item-subline">
 				By <%- obj.data[Symbol.for('authors')] %>
 				<% if (obj.data[Symbol.for('formattedDate')]) { %>
@@ -20,9 +20,9 @@
 			</div>
 
 		<% } else if (obj.data.itemType == 'journalArticle') { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%- obj.data.title %></a>
-			</div>
+			</h3>
 			<div class="zotoero-item-subline">
 				<%- obj.data.journalAbbreviation %>
 				<% if (obj.data[Symbol.for('formattedDate')]) { %>
@@ -31,9 +31,9 @@
 			</div>
 
 		<% } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%- obj.data.title %></a>
-			</div>
+			</h3>
 			<div class="zotoero-item-subline">
 				<%- obj.data.publicationTitle %>
 				<% if (obj.data[Symbol.for('formattedDate')]) { %>
@@ -42,9 +42,9 @@
 			</div>
 
 		<% } else if (obj.data.itemType == 'blogPost') { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%- obj.data.title %></a>
-			</div>
+			</h3>
 			<div class="zotoero-item-subline">
 				<%- obj.data.blogTitle %>
 				<% if (obj.data[Symbol.for('formattedDate')]) { %>
@@ -53,9 +53,9 @@
 			</div>
 
 		<% } else { %>
-			<div class="zotero-item-title">
+			<h3 class="zotero-item-title">
 				<a href="#"><%= obj.item.citation %></a>
-			</div>
+			</h3>
 		<% } %>
 	<% } %>
 
@@ -69,23 +69,15 @@
 	<!-- Details -->
 	<div class="zotero-details">
 		<div class="zotero-details-inner">
-			<% if (!obj.renderer.config.alwaysUseCitationStyle) { %>
-				<div class="zotero-reference">
-					<%= obj.item.citation %>
-				</div>
-			<% } %>
-
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
-				<h3>
-					Abstract
-				</h3>
+				<h4>Abstract</h4>
 				<p class="zotero-abstract">
 					<%- obj.data.abstractNote %>
 				</p>
 			<% } %>
 
 			<% if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) { %>
-				<h3>Notes</h3>
+				<h4>Notes</h4>
 				<ul class="zotero-notes">
 					<% for(var childItem of obj.item[Symbol.for('childNotes')]) { %>
 						<li>
@@ -96,7 +88,7 @@
 			<% } %>
 
 			<% if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) { %>
-				<h3>Attachments</h3>
+				<h4>Attachments</h4>
 				<ul class="zotero-attachments">
 					<% for(var childItem of obj.item[Symbol.for('childAttachments')]) { %>
 						<li>
@@ -109,13 +101,12 @@
 				</ul>
 			<% } %>
 			<% if(obj.renderer.zotero.userId) { %>
-				<div>
-					<button class="zotero-cite-button" data-trigger="cite">
-						Cite
-					</button>
+			<!-- Cite -->
+				<div class="zotero-toolbar">
+					<a data-trigger="cite">Cite</a>
 				</div>
 				<div class="zotero-cite-container">
-					<select data-trigger="cite-style-selection">
+					<select class="zotero-form-control" data-trigger="cite-style-selection">
 						<option value="american-anthropological-association">
 							American Anthropological Association
 						</option>
@@ -144,9 +135,9 @@
 							Vancouver
 						</option>
 					</select>
-					<textarea class="zotero-citation" cols="30" rows="5">
+					<p class="zotero-citation">
 						<%= obj.item.citation %>
-					</textarea>
+					</p>
 				</div>
 			<% } %>
 		</div>
