@@ -1,5 +1,5 @@
 <ul class="zotero-groups">
-	<% for (var group of groups) { %>
-		<%= renderer.renderGroup(group) %>
+	<% for (var group of obj.groups) { %>
+		<%= obj.renderer.renderGroup(group) %>
 	<% } %>
 </ul>
