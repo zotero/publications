@@ -15,6 +15,7 @@ import {
 	closest
 } from './utils.js';
 
+_.templateSettings.variable = 'obj';
 
 /**
  * Zotero Renderer constructor

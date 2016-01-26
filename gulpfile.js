@@ -75,13 +75,18 @@ function getBrowserify(debug, entry, shimConfig) {
 			debug: debug,
 			standalone: 'ZoteroPublications',
 			transform: [
-			'babelify',
+
 			['node-underscorify', {
                 'extensions': ['tpl'],
-                requires: [{variable: '_', module: 'lodash'}]
+                'requires': [{variable: '_', module: 'lodash'}],
+                'templateSettings': {
+                	variable: 'obj'
+                }
             }],
+            ['babelify', {'extensions': ['.js', '.tpl']}],
 			['stringify', {extensions: ['.html']}],
-			['browserify-shim', shimConfig]
+			['browserify-shim', shimConfig],
+
 		]
 	});
 

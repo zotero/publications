@@ -1,4 +1,4 @@
 <div class="zotero-publications">
-	<%= renderer.renderItems(items) %>
-	<%= renderer.renderBranding() %>
+	<%= obj.renderer.renderItems(items) %>
+	<%= obj.renderer.renderBranding() %>
 </div>
