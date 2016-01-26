@@ -29,11 +29,14 @@ module.exports = function(config) {
 	browserify: {
 		debug: true,
 		transform: [
-			'babelify',
 			['node-underscorify', {
-                'extensions': ['tpl'],
-                requires: [{variable: '_', module: 'lodash'}]
-            }],
+				'extensions': ['tpl'],
+				'requires': [{variable: '_', module: 'lodash'}],
+				'templateSettings': {
+					variable: 'obj'
+				}
+			}],
+			['babelify', {'extensions': ['.js', '.tpl']}],
 			['stringify', {extensions: ['.html']}],
 			'browserify-istanbul'
 		]
