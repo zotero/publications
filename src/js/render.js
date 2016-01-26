@@ -15,6 +15,7 @@ import {
 	closest
 } from './utils.js';
 
+_.templateSettings.variable = 'obj';
 
 /**
  * Zotero Renderer constructor
@@ -175,7 +176,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			let citationEl = itemEl.querySelector('.zotero-citation');
 			let citationStyle = target.options[target.selectedIndex].value;
 			this.zotero.getItem(itemId, this.zotero.userId, citationStyle).then(function(item) {
-				citationEl.value = item.raw[0].citation;
+				citationEl.innerHTML = item.raw[0].citation;
 			});
 		}
 	}.bind(this));
