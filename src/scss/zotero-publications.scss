@@ -52,6 +52,11 @@ $border-radius-base: 4px;
 			list-style-type: none;
 			padding: 0;
 			margin: 0;
+
+			&.zotero-list-inline li {
+				display: inline;
+				margin-right: 1em * 8 / 7;
+			}
 		}
 	}
 
