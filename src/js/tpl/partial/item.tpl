@@ -103,7 +103,10 @@
 			<% if(obj.renderer.zotero.userId) { %>
 			<!-- Cite -->
 				<div class="zotero-toolbar">
-					<a data-trigger="cite">Cite</a>
+					<ul class="zotero-list-inline">
+						<li><a data-trigger="cite">Cite</a></li><!--
+						--><li><a>Copy as BibTeX</a></li>
+					</ul>
 				</div>
 				<div class="zotero-cite-container">
 					<select class="zotero-form-control" data-trigger="cite-style-selection">
