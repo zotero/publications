@@ -12,7 +12,8 @@ import {
 } from './data.js';
 import {
 	formatCategoryName,
-	closest
+	closest,
+	selectText
 } from './utils.js';
 
 _.templateSettings.variable = 'obj';
@@ -177,6 +178,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			let citationStyle = target.options[target.selectedIndex].value;
 			this.zotero.getItem(itemId, this.zotero.userId, citationStyle).then(function(item) {
 				citationEl.innerHTML = item.raw[0].citation;
+				selectText(citationEl);
 			});
 		}
 	}.bind(this));

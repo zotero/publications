@@ -48,3 +48,21 @@ export function formatCategoryName(name) {
 export function closest(el, fn) {
     return el && (fn(el) ? el : closest(el.parentNode, fn));
 }
+
+/**
+ * Cross-browser text range selection
+ * @param  {HTMLElement} textEl		- A DOM element where text should be selected
+ */
+export function selectText(textEl) {
+    if(document.body.createTextRange) {
+        let range = document.body.createTextRange();
+        range.moveToElementText(textEl);
+        range.select();
+    } else if(window.getSelection) {
+        let selection = window.getSelection(),
+			range = document.createRange();
+        range.selectNodeContents(textEl);
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
+}
