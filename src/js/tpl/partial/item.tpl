@@ -105,7 +105,7 @@
 				<div class="zotero-toolbar">
 					<ul class="zotero-list-inline">
 						<li><a data-trigger="cite">Cite</a></li><!--
-						--><li><a>Copy as BibTeX</a></li>
+						--><li><a href="data:application/x-bibtex,<%- obj.item.bibtex %>" target="_blank" download="<%- obj.data.title %>.bib">Export as BibTeX</a></li>
 					</ul>
 				</div>
 				<div class="zotero-cite-container zotero-collapsed zotero-collapsable">

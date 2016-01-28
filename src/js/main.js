@@ -34,7 +34,7 @@ ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
 	limit: 100,
 	citationStyle: '',
-	include: ['data', 'citation'],
+	include: ['data', 'citation', 'bibtex'],
 	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
