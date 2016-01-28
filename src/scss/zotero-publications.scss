@@ -113,18 +113,25 @@ $border-radius-base: 4px;
 		}
 	}
 
+	&-collapsed {
+		height: 0;
+	}
+
+	&-collapsing {
+		transition: height .4s ease-out;
+		will-change: height;
+	}
+
+	&-collapsable {
+		overflow: hidden;
+	}
+
 	// Details
 	&-details {
-		transition: height .4s ease-out;
-		overflow: hidden;
 		padding-left: $details-indent-xs;
 
 		@media (min-width: $screen-sm-min) {
 			padding-left: $details-indent-sm;
-		}
-
-		&-collapsed {
-			height: 0 !important;
 		}
 
 		&-inner {

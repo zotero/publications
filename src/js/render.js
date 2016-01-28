@@ -13,7 +13,8 @@ import {
 import {
 	formatCategoryName,
 	closest,
-	selectText
+	selectText,
+	toggleCollapse
 } from './utils.js';
 
 _.templateSettings.variable = 'obj';
@@ -129,13 +130,6 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
 
 	this.data = data;
 	this.container.innerHTML = markup;
-
-
-	_.each(this.container.querySelectorAll('.zotero-details'), function(element) {
-		element.style.height = element.offsetHeight + 'px';
-		element.classList.add('zotero-details-collapsed');
-	});
-
 	this.toggleSpinner(false);
 	this.previous = markup;
 	this.addHandlers();
@@ -153,7 +147,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			let detailsEl = itemEl.querySelector('.zotero-details');
 			if(detailsEl) {
-				detailsEl.classList.toggle('zotero-details-collapsed');
+				toggleCollapse(detailsEl);
 			}
 			window.history.pushState(null, null, `#${itemEl.dataset.item}`);
 			ev.preventDefault();
@@ -163,7 +157,10 @@ ZoteroRenderer.prototype.addHandlers = function() {
 		if(target) {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-			citeContainerEl.classList.toggle('collapsed');
+			if(citeContainerEl) {
+				toggleCollapse(citeContainerEl);
+				selectText(citeContainerEl.querySelector('.zotero-citation'));
+			}
 		}
 	});
 

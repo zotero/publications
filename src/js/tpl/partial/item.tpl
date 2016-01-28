@@ -12,7 +12,7 @@
 			<h3 class="zotero-item-title">
 				<a href="#"><%- obj.data.title %></a>
 			</h3>
-			<div class="zotoero-item-subline">
+			<div class="zotero-item-subline">
 				By <%- obj.data[Symbol.for('authors')] %>
 				<% if (obj.data[Symbol.for('formattedDate')]) { %>
 				(<%- obj.data[Symbol.for('formattedDate')] %>)
@@ -23,7 +23,7 @@
 			<h3 class="zotero-item-title">
 				<a href="#"><%- obj.data.title %></a>
 			</h3>
-			<div class="zotoero-item-subline">
+			<div class="zotero-item-subline">
 				<%- obj.data.journalAbbreviation %>
 				<% if (obj.data[Symbol.for('formattedDate')]) { %>
 				(<%- obj.data[Symbol.for('formattedDate')] %>)
@@ -34,7 +34,7 @@
 			<h3 class="zotero-item-title">
 				<a href="#"><%- obj.data.title %></a>
 			</h3>
-			<div class="zotoero-item-subline">
+			<div class="zotero-item-subline">
 				<%- obj.data.publicationTitle %>
 				<% if (obj.data[Symbol.for('formattedDate')]) { %>
 				(<%- obj.data[Symbol.for('formattedDate')] %>)
@@ -45,7 +45,7 @@
 			<h3 class="zotero-item-title">
 				<a href="#"><%- obj.data.title %></a>
 			</h3>
-			<div class="zotoero-item-subline">
+			<div class="zotero-item-subline">
 				<%- obj.data.blogTitle %>
 				<% if (obj.data[Symbol.for('formattedDate')]) { %>
 				(<%- obj.data[Symbol.for('formattedDate')] %>)
@@ -67,7 +67,7 @@
 	</div>
 
 	<!-- Details -->
-	<div class="zotero-details">
+	<div class="zotero-details zotero-collapsed zotero-collapsable">
 		<div class="zotero-details-inner">
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
@@ -108,7 +108,7 @@
 						--><li><a>Copy as BibTeX</a></li>
 					</ul>
 				</div>
-				<div class="zotero-cite-container">
+				<div class="zotero-cite-container zotero-collapsed zotero-collapsable">
 					<select class="zotero-form-control" data-trigger="cite-style-selection">
 						<option value="american-anthropological-association">
 							American Anthropological Association
