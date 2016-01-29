@@ -152,8 +152,11 @@ export function toggleCollapse(element) {
 		collapsesInProgress[element]();
 		let collapsing = !element.style.height;
 		collapsing ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return collapsing;
 	}
 	else {
-		element.classList.contains('zotero-collapsed') ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		let collapsed = element.classList.contains('zotero-collapsed');
+		collapsed ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return collapsed;
 	}
 }

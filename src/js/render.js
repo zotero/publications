@@ -28,6 +28,11 @@ export function ZoteroRenderer(container, zotero) {
 	this.container = container;
 	this.zotero = zotero;
 	this.config = zotero.config;
+	if(this.config.storeCitationPreference) {
+		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
+	} else {
+		this.preferredCitationStyle = this.config.citationStyle;
+	}
 	this.toggleSpinner(true);
 }
 
@@ -37,10 +42,13 @@ export function ZoteroRenderer(container, zotero) {
  * @return {String}                  - Rendered markup of a Zotero item
  */
 ZoteroRenderer.prototype.renderItem = function(zoteroItem) {
+	var citationPreference;
+
 	return itemTpl({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'renderer': this
+		'renderer': this,
+		'citationPreference': citationPreference
 	});
 };
 
@@ -121,7 +129,6 @@ ZoteroRenderer.prototype.renderBranding = function() {
 ZoteroRenderer.prototype.displayPublications = function(data) {
 	var markup;
 
-
 	if(data.grouped > 0) {
 		markup = this.renderGroupView(data);
 	} else {
@@ -136,10 +143,38 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
 };
 
 /**
+ * Update citation and store preference in memory/local storage
+ * depending on configuration
+ * @param  {HTMLElement} itemEl 		- dom element containing the item
+ * @param  {String} citationStyle 		- optionally set the citation style
+ */
+ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
+	let itemId = itemEl.dataset.item;
+	let citationEl = itemEl.querySelector('.zotero-citation');
+	let citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
+
+	if(citationStyle) {
+		citationStyleSelectEl.value = citationStyle;
+	} else {
+		citationStyle = citationStyleSelectEl.options[citationStyleSelectEl.selectedIndex].value;
+	}
+
+	this.preferredCitationStyle = citationStyle;
+	if(this.config.storeCitationPreference) {
+		localStorage.setItem('zotero-citation-preference', citationStyle);
+	}
+
+	this.zotero.getItem(itemId, this.zotero.userId, citationStyle).then(function(item) {
+		citationEl.innerHTML = item.raw[0].citation;
+		selectText(citationEl);
+	});
+};
+
+/**
  * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function() {
-	this.container.addEventListener('click', function(ev) {
+	this.container.addEventListener('click', ev => {
 		var target;
 
 		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'details');
@@ -158,28 +193,26 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
 			if(citeContainerEl) {
-				toggleCollapse(citeContainerEl);
-				selectText(citeContainerEl.querySelector('.zotero-citation'));
+				let expanding = toggleCollapse(citeContainerEl);
+				if(expanding) {
+					this.updateCitation(itemEl, this.preferredCitationStyle);
+				}
 			}
 		}
 	});
 
-	this.container.addEventListener('change', function(ev) {
+	this.container.addEventListener('change', ev => {
 		var target;
 
 		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'cite-style-selection');
 		if(target) {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			let itemId = itemEl.dataset.item;
-			let citationEl = itemEl.querySelector('.zotero-citation');
-			let citationStyle = target.options[target.selectedIndex].value;
-			this.zotero.getItem(itemId, this.zotero.userId, citationStyle).then(function(item) {
-				citationEl.innerHTML = item.raw[0].citation;
-				selectText(citationEl);
-			});
+			this.updateCitation(itemEl);
 		}
-	}.bind(this));
+	});
 };
+
+
 
 /**
  * Toggle CSS class that gives a visual loading feedback. Optionally allows to explicetly specify
