@@ -35,6 +35,7 @@ ZoteroPublications.prototype.defaults = {
 	limit: 100,
 	citationStyle: '',
 	include: ['data', 'citation', 'bibtex'],
+	storeCitationPreference: false,
 	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
