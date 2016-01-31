@@ -4,6 +4,7 @@ import itemsTpl from './tpl/partial/items.tpl';
 import groupTpl from './tpl/partial/group.tpl';
 import groupsTpl from './tpl/partial/groups.tpl';
 import brandingTpl from './tpl/partial/branding.tpl';
+import exportTpl from './tpl/partial/export.tpl';
 import groupViewTpl from './tpl/group-view.tpl';
 import plainViewTpl from './tpl/plain-view.tpl';
 import {
@@ -164,9 +165,30 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 		localStorage.setItem('zotero-citation-preference', citationStyle);
 	}
 
-	this.zotero.getItem(itemId, this.zotero.userId, citationStyle).then(function(item) {
+	this.zotero.getItem(itemId, this.zotero.userId, {'citationStyle': citationStyle}).then(function(item) {
 		citationEl.innerHTML = item.raw[0].citation;
 		selectText(citationEl);
+	});
+};
+
+/**
+ * Prepare a link for downloading item export
+ */
+ZoteroRenderer.prototype.prepareExport = function(itemEl) {
+	let itemId = itemEl.dataset.item;
+	let exportEl = itemEl.querySelector('.zotero-export');
+	let exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
+	let exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
+
+	exportEl.innerHTML = '';
+	exportEl.classList.add('zotero-loading');
+
+	this.zotero.getItem(itemId, this.zotero.userId, {'include': ['data', 'citation', exportFormat]}).then(function(item) {
+		exportEl.classList.remove('zotero-loading');
+		exportEl.innerHTML = exportTpl({
+			'filename': item.raw[0].data.title,
+			'content': item.raw[0][exportFormat]
+		});
 	});
 };
 
@@ -192,10 +214,25 @@ ZoteroRenderer.prototype.addHandlers = function() {
 		if(target) {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+			let exportContainerEl = itemEl.querySelector('.zotero-export-container');
 			if(citeContainerEl) {
 				let expanding = toggleCollapse(citeContainerEl);
 				if(expanding) {
 					this.updateCitation(itemEl, this.preferredCitationStyle);
+					toggleCollapse(exportContainerEl, false);
+				}
+			}
+		}
+		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'export');
+		if(target) {
+			let itemEl = closest(target, el => el.dataset && el.dataset.item);
+			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+			let exportContainerEl = itemEl.querySelector('.zotero-export-container');
+			if(exportContainerEl) {
+				let expanding = toggleCollapse(exportContainerEl);
+				if(expanding) {
+					this.prepareExport(itemEl);
+					toggleCollapse(citeContainerEl, false);
 				}
 			}
 		}
@@ -208,6 +245,12 @@ ZoteroRenderer.prototype.addHandlers = function() {
 		if(target) {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			this.updateCitation(itemEl);
+		}
+
+		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'export-format-selection');
+		if(target) {
+			let itemEl = closest(target, el => el.dataset && el.dataset.item);
+			this.prepareExport(itemEl);
 		}
 	});
 };
