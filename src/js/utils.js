@@ -147,7 +147,12 @@ function uncollapse(element) {
  * Collpases or uncollapses a DOM element
  * @param  {HTMLElement} element 	- DOM element to be (un)collapsed
  */
-export function toggleCollapse(element) {
+export function toggleCollapse(element, override) {
+	if(typeof override !== 'undefined') {
+		override ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return override;
+	}
+
 	if(collapsesInProgress[element]) {
 		collapsesInProgress[element]();
 		let collapsing = !element.style.height;

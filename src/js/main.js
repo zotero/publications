@@ -34,12 +34,24 @@ ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
 	limit: 100,
 	citationStyle: '',
-	include: ['data', 'citation', 'bibtex'],
+	include: ['data', 'citation'],
 	storeCitationPreference: false,
 	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
-	expand: 'all'
+	expand: 'all',
+	citeStyleOptions: {
+		'american-anthropological-association': 'American Anthropological Association',
+		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
+		'elsevier-harvard': 'Elsevier Harvard (with titles)',
+		'modern-humanities-research-association-author-date': 'Modern Humanities Research Association 3rd edition (author-date)',
+		'modern-language-association': 'Modern Language Association 7th edition'
+	},
+	exportFormats: {
+		'bibtex': 'BibTeX',
+		'ris': 'RIS',
+		'rdf_zotero': 'Zotero RDF'
+	}
 };
 
 ZoteroPublications.prototype.get = function(url, options) {
@@ -79,11 +91,12 @@ ZoteroPublications.prototype.getEndpoint = function(endpoint) {
 
 };
 
-ZoteroPublications.prototype.getPublications = function(userId, citationStyle) {
+ZoteroPublications.prototype.getPublications = function(userId, options) {
+	options = options || {};
 	let apiBase = this.config.apiBase,
-		limit = this.config.limit,
-		style = citationStyle || this.config.citationStyle,
-		include = this.config.include.join(','),
+		limit = options.limit || this.config.limit,
+		style = options.citationStyle || this.config.citationStyle,
+		include = options.include && options.include.join(',') || this.config.include.join(','),
 		url = `https://${apiBase}/users/${userId}/publications/items?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
 
 	this.userId = userId;
@@ -92,11 +105,12 @@ ZoteroPublications.prototype.getPublications = function(userId, citationStyle) {
 };
 
 
-ZoteroPublications.prototype.getItem = function(itemId, userId, citationStyle) {
+ZoteroPublications.prototype.getItem = function(itemId, userId, options) {
+	options = options || {};
 	let apiBase = this.config.apiBase,
-		limit = this.config.limit,
-		style = citationStyle || this.config.citationStyle,
-		include = this.config.include.join(','),
+		limit = options.limit || this.config.limit,
+		style = options.citationStyle || this.config.citationStyle,
+		include = options.include && options.include.join(',') || this.config.include.join(','),
 		url = `https://${apiBase}/users/${userId}/publications/items/${itemId}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
 
 	return this.get(url);
