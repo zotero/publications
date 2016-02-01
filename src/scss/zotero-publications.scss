@@ -69,6 +69,10 @@ $border-radius-base: 4px;
 	// Item
 	&-item {
 		margin-bottom: 1em;
+
+		&:last-child {
+			margin-bottom: 0;
+		}
 	}
 
 	// h3
@@ -93,6 +97,20 @@ $border-radius-base: 4px;
 			0 0 no-repeat;
 	}
 
+	// Collapse
+	&-collapsed {
+		height: 0;
+	}
+
+	&-collapsing {
+		transition: height .4s ease-out;
+		will-change: height;
+	}
+
+	&-collapsable {
+		overflow: hidden;
+	}
+
 	// Forms
 	&-form-control {
 		background: {
@@ -113,19 +131,6 @@ $border-radius-base: 4px;
 		}
 	}
 
-	&-collapsed {
-		height: 0;
-	}
-
-	&-collapsing {
-		transition: height .4s ease-out;
-		will-change: height;
-	}
-
-	&-collapsable {
-		overflow: hidden;
-	}
-
 	// Details
 	&-details {
 		padding-left: $details-indent-xs;
@@ -138,7 +143,7 @@ $border-radius-base: 4px;
 			margin: 3.4em 0 2.4em;
 
 			.zotero-item:last-child & {
-				margin-bottom: -1em;
+				margin-bottom: 0;
 			}
 		}
 
@@ -154,20 +159,17 @@ $border-radius-base: 4px;
 
 	// Toolbar
 	&-toolbar {
-		margin: 2em 0 1em;
+		margin: 2em 0 0;
+
+		ul {
+			margin: 0;
+		}
 	}
 
-	// Cite
-	&-cite-container {
-		transition: height .4s ease-out;
-		overflow: hidden;
-		margin-bottom: 1em;
+	&-container-inner {
+		margin-top: 1em;
 
-		&.collapsed {
-			height: 0 !important;
-		}
-
-		.zotero-citation {
+		p {
 			margin-bottom: 0;
 		}
 	}
