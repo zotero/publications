@@ -101,34 +101,42 @@
 				</ul>
 			<% } %>
 			<% if(obj.renderer.zotero.userId) { %>
-			<!-- Cite -->
+				<!-- Cite & export -->
 				<div class="zotero-toolbar">
 					<ul class="zotero-list-inline">
 						<li><a data-trigger="cite">Cite</a></li><!--
 						--><li><a data-trigger="export">Export</a></li>
 					</ul>
 				</div>
+
+				<!-- Cite -->
 				<div class="zotero-cite-container zotero-collapsed zotero-collapsable">
-					<select class="zotero-form-control" data-trigger="cite-style-selection">
-						<% for(var citationStyle in obj.renderer.zotero.config.citeStyleOptions) { %>
-							<option value="<%= citationStyle %>">
-								<%= obj.renderer.zotero.config.citeStyleOptions[citationStyle] %>
-							</option>
-						<% } %>
-					</select>
-					<p class="zotero-citation">
-						<%= obj.item.citation %>
-					</p>
+					<div class="zotero-container-inner">
+						<select class="zotero-form-control" data-trigger="cite-style-selection">
+							<% for(var citationStyle in obj.renderer.zotero.config.citeStyleOptions) { %>
+								<option value="<%= citationStyle %>">
+									<%= obj.renderer.zotero.config.citeStyleOptions[citationStyle] %>
+								</option>
+							<% } %>
+						</select>
+						<p class="zotero-citation">
+							<%= obj.item.citation %>
+						</p>
+					</div>
 				</div>
+
+				<!-- Export -->
 				<div class="zotero-export-container zotero-collapsed zotero-collapsable">
-					<select class="zotero-form-control" data-trigger="export-format-selection">
-						<% for(var exportFormat in obj.renderer.zotero.config.exportFormats) { %>
-							<option value="<%= exportFormat %>">
-								<%= obj.renderer.zotero.config.exportFormats[exportFormat] %>
-							</option>
-						<% } %>
-					</select>
-					<p class="zotero-export"></p>
+					<div class="zotero-container-inner">
+						<select class="zotero-form-control" data-trigger="export-format-selection">
+							<% for(var exportFormat in obj.renderer.zotero.config.exportFormats) { %>
+								<option value="<%= exportFormat %>">
+									<%= obj.renderer.zotero.config.exportFormats[exportFormat] %>
+								</option>
+							<% } %>
+						</select>
+						<p class="zotero-export"></p>
+					</div>
 				</div>
 			<% } %>
 		</div>
