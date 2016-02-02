@@ -160,6 +160,9 @@ function uncollapse(element) {
  */
 export function toggleCollapse(element, override) {
 	if(typeof override !== 'undefined') {
+		if(collapsesInProgress[id(element)]) {
+			collapsesInProgress[id(element)]();
+		}
 		override ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
 		return override;
 	}
