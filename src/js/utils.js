@@ -74,6 +74,17 @@ export function once(target, type, listener) {
 }
 
 /**
+ * Uniquely and pernamently identify a DOM element
+ * even if it has no id
+ * @param  {HTMLElement} target - DOM element to identify
+ * @return {String} 			- unique identifier
+ */
+export function id(target) {
+	target.id = target.id || _.uniqueId(target);
+	return target.id;
+}
+
+/**
  * Cross-browser text range selection
  * @param  {HTMLElement} textEl		- A DOM element where text should be selected
  */
@@ -117,14 +128,14 @@ var collapsesInProgress = {};
 function collapse(element) {
 	let initialHeight = window.getComputedStyle(element).height;
 	element.style.height = initialHeight;
-	_.delay(() => {
+	_.defer(() => {
 		element.classList.add('zotero-collapsed', 'zotero-collapsing');
 		element.style.height = null;
-		collapsesInProgress[element] = once(element, transitionend(), () => {
+		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
 			element.classList.remove('zotero-collapsing');
-			delete collapsesInProgress[element];
+			delete collapsesInProgress[id(element)];
 		});
-	}, 50);
+	});
 }
 
 function uncollapse(element) {
@@ -135,10 +146,10 @@ function uncollapse(element) {
 	_.defer(() => {
 		element.classList.add('zotero-collapsing');
 		element.style.height = targetHeight;
-		collapsesInProgress[element] = once(element, transitionend(), () => {
+		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
 			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
 			element.style.height = null;
-			delete collapsesInProgress[element];
+			delete collapsesInProgress[id(element)];
 		});
 	});
 }
@@ -153,8 +164,8 @@ export function toggleCollapse(element, override) {
 		return override;
 	}
 
-	if(collapsesInProgress[element]) {
-		collapsesInProgress[element]();
+	if(collapsesInProgress[id(element)]) {
+		collapsesInProgress[id(element)]();
 		let collapsing = !element.style.height;
 		collapsing ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
 		return collapsing;
