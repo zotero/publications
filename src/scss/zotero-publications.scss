@@ -58,6 +58,10 @@ $border-radius-base: 4px;
 				margin-right: 1em * 8 / 7;
 			}
 		}
+
+		[data-trigger] {
+			user-select: none;
+		}
 	}
 
 	// h2
