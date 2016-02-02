@@ -174,7 +174,8 @@ $border-radius-base: 4px;
 		}
 	}
 
-	&-export {
+	&-export,
+	&-citation {
 		&:before {
 			content: "\200B"; // Stable height
 			float: left;
@@ -206,7 +207,7 @@ $border-radius-base: 4px;
 		}
 	}
 
-	// Loader
+	// Loading feedback for the container
 	&-loading {
 		display: block;
 		position: relative;
@@ -217,13 +218,33 @@ $border-radius-base: 4px;
 			display: block;
 			height: 100%;
 			left: 0;
+			opacity: 0.3;
 			position: absolute;
 			right: 0;
 			text-align: center;
 			top: 0;
 			width: 100%;
+		}
+	}
+
+	// Loading feedback for inline items (cite/export functionality)
+	&-loading-inline {
+		display: block;
+		position: relative;
+
+		&:after {
+			bottom: 0;
 			color: inherit;
+			content: 'Loading …';
+			display: block;
+			height: 100%;
+			left: 0;
 			opacity: 0.3;
+			position: absolute;
+			right: 0;
+			text-align: left;
+			top: 0;
+			width: 100%;
 
 			.zotero-export-container & {
 				position: static;
