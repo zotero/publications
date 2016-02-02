@@ -211,49 +211,41 @@ $border-radius-base: 4px;
 		color: inherit;
 	}
 
-	// Loading feedback for the container
+	// Global loader
 	&-loading {
-		display: block;
-		position: relative;
+		text-align: center;
+		margin: 5.5em 0;
+
+		@at-root {
+			@keyframes loading {
+			  0% {
+			    transform: rotate(0deg);
+			  }
+
+			  100% {
+			    transform: rotate(180deg);
+			  }
+			}
+		}
 
 		&:after {
-			bottom: 0;
-			content: 'Loading …';
-			display: block;
-			height: 100%;
-			left: 0;
-			opacity: 0.3;
-			position: absolute;
-			right: 0;
-			text-align: center;
-			top: 0;
-			width: 100%;
+			display: inline-block;
+			vertical-align: top;
+			content: ' ';
+			width: 1.55em;
+			height: 2em;
+			background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIGlkPSJFYmVuZV8xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDEyLjQgMTYiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDEyLjQgMTYiIHhtbDpzcGFjZT0icHJlc2VydmUiPjxwYXRoIGZpbGw9IiM5OTAwMDAiIGQ9Ik0xMi4zLDIuMkwyLjgsMTRoOS41djJIMHYtMi4yTDkuNSwySDBWMGgxMi4zVjIuMnoiLz48L3N2Zz4=")
+				0 0 no-repeat;
+			animation: loading 1.2s cubic-bezier(.87,-.41,.19,1.44) infinite;
+
 		}
 	}
 
-	// Loading feedback for inline items (cite/export functionality)
+	// Inline loader
 	&-loading-inline {
-		display: block;
-		position: relative;
-
 		&:after {
-			bottom: 0;
-			color: inherit;
 			content: 'Loading …';
-			display: block;
-			height: 100%;
-			left: 0;
 			opacity: 0.3;
-			position: absolute;
-			right: 0;
-			text-align: left;
-			top: 0;
-			width: 100%;
-
-			.zotero-export-container & {
-				position: static;
-				display: inline;
-			}
 		}
 	}
 }
