@@ -220,10 +220,14 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
 			let exportContainerEl = itemEl.querySelector('.zotero-export-container');
 			if(citeContainerEl) {
+				_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
+					item.classList.remove('zotero-active');
+				});
 				let expanding = toggleCollapse(citeContainerEl);
 				if(expanding) {
 					this.updateCitation(itemEl, this.preferredCitationStyle);
 					toggleCollapse(exportContainerEl, false);
+					target.classList.add('zotero-active');
 				}
 			}
 		}
@@ -233,10 +237,14 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
 			let exportContainerEl = itemEl.querySelector('.zotero-export-container');
 			if(exportContainerEl) {
+				_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
+					item.classList.remove('zotero-active');
+				});
 				let expanding = toggleCollapse(exportContainerEl);
 				if(expanding) {
 					this.prepareExport(itemEl);
 					toggleCollapse(citeContainerEl, false);
+					target.classList.add('zotero-active');
 				}
 			}
 		}
