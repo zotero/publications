@@ -207,6 +207,10 @@ $border-radius-base: 4px;
 		}
 	}
 
+	&-active {
+		font-weight: bold;
+	}
+
 	// Loading feedback for the container
 	&-loading {
 		display: block;
