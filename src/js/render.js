@@ -219,7 +219,9 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
 			let exportContainerEl = itemEl.querySelector('.zotero-export-container');
+			let citeEl = itemEl.querySelector('.zotero-citation');
 			if(citeContainerEl) {
+				citeEl.innerHTML = '';
 				_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
 					item.classList.remove('zotero-active');
 				});

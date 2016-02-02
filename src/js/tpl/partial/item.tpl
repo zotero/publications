@@ -119,9 +119,7 @@
 								</option>
 							<% } %>
 						</select>
-						<p class="zotero-citation">
-							<%= obj.item.citation %>
-						</p>
+						<p class="zotero-citation"></p>
 					</div>
 				</div>
 
