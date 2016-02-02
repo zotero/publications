@@ -122,20 +122,31 @@ ZoteroPublications.prototype.getItem = function(itemId, userId, options) {
  * @param  {HTMLElement} container            - A DOM element where publications will be rendered
  * @return {Promise}                          - Resolved when rendered or rejected on error.
  */
-ZoteroPublications.prototype.render = function(endpointOrData, container) {
+ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container) {
 	return new Promise(function(resolve, reject) {
 		if(!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
-		if(endpointOrData instanceof ZoteroData) {
+		if(userIdOrendpointOrData instanceof ZoteroData) {
+			let data = userIdOrendpointOrData;
 			this.renderer = new ZoteroRenderer(container, this);
-			let data = endpointOrData;
 			this.renderer.displayPublications(data);
 			resolve();
-		} else if(typeof endpointOrData === 'string') {
+		} else if(typeof userIdOrendpointOrData === 'number') {
+			let userId = userIdOrendpointOrData;
+			let promise = this.getPublications(userId);
 			this.renderer = new ZoteroRenderer(container, this);
-			let endpoint = endpointOrData;
+			promise.then(function(data) {
+				this.renderer.displayPublications(data);
+				resolve();
+			}.bind(this));
+			promise.catch(function() {
+				reject(arguments[0]);
+			});
+		} else if(typeof userIdOrendpointOrData === 'string') {
+			let endpoint = userIdOrendpointOrData;
 			let promise = this.getEndpoint(endpoint);
+			this.renderer = new ZoteroRenderer(container, this);
 			promise.then(function(data) {
 				this.renderer.displayPublications(data);
 				resolve();

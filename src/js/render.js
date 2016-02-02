@@ -165,7 +165,11 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 		localStorage.setItem('zotero-citation-preference', citationStyle);
 	}
 
+	citationEl.innerHTML = '';
+	citationEl.classList.add('zotero-loading-inline');
+
 	this.zotero.getItem(itemId, this.zotero.userId, {'citationStyle': citationStyle}).then(function(item) {
+		citationEl.classList.remove('zotero-loading-inline');
 		citationEl.innerHTML = item.raw[0].citation;
 		selectText(citationEl);
 	});
@@ -181,10 +185,10 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 	let exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
 
 	exportEl.innerHTML = '';
-	exportEl.classList.add('zotero-loading');
+	exportEl.classList.add('zotero-loading-inline');
 
 	this.zotero.getItem(itemId, this.zotero.userId, {'include': ['data', 'citation', exportFormat]}).then(function(item) {
-		exportEl.classList.remove('zotero-loading');
+		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = exportTpl({
 			'filename': item.raw[0].data.title,
 			'content': item.raw[0][exportFormat]
