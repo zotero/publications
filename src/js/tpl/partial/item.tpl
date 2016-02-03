@@ -71,9 +71,9 @@
 		<div class="zotero-details-inner">
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
-				<p class="zotero-abstract">
+				<div class="zotero-abstract">
 					<%- obj.data.abstractNote %>
-				</p>
+				</div>
 			<% } %>
 
 			<% if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) { %>
