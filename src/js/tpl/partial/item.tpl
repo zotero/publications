@@ -72,7 +72,7 @@
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
 				<div class="zotero-abstract">
-					<%- obj.data.abstractNote %>
+					<%= obj.data[Symbol.for('abstractNoteProcessed')] %>
 				</div>
 			<% } %>
 

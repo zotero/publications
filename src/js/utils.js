@@ -29,6 +29,10 @@ export function formatDate(isoDate) {
 	return date;
 }
 
+export function formatAbstract(abstract) {
+	return abstract.replace(/(^|\n)([\s\S]*?)(\n|$)/g, '<p>$2</p>');
+}
+
 /**
  * Formats category name
  * @param  {String} name 	- unformatted name
