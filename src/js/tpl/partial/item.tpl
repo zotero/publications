@@ -104,8 +104,8 @@
 				<!-- Cite & export -->
 				<div class="zotero-toolbar">
 					<ul class="zotero-list-inline">
-						<li><a data-trigger="cite">Cite</a></li><!--
-						--><li><a data-trigger="export">Export</a></li>
+						<li><a href="" data-trigger="cite">Cite</a></li><!--
+						--><li><a href="" data-trigger="export">Export</a></li>
 					</ul>
 				</div>
 
