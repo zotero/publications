@@ -1,7 +1,8 @@
 require('es6-symbol/implement');
 import _ from 'lodash';
 import {
-	formatDate
+	formatDate,
+	formatAbstract
 } from './utils.js';
 import {
 	CHILD_NOTES,
@@ -10,6 +11,7 @@ import {
 } from './data.js';
 
 export const ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
+export const ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
 export const AUTHORS_SYMBOL = Symbol.for('authors');
 export const FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
 
@@ -33,6 +35,7 @@ export function processResponse(response, config) {
 					Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' '))
 				);
 				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
+				item.data[ABSTRACT_NOTE_PROCESSED] = formatAbstract(item.data.abstractNote);
 			}
 			if(item.data && item.data.creators) {
 				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => author.firstName + ' ' + author.lastName).join(' & ');
