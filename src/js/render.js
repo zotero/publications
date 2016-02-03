@@ -203,66 +203,60 @@ ZoteroRenderer.prototype.addHandlers = function() {
 	this.container.addEventListener('click', ev => {
 		var target;
 
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'details');
+		target = closest(ev.target, el => el.dataset && el.dataset.trigger);
+
 		if(target) {
-			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			let detailsEl = itemEl.querySelector('.zotero-details');
-			if(detailsEl) {
-				toggleCollapse(detailsEl);
-			}
-			window.history.pushState(null, null, `#${itemEl.dataset.item}`);
 			ev.preventDefault();
-			return;
-		}
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'cite');
-		if(target) {
-			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-			let exportContainerEl = itemEl.querySelector('.zotero-export-container');
-			let citeEl = itemEl.querySelector('.zotero-citation');
-			if(citeContainerEl) {
-				citeEl.innerHTML = '';
-				_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
-					item.classList.remove('zotero-active');
-				});
-				let expanding = toggleCollapse(citeContainerEl);
-				if(expanding) {
-					this.updateCitation(itemEl, this.preferredCitationStyle);
-					toggleCollapse(exportContainerEl, false);
-					target.classList.add('zotero-active');
+			if(target.dataset.trigger === 'details') {
+				let itemEl = closest(target, el => el.dataset && el.dataset.item);
+				let detailsEl = itemEl.querySelector('.zotero-details');
+				if(detailsEl) {
+					toggleCollapse(detailsEl);
 				}
-			}
-		}
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'export');
-		if(target) {
-			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-			let exportContainerEl = itemEl.querySelector('.zotero-export-container');
-			if(exportContainerEl) {
-				_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
-					item.classList.remove('zotero-active');
-				});
-				let expanding = toggleCollapse(exportContainerEl);
-				if(expanding) {
-					this.prepareExport(itemEl);
-					toggleCollapse(citeContainerEl, false);
-					target.classList.add('zotero-active');
+				window.history.pushState(null, null, `#${itemEl.dataset.item}`);
+			} else if(target.dataset.trigger === 'cite') {
+				let itemEl = closest(target, el => el.dataset && el.dataset.item);
+				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
+				let citeEl = itemEl.querySelector('.zotero-citation');
+				if(citeContainerEl) {
+					citeEl.innerHTML = '';
+					_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
+						item.classList.remove('zotero-active');
+					});
+					let expanding = toggleCollapse(citeContainerEl);
+					if(expanding) {
+						this.updateCitation(itemEl, this.preferredCitationStyle);
+						toggleCollapse(exportContainerEl, false);
+						target.classList.add('zotero-active');
+					}
+				}
+			} else if(target.dataset.trigger === 'export') {
+				let itemEl = closest(target, el => el.dataset && el.dataset.item);
+				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
+				if(exportContainerEl) {
+					_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
+						item.classList.remove('zotero-active');
+					});
+					let expanding = toggleCollapse(exportContainerEl);
+					if(expanding) {
+						this.prepareExport(itemEl);
+						toggleCollapse(citeContainerEl, false);
+						target.classList.add('zotero-active');
+					}
 				}
 			}
 		}
 	});
 
 	this.container.addEventListener('change', ev => {
-		var target;
+		var target = closest(ev.target, el => el.dataset && el.dataset.trigger);
 
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'cite-style-selection');
-		if(target) {
+		if(target.dataset.trigger === 'cite-style-selection') {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			this.updateCitation(itemEl);
-		}
-
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger === 'export-format-selection');
-		if(target) {
+		} else if(target.dataset.trigger === 'export-format-selection') {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			this.prepareExport(itemEl);
 		}
