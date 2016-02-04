@@ -67,7 +67,7 @@
 	</div>
 
 	<!-- Details -->
-	<div class="zotero-details zotero-collapsed zotero-collapsable">
+	<section class="zotero-details zotero-collapsed zotero-collapsable">
 		<div class="zotero-details-inner">
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
@@ -138,5 +138,5 @@
 				</div>
 			<% } %>
 		</div>
-	</div>
+	</section>
 </li>
