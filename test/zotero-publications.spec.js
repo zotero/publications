@@ -34,7 +34,7 @@ describe('Zotero Publications', function() {
 			alwaysUseCitationStyle: true
 		});
 		container = document.createElement('div');
-		renderer = new ZoteroRenderer(container, zp.config);
+		renderer = new ZoteroRenderer(container, zp);
 		data = _.clone(testData);
 		dataGrouped = _.clone(testDataGrouped);
 	});
@@ -64,7 +64,7 @@ describe('Zotero Publications', function() {
 		processResponse(data, zp.config);
 		let renderedCollection = renderer.renderItems(data);
 		expect(renderedCollection).toBeDefined();
-		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item.*>[\s\S]*?<div.*class="zotero-details".*>[\s\S]*?<ul.*zotero-(attachments|notes).*>[\s\S]*?<\/div>[\s\S]*?<\/li>){2}[\s\S]*?<\/ul>/);
+		expect(renderedCollection).toMatch(/^^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item.*>[\s\S]*?<div.*zotero-details.*>[\s\S]*?<ul.*zotero-(attachments|notes).*>[\s\S]*?<\/div>[\s\S]*?<\/li>){2}[\s\S]*?<\/ul>$/);
 	});
 
 	it('should replace contents of a container', function() {
@@ -80,7 +80,7 @@ describe('Zotero Publications', function() {
 
 	it('should request items from desired enpoint', function() {
 		spyOn(window, 'fetch');
-		zp.get('some/endpoint');
+		zp.getEndpoint('some/endpoint');
 		expect(window.fetch).toHaveBeenCalled();
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/some\/endpoint\?.*$/);
 	});
