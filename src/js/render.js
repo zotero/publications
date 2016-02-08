@@ -170,7 +170,8 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 
 	this.zotero.getItem(itemId, this.zotero.userId, {
 		'citationStyle': citationStyle,
-		'include': ['data', 'bib']
+		'include': ['bib'],
+		'group': false
 	}).then(item => {
 		citationEl.classList.remove('zotero-loading-inline');
 		citationEl.innerHTML = item.raw[0].bib;
@@ -190,10 +191,14 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 	exportEl.innerHTML = '';
 	exportEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {'include': ['data', 'citation', exportFormat]}).then(item => {
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'include': [exportFormat],
+		'group': false
+	}).then(item => {
+		let itemData = _.findWhere(this.data.raw, {'key': itemId});
 		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = exportTpl({
-			'filename': item.raw[0].data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
+			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
 			'content': item.raw[0][exportFormat],
 			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
 		});
