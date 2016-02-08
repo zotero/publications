@@ -129,7 +129,7 @@
 						<select class="zotero-form-control" data-trigger="export-format-selection">
 							<% for(var exportFormat in obj.renderer.zotero.config.exportFormats) { %>
 								<option value="<%= exportFormat %>">
-									<%= obj.renderer.zotero.config.exportFormats[exportFormat] %>
+									<%= obj.renderer.zotero.config.exportFormats[exportFormat].name %>
 								</option>
 							<% } %>
 						</select>

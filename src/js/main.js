@@ -48,9 +48,21 @@ ZoteroPublications.prototype.defaults = {
 		'modern-language-association': 'Modern Language Association 7th edition'
 	},
 	exportFormats: {
-		'bibtex': 'BibTeX',
-		'ris': 'RIS',
-		'rdf_zotero': 'Zotero RDF'
+		'bibtex': {
+			name: 'BibTeX',
+			contentType: 'application/x-bibtex',
+			extension: 'bib'
+		},
+		'ris': {
+			name: 'RIS',
+			contentType: 'application/x-research-info-systems',
+			extension: 'ris'
+		},
+		'rdf_zotero': {
+			name: 'Zotero RDF',
+			contentType: 'application/rdf+xml',
+			extension: 'rdf'
+		}
 	}
 };
 

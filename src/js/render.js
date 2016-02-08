@@ -190,11 +190,12 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 	exportEl.innerHTML = '';
 	exportEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {'include': ['data', 'citation', exportFormat]}).then(function(item) {
+	this.zotero.getItem(itemId, this.zotero.userId, {'include': ['data', 'citation', exportFormat]}).then(item => {
 		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = exportTpl({
-			'filename': item.raw[0].data.title,
-			'content': item.raw[0][exportFormat]
+			'filename': item.raw[0].data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
+			'content': item.raw[0][exportFormat],
+			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
 		});
 	});
 };
