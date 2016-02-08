@@ -66,19 +66,29 @@ ZoteroPublications.prototype.defaults = {
 	}
 };
 
-ZoteroPublications.prototype.get = function(url, options) {
-	options = options || {
+/**
+ * Low-level function to fetch given url to obtain Zotero Data
+ * @param  {String} url      - A Zotero API url to get
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @param  {?Object} init    - Options forwarded to the fetch method
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.get = function(url, options, init) {
+	init = init || {
 		headers: {
 			'Accept': 'application/json'
 		}
 	};
 
+	options = _.extend({}, this.config, options);
+
 	return new Promise(function(resolve, reject) {
-		let promise = fetchUntilExhausted(url, options);
+		let promise = fetchUntilExhausted(url, init);
 		promise.then(function(responseJson) {
 			let data = new ZoteroData(responseJson, this.config);
-			if(this.config.group === 'type') {
-				data.groupByType(this.config.expand);
+			if(options.group === 'type') {
+				data.groupByType(options.expand);
 			}
 			resolve(data);
 		}.bind(this));
@@ -92,17 +102,24 @@ ZoteroPublications.prototype.get = function(url, options) {
  * @return {Promise}         - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.getEndpoint = function(endpoint) {
+ZoteroPublications.prototype.getEndpoint = function(endpoint, options) {
+	options = options || {};
 	let apiBase = this.config.apiBase,
-		limit = this.config.limit,
-		style = this.config.citationStyle,
-		include = this.config.include.join(','),
+		limit = options.limit || this.config.limit,
+		style = options.citationStyle || this.config.citationStyle,
+		include = options.include && options.include.join(',') || this.config.include.join(','),
 		url = `https://${apiBase}/${endpoint}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
 
-	return this.get(url);
-
+	return this.get(url, options);
 };
 
+/**
+ * Build url for getting user's publications then fetch entire dataset recursively
+ * @param  {number} userId   - User id
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
 ZoteroPublications.prototype.getPublications = function(userId, options) {
 	options = options || {};
 	let apiBase = this.config.apiBase,
@@ -113,10 +130,16 @@ ZoteroPublications.prototype.getPublications = function(userId, options) {
 
 	this.userId = userId;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
-
+/**
+ * Build url for getting a single item from user's publications then fetch it
+ * @param  {[type]} userId   - User id
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @return {[type]}          - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
 ZoteroPublications.prototype.getItem = function(itemId, userId, options) {
 	options = options || {};
 	let apiBase = this.config.apiBase,
@@ -125,7 +148,7 @@ ZoteroPublications.prototype.getItem = function(itemId, userId, options) {
 		include = options.include && options.include.join(',') || this.config.include.join(','),
 		url = `https://${apiBase}/users/${userId}/publications/items/${itemId}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
 /**
