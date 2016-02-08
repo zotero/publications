@@ -168,9 +168,12 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 	citationEl.innerHTML = '';
 	citationEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {'citationStyle': citationStyle}).then(function(item) {
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'citationStyle': citationStyle,
+		'include': ['data', 'bib']
+	}).then(item => {
 		citationEl.classList.remove('zotero-loading-inline');
-		citationEl.innerHTML = item.raw[0].citation;
+		citationEl.innerHTML = item.raw[0].bib;
 		selectText(citationEl);
 	});
 };
