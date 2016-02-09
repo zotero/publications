@@ -78,22 +78,23 @@ $border-radius-base: 4px;
 	&-line {
 		border-left: 3px solid currentcolor;
   	position: absolute;
-		height: calc(100% - 2.4em);
+  	height: 100%;
 		left: -15px;
 		opacity: 0;
-		transition: opacity .35s ease-out;
+		transition: opacity .35s ease-out, height .35s ease-out;
   	cursor: default !important;
 
 		@media (min-width: 767px) {
 			left: -23px;
 		}
 
-		.zotero-item:last-child & {
-			height: 100%;
-		}
-
 		.zotero-details-open & {
 			opacity: 1;
+			height: calc(100% - 2.4em);
+		}
+
+		.zotero-item:last-child & {
+			height: 100%;
 		}
 	}
 
