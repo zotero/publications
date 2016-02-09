@@ -71,6 +71,30 @@ $border-radius-base: 4px;
 	// Item
 	&-item {
 		margin-bottom: 1em;
+		position: relative;
+	}
+
+	// Line
+	&-line {
+		border-left: 3px solid currentcolor;
+  	position: absolute;
+		height: calc(100% - 2.4em);
+		left: -15px;
+		opacity: 0;
+		transition: opacity .35s ease-out;
+  	cursor: default !important;
+
+		@media (min-width: 767px) {
+			left: -23px;
+		}
+
+		.zotero-item:last-child & {
+			height: 100%;
+		}
+
+		.zotero-details-open & {
+			opacity: 1;
+		}
 	}
 
 	// h3
@@ -101,7 +125,7 @@ $border-radius-base: 4px;
 	}
 
 	&-collapsing {
-		transition: height .4s ease-out;
+		transition: height .35s ease-out;
 		will-change: height;
 	}
 
