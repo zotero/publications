@@ -10,7 +10,7 @@
   margin: 5em 0 6.2em; }
   .zotero-publications * {
     box-sizing: border-box; }
-  .zotero-publications h2, .zotero-publications h3 {
+  .zotero-publications h2, .zotero-publications h4 {
     font-weight: bold;
     line-height: 1.3;
     letter-spacing: -0.025em; }
@@ -22,12 +22,14 @@
     list-style-type: none;
     padding: 0;
     margin: 0; }
-
-.zotero-reference {
-  font-size: 1.5em;
-  line-height: 1.3;
-  margin-bottom: 2.3em;
-  opacity: 0.7; }
+    .zotero-publications ul.zotero-list-inline li {
+      display: inline;
+      margin-right: 1.14286em; }
+  .zotero-publications [data-trigger] {
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none; }
 
 .zotero-group-title {
   font-size: 2em;
@@ -38,26 +40,9 @@
 
 .zotero-item-title {
   font-size: 1.14286em;
-  line-height: 1.5; }
-
-.zotero-details {
-  transition: height .4s ease-out;
-  overflow: hidden;
-  padding-left: 15px; }
-  @media (min-width: 768px) {
-    .zotero-details {
-      padding-left: 3em; } }
-  .zotero-details-collapsed {
-    height: 0 !important; }
-  .zotero-details-inner {
-    margin: 3.4em 0 2.4em; }
-    .zotero-item:last-child .zotero-details-inner {
-      margin-bottom: -1em; }
-  .zotero-details h3 {
-    font-size: 1.5em;
-    margin: 1.4em 0 0.66667em; }
-  .zotero-details ul {
-    margin-bottom: 1em; }
+  font-weight: normal;
+  line-height: 1.5;
+  margin: 0; }
 
 .zotero-icon-paperclip {
   width: 1.07143em;
@@ -66,6 +51,66 @@
   vertical-align: -0.07143em;
   margin-right: 0.28571em;
   background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPScxLjEnIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZycgeG1sbnM6eGxpbms9J2h0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsnIHg9JzBweCcgeT0nMHB4JyB2aWV3Qm94PScwIDAgMTUgMTQnIGVuYWJsZS1iYWNrZ3JvdW5kPSduZXcgMCAwIDE1IDE0JyB4bWw6c3BhY2U9J3ByZXNlcnZlJz48Zz48cGF0aCBmaWxsPScjNzc3Nzc3JyBkPSdNNi44LDEzbDUuNC01LjRjMC43LTAuNywxLjEtMS40LDEuMS0yLjJjMC4xLTAuOC0wLjEtMS40LTAuNi0ycy0xLjEtMS0xLjgtMS4xYy0wLjIsMC0wLjQsMC0wLjUsMGMtMC4zLDAtMC41LDAtMC44LDAuMUM5LjQsMi40LDkuMiwyLjUsOSwyLjZDOC45LDIuNyw4LjYsMi44LDguNCwzQzguMiwzLjIsOCwzLjQsNy44LDMuNUM3LjcsMy42LDcuNSwzLjgsNy4zLDRDNC40LDYuOSwyLjksOC40LDIuOCw4LjZDMi41LDguOCwyLjMsOC45LDIuMiw5QzIuMSw5LjIsMiw5LjMsMS44LDkuNXMtMC4zLDAuNC0wLjQsMC41Yy0wLjEsMC4yLTAuMSwwLjMtMC4yLDAuNmMtMC4xLDAuMi0wLjEsMC40LDAsMC43YzAuMSwwLjUsMC4zLDAuOCwwLjYsMS4xYzAuMywwLjMsMC43LDAuNCwxLjIsMC40YzAuNiwwLDEuMS0wLjIsMS40LTAuNmw2LjMtNi4zYzAuMy0wLjMsMC40LTAuNiwwLjItMC45Yy0wLjEtMC4xLTAuMS0wLjItMC4yLTAuM2MtMC4xLTAuMS0wLjItMC4xLTAuNC0wLjFjLTAuMiwwLTAuNCwwLjEtMC42LDAuM0M5LjcsNC45LDkuNiw1LDkuNCw1LjJsLTQsMy45QzUuMyw5LjMsNS4yLDkuMyw1LDkuM2MtMC4yLDAtMC4zLDAtMC40LTAuMkM0LjUsOS4xLDQuNCw4LjksNC40LDguOGMwLTAuMiwwLjEtMC4zLDAuMi0wLjRjMi41LTIuNiwzLjktNCw0LjItNC4zYzAuMy0wLjMsMC41LTAuNSwwLjgtMC42YzAuMy0wLjEsMC42LTAuMiwwLjktMC4yYzAuMSwwLDAuMiwwLDAuMywwYzAuMywwLjEsMC42LDAuMiwwLjksMC40YzAuMiwwLjIsMC40LDAuNSwwLjUsMC44YzAuMSwwLjQsMC4xLDAuNywwLDEuMWMtMC4xLDAuNC0wLjMsMC43LTAuNSwxYy0wLjEsMC4xLTAuMiwwLjItMC40LDAuNGMtMC4yLDAuMi0wLjUsMC41LTAuOSwwLjlDOS45LDguNCw5LjUsOC45LDksOS4zcy0wLjksMC45LTEuNCwxLjRjLTAuNSwwLjUtMSwxLTEuNCwxLjRzLTAuOCwwLjctMS4xLDFjLTAuMywwLjMtMC42LDAuNS0wLjcsMC41QzQsMTMuOSwzLjUsMTQsMywxNGMtMC41LDAtMS0wLjEtMS41LTAuNGMtMC41LTAuMi0wLjgtMC42LTEuMS0xYy0wLjQtMC42LTAuNS0xLjMtMC40LTJDMC4xLDkuOCwwLjQsOS4yLDEsOC43bDUuOS01LjljMC41LTAuNiwxLTAuOSwxLjMtMS4xQzguOSwxLjIsOS42LDEsMTAuNSwxYzAuNiwwLDEuMiwwLjEsMS44LDAuNGMwLjYsMC4zLDEuMSwwLjcsMS41LDEuMmMwLjQsMC41LDAuNywxLjEsMC44LDEuOGMwLjEsMC43LDAuMSwxLjQtMC4xLDIuMWMtMC4yLDAuNy0wLjYsMS4zLTEuMSwxLjhsLTUuNiw1LjVDNy42LDEzLjksNy40LDE0LDcuMywxNGMtMC4yLDAtMC4zLDAtMC40LTAuMmMtMC4xLTAuMS0wLjItMC4yLTAuMi0wLjRDNi42LDEzLjMsNi43LDEzLjIsNi44LDEzeicvPjwvZz48L3N2Zz4=") 0 0 no-repeat; }
+
+.zotero-collapsed {
+  height: 0; }
+
+.zotero-collapsing {
+  transition: height .4s ease-out;
+  will-change: height; }
+
+.zotero-collapsable {
+  overflow: hidden; }
+
+.zotero-form-control {
+  background-image: none;
+  background-color: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  color: inherit;
+  height: 2.4em;
+  display: block;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px; }
+  .zotero-form-control:focus {
+    outline: 0; }
+
+.zotero-details {
+  padding-left: 15px; }
+  @media (min-width: 768px) {
+    .zotero-details {
+      padding-left: 3em; } }
+  .zotero-details-inner {
+    margin: 2em 0 2.4em; }
+    .zotero-item:last-child .zotero-details-inner {
+      margin-bottom: 0; }
+  .zotero-details h4 {
+    font-size: 1.5em;
+    margin: 1.4em 0 0.66667em; }
+  .zotero-details ul {
+    margin-bottom: 1em; }
+
+.zotero-abstract {
+  margin: 1em 0; }
+  .zotero-abstract p {
+    margin: 0; }
+  .zotero-abstract p + p {
+    text-indent: 2em; }
+
+.zotero-toolbar {
+  margin: 2em 0 0; }
+  .zotero-toolbar ul {
+    margin: 0; }
+
+.zotero-container-inner {
+  margin-top: 1em; }
+  .zotero-container-inner p {
+    margin-bottom: 0; }
+
+.zotero-export:before, .zotero-citation:before {
+  content: "\200B";
+  float: left; }
 
 .zotero-branding {
   margin-top: 3.8em; }
@@ -81,24 +126,38 @@
   .zotero-logo:hover .zotero-z {
     fill: #900; }
 
-.zotero-loading {
-  display: block;
-  position: relative; }
-  .zotero-loading:after {
-    bottom: 0;
-    content: 'Loading …';
-    display: block;
-    height: 100%;
-    left: 0;
-    position: absolute;
-    right: 0;
-    text-align: center;
-    top: 0;
-    width: 100%;
-    background: #fff; }
+.zotero-active {
+  color: inherit; }
 
-.zotero-cite-container {
-  transition: height .4s ease-out;
-  overflow: hidden; }
-  .zotero-cite-container-collapsed {
-    height: 0 !important; }
+.zotero-loading {
+  text-align: center;
+  margin: 5.5em 0; }
+
+@-webkit-keyframes loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(180deg);
+            transform: rotate(180deg); } }
+
+@keyframes loading {
+  0% {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg); }
+  100% {
+    -webkit-transform: rotate(180deg);
+            transform: rotate(180deg); } }
+  .zotero-loading:after {
+    display: inline-block;
+    vertical-align: top;
+    content: ' ';
+    width: 24.6px;
+    height: 30px;
+    background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjQuNiAzMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBvbHlnb24gZmlsbD0iIzk5MDAwMCIgcG9pbnRzPSIyNC41LDAgMjAuMiwwIDAsMCAwLDUuNSAxNS43LDUuNSAwLDI0LjUgMCwzMCAyNC41LDMwIDI0LjUsMjQuNSA4LjgsMjQuNSAyNC41LDUuNSAiLz48L3N2Zz4=") 0 0 no-repeat;
+    -webkit-animation: loading 1.2s cubic-bezier(0.87, -0.41, 0.19, 1.44) infinite;
+            animation: loading 1.2s cubic-bezier(0.87, -0.41, 0.19, 1.44) infinite; }
+
+.zotero-loading-inline:after {
+  content: 'Loading …';
+  opacity: 0.3; }
