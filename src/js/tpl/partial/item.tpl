@@ -1,4 +1,5 @@
-<li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="<%- obj.item.key %>">
+<li class="zotero-item zotero-<%- obj.data.itemType %> zotero-details-open" data-item="<%- obj.item.key %>" id="<%- obj.item.key %>">
+	<a href="#" class="zotero-line"></a>
 
 	<!-- Reference -->
 	<% if (obj.renderer.config.alwaysUseCitationStyle) { %>
@@ -129,7 +130,7 @@
 						<select class="zotero-form-control" data-trigger="export-format-selection">
 							<% for(var exportFormat in obj.renderer.zotero.config.exportFormats) { %>
 								<option value="<%= exportFormat %>">
-									<%= obj.renderer.zotero.config.exportFormats[exportFormat].name %>
+									<%= obj.renderer.zotero.config.exportFormats[exportFormat] %>
 								</option>
 							<% } %>
 						</select>

@@ -28,8 +28,6 @@ $border-radius-base: 4px;
 
 .zotero {
 	&-publications {
-		margin: 5em 0 6.2em;
-
 		* {
 			box-sizing: border-box;
 		}
@@ -73,6 +71,31 @@ $border-radius-base: 4px;
 	// Item
 	&-item {
 		margin-bottom: 1em;
+		position: relative;
+	}
+
+	// Line
+	&-line {
+		border-left: 3px solid currentcolor;
+  	position: absolute;
+  	height: 100%;
+		left: -15px;
+		opacity: 0;
+		transition: opacity .35s ease-out, height .35s ease-out;
+  	cursor: default !important;
+
+		@media (min-width: 767px) {
+			left: -23px;
+		}
+
+		.zotero-details-open & {
+			opacity: 1;
+			height: calc(100% - 2.4em);
+		}
+
+		.zotero-item:last-child & {
+			height: 100%;
+		}
 	}
 
 	// h3
@@ -103,7 +126,7 @@ $border-radius-base: 4px;
 	}
 
 	&-collapsing {
-		transition: height .4s ease-out;
+		transition: height .35s ease-out;
 		will-change: height;
 	}
 
@@ -227,7 +250,6 @@ $border-radius-base: 4px;
 	// Global loader
 	&-loading {
 		text-align: center;
-		margin: 5.5em 0;
 
 		@at-root {
 			@keyframes loading {
@@ -249,7 +271,7 @@ $border-radius-base: 4px;
 			height: 30px;
 			background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjQuNiAzMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBvbHlnb24gZmlsbD0iIzk5MDAwMCIgcG9pbnRzPSIyNC41LDAgMjAuMiwwIDAsMCAwLDUuNSAxNS43LDUuNSAwLDI0LjUgMCwzMCAyNC41LDMwIDI0LjUsMjQuNSA4LjgsMjQuNSAyNC41LDUuNSAiLz48L3N2Zz4=")
 				0 0 no-repeat;
-			animation: loading 1.2s cubic-bezier(.87,-.41,.19,1.44) infinite;
+			animation: loading 1s cubic-bezier(.87,-.41,.19,1.44) infinite;
 
 		}
 	}
