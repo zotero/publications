@@ -1,4 +1,665 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/srv/zotero/my-publications/node_modules/d/index.js":[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/srv/zotero/my-publications/node_modules/babel-regenerator-runtime/runtime.js":[function(require,module,exports){
+(function (process,global){
+/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
+ * additional grant of patent rights can be found in the PATENTS file in
+ * the same directory.
+ */
+
+!(function(global) {
+  "use strict";
+
+  var hasOwn = Object.prototype.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var iteratorSymbol =
+    typeof Symbol === "function" && Symbol.iterator || "@@iterator";
+
+  var inModule = typeof module === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
+  }
+
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided, then outerFn.prototype instanceof Generator.
+    var generator = Object.create((outerFn || Generator).prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  runtime.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `value instanceof AwaitArgument` to determine if the yielded value is
+  // meant to be awaited. Some may consider the name of this method too
+  // cutesy, but they are curmudgeons.
+  runtime.awrap = function(arg) {
+    return new AwaitArgument(arg);
+  };
+
+  function AwaitArgument(arg) {
+    this.arg = arg;
+  }
+
+  function AsyncIterator(generator) {
+    // This invoke function is written in a style that assumes some
+    // calling function (or Promise) will handle exceptions.
+    function invoke(method, arg) {
+      var result = generator[method](arg);
+      var value = result.value;
+      return value instanceof AwaitArgument
+        ? Promise.resolve(value.arg).then(invokeNext, invokeThrow)
+        : Promise.resolve(value).then(function(unwrapped) {
+            // When a yielded Promise is resolved, its final value becomes
+            // the .value of the Promise<{value,done}> result for the
+            // current iteration. If the Promise is rejected, however, the
+            // result for this iteration will be rejected with the same
+            // reason. Note that rejections of yielded Promises are not
+            // thrown back into the generator function, as is the case
+            // when an awaited Promise is rejected. This difference in
+            // behavior between yield and await is important, because it
+            // allows the consumer to decide what to do with the yielded
+            // rejection (swallow it and continue, manually .throw it back
+            // into the generator, abandon iteration, whatever). With
+            // await, by contrast, there is no opportunity to examine the
+            // rejection reason outside the generator function, so the
+            // only option is to throw it from the await expression, and
+            // let the generator function handle the exception.
+            result.value = unwrapped;
+            return result;
+          });
+    }
+
+    if (typeof process === "object" && process.domain) {
+      invoke = process.domain.bind(invoke);
+    }
+
+    var invokeNext = invoke.bind(generator, "next");
+    var invokeThrow = invoke.bind(generator, "throw");
+    var invokeReturn = invoke.bind(generator, "return");
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return invoke(method, arg);
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : new Promise(function (resolve) {
+          resolve(callInvokeWithMethodAndArg());
+        });
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          if (method === "return" ||
+              (method === "throw" && delegate.iterator[method] === undefined)) {
+            // A return or throw (when the delegate iterator has no throw
+            // method) always terminates the yield* loop.
+            context.delegate = null;
+
+            // If the delegate iterator has a return method, give it a
+            // chance to clean up.
+            var returnMethod = delegate.iterator["return"];
+            if (returnMethod) {
+              var record = tryCatch(returnMethod, delegate.iterator, arg);
+              if (record.type === "throw") {
+                // If the return method threw an exception, let that
+                // exception prevail over the original return or throw.
+                method = "throw";
+                arg = record.arg;
+                continue;
+              }
+            }
+
+            if (method === "return") {
+              // Continue with the outer return, now that the delegate
+              // iterator has been terminated.
+              continue;
+            }
+          }
+
+          var record = tryCatch(
+            delegate.iterator[method],
+            delegate.iterator,
+            arg
+          );
+
+          if (record.type === "throw") {
+            context.delegate = null;
+
+            // Like returning generator.throw(uncaught), but without the
+            // overhead of an extra function call.
+            method = "throw";
+            arg = record.arg;
+            continue;
+          }
+
+          // Delegate generator ran and handled its own exceptions so
+          // regardless of what the method was, we continue as if it is
+          // "next" with an undefined arg.
+          method = "next";
+          arg = undefined;
+
+          var info = record.arg;
+          if (info.done) {
+            context[delegate.resultName] = info.value;
+            context.next = delegate.nextLoc;
+          } else {
+            state = GenStateSuspendedYield;
+            return info;
+          }
+
+          context.delegate = null;
+        }
+
+        if (method === "next") {
+          context._sent = arg;
+
+          if (state === GenStateSuspendedYield) {
+            context.sent = arg;
+          } else {
+            context.sent = undefined;
+          }
+        } else if (method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw arg;
+          }
+
+          if (context.dispatchException(arg)) {
+            // If the dispatched exception was caught by a catch block,
+            // then let that catch block handle the exception normally.
+            method = "next";
+            arg = undefined;
+          }
+
+        } else if (method === "return") {
+          context.abrupt("return", arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          var info = {
+            value: record.arg,
+            done: context.done
+          };
+
+          if (record.arg === ContinueSentinel) {
+            if (context.delegate && method === "next") {
+              // Deliberately forget the last sent value so that we don't
+              // accidentally pass it on to the delegate.
+              arg = undefined;
+            }
+          } else {
+            return info;
+          }
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(arg) call above.
+          method = "throw";
+          arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      this.sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+        return !!caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.next = finallyEntry.finallyLoc;
+      } else {
+        this.complete(record);
+      }
+
+      return ContinueSentinel;
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = record.arg;
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      return ContinueSentinel;
+    }
+  };
+})(
+  // Among the various tricks for obtaining a reference to the global
+  // object, this seems to be the most reliable technique that does not
+  // use indirect eval (which violates Content Security Policy).
+  typeof global === "object" ? global :
+  typeof window === "object" ? window :
+  typeof self === "object" ? self : this
+);
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":"/srv/zotero/my-publications/node_modules/process/browser.js"}],"/srv/zotero/my-publications/node_modules/d/index.js":[function(require,module,exports){
 'use strict';
 
 var assign        = require('es5-ext/object/assign')
@@ -351,1690 +1012,98 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js"}],"/srv/zotero/my-publications/src/js/api.js":[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = undefined;
-exports.processResponse = processResponse;
-exports.fetchUntilExhausted = fetchUntilExhausted;
-
-var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _utils = require('./utils.js');
-
-var _data = require('./data.js');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-require('es6-symbol/implement');
-var ABSTRACT_NOTE_SHORT_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
-var AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
-var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
-
-/**
- * Process raw API response
- * @param  {Object[]} response - The raw API response
- * @param  {Object} config     - Global ZoteroPublications config
- * @return {Object[]}          - Processed API response
- */
-function processResponse(response, config) {
-	if (response) {
-		var childItems = [];
-		var index = {};
-
-		for (var i = response.length; i--;) {
-			var item = response[i];
-			if (item.data && item.data.abstractNote) {
-				var abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
-				abstractNoteShort = abstractNoteShort.substr(0, Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' ')));
-				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
-			}
-			if (item.data && item.data.creators) {
-				item.data[AUTHORS_SYMBOL] = item.data.creators.map(function (author) {
-					return author.firstName + ' ' + author.lastName;
-				}).join(' & ');
-			}
-			if (item.data && item.meta.parsedDate) {
-				item.data[FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
-			}
-			if (item.data && item.data.parentItem) {
-				response.splice(i, 1);
-				childItems.push(item);
-			}
-			index[item.key] = item;
-		}
-
-		var _iteratorNormalCompletion = true;
-		var _didIteratorError = false;
-		var _iteratorError = undefined;
-
-		try {
-			for (var _iterator = childItems[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-				var item = _step.value;
-
-				if (!index[item.data.parentItem]) {
-					console.warn('item ' + item.key + ' has parentItem ' + item.data.parentItem + ' that does not exist in the dataset');
-					continue;
-				}
-
-				if (item.data.itemType === 'note') {
-					if (!index[item.data.parentItem][_data.CHILD_NOTES]) {
-						index[item.data.parentItem][_data.CHILD_NOTES] = [];
-					}
-					index[item.data.parentItem][_data.CHILD_NOTES].push(item);
-				} else if (item.data.itemType === 'attachment') {
-					if (!index[item.data.parentItem][_data.CHILD_ATTACHMENTS]) {
-						index[item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
-					}
-					index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(item);
-				} else {
-					if (!index[item.data.parentItem][_data.CHILD_OTHER]) {
-						index[item.data.parentItem][_data.CHILD_OTHER] = [];
-					}
-					index[item.data.parentItem][_data.CHILD_OTHER].push(item);
-				}
-			}
-		} catch (err) {
-			_didIteratorError = true;
-			_iteratorError = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion && _iterator.return) {
-					_iterator.return();
-				}
-			} finally {
-				if (_didIteratorError) {
-					throw _iteratorError;
-				}
-			}
-		}
-	}
-	return response;
-}
-
-/**
- * Recursively fetch data until there's no more rel="next" url in Link header
- * @param  {String} url             - An url for initial data request
- * @param  {Object} [options]       - Custom settings (e.g. headers) passed over to fetch() for each request
- * @param  {Object[]} [jsondata=[]] - Used for data aggregation in recursive calls
- * @return {Promise}                - Resolved with complete dataset or rejected on error
- */
-function fetchUntilExhausted(url, options, jsondata) {
-	var relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
-	jsondata = jsondata || [];
-
-	return new Promise(function (resolve, reject) {
-		fetch(url, options).then(function (response) {
-			if (response.status >= 200 && response.status < 300) {
-				if (response.headers.has('Link')) {
-					(function () {
-						var matches = response.headers.get('Link').match(relRegex);
-						if (matches && matches.length >= 2) {
-							response.json().then(function (jsonDataPart) {
-								if (!(jsonDataPart instanceof Array)) {
-									jsonDataPart = [jsonDataPart];
-								}
-								resolve(fetchUntilExhausted(matches[1], options, _lodash2.default.union(jsondata, jsonDataPart)));
-							});
-						} else {
-							response.json().then(function (jsonDataPart) {
-								if (!(jsonDataPart instanceof Array)) {
-									jsonDataPart = [jsonDataPart];
-								}
-								resolve(_lodash2.default.union(jsondata, jsonDataPart));
-							});
-						}
-					})();
-				} else {
-					response.json().then(function (jsonDataPart) {
-						if (!(jsonDataPart instanceof Array)) {
-							jsonDataPart = [jsonDataPart];
-						}
-						resolve(_lodash2.default.union(jsondata, jsonDataPart));
-					});
-				}
-			} else {
-				reject(new Error('Unexpected status code ' + response.status + ' when requesting ' + url));
-			}
-		}).catch(function () {
-			reject(new Error('Unexpected error when requesting ' + url));
-		});
-	});
-}
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/data.js":[function(require,module,exports){
-(function (global){
-'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.GROUP_TITLE = exports.GROUP_EXPANDED_SUMBOL = exports.CHILD_OTHER = exports.CHILD_ATTACHMENTS = exports.CHILD_NOTES = exports.GROUPED_BY_COLLECTION = exports.GROUPED_BY_TYPE = exports.GROUPED_NONE = undefined;
-exports.ZoteroData = ZoteroData;
-
-var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _api = require('./api.js');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-require('es6-symbol/implement');
-var GROUPED_NONE = exports.GROUPED_NONE = 0;
-var GROUPED_BY_TYPE = exports.GROUPED_BY_TYPE = 1;
-var GROUPED_BY_COLLECTION = exports.GROUPED_BY_COLLECTION = 2;
-var CHILD_NOTES = exports.CHILD_NOTES = Symbol.for('childNotes');
-var CHILD_ATTACHMENTS = exports.CHILD_ATTACHMENTS = Symbol.for('childAttachments');
-var CHILD_OTHER = exports.CHILD_OTHER = Symbol.for('childOther');
-var GROUP_EXPANDED_SUMBOL = exports.GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
-var GROUP_TITLE = exports.GROUP_TITLE = Symbol.for('groupTitle');
-
-/**
- * Store, Encapsulate and Manipulate Zotero API data
- * @param {Object[]} data   - Zotero API data to encapsulate
- * @param {Object} [config] - ZoteroPublications config
- */
-function ZoteroData(data, config) {
-	this.raw = this.data = (0, _api.processResponse)(data, config);
-	this.grouped = GROUPED_NONE;
-
-	Object.defineProperty(this, 'length', {
-		enumerable: false,
-		configurable: false,
-		get: function get() {
-			return this.data.length;
-		}
-	});
-}
-
-/**
- * Group data by type
- * @param  {String|String[]} [expand=[]] - List of types which should appear pre-expanded.
- *                                         Alternatively string "all" is accepted.
- */
-ZoteroData.prototype.groupByType = function (expand) {
-	var groupedData = {};
-	expand = expand || [];
-	for (var i = this.raw.length; i--;) {
-		var item = this.raw[i];
-
-		if (!groupedData[item.data.itemType]) {
-			groupedData[item.data.itemType] = [];
-		}
-		groupedData[item.data.itemType].push(item);
-		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.contains(expand, item.data.itemType);
-	}
-	this.data = groupedData;
-	this.grouped = GROUPED_BY_TYPE;
-};
-
-/**
- * Group data by top-level collections
- */
-ZoteroData.prototype.groupByCollections = function () {
-	throw new Error('groupByCollections is not implemented yet.');
-};
-
-/**
- * Custom iterator to allow for..of interation regardless of whether data is grouped or not.
- * For ungrouped data each interation returns single Zotero item
- * For grouped data each iternation returns a group of Zotero items. Additionaly group name
- * is available under GROUP_TITLE Symbol
- */
-ZoteroData.prototype[Symbol.iterator] = function () {
-	var _this = this;
-
-	var i = 0;
-	if (this.grouped > 0) {
-		var _ret = function () {
-			var keys = Object.keys(_this.data);
-			return {
-				v: {
-					next: function () {
-						var group = this.data[keys[i]];
-						group[GROUP_TITLE] = keys[i];
-						return {
-							value: group,
-							done: ++i === keys.length
-						};
-					}.bind(_this)
-				}
-			};
-		}();
-
-		if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	} else {
-		return {
-			next: function () {
-				return {
-					value: i < this.data.length ? this.data[i] : null,
-					done: i++ >= this.data.length
-				};
-			}.bind(this)
-		};
-	}
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/main-modern.js":[function(require,module,exports){
-'use strict';
-
-var _main = require('./main.js');
-
-module.exports = _main.ZoteroPublications;
-
-},{"./main.js":"/srv/zotero/my-publications/src/js/main.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.ZoteroPublications = ZoteroPublications;
-
-var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _render = require('./render.js');
-
-var _api = require('./api.js');
-
-var _data = require('./data.js');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-/**
- * Application entry point
- * @param {Object} [config] - Configuration object that will selectively override the defaults
- */
-function ZoteroPublications() {
-	if (arguments.length <= 1) {
-		this.config = _lodash2.default.extend({}, this.defaults, arguments ? arguments[0] : {});
-	} else if (arguments.length <= 3) {
-		this.config = _lodash2.default.extend({}, this.defaults, arguments[2]);
-		return this.render(arguments[0], arguments[1]);
-	} else {
-		return Promise.reject(new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.'));
-	}
-}
-
-/**
- * Default configuration object
- * @type {Object}
- */
-ZoteroPublications.prototype.defaults = {
-	apiBase: 'api.zotero.org',
-	limit: 100,
-	citationStyle: '',
-	include: ['data', 'citation'],
-	shortenedAbstractLenght: 250,
-	group: false,
-	alwaysUseCitationStyle: false,
-	expand: 'all'
-};
-
-ZoteroPublications.prototype.get = function (url, options) {
-	options = options || {
-		headers: {
-			'Accept': 'application/json'
-		}
-	};
-
-	return new Promise(function (resolve, reject) {
-		var promise = (0, _api.fetchUntilExhausted)(url, options);
-		promise.then(function (responseJson) {
-			var data = new _data.ZoteroData(responseJson, this.config);
-			if (this.config.group === 'type') {
-				data.groupByType(this.config.expand);
-			}
-			resolve(data);
-		}.bind(this));
-		promise.catch(reject);
-	}.bind(this));
-};
-
-/**
- * Build url for an endpoint then fetch entire dataset recursively
- * @param  {String} endpoint - An API endpoint from which data should be obtained
- * @return {Promise}         - Resolved with ZoteroData object on success, rejected
- *                             in case of any network/response problems
- */
-ZoteroPublications.prototype.getEndpoint = function (endpoint) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/' + endpoint + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
-
-	return this.get(url);
-};
-
-ZoteroPublications.prototype.getPublications = function (userId, citationStyle) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = citationStyle || this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
-
-	this.userId = userId;
-
-	return this.get(url);
-};
-
-ZoteroPublications.prototype.getItem = function (itemId, userId, citationStyle) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = citationStyle || this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items/' + itemId + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
-
-	return this.get(url);
-};
-
-/**
- * Render local or remote items.
- * @param  {String|ZoteroData} endpointOrData - Data containung publications to be rendered
- * @param  {HTMLElement} container            - A DOM element where publications will be rendered
- * @return {Promise}                          - Resolved when rendered or rejected on error.
- */
-ZoteroPublications.prototype.render = function (endpointOrData, container) {
-	return new Promise(function (resolve, reject) {
-		if (!(container instanceof HTMLElement)) {
-			reject(new Error('Second argument to render() method must be a DOM element'));
-		}
-		if (endpointOrData instanceof _data.ZoteroData) {
-			this.renderer = new _render.ZoteroRenderer(container, this);
-			var data = endpointOrData;
-			this.renderer.displayPublications(data);
-			resolve();
-		} else if (typeof endpointOrData === 'string') {
-			this.renderer = new _render.ZoteroRenderer(container, this);
-			var endpoint = endpointOrData;
-			var promise = this.getEndpoint(endpoint);
-			promise.then(function (data) {
-				this.renderer.displayPublications(data);
-				resolve();
-			}.bind(this));
-			promise.catch(function () {
-				reject(arguments[0]);
-			});
-		} else {
-			reject(new Error('First argument to render() method must be an endpoint or an instance of ZoteroData'));
-		}
-	}.bind(this));
-};
-
-/**
- * Make ZoteroData publicly accessible underneath ZoteroPublications
- * @type {ZoteroData}
- */
-ZoteroPublications.ZoteroData = _data.ZoteroData;
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","./data.js":"/srv/zotero/my-publications/src/js/data.js","./render.js":"/srv/zotero/my-publications/src/js/render.js"}],"/srv/zotero/my-publications/src/js/render.js":[function(require,module,exports){
-(function (global){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.ZoteroRenderer = ZoteroRenderer;
-
-var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _item = require('./tpl/partial/item.tpl');
-
-var _item2 = _interopRequireDefault(_item);
-
-var _items = require('./tpl/partial/items.tpl');
-
-var _items2 = _interopRequireDefault(_items);
-
-var _group = require('./tpl/partial/group.tpl');
-
-var _group2 = _interopRequireDefault(_group);
-
-var _groups = require('./tpl/partial/groups.tpl');
-
-var _groups2 = _interopRequireDefault(_groups);
-
-var _branding = require('./tpl/partial/branding.tpl');
-
-var _branding2 = _interopRequireDefault(_branding);
-
-var _groupView = require('./tpl/group-view.tpl');
-
-var _groupView2 = _interopRequireDefault(_groupView);
-
-var _plainView = require('./tpl/plain-view.tpl');
-
-var _plainView2 = _interopRequireDefault(_plainView);
-
-var _data = require('./data.js');
-
-var _utils = require('./utils.js');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-_lodash2.default.templateSettings.variable = 'obj';
-
-/**
- * Zotero Renderer constructor
- * @param {HTMLElement} container	- A container where contents is rendered
- * @param {Object} [config]			- ZoteroPublications config
- */
-function ZoteroRenderer(container, zotero) {
-	this.container = container;
-	this.zotero = zotero;
-	this.config = zotero.config;
-	this.toggleSpinner(true);
-}
-
-/**
- * Render single Zotero item
- * @param  {Object} zoteroItem       - Single Zotero item data
- * @return {String}                  - Rendered markup of a Zotero item
- */
-ZoteroRenderer.prototype.renderItem = function (zoteroItem) {
-	return (0, _item2.default)({
-		'item': zoteroItem,
-		'data': zoteroItem.data,
-		'renderer': this
-	});
-};
-
-/**
- * Render a list of Zotero items
- * @param  {Object[]} zoteroItems - List of Zotero items
- * @return {String}                          - Rendered markup of a list of Zotero items
- */
-ZoteroRenderer.prototype.renderItems = function (zoteroItems) {
-	return (0, _items2.default)({
-		'items': zoteroItems,
-		'renderer': this
-	});
-};
-
-/**
- * Render a group of Zotero items
- * @param  {Object[]} items 	- List of items for this group
- * @return {String}             - Rendered markup of a group
- */
-ZoteroRenderer.prototype.renderGroup = function (items) {
-	return (0, _group2.default)({
-		'title': (0, _utils.formatCategoryName)(items[_data.GROUP_TITLE]),
-		'items': items,
-		'expand': items[_data.GROUP_EXPANDED_SUMBOL],
-		'renderer': this
-	});
-};
-
-/**
- * Renders a list of groups of Zotero items
- * @param {Object[]} 	- List of groups to render
- * @return {String} 	- Rendered markup of groups
- */
-ZoteroRenderer.prototype.renderGroups = function (groups) {
-	return (0, _groups2.default)({
-		'groups': groups,
-		'renderer': this
-	});
-};
-
-/**
- * Render a Group View
- * @param {Object[]} 	- List of groups to render
- * @return {String} 	- Rendered markup of a complete group view
- */
-ZoteroRenderer.prototype.renderGroupView = function (data) {
-	return (0, _groupView2.default)({
-		'groups': data,
-		'renderer': this
-	});
-};
-
-/**
- * Render a Plain View
- * @param  {Object[]} zoteroItems - List of Zotero items
- * @return {String} 	- Rendered markup of a complete plain view
- */
-ZoteroRenderer.prototype.renderPlainView = function (data) {
-	return (0, _plainView2.default)({
-		'items': data,
-		'renderer': this
-	});
-};
-
-/**
- * Render Zotero branding
- * @return {String}
- */
-ZoteroRenderer.prototype.renderBranding = function () {
-	return (0, _branding2.default)();
-};
-
-/**
- * Render Zotero publications into a DOM element
- * @param  {ZoteroData} data       - Source of publications to be rendered
- */
-ZoteroRenderer.prototype.displayPublications = function (data) {
-	var markup;
-
-	if (data.grouped > 0) {
-		markup = this.renderGroupView(data);
-	} else {
-		markup = this.renderPlainView(data);
-	}
-
-	this.data = data;
-	this.container.innerHTML = markup;
-
-	_lodash2.default.each(this.container.querySelectorAll('.zotero-details'), function (element) {
-		element.style.height = element.offsetHeight + 'px';
-		element.classList.add('zotero-details-collapsed');
-	});
-
-	this.toggleSpinner(false);
-	this.previous = markup;
-	this.addHandlers();
-};
-
-/**
- * Attach interaction handlers
- */
-ZoteroRenderer.prototype.addHandlers = function () {
-	this.container.addEventListener('click', function (ev) {
-		var target;
-
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'details';
-		});
-		if (target) {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
-			var detailsEl = itemEl.querySelector('.zotero-details');
-			if (detailsEl) {
-				detailsEl.classList.toggle('zotero-details-collapsed');
-			}
-			window.history.pushState(null, null, '#' + itemEl.dataset.item);
-			ev.preventDefault();
-			return;
-		}
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'cite';
-		});
-		if (target) {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
-			var citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-			citeContainerEl.classList.toggle('zotero-cite-container-collapsed');
-		}
-	});
-
-	this.container.addEventListener('change', function (ev) {
-		var _this = this;
-
-		var target;
-
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'cite-style-selection';
-		});
-		if (target) {
-			(function () {
-				var itemEl = (0, _utils.closest)(target, function (el) {
-					return el.dataset && el.dataset.item;
-				});
-				var itemId = itemEl.dataset.item;
-				var citationTextareaEl = itemEl.querySelector('.zotero-citation');
-				var citationStyle = target.options[target.selectedIndex].value;
-				_this.zotero.getItem(itemId, _this.zotero.userId, citationStyle).then(function (item) {
-					citationTextareaEl.value = item.raw[0].citation;
-				});
-			})();
-		}
-	}.bind(this));
-};
-
-/**
- * Toggle CSS class that gives a visual loading feedback. Optionally allows to explicetly specify
- * whether to display or hide visual feedback.
- * @param  {boolean} [activate]    - Explicitely indicate whether to add or remove visual feedback
- */
-ZoteroRenderer.prototype.toggleSpinner = function (activate) {
-	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
-	method.call(this.container.classList, 'zotero-loading');
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
-(function (global){
-'use strict';
-
-var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-module.exports = function (obj) {
-  var __t,
-      __p = '',
-      __j = Array.prototype.join,
-      print = function print() {
-    __p += __j.call(arguments, '');
-  };
-  __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderGroups(obj.groups)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
-  return __p;
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl":[function(require,module,exports){
-(function (global){
-'use strict';
-
-var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-module.exports = function (obj) {
-  var __t,
-      __p = '',
-      __j = Array.prototype.join,
-      print = function print() {
-    __p += __j.call(arguments, '');
-  };
-  __p += '<div class="zotero-branding">\n\t<a href="http://www.zotero.org" class="zotero-logo-link">\n\t\t<svg class="zotero-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="90" height="20">\n\t\t\t<g>\n\t\t\t\t<path class="zotero-z" fill="#990000" d="M12.2,6.1L2.8,17.8h9.4v1.9H0v-2.2L9.4,5.8H0.8V3.9h11.4V6.1z"/>\n\t\t\t\t<path fill="#222222" d="M22.1,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C15.1,5.2,16.2,3.7,22.1,3.7z M22.1,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C17.5,17.3,17.8,18,22.1,18z"/>\n\t\t\t\t<path fill="#222222" d="M41.7,5.8h-6.1v10c0,1.7,0.5,2.1,2.2,2.1c2.2,0,2.2-1.2,2.2-2.7v-1.2h2.3v1.2c0,3.1-1.3,4.6-4.5,4.6\n\t\t\t\t\tc-3.7,0-4.5-1.1-4.5-4.8V5.8h-2.1V3.9h2.1V0.1h2.4v3.8h6.1V5.8z"/>\n\t\t\t\t<path fill="#222222" d="M58.3,14.9v0.6c0,4.2-3.2,4.4-6.7,4.4c-6.2,0-7.1-2-7.1-8.1c0-6.6,1.4-8.1,7.1-8.1c5.1,0,6.7,1.2,6.7,7v1.6\n\t\t\t\t\tH46.9c0,5,0.4,5.6,4.6,5.6c3.3,0,4.3-0.2,4.3-2.4v-0.6H58.3z M55.8,10.4c-0.1-4.5-0.7-4.8-4.3-4.8c-4.3,0-4.5,1.1-4.6,4.8H55.8z"/>\n\t\t\t\t<path fill="#222222" d="M64.6,3.9l-0.1,2l0.1,0.1c0.8-1.7,2.7-2.2,4.5-2.2c3,0,4.4,1.5,4.4,4.5v1.1h-2.3V8.3c0-2-0.7-2.6-2.6-2.6\n\t\t\t\t\tc-3,0-3.9,1.4-3.9,4.2v9.8h-2.4V3.9H64.6z"/>\n\t\t\t\t<path fill="#222222" d="M83,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C76,5.2,77.1,3.7,83,3.7z M83,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C78.4,17.3,78.7,18,83,18z"/>\n\t\t\t</g>\n\t\t</svg>\n\t</a>\n</div>';
-  return __p;
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl":[function(require,module,exports){
-(function (global){
-'use strict';
-
-var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-module.exports = function (obj) {
-  var __t,
-      __p = '',
-      __j = Array.prototype.join,
-      print = function print() {
-    __p += __j.call(arguments, '');
-  };
-  __p += '<li class="zotero-group' + ((__t = obj.expand ? ' zotero-group-expanded' : '') == null ? '' : _.escape(__t)) + '" aria-expanded="' + ((__t = obj.expand ? ' true' : 'false') == null ? '' : _.escape(__t)) + '" >\n\t<h2 class="zotero-group-title" data-trigger="expand-group">' + ((__t = obj.title) == null ? '' : _.escape(__t)) + '</h2>\n\t' + ((__t = obj.renderer.renderItems(obj.items)) == null ? '' : __t) + '\n</li>';
-  return __p;
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl":[function(require,module,exports){
-(function (global){
-'use strict';
-
-var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-module.exports = function (obj) {
-  var __t,
-      __p = '',
-      __j = Array.prototype.join,
-      print = function print() {
-    __p += __j.call(arguments, '');
-  };
-  __p += '<ul class="zotero-groups">\n\t';
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = obj.groups[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var group = _step.value;
-
-      __p += '\n\t\t' + ((__t = obj.renderer.renderGroup(group)) == null ? '' : __t) + '\n\t';
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  __p += '\n</ul>';
-  return __p;
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl":[function(require,module,exports){
-(function (global){
-'use strict';
-
-var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-module.exports = function (obj) {
-  var __t,
-      __p = '',
-      __j = Array.prototype.join,
-      print = function print() {
-    __p += __j.call(arguments, '');
-  };
-  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\n\t<!-- Reference -->\n\t';
-  if (obj.renderer.config.alwaysUseCitationStyle) {
-    __p += '\n\t\t<div class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</div>\n\n\t<!-- Templated -->\n\t';
-  } else {
-    __p += '\n\t\t';
-    if (obj.data.itemType == 'book') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
-      if (obj.data[Symbol.for('formattedDate')]) {
-        __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
-      }
-      __p += '\n\t\t\t</div>\n\n\t\t';
-    } else if (obj.data.itemType == 'journalArticle') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
-      if (obj.data[Symbol.for('formattedDate')]) {
-        __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
-      }
-      __p += '\n\t\t\t</div>\n\n\t\t';
-    } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
-      if (obj.data[Symbol.for('formattedDate')]) {
-        __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
-      }
-      __p += '\n\t\t\t</div>\n\n\t\t';
-    } else if (obj.data.itemType == 'blogPost') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
-      if (obj.data[Symbol.for('formattedDate')]) {
-        __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
-      }
-      __p += '\n\t\t\t</div>\n\n\t\t';
+},{"./is-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js"}],"/srv/zotero/my-publications/node_modules/process/browser.js":[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
     } else {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.item.citation) == null ? '' : __t) + '</a>\n\t\t\t</div>\n\t\t';
+        queueIndex = -1;
     }
-    __p += '\n\t';
-  }
-  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" data-trigger="details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<div class="zotero-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t';
-  if (!obj.renderer.config.alwaysUseCitationStyle) {
-    __p += '\n\t\t\t\t<div class="zotero-reference">\n\t\t\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
-  }
-  __p += '\n\n\t\t\t';
-  if (obj.data.abstractNote && obj.data.abstractNote.length) {
-    __p += '\n\t\t\t\t<h3>\n\t\t\t\t\tAbstract\n\t\t\t\t</h3>\n\t\t\t\t<p class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data.abstractNote) == null ? '' : _.escape(__t)) + '\n\t\t\t\t</p>\n\t\t\t';
-  }
-  __p += '\n\n\t\t\t';
-  if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) {
-    __p += '\n\t\t\t\t<h3>Notes</h3>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = obj.item[Symbol.for('childNotes')][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var childItem = _step.value;
-
-        __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t' + ((__t = childItem.data.note) == null ? '' : __t) + '\n\t\t\t\t\t\t</li>\n\t\t\t\t\t';
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+    if (queue.length) {
+        drainQueue();
     }
-
-    __p += '\n\t\t\t\t</ul>\n\t\t\t';
-  }
-  __p += '\n\n\t\t\t';
-  if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
-    __p += '\n\t\t\t\t<h3>Attachments</h3>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = obj.item[Symbol.for('childAttachments')][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var childItem = _step2.value;
-
-        __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="#">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t';
-      }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
-    }
-
-    __p += '\n\t\t\t\t</ul>\n\t\t\t';
-  }
-  __p += '\n\t\t\t';
-  if (obj.renderer.zotero.userId) {
-    __p += '\n\t\t\t\t<div>\n\t\t\t\t\t<button class="zotero-cite-button" data-trigger="cite">\n\t\t\t\t\t\tCite\n\t\t\t\t\t</button>\n\t\t\t\t</div>\n\t\t\t\t<div class="zotero-cite-container">\n\t\t\t\t\t<select data-trigger="cite-style-selection">\n\t\t\t\t\t\t<option value="american-anthropological-association">\n\t\t\t\t\t\t\tAmerican Anthropological Association\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="cell">\n\t\t\t\t\t\t\tCell\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="chicago-author-date">\n\t\t\t\t\t\t\tChicago Manual of Style 16th edition (author-date)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="elsevier-harvard">\n\t\t\t\t\t\t\tElsevier Harvard (with titles)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="ieee">\n\t\t\t\t\t\t\tIEEE\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="modern-humanities-research-association-author-date">\n\t\t\t\t\t\t\tModern Humanities Research Association 3rd edition (author-date)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="modern-language-association">\n\t\t\t\t\t\t\tModern Language Association 7th edition\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="nature">\n\t\t\t\t\t\t\tNature\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="vancouver">\n\t\t\t\t\t\t\tVancouver\n\t\t\t\t\t\t</option>\n\t\t\t\t\t</select>\n\t\t\t\t\t<textarea class="zotero-citation" cols="30" rows="5">\n\t\t\t\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t\t\t\t</textarea>\n\t\t\t\t</div>\n\t\t\t';
-  }
-  __p += '\n\t\t</div>\n\t</div>\n</li>';
-  return __p;
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl":[function(require,module,exports){
-(function (global){
-'use strict';
-
-var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-module.exports = function (obj) {
-  var __t,
-      __p = '',
-      __j = Array.prototype.join,
-      print = function print() {
-    __p += __j.call(arguments, '');
-  };
-  __p += '<ul class="zotero-items">\n\t';
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = obj.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var item = _step.value;
-
-      __p += '\n\t\t' + ((__t = obj.renderer.renderItem(item)) == null ? '' : __t) + '\n\t';
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
-  }
-
-  __p += '\n</ul>';
-  return __p;
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl":[function(require,module,exports){
-(function (global){
-'use strict';
-
-var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-module.exports = function (obj) {
-  var __t,
-      __p = '',
-      __j = Array.prototype.join,
-      print = function print() {
-    __p += __j.call(arguments, '');
-  };
-  __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderItems(items)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
-  return __p;
-};
-
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/src/js/utils.js":[function(require,module,exports){
-'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.formatDate = formatDate;
-exports.formatCategoryName = formatCategoryName;
-exports.closest = closest;
-var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-
-/**
- * Parse iso date and format it in a simple way
- * @param  {String} isoDate - date in iso format
- * @return {String}         - formatted date
- */
-function formatDate(isoDate) {
-	var matches = isoDate.match(/(\d{4})\-?(\d{2})?-?(\d{2})?/);
-	var date = isoDate;
-
-	if (matches.length >= 4) {
-		var year = matches[1];
-		var month = months[parseInt(matches[2], 10) - 1];
-		var day = parseInt(matches[3], 10);
-		date = month + ' ' + day + ', ' + year;
-	}
-	if (matches.length >= 3) {
-		var year = matches[1];
-		var month = months[parseInt(matches[2], 10) - 1];
-		date = month + ' ' + year;
-	}
-	if (matches.length >= 2) {
-		date = matches[1];
-	}
-
-	return date;
 }
 
-/**
- * Formats category name
- * @param  {String} name 	- unformatted name
- * @return {String}      	- formatted name
- */
-function formatCategoryName(name) {
-	name = name.replace(/(?! )[A-Z]/g, ' $&');
-	return name.charAt(0).toUpperCase() + name.slice(1);
-}
-
-/**
- * Finds the first element that pasess function test by
- * testing the element itself and traversing up
- * @param  {HTMLElement}   el 	- A DOM element from which tracersing begins
- * @param  {Function} fn 		- Function that tests if element is suitable
- * @return {HTMLElement}		- First element that passes the test
- */
-function closest(el, fn) {
-	return el && (fn(el) ? el : closest(el.parentNode, fn));
-}
-
-},{}]},{},["/srv/zotero/my-publications/src/js/main-modern.js"])("/srv/zotero/my-publications/src/js/main-modern.js")
-});se strict';
-
-module.exports = new Function("return this")();
-
-},{}],"/srv/zotero/my-publications/node_modules/es5-ext/object/assign/index.js":[function(require,module,exports){
-'use strict';
-
-module.exports = require('./is-implemented')()
-	? Object.assign
-	: require('./shim');
-
-},{"./is-implemented":"/srv/zotero/my-publications/node_modules/es5-ext/object/assign/is-implemented.js","./shim":"/srv/zotero/my-publications/node_modules/es5-ext/object/assign/shim.js"}],"/srv/zotero/my-publications/node_modules/es5-ext/object/assign/is-implemented.js":[function(require,module,exports){
-'use strict';
-
-module.exports = function () {
-	var assign = Object.assign, obj;
-	if (typeof assign !== 'function') return false;
-	obj = { foo: 'raz' };
-	assign(obj, { bar: 'dwa' }, { trzy: 'trzy' });
-	return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es5-ext/object/assign/shim.js":[function(require,module,exports){
-'use strict';
-
-var keys  = require('../keys')
-  , value = require('../valid-value')
-
-  , max = Math.max;
-
-module.exports = function (dest, src/*, …srcn*/) {
-	var error, i, l = max(arguments.length, 2), assign;
-	dest = Object(value(dest));
-	assign = function (key) {
-		try { dest[key] = src[key]; } catch (e) {
-			if (!error) error = e;
-		}
-	};
-	for (i = 1; i < l; ++i) {
-		src = arguments[i];
-		keys(src).forEach(assign);
-	}
-	if (error !== undefined) throw error;
-	return dest;
-};
-
-},{"../keys":"/srv/zotero/my-publications/node_modules/es5-ext/object/keys/index.js","../valid-value":"/srv/zotero/my-publications/node_modules/es5-ext/object/valid-value.js"}],"/srv/zotero/my-publications/node_modules/es5-ext/object/is-callable.js":[function(require,module,exports){
-// Deprecated
-
-'use strict';
-
-module.exports = function (obj) { return typeof obj === 'function'; };
-
-},{}],"/srv/zotero/my-publications/node_modules/es5-ext/object/keys/index.js":[function(require,module,exports){
-'use strict';
-
-module.exports = require('./is-implemented')()
-	? Object.keys
-	: require('./shim');
-
-},{"./is-implemented":"/srv/zotero/my-publications/node_modules/es5-ext/object/keys/is-implemented.js","./shim":"/srv/zotero/my-publications/node_modules/es5-ext/object/keys/shim.js"}],"/srv/zotero/my-publications/node_modules/es5-ext/object/keys/is-implemented.js":[function(require,module,exports){
-'use strict';
-
-module.exports = function () {
-	try {
-		Object.keys('primitive');
-		return true;
-	} catch (e) { return false; }
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es5-ext/object/keys/shim.js":[function(require,module,exports){
-'use strict';
-
-var keys = Object.keys;
-
-module.exports = function (object) {
-	return keys(object == null ? object : Object(object));
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es5-ext/object/normalize-options.js":[function(require,module,exports){
-'use strict';
-
-var forEach = Array.prototype.forEach, create = Object.create;
-
-var process = function (src, obj) {
-	var key;
-	for (key in src) obj[key] = src[key];
-};
-
-module.exports = function (options/*, …options*/) {
-	var result = create(null);
-	forEach.call(arguments, function (options) {
-		if (options == null) return;
-		process(Object(options), result);
-	});
-	return result;
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es5-ext/object/valid-value.js":[function(require,module,exports){
-'use strict';
-
-module.exports = function (value) {
-	if (value == null) throw new TypeError("Cannot use null or undefined");
-	return value;
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es5-ext/string/#/contains/index.js":[function(require,module,exports){
-'use strict';
-
-module.exports = require('./is-implemented')()
-	? String.prototype.contains
-	: require('./shim');
-
-},{"./is-implemented":"/srv/zotero/my-publications/node_modules/es5-ext/string/#/contains/is-implemented.js","./shim":"/srv/zotero/my-publications/node_modules/es5-ext/string/#/contains/shim.js"}],"/srv/zotero/my-publications/node_modules/es5-ext/string/#/contains/is-implemented.js":[function(require,module,exports){
-'use strict';
-
-var str = 'razdwatrzy';
-
-module.exports = function () {
-	if (typeof str.contains !== 'function') return false;
-	return ((str.contains('dwa') === true) && (str.contains('foo') === false));
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es5-ext/string/#/contains/shim.js":[function(require,module,exports){
-'use strict';
-
-var indexOf = String.prototype.indexOf;
-
-module.exports = function (searchString/*, position*/) {
-	return indexOf.call(this, searchString, arguments[1]) > -1;
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js":[function(require,module,exports){
-'use strict';
-
-if (!require('./is-implemented')()) {
-	Object.defineProperty(require('es5-ext/global'), 'Symbol',
-		{ value: require('./polyfill'), configurable: true, enumerable: false,
-			writable: true });
-}
-
-},{"./is-implemented":"/srv/zotero/my-publications/node_modules/es6-symbol/is-implemented.js","./polyfill":"/srv/zotero/my-publications/node_modules/es6-symbol/polyfill.js","es5-ext/global":"/srv/zotero/my-publications/node_modules/es5-ext/global.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/is-implemented.js":[function(require,module,exports){
-'use strict';
-
-module.exports = function () {
-	var symbol;
-	if (typeof Symbol !== 'function') return false;
-	symbol = Symbol('test symbol');
-	try { String(symbol); } catch (e) { return false; }
-	if (typeof Symbol.iterator === 'symbol') return true;
-
-	// Return 'true' for polyfills
-	if (typeof Symbol.isConcatSpreadable !== 'object') return false;
-	if (typeof Symbol.iterator !== 'object') return false;
-	if (typeof Symbol.toPrimitive !== 'object') return false;
-	if (typeof Symbol.toStringTag !== 'object') return false;
-	if (typeof Symbol.unscopables !== 'object') return false;
-
-	return true;
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js":[function(require,module,exports){
-'use strict';
-
-module.exports = function (x) {
-	return (x && ((typeof x === 'symbol') || (x['@@toStringTag'] === 'Symbol'))) || false;
-};
-
-},{}],"/srv/zotero/my-publications/node_modules/es6-symbol/polyfill.js":[function(require,module,exports){
-// ES2015 Symbol polyfill for environments that do not support it (or partially support it_
-
-'use strict';
-
-var d              = require('d')
-  , validateSymbol = require('./validate-symbol')
-
-  , create = Object.create, defineProperties = Object.defineProperties
-  , defineProperty = Object.defineProperty, objPrototype = Object.prototype
-  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null);
-
-if (typeof Symbol === 'function') NativeSymbol = Symbol;
-
-var generateName = (function () {
-	var created = create(null);
-	return function (desc) {
-		var postfix = 0, name, ie11BugWorkaround;
-		while (created[desc + (postfix || '')]) ++postfix;
-		desc += (postfix || '');
-		created[desc] = true;
-		name = '@@' + desc;
-		defineProperty(objPrototype, name, d.gs(null, function (value) {
-			// For IE11 issue see:
-			// https://connect.microsoft.com/IE/feedbackdetail/view/1928508/
-			//    ie11-broken-getters-on-dom-objects
-			// https://github.com/medikoo/es6-symbol/issues/12
-			if (ie11BugWorkaround) return;
-			ie11BugWorkaround = true;
-			defineProperty(this, name, d(value));
-			ie11BugWorkaround = false;
-		}));
-		return name;
-	};
-}());
-
-// Internal constructor (not one exposed) for creating Symbol instances.
-// This one is used to ensure that `someSymbol instanceof Symbol` always return false
-HiddenSymbol = function Symbol(description) {
-	if (this instanceof HiddenSymbol) throw new TypeError('TypeError: Symbol is not a constructor');
-	return SymbolPolyfill(description);
-};
-
-// Exposed `Symbol` constructor
-// (returns instances of HiddenSymbol)
-module.exports = SymbolPolyfill = function Symbol(description) {
-	var symbol;
-	if (this instanceof Symbol) throw new TypeError('TypeError: Symbol is not a constructor');
-	symbol = create(HiddenSymbol.prototype);
-	description = (description === undefined ? '' : String(description));
-	return defineProperties(symbol, {
-		__description__: d('', description),
-		__name__: d('', generateName(description))
-	});
-};
-defineProperties(SymbolPolyfill, {
-	for: d(function (key) {
-		if (globalSymbols[key]) return globalSymbols[key];
-		return (globalSymbols[key] = SymbolPolyfill(String(key)));
-	}),
-	keyFor: d(function (s) {
-		var key;
-		validateSymbol(s);
-		for (key in globalSymbols) if (globalSymbols[key] === s) return key;
-	}),
-
-	// If there's native implementation of given symbol, let's fallback to it
-	// to ensure proper interoperability with other native functions e.g. Array.from
-	hasInstance: d('', (NativeSymbol && NativeSymbol.hasInstance) || SymbolPolyfill('hasInstance')),
-	isConcatSpreadable: d('', (NativeSymbol && NativeSymbol.isConcatSpreadable) ||
-		SymbolPolyfill('isConcatSpreadable')),
-	iterator: d('', (NativeSymbol && NativeSymbol.iterator) || SymbolPolyfill('iterator')),
-	match: d('', (NativeSymbol && NativeSymbol.match) || SymbolPolyfill('match')),
-	replace: d('', (NativeSymbol && NativeSymbol.replace) || SymbolPolyfill('replace')),
-	search: d('', (NativeSymbol && NativeSymbol.search) || SymbolPolyfill('search')),
-	species: d('', (NativeSymbol && NativeSymbol.species) || SymbolPolyfill('species')),
-	split: d('', (NativeSymbol && NativeSymbol.split) || SymbolPolyfill('split')),
-	toPrimitive: d('', (NativeSymbol && NativeSymbol.toPrimitive) || SymbolPolyfill('toPrimitive')),
-	toStringTag: d('', (NativeSymbol && NativeSymbol.toStringTag) || SymbolPolyfill('toStringTag')),
-	unscopables: d('', (NativeSymbol && NativeSymbol.unscopables) || SymbolPolyfill('unscopables'))
-});
-
-// Internal tweaks for real symbol producer
-defineProperties(HiddenSymbol.prototype, {
-	constructor: d(SymbolPolyfill),
-	toString: d('', function () { return this.__name__; })
-});
-
-// Proper implementation of methods exposed on Symbol.prototype
-// They won't be accessible on produced symbol instances as they derive from HiddenSymbol.prototype
-defineProperties(SymbolPolyfill.prototype, {
-	toString: d(function () { return 'Symbol (' + validateSymbol(this).__description__ + ')'; }),
-	valueOf: d(function () { return validateSymbol(this); })
-});
-defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('',
-	function () { return validateSymbol(this); }));
-defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d('c', 'Symbol'));
-
-// Proper implementaton of toPrimitive and toStringTag for returned symbol instances
-defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
-	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toStringTag]));
-
-// Note: It's important to define `toPrimitive` as last one, as some implementations
-// implement `toPrimitive` natively without implementing `toStringTag` (or other specified symbols)
-// And that may invoke error in definition flow:
-// See: https://github.com/medikoo/es6-symbol/issues/13#issuecomment-164146149
-defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
-	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
-
-},{"./validate-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/validate-symbol.js","d":"/srv/zotero/my-publications/node_modules/d/index.js"}],"/srv/zotero/my-publications/node_modules/es6-symbol/validate-symbol.js":[function(require,module,exports){
-'use strict';
-
-var isSymbol = require('./is-symbol');
-
-module.exports = function (value) {
-	if (!isSymbol(value)) throw new TypeError(value + " is not a symbol");
-	return value;
-};
-
-},{"./is-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js"}],"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js":[function(require,module,exports){
-(function(self) {
-  'use strict';
-
-  if (self.fetch) {
-    return
-  }
-
-  function normalizeName(name) {
-    if (typeof name !== 'string') {
-      name = String(name)
-    }
-    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
-      throw new TypeError('Invalid character in header field name')
-    }
-    return name.toLowerCase()
-  }
-
-  function normalizeValue(value) {
-    if (typeof value !== 'string') {
-      value = String(value)
-    }
-    return value
-  }
-
-  function Headers(headers) {
-    this.map = {}
-
-    if (headers instanceof Headers) {
-      headers.forEach(function(value, name) {
-        this.append(name, value)
-      }, this)
-
-    } else if (headers) {
-      Object.getOwnPropertyNames(headers).forEach(function(name) {
-        this.append(name, headers[name])
-      }, this)
-    }
-  }
-
-  Headers.prototype.append = function(name, value) {
-    name = normalizeName(name)
-    value = normalizeValue(value)
-    var list = this.map[name]
-    if (!list) {
-      list = []
-      this.map[name] = list
-    }
-    list.push(value)
-  }
-
-  Headers.prototype['delete'] = function(name) {
-    delete this.map[normalizeName(name)]
-  }
-
-  Headers.prototype.get = function(name) {
-    var values = this.map[normalizeName(name)]
-    return values ? values[0] : null
-  }
-
-  Headers.prototype.getAll = function(name) {
-    return this.map[normalizeName(name)] || []
-  }
-
-  Headers.prototype.has = function(name) {
-    return this.map.hasOwnProperty(normalizeName(name))
-  }
-
-  Headers.prototype.set = function(name, value) {
-    this.map[normalizeName(name)] = [normalizeValue(value)]
-  }
-
-  Headers.prototype.forEach = function(callback, thisArg) {
-    Object.getOwnPropertyNames(this.map).forEach(function(name) {
-      this.map[name].forEach(function(value) {
-        callback.call(thisArg, value, name, this)
-      }, this)
-    }, this)
-  }
-
-  function consumed(body) {
-    if (body.bodyUsed) {
-      return Promise.reject(new TypeError('Already read'))
-    }
-    body.bodyUsed = true
-  }
-
-  function fileReaderReady(reader) {
-    return new Promise(function(resolve, reject) {
-      reader.onload = function() {
-        resolve(reader.result)
-      }
-      reader.onerror = function() {
-        reject(reader.error)
-      }
-    })
-  }
-
-  function readBlobAsArrayBuffer(blob) {
-    var reader = new FileReader()
-    reader.readAsArrayBuffer(blob)
-    return fileReaderReady(reader)
-  }
-
-  function readBlobAsText(blob) {
-    var reader = new FileReader()
-    reader.readAsText(blob)
-    return fileReaderReady(reader)
-  }
-
-  var support = {
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
-      try {
-        new Blob();
-        return true
-      } catch(e) {
-        return false
-      }
-    })(),
-    formData: 'FormData' in self,
-    arrayBuffer: 'ArrayBuffer' in self
-  }
-
-  function Body() {
-    this.bodyUsed = false
-
-
-    this._initBody = function(body) {
-      this._bodyInit = body
-      if (typeof body === 'string') {
-        this._bodyText = body
-      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-        this._bodyBlob = body
-      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-        this._bodyFormData = body
-      } else if (!body) {
-        this._bodyText = ''
-      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
-        // Only support ArrayBuffers for POST method.
-        // Receiving ArrayBuffers happens via Blobs, instead.
-      } else {
-        throw new Error('unsupported BodyInit type')
-      }
-
-      if (!this.headers.get('content-type')) {
-        if (typeof body === 'string') {
-          this.headers.set('content-type', 'text/plain;charset=UTF-8')
-        } else if (this._bodyBlob && this._bodyBlob.type) {
-          this.headers.set('content-type', this._bodyBlob.type)
-        }
-      }
-    }
-
-    if (support.blob) {
-      this.blob = function() {
-        var rejected = consumed(this)
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return Promise.resolve(this._bodyBlob)
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as blob')
-        } else {
-          return Promise.resolve(new Blob([this._bodyText]))
-        }
-      }
-
-      this.arrayBuffer = function() {
-        return this.blob().then(readBlobAsArrayBuffer)
-      }
-
-      this.text = function() {
-        var rejected = consumed(this)
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return readBlobAsText(this._bodyBlob)
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as text')
-        } else {
-          return Promise.resolve(this._bodyText)
-        }
-      }
-    } else {
-      this.text = function() {
-        var rejected = consumed(this)
-        return rejected ? rejected : Promise.resolve(this._bodyText)
-      }
-    }
-
-    if (support.formData) {
-      this.formData = function() {
-        return this.text().then(decode)
-      }
-    }
-
-    this.json = function() {
-      return this.text().then(JSON.parse)
-    }
-
-    return this
-  }
-
-  // HTTP methods whose capitalization should be normalized
-  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
-
-  function normalizeMethod(method) {
-    var upcased = method.toUpperCase()
-    return (methods.indexOf(upcased) > -1) ? upcased : method
-  }
-
-  function Request(input, options) {
-    options = options || {}
-    var body = options.body
-    if (Request.prototype.isPrototypeOf(input)) {
-      if (input.bodyUsed) {
-        throw new TypeError('Already read')
-      }
-      this.url = input.url
-      this.credentials = input.credentials
-      if (!options.headers) {
-        this.headers = new Headers(input.headers)
-      }
-      this.method = input.method
-      this.mode = input.mode
-      if (!body) {
-        body = input._bodyInit
-        input.bodyUsed = true
-      }
-    } else {
-      this.url = input
-    }
-
-    this.credentials = options.credentials || this.credentials || 'omit'
-    if (options.headers || !this.headers) {
-      this.headers = new Headers(options.headers)
-    }
-    this.method = normalizeMethod(options.method || this.method || 'GET')
-    this.mode = options.mode || this.mode || null
-    this.referrer = null
-
-    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-      throw new TypeError('Body not allowed for GET or HEAD requests')
-    }
-    this._initBody(body)
-  }
-
-  Request.prototype.clone = function() {
-    return new Request(this)
-  }
-
-  function decode(body) {
-    var form = new FormData()
-    body.trim().split('&').forEach(function(bytes) {
-      if (bytes) {
-        var split = bytes.split('=')
-        var name = split.shift().replace(/\+/g, ' ')
-        var value = split.join('=').replace(/\+/g, ' ')
-        form.append(decodeURIComponent(name), decodeURIComponent(value))
-      }
-    })
-    return form
-  }
-
-  function headers(xhr) {
-    var head = new Headers()
-    var pairs = xhr.getAllResponseHeaders().trim().split('\n')
-    pairs.forEach(function(header) {
-      var split = header.trim().split(':')
-      var key = split.shift().trim()
-      var value = split.join(':').trim()
-      head.append(key, value)
-    })
-    return head
-  }
-
-  Body.call(Request.prototype)
-
-  function Response(bodyInit, options) {
-    if (!options) {
-      options = {}
-    }
-
-    this.type = 'default'
-    this.status = options.status
-    this.ok = this.status >= 200 && this.status < 300
-    this.statusText = options.statusText
-    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
-    this.url = options.url || ''
-    this._initBody(bodyInit)
-  }
-
-  Body.call(Response.prototype)
-
-  Response.prototype.clone = function() {
-    return new Response(this._bodyInit, {
-      status: this.status,
-      statusText: this.statusText,
-      headers: new Headers(this.headers),
-      url: this.url
-    })
-  }
-
-  Response.error = function() {
-    var response = new Response(null, {status: 0, statusText: ''})
-    response.type = 'error'
-    return response
-  }
-
-  var redirectStatuses = [301, 302, 303, 307, 308]
-
-  Response.redirect = function(url, status) {
-    if (redirectStatuses.indexOf(status) === -1) {
-      throw new RangeError('Invalid status code')
-    }
-
-    return new Response(null, {status: status, headers: {location: url}})
-  }
-
-  self.Headers = Headers;
-  self.Request = Request;
-  self.Response = Response;
-
-  self.fetch = function(input, init) {
-    return new Promise(function(resolve, reject) {
-      var request
-      if (Request.prototype.isPrototypeOf(input) && !init) {
-        request = input
-      } else {
-        request = new Request(input, init)
-      }
-
-      var xhr = new XMLHttpRequest()
-
-      function responseURL() {
-        if ('responseURL' in xhr) {
-          return xhr.responseURL
-        }
-
-        // Avoid security warnings on getResponseHeader when not allowed by CORS
-        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
-          return xhr.getResponseHeader('X-Request-URL')
-        }
-
+function drainQueue() {
+    if (draining) {
         return;
-      }
+    }
+    var timeout = setTimeout(cleanUpNextTick);
+    draining = true;
 
-      xhr.onload = function() {
-        var status = (xhr.status === 1223) ? 204 : xhr.status
-        if (status < 100 || status > 599) {
-          reject(new TypeError('Network request failed'))
-          return
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
-        var options = {
-          status: status,
-          statusText: xhr.statusText,
-          headers: headers(xhr),
-          url: responseURL()
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    clearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
         }
-        var body = 'response' in xhr ? xhr.response : xhr.responseText;
-        resolve(new Response(body, options))
-      }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        setTimeout(drainQueue, 0);
+    }
+};
 
-      xhr.onerror = function() {
-        reject(new TypeError('Network request failed'))
-      }
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
 
-      xhr.open(request.method, request.url, true)
+function noop() {}
 
-      if (request.credentials === 'include') {
-        xhr.withCredentials = true
-      }
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
 
-      if ('responseType' in xhr && support.blob) {
-        xhr.responseType = 'blob'
-      }
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
 
-      request.headers.forEach(function(value, name) {
-        xhr.setRequestHeader(name, value)
-      })
-
-      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
-    })
-  }
-  self.fetch.polyfill = true
-})(typeof self !== 'undefined' ? self : this);
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 },{}],"/srv/zotero/my-publications/src/js/api.js":[function(require,module,exports){
 (function (global){
@@ -2043,7 +1112,7 @@ module.exports = function (value) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = undefined;
+exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_SHORT_SYMBOL = undefined;
 exports.processResponse = processResponse;
 exports.fetchUntilExhausted = fetchUntilExhausted;
 
@@ -2058,9 +1127,10 @@ var _data = require('./data.js');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('es6-symbol/implement');
-var ABSTRACT_NOTE_SHORT_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
-var AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
-var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
+const ABSTRACT_NOTE_SHORT_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
+const ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
+const AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
+const FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
 
 /**
  * Process raw API response
@@ -2070,20 +1140,19 @@ var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formatte
  */
 function processResponse(response, config) {
 	if (response) {
-		var childItems = [];
-		var index = {};
+		let childItems = [];
+		let index = {};
 
 		for (var i = response.length; i--;) {
-			var item = response[i];
+			let item = response[i];
 			if (item.data && item.data.abstractNote) {
-				var abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
+				let abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
 				abstractNoteShort = abstractNoteShort.substr(0, Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' ')));
 				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
+				item.data[ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
 			}
 			if (item.data && item.data.creators) {
-				item.data[AUTHORS_SYMBOL] = item.data.creators.map(function (author) {
-					return author.firstName + ' ' + author.lastName;
-				}).join(' & ');
+				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => author.firstName + ' ' + author.lastName).join(' & ');
 			}
 			if (item.data && item.meta.parsedDate) {
 				item.data[FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
@@ -2101,10 +1170,10 @@ function processResponse(response, config) {
 
 		try {
 			for (var _iterator = childItems[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-				var item = _step.value;
+				let item = _step.value;
 
 				if (!index[item.data.parentItem]) {
-					console.warn('item ' + item.key + ' has parentItem ' + item.data.parentItem + ' that does not exist in the dataset');
+					console.warn(`item ${ item.key } has parentItem ${ item.data.parentItem } that does not exist in the dataset`);
 					continue;
 				}
 
@@ -2151,31 +1220,29 @@ function processResponse(response, config) {
  * @return {Promise}                - Resolved with complete dataset or rejected on error
  */
 function fetchUntilExhausted(url, options, jsondata) {
-	var relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
+	let relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
 	jsondata = jsondata || [];
 
 	return new Promise(function (resolve, reject) {
 		fetch(url, options).then(function (response) {
 			if (response.status >= 200 && response.status < 300) {
 				if (response.headers.has('Link')) {
-					(function () {
-						var matches = response.headers.get('Link').match(relRegex);
-						if (matches && matches.length >= 2) {
-							response.json().then(function (jsonDataPart) {
-								if (!(jsonDataPart instanceof Array)) {
-									jsonDataPart = [jsonDataPart];
-								}
-								resolve(fetchUntilExhausted(matches[1], options, _lodash2.default.union(jsondata, jsonDataPart)));
-							});
-						} else {
-							response.json().then(function (jsonDataPart) {
-								if (!(jsonDataPart instanceof Array)) {
-									jsonDataPart = [jsonDataPart];
-								}
-								resolve(_lodash2.default.union(jsondata, jsonDataPart));
-							});
-						}
-					})();
+					let matches = response.headers.get('Link').match(relRegex);
+					if (matches && matches.length >= 2) {
+						response.json().then(function (jsonDataPart) {
+							if (!(jsonDataPart instanceof Array)) {
+								jsonDataPart = [jsonDataPart];
+							}
+							resolve(fetchUntilExhausted(matches[1], options, _lodash2.default.union(jsondata, jsonDataPart)));
+						});
+					} else {
+						response.json().then(function (jsonDataPart) {
+							if (!(jsonDataPart instanceof Array)) {
+								jsonDataPart = [jsonDataPart];
+							}
+							resolve(_lodash2.default.union(jsondata, jsonDataPart));
+						});
+					}
 				} else {
 					response.json().then(function (jsonDataPart) {
 						if (!(jsonDataPart instanceof Array)) {
@@ -2185,10 +1252,10 @@ function fetchUntilExhausted(url, options, jsondata) {
 					});
 				}
 			} else {
-				reject(new Error('Unexpected status code ' + response.status + ' when requesting ' + url));
+				reject(new Error(`Unexpected status code ${ response.status } when requesting ${ url }`));
 			}
 		}).catch(function () {
-			reject(new Error('Unexpected error when requesting ' + url));
+			reject(new Error(`Unexpected error when requesting ${ url }`));
 		});
 	});
 }
@@ -2197,8 +1264,6 @@ function fetchUntilExhausted(url, options, jsondata) {
 },{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/data.js":[function(require,module,exports){
 (function (global){
 'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -2215,14 +1280,14 @@ var _api = require('./api.js');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('es6-symbol/implement');
-var GROUPED_NONE = exports.GROUPED_NONE = 0;
-var GROUPED_BY_TYPE = exports.GROUPED_BY_TYPE = 1;
-var GROUPED_BY_COLLECTION = exports.GROUPED_BY_COLLECTION = 2;
-var CHILD_NOTES = exports.CHILD_NOTES = Symbol.for('childNotes');
-var CHILD_ATTACHMENTS = exports.CHILD_ATTACHMENTS = Symbol.for('childAttachments');
-var CHILD_OTHER = exports.CHILD_OTHER = Symbol.for('childOther');
-var GROUP_EXPANDED_SUMBOL = exports.GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
-var GROUP_TITLE = exports.GROUP_TITLE = Symbol.for('groupTitle');
+const GROUPED_NONE = exports.GROUPED_NONE = 0;
+const GROUPED_BY_TYPE = exports.GROUPED_BY_TYPE = 1;
+const GROUPED_BY_COLLECTION = exports.GROUPED_BY_COLLECTION = 2;
+const CHILD_NOTES = exports.CHILD_NOTES = Symbol.for('childNotes');
+const CHILD_ATTACHMENTS = exports.CHILD_ATTACHMENTS = Symbol.for('childAttachments');
+const CHILD_OTHER = exports.CHILD_OTHER = Symbol.for('childOther');
+const GROUP_EXPANDED_SUMBOL = exports.GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
+const GROUP_TITLE = exports.GROUP_TITLE = Symbol.for('groupTitle');
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
@@ -2236,7 +1301,7 @@ function ZoteroData(data, config) {
 	Object.defineProperty(this, 'length', {
 		enumerable: false,
 		configurable: false,
-		get: function get() {
+		get: function () {
 			return this.data.length;
 		}
 	});
@@ -2248,16 +1313,16 @@ function ZoteroData(data, config) {
  *                                         Alternatively string "all" is accepted.
  */
 ZoteroData.prototype.groupByType = function (expand) {
-	var groupedData = {};
+	let groupedData = {};
 	expand = expand || [];
-	for (var i = this.raw.length; i--;) {
-		var item = this.raw[i];
+	for (let i = this.raw.length; i--;) {
+		let item = this.raw[i];
 
 		if (!groupedData[item.data.itemType]) {
 			groupedData[item.data.itemType] = [];
 		}
 		groupedData[item.data.itemType].push(item);
-		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.contains(expand, item.data.itemType);
+		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.includes(expand, item.data.itemType);
 	}
 	this.data = groupedData;
 	this.grouped = GROUPED_BY_TYPE;
@@ -2276,56 +1341,186 @@ ZoteroData.prototype.groupByCollections = function () {
  * For grouped data each iternation returns a group of Zotero items. Additionaly group name
  * is available under GROUP_TITLE Symbol
  */
-ZoteroData.prototype[Symbol.iterator] = function () {
-	var _this = this;
+// ZoteroData.prototype[Symbol.iterator] = function () {
+// 	let i = 0;
+// 	if(this.grouped > 0) {
+// 		let keys = Object.keys(this.data);
+// 		return {
+// 			next: function() {
+// 				var group;
+// 				if(i < this.data.length) {
+// 					group = this.data[keys[i]];
+// 					group[GROUP_TITLE] = keys[i];
+// 				} else {
+// 					group = null;
+// 				}
 
-	var i = 0;
-	if (this.grouped > 0) {
-		var _ret = function () {
-			var keys = Object.keys(_this.data);
-			return {
-				v: {
-					next: function () {
-						var group = this.data[keys[i]];
-						group[GROUP_TITLE] = keys[i];
-						return {
-							value: group,
-							done: ++i === keys.length
-						};
-					}.bind(_this)
+// 				return {
+// 					value: group,
+// 					done: i++ >= this.data.length
+// 				};
+// 			}.bind(this)
+// 		};
+// 	} else {
+// 		return {
+// 			next: function() {
+// 				return {
+// 					value: i < this.data.length ? this.data[i] : null,
+// 					done: i++ >= this.data.length
+// 				};
+// 			}.bind(this)
+// 		};
+// 	}
+// };
+
+ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee() {
+	var keys, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, key, group, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, value;
+
+	return regeneratorRuntime.wrap(function _callee$(_context) {
+		while (1) switch (_context.prev = _context.next) {
+			case 0:
+				if (!this.grouped) {
+					_context.next = 32;
+					break;
 				}
-			};
-		}();
 
-		if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	} else {
-		return {
-			next: function () {
-				return {
-					value: i < this.data.length ? this.data[i] : null,
-					done: i++ >= this.data.length
-				};
-			}.bind(this)
-		};
-	}
-};
+				keys = Object.keys(this.data);
+				_iteratorNormalCompletion = true;
+				_didIteratorError = false;
+				_iteratorError = undefined;
+				_context.prev = 5;
+				_iterator = keys[Symbol.iterator]();
+
+			case 7:
+				if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+					_context.next = 16;
+					break;
+				}
+
+				key = _step.value;
+				group = this.data[key];
+
+				group[GROUP_TITLE] = key;
+				_context.next = 13;
+				return group;
+
+			case 13:
+				_iteratorNormalCompletion = true;
+				_context.next = 7;
+				break;
+
+			case 16:
+				_context.next = 22;
+				break;
+
+			case 18:
+				_context.prev = 18;
+				_context.t0 = _context['catch'](5);
+				_didIteratorError = true;
+				_iteratorError = _context.t0;
+
+			case 22:
+				_context.prev = 22;
+				_context.prev = 23;
+
+				if (!_iteratorNormalCompletion && _iterator.return) {
+					_iterator.return();
+				}
+
+			case 25:
+				_context.prev = 25;
+
+				if (!_didIteratorError) {
+					_context.next = 28;
+					break;
+				}
+
+				throw _iteratorError;
+
+			case 28:
+				return _context.finish(25);
+
+			case 29:
+				return _context.finish(22);
+
+			case 30:
+				_context.next = 58;
+				break;
+
+			case 32:
+				_iteratorNormalCompletion2 = true;
+				_didIteratorError2 = false;
+				_iteratorError2 = undefined;
+				_context.prev = 35;
+				_iterator2 = this.data[Symbol.iterator]();
+
+			case 37:
+				if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
+					_context.next = 44;
+					break;
+				}
+
+				value = _step2.value;
+				_context.next = 41;
+				return value;
+
+			case 41:
+				_iteratorNormalCompletion2 = true;
+				_context.next = 37;
+				break;
+
+			case 44:
+				_context.next = 50;
+				break;
+
+			case 46:
+				_context.prev = 46;
+				_context.t1 = _context['catch'](35);
+				_didIteratorError2 = true;
+				_iteratorError2 = _context.t1;
+
+			case 50:
+				_context.prev = 50;
+				_context.prev = 51;
+
+				if (!_iteratorNormalCompletion2 && _iterator2.return) {
+					_iterator2.return();
+				}
+
+			case 53:
+				_context.prev = 53;
+
+				if (!_didIteratorError2) {
+					_context.next = 56;
+					break;
+				}
+
+				throw _iteratorError2;
+
+			case 56:
+				return _context.finish(53);
+
+			case 57:
+				return _context.finish(50);
+
+			case 58:
+			case 'end':
+				return _context.stop();
+		}
+	}, _callee, this, [[5, 18, 22, 30], [23,, 25, 29], [35, 46, 50, 58], [51,, 53, 57]]);
+});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/main-compat.js":[function(require,module,exports){
+},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/main-modern.js":[function(require,module,exports){
 'use strict';
+
+require('babel-regenerator-runtime');
 
 var _main = require('./main.js');
 
-// require('core-js/es5');
-
-// doesn't seem to work very well in IE
-// require('es6-promise').polyfill();
-require('core-js/es6/promise');
-require('whatwg-fetch');
-
 module.exports = _main.ZoteroPublications;
 
-},{"./main.js":"/srv/zotero/my-publications/src/js/main.js","core-js/es6/promise":"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js","whatwg-fetch":"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
+},{"./main.js":"/srv/zotero/my-publications/src/js/main.js","babel-regenerator-runtime":"/srv/zotero/my-publications/node_modules/babel-regenerator-runtime/runtime.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2370,25 +1565,60 @@ ZoteroPublications.prototype.defaults = {
 	limit: 100,
 	citationStyle: '',
 	include: ['data', 'citation'],
+	storeCitationPreference: false,
 	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
-	expand: 'all'
+	expand: 'all',
+	citeStyleOptions: {
+		'american-anthropological-association': 'American Anthropological Association',
+		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
+		'elsevier-harvard': 'Elsevier Harvard (with titles)',
+		'modern-humanities-research-association-author-date': 'Modern Humanities Research Association 3rd edition (author-date)',
+		'modern-language-association': 'Modern Language Association 7th edition'
+	},
+	exportFormats: {
+		'bibtex': {
+			name: 'BibTeX',
+			contentType: 'application/x-bibtex',
+			extension: 'bib'
+		},
+		'ris': {
+			name: 'RIS',
+			contentType: 'application/x-research-info-systems',
+			extension: 'ris'
+		},
+		'rdf_zotero': {
+			name: 'Zotero RDF',
+			contentType: 'application/rdf+xml',
+			extension: 'rdf'
+		}
+	}
 };
 
-ZoteroPublications.prototype.get = function (url, options) {
-	options = options || {
+/**
+ * Low-level function to fetch given url to obtain Zotero Data
+ * @param  {String} url      - A Zotero API url to get
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @param  {?Object} init    - Options forwarded to the fetch method
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.get = function (url, options, init) {
+	init = init || {
 		headers: {
 			'Accept': 'application/json'
 		}
 	};
 
+	options = _lodash2.default.extend({}, this.config, options);
+
 	return new Promise(function (resolve, reject) {
-		var promise = (0, _api.fetchUntilExhausted)(url, options);
+		let promise = (0, _api.fetchUntilExhausted)(url, init);
 		promise.then(function (responseJson) {
-			var data = new _data.ZoteroData(responseJson, this.config);
-			if (this.config.group === 'type') {
-				data.groupByType(this.config.expand);
+			let data = new _data.ZoteroData(responseJson, this.config);
+			if (options.group === 'type') {
+				data.groupByType(options.expand);
 			}
 			resolve(data);
 		}.bind(this));
@@ -2402,36 +1632,53 @@ ZoteroPublications.prototype.get = function (url, options) {
  * @return {Promise}         - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.getEndpoint = function (endpoint) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/' + endpoint + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+ZoteroPublications.prototype.getEndpoint = function (endpoint, options) {
+	options = options || {};
+	let apiBase = this.config.apiBase,
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
+	    url = `https://${ apiBase }/${ endpoint }?include=${ include }&limit=${ limit }&linkwrap=1&order=dateModified&sort=desc&start=0&style=${ style }`;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
-ZoteroPublications.prototype.getPublications = function (userId, citationStyle) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = citationStyle || this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+/**
+ * Build url for getting user's publications then fetch entire dataset recursively
+ * @param  {number} userId   - User id
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.getPublications = function (userId, options) {
+	options = options || {};
+	let apiBase = this.config.apiBase,
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
+	    url = `https://${ apiBase }/users/${ userId }/publications/items?include=${ include }&limit=${ limit }&linkwrap=1&order=dateModified&sort=desc&start=0&style=${ style }`;
 
 	this.userId = userId;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
-ZoteroPublications.prototype.getItem = function (itemId, userId, citationStyle) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = citationStyle || this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items/' + itemId + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+/**
+ * Build url for getting a single item from user's publications then fetch it
+ * @param  {[type]} userId   - User id
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @return {[type]}          - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.getItem = function (itemId, userId, options) {
+	options = options || {};
+	let apiBase = this.config.apiBase,
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
+	    url = `https://${ apiBase }/users/${ userId }/publications/items/${ itemId }?include=${ include }&limit=${ limit }&linkwrap=1&order=dateModified&sort=desc&start=0&style=${ style }`;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
 /**
@@ -2440,20 +1687,31 @@ ZoteroPublications.prototype.getItem = function (itemId, userId, citationStyle) 
  * @param  {HTMLElement} container            - A DOM element where publications will be rendered
  * @return {Promise}                          - Resolved when rendered or rejected on error.
  */
-ZoteroPublications.prototype.render = function (endpointOrData, container) {
+ZoteroPublications.prototype.render = function (userIdOrendpointOrData, container) {
 	return new Promise(function (resolve, reject) {
 		if (!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
-		if (endpointOrData instanceof _data.ZoteroData) {
+		if (userIdOrendpointOrData instanceof _data.ZoteroData) {
+			let data = userIdOrendpointOrData;
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			var data = endpointOrData;
 			this.renderer.displayPublications(data);
 			resolve();
-		} else if (typeof endpointOrData === 'string') {
+		} else if (typeof userIdOrendpointOrData === 'number') {
+			let userId = userIdOrendpointOrData;
+			let promise = this.getPublications(userId);
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			var endpoint = endpointOrData;
-			var promise = this.getEndpoint(endpoint);
+			promise.then(function (data) {
+				this.renderer.displayPublications(data);
+				resolve();
+			}.bind(this));
+			promise.catch(function () {
+				reject(arguments[0]);
+			});
+		} else if (typeof userIdOrendpointOrData === 'string') {
+			let endpoint = userIdOrendpointOrData;
+			let promise = this.getEndpoint(endpoint);
+			this.renderer = new _render.ZoteroRenderer(container, this);
 			promise.then(function (data) {
 				this.renderer.displayPublications(data);
 				resolve();
@@ -2507,6 +1765,10 @@ var _branding = require('./tpl/partial/branding.tpl');
 
 var _branding2 = _interopRequireDefault(_branding);
 
+var _export = require('./tpl/partial/export.tpl');
+
+var _export2 = _interopRequireDefault(_export);
+
 var _groupView = require('./tpl/group-view.tpl');
 
 var _groupView2 = _interopRequireDefault(_groupView);
@@ -2532,6 +1794,11 @@ function ZoteroRenderer(container, zotero) {
 	this.container = container;
 	this.zotero = zotero;
 	this.config = zotero.config;
+	if (this.config.storeCitationPreference) {
+		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
+	} else {
+		this.preferredCitationStyle = this.config.citationStyle;
+	}
 	this.toggleSpinner(true);
 }
 
@@ -2541,10 +1808,13 @@ function ZoteroRenderer(container, zotero) {
  * @return {String}                  - Rendered markup of a Zotero item
  */
 ZoteroRenderer.prototype.renderItem = function (zoteroItem) {
+	var citationPreference;
+
 	return (0, _item2.default)({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'renderer': this
+		'renderer': this,
+		'citationPreference': citationPreference
 	});
 };
 
@@ -2633,73 +1903,138 @@ ZoteroRenderer.prototype.displayPublications = function (data) {
 
 	this.data = data;
 	this.container.innerHTML = markup;
-
-	_lodash2.default.each(this.container.querySelectorAll('.zotero-details'), function (element) {
-		element.style.height = element.offsetHeight + 'px';
-		element.classList.add('zotero-details-collapsed');
-	});
-
 	this.toggleSpinner(false);
 	this.previous = markup;
 	this.addHandlers();
 };
 
 /**
+ * Update citation and store preference in memory/local storage
+ * depending on configuration
+ * @param  {HTMLElement} itemEl 		- dom element containing the item
+ * @param  {String} citationStyle 		- optionally set the citation style
+ */
+ZoteroRenderer.prototype.updateCitation = function (itemEl, citationStyle) {
+	let itemId = itemEl.dataset.item;
+	let citationEl = itemEl.querySelector('.zotero-citation');
+	let citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
+
+	if (citationStyle) {
+		citationStyleSelectEl.value = citationStyle;
+	} else {
+		citationStyle = citationStyleSelectEl.options[citationStyleSelectEl.selectedIndex].value;
+	}
+
+	this.preferredCitationStyle = citationStyle;
+	if (this.config.storeCitationPreference) {
+		localStorage.setItem('zotero-citation-preference', citationStyle);
+	}
+
+	citationEl.innerHTML = '';
+	citationEl.classList.add('zotero-loading-inline');
+
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'citationStyle': citationStyle,
+		'include': ['bib'],
+		'group': false
+	}).then(item => {
+		citationEl.classList.remove('zotero-loading-inline');
+		citationEl.innerHTML = item.raw[0].bib;
+		(0, _utils.selectText)(citationEl);
+	});
+};
+
+/**
+ * Prepare a link for downloading item export
+ */
+ZoteroRenderer.prototype.prepareExport = function (itemEl) {
+	let itemId = itemEl.dataset.item;
+	let exportEl = itemEl.querySelector('.zotero-export');
+	let exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
+	let exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
+
+	exportEl.innerHTML = '';
+	exportEl.classList.add('zotero-loading-inline');
+
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'include': [exportFormat],
+		'group': false
+	}).then(item => {
+		let itemData = _lodash2.default.findWhere(this.data.raw, { 'key': itemId });
+		exportEl.classList.remove('zotero-loading-inline');
+		exportEl.innerHTML = (0, _export2.default)({
+			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
+			'content': item.raw[0][exportFormat],
+			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
+		});
+	});
+};
+
+/**
  * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function () {
-	this.container.addEventListener('click', function (ev) {
+	this.container.addEventListener('click', ev => {
 		var target;
 
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'details';
-		});
+		target = (0, _utils.closest)(ev.target, el => el.dataset && el.dataset.trigger);
+
 		if (target) {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
-			var detailsEl = itemEl.querySelector('.zotero-details');
-			if (detailsEl) {
-				detailsEl.classList.toggle('zotero-details-collapsed');
-			}
-			window.history.pushState(null, null, '#' + itemEl.dataset.item);
 			ev.preventDefault();
-			return;
-		}
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'cite';
-		});
-		if (target) {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
-			var citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-			citeContainerEl.classList.toggle('zotero-cite-container-collapsed');
+			if (target.dataset.trigger === 'details') {
+				let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+				let detailsEl = itemEl.querySelector('.zotero-details');
+				if (detailsEl) {
+					(0, _utils.toggleCollapse)(detailsEl);
+				}
+				window.history.pushState(null, null, `#${ itemEl.dataset.item }`);
+			} else if (target.dataset.trigger === 'cite') {
+				let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
+				let citeEl = itemEl.querySelector('.zotero-citation');
+				if (citeContainerEl) {
+					citeEl.innerHTML = '';
+					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), function (item) {
+						item.classList.remove('zotero-active');
+					});
+					let expanding = (0, _utils.toggleCollapse)(citeContainerEl);
+					if (expanding) {
+						this.updateCitation(itemEl, this.preferredCitationStyle);
+						(0, _utils.toggleCollapse)(exportContainerEl, false);
+						target.classList.add('zotero-active');
+					}
+				}
+			} else if (target.dataset.trigger === 'export') {
+				let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
+				if (exportContainerEl) {
+					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), function (item) {
+						item.classList.remove('zotero-active');
+					});
+					let expanding = (0, _utils.toggleCollapse)(exportContainerEl);
+					if (expanding) {
+						this.prepareExport(itemEl);
+						(0, _utils.toggleCollapse)(citeContainerEl, false);
+						target.classList.add('zotero-active');
+					}
+				}
+			}
 		}
 	});
 
-	this.container.addEventListener('change', function (ev) {
-		var _this = this;
+	this.container.addEventListener('change', ev => {
+		var target = (0, _utils.closest)(ev.target, el => el.dataset && el.dataset.trigger);
 
-		var target;
-
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'cite-style-selection';
-		});
-		if (target) {
-			(function () {
-				var itemEl = (0, _utils.closest)(target, function (el) {
-					return el.dataset && el.dataset.item;
-				});
-				var itemId = itemEl.dataset.item;
-				var citationTextareaEl = itemEl.querySelector('.zotero-citation');
-				var citationStyle = target.options[target.selectedIndex].value;
-				_this.zotero.getItem(itemId, _this.zotero.userId, citationStyle).then(function (item) {
-					citationTextareaEl.value = item.raw[0].citation;
-				});
-			})();
+		if (target.dataset.trigger === 'cite-style-selection') {
+			let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+			this.updateCitation(itemEl);
+		} else if (target.dataset.trigger === 'export-format-selection') {
+			let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+			this.prepareExport(itemEl);
 		}
-	}.bind(this));
+	});
 };
 
 /**
@@ -2713,7 +2048,7 @@ ZoteroRenderer.prototype.toggleSpinner = function (activate) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
+},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2722,7 +2057,7 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderGroups(obj.groups)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
@@ -2739,10 +2074,27 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<div class="zotero-branding">\n\t<a href="http://www.zotero.org" class="zotero-logo-link">\n\t\t<svg class="zotero-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="90" height="20">\n\t\t\t<g>\n\t\t\t\t<path class="zotero-z" fill="#990000" d="M12.2,6.1L2.8,17.8h9.4v1.9H0v-2.2L9.4,5.8H0.8V3.9h11.4V6.1z"/>\n\t\t\t\t<path fill="#222222" d="M22.1,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C15.1,5.2,16.2,3.7,22.1,3.7z M22.1,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C17.5,17.3,17.8,18,22.1,18z"/>\n\t\t\t\t<path fill="#222222" d="M41.7,5.8h-6.1v10c0,1.7,0.5,2.1,2.2,2.1c2.2,0,2.2-1.2,2.2-2.7v-1.2h2.3v1.2c0,3.1-1.3,4.6-4.5,4.6\n\t\t\t\t\tc-3.7,0-4.5-1.1-4.5-4.8V5.8h-2.1V3.9h2.1V0.1h2.4v3.8h6.1V5.8z"/>\n\t\t\t\t<path fill="#222222" d="M58.3,14.9v0.6c0,4.2-3.2,4.4-6.7,4.4c-6.2,0-7.1-2-7.1-8.1c0-6.6,1.4-8.1,7.1-8.1c5.1,0,6.7,1.2,6.7,7v1.6\n\t\t\t\t\tH46.9c0,5,0.4,5.6,4.6,5.6c3.3,0,4.3-0.2,4.3-2.4v-0.6H58.3z M55.8,10.4c-0.1-4.5-0.7-4.8-4.3-4.8c-4.3,0-4.5,1.1-4.6,4.8H55.8z"/>\n\t\t\t\t<path fill="#222222" d="M64.6,3.9l-0.1,2l0.1,0.1c0.8-1.7,2.7-2.2,4.5-2.2c3,0,4.4,1.5,4.4,4.5v1.1h-2.3V8.3c0-2-0.7-2.6-2.6-2.6\n\t\t\t\t\tc-3,0-3.9,1.4-3.9,4.2v9.8h-2.4V3.9H64.6z"/>\n\t\t\t\t<path fill="#222222" d="M83,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C76,5.2,77.1,3.7,83,3.7z M83,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C78.4,17.3,78.7,18,83,18z"/>\n\t\t\t</g>\n\t\t</svg>\n\t</a>\n</div>';
+  return __p;
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl":[function(require,module,exports){
+(function (global){
+'use strict';
+
+var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
+module.exports = function (obj) {
+  var __t,
+      __p = '',
+      __j = Array.prototype.join,
+      print = function () {
+    __p += __j.call(arguments, '');
+  };
+  __p += '<a href="data:' + ((__t = obj.contentType) == null ? '' : _.escape(__t)) + ',' + ((__t = obj.content) == null ? '' : _.escape(__t)) + '" download="' + ((__t = obj.filename) == null ? '' : _.escape(__t)) + '">\n\tDownload\n</a>';
   return __p;
 };
 
@@ -2756,7 +2108,7 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<li class="zotero-group' + ((__t = obj.expand ? ' zotero-group-expanded' : '') == null ? '' : _.escape(__t)) + '" aria-expanded="' + ((__t = obj.expand ? ' true' : 'false') == null ? '' : _.escape(__t)) + '" >\n\t<h2 class="zotero-group-title" data-trigger="expand-group">' + ((__t = obj.title) == null ? '' : _.escape(__t)) + '</h2>\n\t' + ((__t = obj.renderer.renderItems(obj.items)) == null ? '' : __t) + '\n</li>';
@@ -2773,7 +2125,7 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<ul class="zotero-groups">\n\t';
@@ -2816,54 +2168,50 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\n\t<!-- Reference -->\n\t';
   if (obj.renderer.config.alwaysUseCitationStyle) {
-    __p += '\n\t\t<div class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</div>\n\n\t<!-- Templated -->\n\t';
+    __p += '\n\t\t<h3 class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</h3>\n\n\t<!-- Templated -->\n\t';
   } else {
     __p += '\n\t\t';
     if (obj.data.itemType == 'book') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'journalArticle') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'blogPost') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.item.citation) == null ? '' : __t) + '</a>\n\t\t\t</div>\n\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.item.citation) == null ? '' : __t) + '</a>\n\t\t\t</h3>\n\t\t';
     }
     __p += '\n\t';
   }
-  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" data-trigger="details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<div class="zotero-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t';
-  if (!obj.renderer.config.alwaysUseCitationStyle) {
-    __p += '\n\t\t\t\t<div class="zotero-reference">\n\t\t\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
-  }
-  __p += '\n\n\t\t\t';
+  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" data-trigger="details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable">\n\t\t<div class="zotero-details-inner">\n\t\t\t';
   if (obj.data.abstractNote && obj.data.abstractNote.length) {
-    __p += '\n\t\t\t\t<h3>\n\t\t\t\t\tAbstract\n\t\t\t\t</h3>\n\t\t\t\t<p class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data.abstractNote) == null ? '' : _.escape(__t)) + '\n\t\t\t\t</p>\n\t\t\t';
+    __p += '\n\t\t\t\t<h4>Abstract</h4>\n\t\t\t\t<div class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data[Symbol.for('abstractNoteProcessed')]) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
   }
   __p += '\n\n\t\t\t';
   if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) {
-    __p += '\n\t\t\t\t<h3>Notes</h3>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
+    __p += '\n\t\t\t\t<h4>Notes</h4>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -2893,7 +2241,7 @@ module.exports = function (obj) {
   }
   __p += '\n\n\t\t\t';
   if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
-    __p += '\n\t\t\t\t<h3>Attachments</h3>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
+    __p += '\n\t\t\t\t<h4>Attachments</h4>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
     var _iteratorNormalCompletion2 = true;
     var _didIteratorError2 = false;
     var _iteratorError2 = undefined;
@@ -2923,9 +2271,17 @@ module.exports = function (obj) {
   }
   __p += '\n\t\t\t';
   if (obj.renderer.zotero.userId) {
-    __p += '\n\t\t\t\t<div>\n\t\t\t\t\t<button class="zotero-cite-button" data-trigger="cite">\n\t\t\t\t\t\tCite\n\t\t\t\t\t</button>\n\t\t\t\t</div>\n\t\t\t\t<div class="zotero-cite-container">\n\t\t\t\t\t<select data-trigger="cite-style-selection">\n\t\t\t\t\t\t<option value="american-anthropological-association">\n\t\t\t\t\t\t\tAmerican Anthropological Association\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="cell">\n\t\t\t\t\t\t\tCell\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="chicago-author-date">\n\t\t\t\t\t\t\tChicago Manual of Style 16th edition (author-date)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="elsevier-harvard">\n\t\t\t\t\t\t\tElsevier Harvard (with titles)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="ieee">\n\t\t\t\t\t\t\tIEEE\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="modern-humanities-research-association-author-date">\n\t\t\t\t\t\t\tModern Humanities Research Association 3rd edition (author-date)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="modern-language-association">\n\t\t\t\t\t\t\tModern Language Association 7th edition\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="nature">\n\t\t\t\t\t\t\tNature\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="vancouver">\n\t\t\t\t\t\t\tVancouver\n\t\t\t\t\t\t</option>\n\t\t\t\t\t</select>\n\t\t\t\t\t<textarea class="zotero-citation" cols="30" rows="5">\n\t\t\t\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t\t\t\t</textarea>\n\t\t\t\t</div>\n\t\t\t';
+    __p += '\n\t\t\t\t<!-- Cite & export -->\n\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t<ul class="zotero-list-inline">\n\t\t\t\t\t\t<li><a href="" data-trigger="cite">Cite</a></li><!--\n\t\t\t\t\t\t--><li><a href="" data-trigger="export">Export</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Cite -->\n\t\t\t\t<div class="zotero-cite-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t';
+    for (var citationStyle in obj.renderer.zotero.config.citeStyleOptions) {
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.citeStyleOptions[citationStyle]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-citation"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
+    for (var exportFormat in obj.renderer.zotero.config.exportFormats) {
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = exportFormat) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.exportFormats[exportFormat].name) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-export"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t';
   }
-  __p += '\n\t\t</div>\n\t</div>\n</li>';
+  __p += '\n\t\t</div>\n\t</section>\n</li>';
   return __p;
 };
 
@@ -2939,7 +2295,7 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<ul class="zotero-items">\n\t';
@@ -2982,23 +2338,37 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderItems(items)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
+  __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderItems(obj.items)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
   return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/srv/zotero/my-publications/src/js/utils.js":[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.formatDate = formatDate;
+exports.formatAbstract = formatAbstract;
 exports.formatCategoryName = formatCategoryName;
 exports.closest = closest;
+exports.once = once;
+exports.id = id;
+exports.selectText = selectText;
+exports.transitionend = transitionend;
+exports.toggleCollapse = toggleCollapse;
+
+var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /**
@@ -3007,25 +2377,29 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
  * @return {String}         - formatted date
  */
 function formatDate(isoDate) {
-	var matches = isoDate.match(/(\d{4})\-?(\d{2})?-?(\d{2})?/);
-	var date = isoDate;
+	let matches = isoDate.match(/(\d{4})\-?(\d{2})?-?(\d{2})?/);
+	let date = isoDate;
 
 	if (matches.length >= 4) {
-		var year = matches[1];
-		var month = months[parseInt(matches[2], 10) - 1];
-		var day = parseInt(matches[3], 10);
-		date = month + ' ' + day + ', ' + year;
+		let year = matches[1];
+		let month = months[parseInt(matches[2], 10) - 1];
+		let day = parseInt(matches[3], 10);
+		date = `${ month } ${ day }, ${ year }`;
 	}
 	if (matches.length >= 3) {
-		var year = matches[1];
-		var month = months[parseInt(matches[2], 10) - 1];
-		date = month + ' ' + year;
+		let year = matches[1];
+		let month = months[parseInt(matches[2], 10) - 1];
+		date = `${ month } ${ year }`;
 	}
 	if (matches.length >= 2) {
 		date = matches[1];
 	}
 
 	return date;
+}
+
+function formatAbstract(abstract) {
+	return abstract.replace(/(^|\n)([\s\S]*?)(\n|$)/g, '<p>$2</p>');
 }
 
 /**
@@ -3049,5 +2423,135 @@ function closest(el, fn) {
 	return el && (fn(el) ? el : closest(el.parentNode, fn));
 }
 
-},{}]},{},["/srv/zotero/my-publications/src/js/main-compat.js"])("/srv/zotero/my-publications/src/js/main-compat.js")
+/**
+ * Register a one-time event listener.
+ *
+ * @param {EventTarget} target
+ * @param {String} type
+ * @param {Function} listener
+ * @returns {Function} deregister
+ */
+function once(target, type, listener) {
+	function deregister() {
+		target.removeEventListener(type, handler); // eslint-disable-line no-use-before-define
+	}
+
+	function handler() {
+		deregister();
+		return listener.apply(this, arguments);
+	}
+
+	target.addEventListener(type, handler);
+
+	return deregister;
+}
+
+/**
+ * Uniquely and pernamently identify a DOM element
+ * even if it has no id
+ * @param  {HTMLElement} target - DOM element to identify
+ * @return {String} 			- unique identifier
+ */
+function id(target) {
+	target.id = target.id || _lodash2.default.uniqueId(target);
+	return target.id;
+}
+
+/**
+ * Cross-browser text range selection
+ * @param  {HTMLElement} textEl		- A DOM element where text should be selected
+ */
+function selectText(textEl) {
+	if (document.body.createTextRange) {
+		let range = document.body.createTextRange();
+		range.moveToElementText(textEl);
+		range.select();
+	} else if (window.getSelection) {
+		let selection = window.getSelection(),
+		    range = document.createRange();
+		range.selectNodeContents(textEl);
+		selection.removeAllRanges();
+		selection.addRange(range);
+	}
+}
+
+/**
+ * Finds a correct name of a transitionend event
+ * @return {String} 	- transitionend event name
+ */
+function transitionend() {
+	var i,
+	    el = document.createElement('div'),
+	    transitions = {
+		'transition': 'transitionend',
+		'OTransition': 'otransitionend',
+		'MozTransition': 'transitionend',
+		'WebkitTransition': 'webkitTransitionEnd'
+	};
+
+	for (i in transitions) {
+		if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+			return transitions[i];
+		}
+	}
+}
+
+var collapsesInProgress = {};
+
+function collapse(element) {
+	let initialHeight = window.getComputedStyle(element).height;
+	element.style.height = initialHeight;
+	_lodash2.default.defer(() => {
+		element.classList.add('zotero-collapsed', 'zotero-collapsing');
+		element.style.height = null;
+		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
+			element.classList.remove('zotero-collapsing');
+			delete collapsesInProgress[id(element)];
+		});
+	});
+}
+
+function uncollapse(element) {
+	element.classList.remove('zotero-collapsed');
+	let targetHeight = window.getComputedStyle(element).height;
+	element.classList.add('zotero-collapsed');
+
+	_lodash2.default.defer(() => {
+		element.classList.add('zotero-collapsing');
+		element.style.height = targetHeight;
+		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
+			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
+			element.style.height = null;
+			delete collapsesInProgress[id(element)];
+		});
+	});
+}
+
+/**
+ * Collpases or uncollapses a DOM element
+ * @param  {HTMLElement} element 	- DOM element to be (un)collapsed
+ */
+function toggleCollapse(element, override) {
+	if (typeof override !== 'undefined') {
+		if (collapsesInProgress[id(element)]) {
+			collapsesInProgress[id(element)]();
+		}
+		override ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return override;
+	}
+
+	if (collapsesInProgress[id(element)]) {
+		collapsesInProgress[id(element)]();
+		let collapsing = !element.style.height;
+		collapsing ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return collapsing;
+	} else {
+		let collapsed = element.classList.contains('zotero-collapsed');
+		collapsed ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return collapsed;
+	}
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}]},{},["/srv/zotero/my-publications/src/js/main-modern.js"])("/srv/zotero/my-publications/src/js/main-modern.js")
 });

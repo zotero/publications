@@ -36,8 +36,16 @@ module.exports = function(config) {
 					variable: 'obj'
 				}
 			}],
-			['babelify', {'extensions': ['.js', '.tpl']}],
-			['stringify', {extensions: ['.html']}],
+			['babelify', {
+				'extensions': ['.js', '.tpl'],
+				'plugins': [
+					'check-es2015-constants',
+					'transform-es2015-modules-commonjs'
+				]
+			}],
+			['stringify', {
+				extensions: ['.html']
+			}],
 			'browserify-istanbul'
 		]
 	},
