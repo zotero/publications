@@ -168,9 +168,13 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 	citationEl.innerHTML = '';
 	citationEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {'citationStyle': citationStyle}).then(function(item) {
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'citationStyle': citationStyle,
+		'include': ['bib'],
+		'group': false
+	}).then(item => {
 		citationEl.classList.remove('zotero-loading-inline');
-		citationEl.innerHTML = item.raw[0].citation;
+		citationEl.innerHTML = item.raw[0].bib;
 		selectText(citationEl);
 	});
 };
@@ -187,11 +191,16 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 	exportEl.innerHTML = '';
 	exportEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {'include': ['data', 'citation', exportFormat]}).then(function(item) {
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'include': [exportFormat],
+		'group': false
+	}).then(item => {
+		let itemData = _.findWhere(this.data.raw, {'key': itemId});
 		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = exportTpl({
-			'filename': item.raw[0].data.title,
-			'content': item.raw[0][exportFormat]
+			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
+			'content': item.raw[0][exportFormat],
+			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
 		});
 	});
 };
