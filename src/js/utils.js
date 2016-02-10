@@ -88,23 +88,6 @@ export function id(target) {
 	return target.id;
 }
 
-/**
- * Cross-browser text range selection
- * @param  {HTMLElement} textEl		- A DOM element where text should be selected
- */
-export function selectText(textEl) {
-	if(document.body.createTextRange) {
-		let range = document.body.createTextRange();
-		range.moveToElementText(textEl);
-		range.select();
-	} else if(window.getSelection) {
-		let selection = window.getSelection(),
-			range = document.createRange();
-		range.selectNodeContents(textEl);
-		selection.removeAllRanges();
-		selection.addRange(range);
-	}
-}
 
 /**
  * Finds a correct name of a transitionend event
