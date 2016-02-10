@@ -1,24 +1,671 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js":[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/srv/zotero/my-publications/node_modules/babel-regenerator-runtime/runtime.js":[function(require,module,exports){
+(function (process,global){
+/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
+ * additional grant of patent rights can be found in the PATENTS file in
+ * the same directory.
+ */
+
+!(function(global) {
+  "use strict";
+
+  var hasOwn = Object.prototype.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var iteratorSymbol =
+    typeof Symbol === "function" && Symbol.iterator || "@@iterator";
+
+  var inModule = typeof module === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
+  }
+
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided, then outerFn.prototype instanceof Generator.
+    var generator = Object.create((outerFn || Generator).prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  runtime.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `value instanceof AwaitArgument` to determine if the yielded value is
+  // meant to be awaited. Some may consider the name of this method too
+  // cutesy, but they are curmudgeons.
+  runtime.awrap = function(arg) {
+    return new AwaitArgument(arg);
+  };
+
+  function AwaitArgument(arg) {
+    this.arg = arg;
+  }
+
+  function AsyncIterator(generator) {
+    // This invoke function is written in a style that assumes some
+    // calling function (or Promise) will handle exceptions.
+    function invoke(method, arg) {
+      var result = generator[method](arg);
+      var value = result.value;
+      return value instanceof AwaitArgument
+        ? Promise.resolve(value.arg).then(invokeNext, invokeThrow)
+        : Promise.resolve(value).then(function(unwrapped) {
+            // When a yielded Promise is resolved, its final value becomes
+            // the .value of the Promise<{value,done}> result for the
+            // current iteration. If the Promise is rejected, however, the
+            // result for this iteration will be rejected with the same
+            // reason. Note that rejections of yielded Promises are not
+            // thrown back into the generator function, as is the case
+            // when an awaited Promise is rejected. This difference in
+            // behavior between yield and await is important, because it
+            // allows the consumer to decide what to do with the yielded
+            // rejection (swallow it and continue, manually .throw it back
+            // into the generator, abandon iteration, whatever). With
+            // await, by contrast, there is no opportunity to examine the
+            // rejection reason outside the generator function, so the
+            // only option is to throw it from the await expression, and
+            // let the generator function handle the exception.
+            result.value = unwrapped;
+            return result;
+          });
+    }
+
+    if (typeof process === "object" && process.domain) {
+      invoke = process.domain.bind(invoke);
+    }
+
+    var invokeNext = invoke.bind(generator, "next");
+    var invokeThrow = invoke.bind(generator, "throw");
+    var invokeReturn = invoke.bind(generator, "return");
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return invoke(method, arg);
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : new Promise(function (resolve) {
+          resolve(callInvokeWithMethodAndArg());
+        });
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          if (method === "return" ||
+              (method === "throw" && delegate.iterator[method] === undefined)) {
+            // A return or throw (when the delegate iterator has no throw
+            // method) always terminates the yield* loop.
+            context.delegate = null;
+
+            // If the delegate iterator has a return method, give it a
+            // chance to clean up.
+            var returnMethod = delegate.iterator["return"];
+            if (returnMethod) {
+              var record = tryCatch(returnMethod, delegate.iterator, arg);
+              if (record.type === "throw") {
+                // If the return method threw an exception, let that
+                // exception prevail over the original return or throw.
+                method = "throw";
+                arg = record.arg;
+                continue;
+              }
+            }
+
+            if (method === "return") {
+              // Continue with the outer return, now that the delegate
+              // iterator has been terminated.
+              continue;
+            }
+          }
+
+          var record = tryCatch(
+            delegate.iterator[method],
+            delegate.iterator,
+            arg
+          );
+
+          if (record.type === "throw") {
+            context.delegate = null;
+
+            // Like returning generator.throw(uncaught), but without the
+            // overhead of an extra function call.
+            method = "throw";
+            arg = record.arg;
+            continue;
+          }
+
+          // Delegate generator ran and handled its own exceptions so
+          // regardless of what the method was, we continue as if it is
+          // "next" with an undefined arg.
+          method = "next";
+          arg = undefined;
+
+          var info = record.arg;
+          if (info.done) {
+            context[delegate.resultName] = info.value;
+            context.next = delegate.nextLoc;
+          } else {
+            state = GenStateSuspendedYield;
+            return info;
+          }
+
+          context.delegate = null;
+        }
+
+        if (method === "next") {
+          context._sent = arg;
+
+          if (state === GenStateSuspendedYield) {
+            context.sent = arg;
+          } else {
+            context.sent = undefined;
+          }
+        } else if (method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw arg;
+          }
+
+          if (context.dispatchException(arg)) {
+            // If the dispatched exception was caught by a catch block,
+            // then let that catch block handle the exception normally.
+            method = "next";
+            arg = undefined;
+          }
+
+        } else if (method === "return") {
+          context.abrupt("return", arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          var info = {
+            value: record.arg,
+            done: context.done
+          };
+
+          if (record.arg === ContinueSentinel) {
+            if (context.delegate && method === "next") {
+              // Deliberately forget the last sent value so that we don't
+              // accidentally pass it on to the delegate.
+              arg = undefined;
+            }
+          } else {
+            return info;
+          }
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(arg) call above.
+          method = "throw";
+          arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      this.sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+        return !!caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.next = finallyEntry.finallyLoc;
+      } else {
+        this.complete(record);
+      }
+
+      return ContinueSentinel;
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = record.arg;
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      return ContinueSentinel;
+    }
+  };
+})(
+  // Among the various tricks for obtaining a reference to the global
+  // object, this seems to be the most reliable technique that does not
+  // use indirect eval (which violates Content Security Policy).
+  typeof global === "object" ? global :
+  typeof window === "object" ? window :
+  typeof self === "object" ? self : this
+);
+
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":"/srv/zotero/my-publications/node_modules/process/browser.js"}],"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js":[function(require,module,exports){
 require('../modules/es6.object.to-string');
 require('../modules/es6.string.iterator');
 require('../modules/web.dom.iterable');
 require('../modules/es6.promise');
 module.exports = require('../modules/_core').Promise;
-},{"../modules/_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","../modules/es6.object.to-string":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.object.to-string.js","../modules/es6.promise":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.promise.js","../modules/es6.string.iterator":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js","../modules/web.dom.iterable":"/srv/zotero/my-publications/node_modules/core-js/modules/web.dom.iterable.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_.js":[function(require,module,exports){
-var $Object = Object;
-module.exports = {
-  create:     $Object.create,
-  getProto:   $Object.getPrototypeOf,
-  isEnum:     {}.propertyIsEnumerable,
-  getDesc:    $Object.getOwnPropertyDescriptor,
-  setDesc:    $Object.defineProperty,
-  setDescs:   $Object.defineProperties,
-  getKeys:    $Object.keys,
-  getNames:   $Object.getOwnPropertyNames,
-  getSymbols: $Object.getOwnPropertySymbols,
-  each:       [].forEach
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js":[function(require,module,exports){
+},{"../modules/_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","../modules/es6.object.to-string":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.object.to-string.js","../modules/es6.promise":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.promise.js","../modules/es6.string.iterator":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js","../modules/web.dom.iterable":"/srv/zotero/my-publications/node_modules/core-js/modules/web.dom.iterable.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js":[function(require,module,exports){
 module.exports = function(it){
   if(typeof it != 'function')throw TypeError(it + ' is not a function!');
   return it;
@@ -52,7 +699,29 @@ module.exports = function(iter, ITERATOR){
   return result;
 };
 
-},{"./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js":[function(require,module,exports){
+},{"./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_array-includes.js":[function(require,module,exports){
+// false -> Array#indexOf
+// true  -> Array#includes
+var toIObject = require('./_to-iobject')
+  , toLength  = require('./_to-length')
+  , toIndex   = require('./_to-index');
+module.exports = function(IS_INCLUDES){
+  return function($this, el, fromIndex){
+    var O      = toIObject($this)
+      , length = toLength(O.length)
+      , index  = toIndex(fromIndex, length)
+      , value;
+    // Array#includes uses SameValueZero equality algorithm
+    if(IS_INCLUDES && el != el)while(length > index){
+      value = O[index++];
+      if(value != value)return true;
+    // Array#toIndex ignores holes, Array#includes - not
+    } else for(;length > index; index++)if(IS_INCLUDES || index in O){
+      if(O[index] === el)return IS_INCLUDES || index;
+    } return !IS_INCLUDES && -1;
+  };
+};
+},{"./_to-index":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-index.js","./_to-iobject":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-iobject.js","./_to-length":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-length.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js":[function(require,module,exports){
 // getting tag from 19.1.3.6 Object.prototype.toString()
 var cof = require('./_cof')
   , TAG = require('./_wks')('toStringTag')
@@ -76,7 +745,7 @@ module.exports = function(it){
   return toString.call(it).slice(8, -1);
 };
 },{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js":[function(require,module,exports){
-var core = module.exports = {version: '2.0.3'};
+var core = module.exports = {version: '2.1.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 },{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js":[function(require,module,exports){
 // optional / simple context binding
@@ -118,7 +787,12 @@ var isObject = require('./_is-object')
 module.exports = function(it){
   return is ? document.createElement(it) : {};
 };
-},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js":[function(require,module,exports){
+},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_enum-bug-keys.js":[function(require,module,exports){
+// IE 8- don't enum bug keys
+module.exports = (
+  'constructor,hasOwnProperty,isPrototypeOf,propertyIsEnumerable,toLocaleString,toString,valueOf'
+).split(',');
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js":[function(require,module,exports){
 var global    = require('./_global')
   , core      = require('./_core')
   , hide      = require('./_hide')
@@ -145,7 +819,7 @@ var $export = function(type, name, source){
     // bind timers to global for call from export context
     exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
     // extend global
-    if(target && !own)redefine(target, key, out, type & $export.U);
+    if(target)redefine(target, key, out, type & $export.U);
     // export
     if(exports[key] != out)hide(exports, key, exp);
     if(IS_PROTO && expProto[key] != out)expProto[key] = out;
@@ -201,17 +875,21 @@ module.exports = function(it, key){
   return hasOwnProperty.call(it, key);
 };
 },{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js":[function(require,module,exports){
-var $          = require('./_')
+var dP         = require('./_object-dp')
   , createDesc = require('./_property-desc');
 module.exports = require('./_descriptors') ? function(object, key, value){
-  return $.setDesc(object, key, createDesc(1, value));
+  return dP.f(object, key, createDesc(1, value));
 } : function(object, key, value){
   object[key] = value;
   return object;
 };
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_html.js":[function(require,module,exports){
+},{"./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_object-dp":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dp.js","./_property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_html.js":[function(require,module,exports){
 module.exports = require('./_global').document && document.documentElement;
-},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_invoke.js":[function(require,module,exports){
+},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_ie8-dom-define.js":[function(require,module,exports){
+module.exports = !require('./_descriptors') && !require('./_fails')(function(){
+  return Object.defineProperty(require('./_dom-create')('div'), 'a', {get: function(){ return 7; }}).a != 7;
+});
+},{"./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_dom-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_dom-create.js","./_fails":"/srv/zotero/my-publications/node_modules/core-js/modules/_fails.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_invoke.js":[function(require,module,exports){
 // fast apply, http://jsperf.lnkit.com/fast-apply/5
 module.exports = function(fn, args, that){
   var un = that === undefined;
@@ -262,7 +940,7 @@ module.exports = function(iterator, fn, value, entries){
 };
 },{"./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-create.js":[function(require,module,exports){
 'use strict';
-var $              = require('./_')
+var create         = require('./_object-create')
   , descriptor     = require('./_property-desc')
   , setToStringTag = require('./_set-to-string-tag')
   , IteratorPrototype = {};
@@ -271,10 +949,10 @@ var $              = require('./_')
 require('./_hide')(IteratorPrototype, require('./_wks')('iterator'), function(){ return this; });
 
 module.exports = function(Constructor, NAME, next){
-  Constructor.prototype = $.create(IteratorPrototype, {next: descriptor(1, next)});
+  Constructor.prototype = create(IteratorPrototype, {next: descriptor(1, next)});
   setToStringTag(Constructor, NAME + ' Iterator');
 };
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-define.js":[function(require,module,exports){
+},{"./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_object-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-create.js","./_property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-define.js":[function(require,module,exports){
 'use strict';
 var LIBRARY        = require('./_library')
   , $export        = require('./_export')
@@ -284,7 +962,7 @@ var LIBRARY        = require('./_library')
   , Iterators      = require('./_iterators')
   , $iterCreate    = require('./_iter-create')
   , setToStringTag = require('./_set-to-string-tag')
-  , getProto       = require('./_').getProto
+  , getPrototypeOf = require('./_object-gpo')
   , ITERATOR       = require('./_wks')('iterator')
   , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
   , FF_ITERATOR    = '@@iterator'
@@ -313,7 +991,7 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED
     , methods, key, IteratorPrototype;
   // Fix native
   if($anyNative){
-    IteratorPrototype = getProto($anyNative.call(new Base));
+    IteratorPrototype = getPrototypeOf($anyNative.call(new Base));
     if(IteratorPrototype !== Object.prototype){
       // Set @@toStringTag to native iterators
       setToStringTag(IteratorPrototype, TAG, true);
@@ -345,7 +1023,7 @@ module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED
   }
   return methods;
 };
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_export":"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js","./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_iter-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-create.js","./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_library":"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-detect.js":[function(require,module,exports){
+},{"./_export":"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js","./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_iter-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-create.js","./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_library":"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js","./_object-gpo":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-gpo.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-detect.js":[function(require,module,exports){
 var ITERATOR     = require('./_wks')('iterator')
   , SAFE_CLOSING = false;
 
@@ -432,7 +1110,7 @@ if(isNode){
   };
 }
 
-module.exports = function asap(fn){
+module.exports = function(fn){
   var task = {fn: fn, next: undefined, domain: isNode && process.domain};
   if(last)last.next = task;
   if(!head){
@@ -440,7 +1118,138 @@ module.exports = function asap(fn){
     notify();
   } last = task;
 };
-},{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js":[function(require,module,exports){
+},{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-create.js":[function(require,module,exports){
+// 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
+var anObject    = require('./_an-object')
+  , dPs         = require('./_object-dps')
+  , enumBugKeys = require('./_enum-bug-keys')
+  , IE_PROTO    = require('./_shared-key')('IE_PROTO')
+  , Empty       = function(){ /* empty */ }
+  , PROTOTYPE   = 'prototype';
+
+// Create object with fake `null` prototype: use iframe Object with cleared prototype
+var createDict = function(){
+  // Thrash, waste and sodomy: IE GC bug
+  var iframe = require('./_dom-create')('iframe')
+    , i      = enumBugKeys.length
+    , gt     = '>'
+    , iframeDocument;
+  iframe.style.display = 'none';
+  require('./_html').appendChild(iframe);
+  iframe.src = 'javascript:'; // eslint-disable-line no-script-url
+  // createDict = iframe.contentWindow.Object;
+  // html.removeChild(iframe);
+  iframeDocument = iframe.contentWindow.document;
+  iframeDocument.open();
+  iframeDocument.write('<script>document.F=Object</script' + gt);
+  iframeDocument.close();
+  createDict = iframeDocument.F;
+  while(i--)delete createDict[PROTOTYPE][enumBugKeys[i]];
+  return createDict();
+};
+
+module.exports = Object.create || function create(O, Properties){
+  var result;
+  if(O !== null){
+    Empty[PROTOTYPE] = anObject(O);
+    result = new Empty;
+    Empty[PROTOTYPE] = null;
+    // add "__proto__" for Object.getPrototypeOf polyfill
+    result[IE_PROTO] = O;
+  } else result = createDict();
+  return Properties === undefined ? result : dPs(result, Properties);
+};
+},{"./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_dom-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_dom-create.js","./_enum-bug-keys":"/srv/zotero/my-publications/node_modules/core-js/modules/_enum-bug-keys.js","./_html":"/srv/zotero/my-publications/node_modules/core-js/modules/_html.js","./_object-dps":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dps.js","./_shared-key":"/srv/zotero/my-publications/node_modules/core-js/modules/_shared-key.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dp.js":[function(require,module,exports){
+var anObject       = require('./_an-object')
+  , IE8_DOM_DEFINE = require('./_ie8-dom-define')
+  , toPrimitive    = require('./_to-primitive')
+  , dP             = Object.defineProperty;
+
+exports.f = require('./_descriptors') ? Object.defineProperty : function defineProperty(O, P, Attributes){
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if(IE8_DOM_DEFINE)try {
+    return dP(O, P, Attributes);
+  } catch(e){ /* empty */ }
+  if('get' in Attributes || 'set' in Attributes)throw TypeError('Accessors not supported!');
+  if('value' in Attributes)O[P] = Attributes.value;
+  return O;
+};
+},{"./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_ie8-dom-define":"/srv/zotero/my-publications/node_modules/core-js/modules/_ie8-dom-define.js","./_to-primitive":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-primitive.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dps.js":[function(require,module,exports){
+var dP       = require('./_object-dp')
+  , anObject = require('./_an-object')
+  , getKeys  = require('./_object-keys');
+
+module.exports = require('./_descriptors') ? Object.defineProperties : function defineProperties(O, Properties){
+  anObject(O);
+  var keys   = getKeys(Properties)
+    , length = keys.length
+    , i = 0
+    , P;
+  while(length > i)dP.f(O, P = keys[i++], Properties[P]);
+  return O;
+};
+},{"./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_object-dp":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dp.js","./_object-keys":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-keys.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-gopd.js":[function(require,module,exports){
+var pIE            = require('./_object-pie')
+  , createDesc     = require('./_property-desc')
+  , toIObject      = require('./_to-iobject')
+  , toPrimitive    = require('./_to-primitive')
+  , has            = require('./_has')
+  , IE8_DOM_DEFINE = require('./_ie8-dom-define')
+  , gOPD           = Object.getOwnPropertyDescriptor;
+
+exports.f = require('./_descriptors') ? gOPD : function getOwnPropertyDescriptor(O, P){
+  O = toIObject(O);
+  P = toPrimitive(P, true);
+  if(IE8_DOM_DEFINE)try {
+    return gOPD(O, P);
+  } catch(e){ /* empty */ }
+  if(has(O, P))return createDesc(!pIE.f.call(O, P), O[P]);
+};
+},{"./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_ie8-dom-define":"/srv/zotero/my-publications/node_modules/core-js/modules/_ie8-dom-define.js","./_object-pie":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-pie.js","./_property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js","./_to-iobject":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-iobject.js","./_to-primitive":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-primitive.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-gpo.js":[function(require,module,exports){
+// 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
+var has         = require('./_has')
+  , toObject    = require('./_to-object')
+  , IE_PROTO    = require('./_shared-key')('IE_PROTO')
+  , ObjectProto = Object.prototype;
+
+module.exports = Object.getPrototypeOf || function(O){
+  O = toObject(O);
+  if(has(O, IE_PROTO))return O[IE_PROTO];
+  if(typeof O.constructor == 'function' && O instanceof O.constructor){
+    return O.constructor.prototype;
+  } return O instanceof Object ? ObjectProto : null;
+};
+},{"./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_shared-key":"/srv/zotero/my-publications/node_modules/core-js/modules/_shared-key.js","./_to-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-keys-internal.js":[function(require,module,exports){
+var has          = require('./_has')
+  , toIObject    = require('./_to-iobject')
+  , arrayIndexOf = require('./_array-includes')(false)
+  , IE_PROTO     = require('./_shared-key')('IE_PROTO');
+
+module.exports = function(object, names){
+  var O      = toIObject(object)
+    , i      = 0
+    , result = []
+    , key;
+  for(key in O)if(key != IE_PROTO)has(O, key) && result.push(key);
+  // Don't enum bug & hidden keys
+  while(names.length > i)if(has(O, key = names[i++])){
+    ~arrayIndexOf(result, key) || result.push(key);
+  }
+  return result;
+};
+},{"./_array-includes":"/srv/zotero/my-publications/node_modules/core-js/modules/_array-includes.js","./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_shared-key":"/srv/zotero/my-publications/node_modules/core-js/modules/_shared-key.js","./_to-iobject":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-iobject.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-keys.js":[function(require,module,exports){
+// 19.1.2.14 / 15.2.3.14 Object.keys(O)
+var $keys       = require('./_object-keys-internal')
+  , enumBugKeys = require('./_enum-bug-keys');
+
+module.exports = Object.keys || function keys(O){
+  return $keys(O, enumBugKeys);
+};
+},{"./_enum-bug-keys":"/srv/zotero/my-publications/node_modules/core-js/modules/_enum-bug-keys.js","./_object-keys-internal":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-keys-internal.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-pie.js":[function(require,module,exports){
+exports.f = {}.propertyIsEnumerable;
+},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js":[function(require,module,exports){
 module.exports = function(bitmap, value){
   return {
     enumerable  : !(bitmap & 1),
@@ -456,10 +1265,9 @@ module.exports = function(target, src, safe){
   return target;
 };
 },{"./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js":[function(require,module,exports){
-// add fake Function#toString
-// for correct work wrapped methods / constructors with methods like LoDash isNative
 var global    = require('./_global')
   , hide      = require('./_hide')
+  , has       = require('./_has')
   , SRC       = require('./_uid')('src')
   , TO_STRING = 'toString'
   , $toString = Function[TO_STRING]
@@ -470,10 +1278,10 @@ require('./_core').inspectSource = function(it){
 };
 
 (module.exports = function(O, key, val, safe){
-  if(typeof val == 'function'){
-    val.hasOwnProperty(SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
-    val.hasOwnProperty('name') || hide(val, 'name', key);
-  }
+  var isFunction = typeof val == 'function';
+  if(isFunction)has(val, 'name') || hide(val, 'name', key);
+  if(O[key] === val)return;
+  if(isFunction)has(val, SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
   if(O === global){
     O[key] = val;
   } else {
@@ -485,14 +1293,14 @@ require('./_core').inspectSource = function(it){
       else hide(O, key, val);
     }
   }
+// add fake Function#toString for correct work wrapped methods / constructors with methods like LoDash isNative
 })(Function.prototype, TO_STRING, function toString(){
   return typeof this == 'function' && this[SRC] || $toString.call(this);
 });
-},{"./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_uid":"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-proto.js":[function(require,module,exports){
+},{"./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_uid":"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-proto.js":[function(require,module,exports){
 // Works with __proto__ only. Old v8 can't work with null proto objects.
 /* eslint-disable no-proto */
-var getDesc  = require('./_').getDesc
-  , isObject = require('./_is-object')
+var isObject = require('./_is-object')
   , anObject = require('./_an-object');
 var check = function(O, proto){
   anObject(O);
@@ -502,7 +1310,7 @@ module.exports = {
   set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
     function(test, buggy, set){
       try {
-        set = require('./_ctx')(Function.call, getDesc(Object.prototype, '__proto__').set, 2);
+        set = require('./_ctx')(Function.call, require('./_object-gopd').f(Object.prototype, '__proto__').set, 2);
         set(test, []);
         buggy = !(test instanceof Array);
       } catch(e){ buggy = true; }
@@ -515,29 +1323,35 @@ module.exports = {
     }({}, false) : undefined),
   check: check
 };
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-species.js":[function(require,module,exports){
+},{"./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js","./_object-gopd":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-gopd.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-species.js":[function(require,module,exports){
 'use strict';
 var global      = require('./_global')
-  , $           = require('./_')
+  , dP          = require('./_object-dp')
   , DESCRIPTORS = require('./_descriptors')
   , SPECIES     = require('./_wks')('species');
 
 module.exports = function(KEY){
   var C = global[KEY];
-  if(DESCRIPTORS && C && !C[SPECIES])$.setDesc(C, SPECIES, {
+  if(DESCRIPTORS && C && !C[SPECIES])dP.f(C, SPECIES, {
     configurable: true,
     get: function(){ return this; }
   });
 };
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js":[function(require,module,exports){
-var def = require('./_').setDesc
+},{"./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_object-dp":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dp.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js":[function(require,module,exports){
+var def = require('./_object-dp').f
   , has = require('./_has')
   , TAG = require('./_wks')('toStringTag');
 
 module.exports = function(it, tag, stat){
   if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
 };
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_shared.js":[function(require,module,exports){
+},{"./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_object-dp":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dp.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_shared-key.js":[function(require,module,exports){
+var shared = require('./_shared')('keys')
+  , uid    = require('./_uid');
+module.exports = function(key){
+  return shared[key] || (shared[key] = uid(key));
+};
+},{"./_shared":"/srv/zotero/my-publications/node_modules/core-js/modules/_shared.js","./_uid":"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_shared.js":[function(require,module,exports){
 var global = require('./_global')
   , SHARED = '__core-js_shared__'
   , store  = global[SHARED] || (global[SHARED] = {});
@@ -647,7 +1461,15 @@ module.exports = {
   set:   setTask,
   clear: clearTask
 };
-},{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_dom-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_dom-create.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_html":"/srv/zotero/my-publications/node_modules/core-js/modules/_html.js","./_invoke":"/srv/zotero/my-publications/node_modules/core-js/modules/_invoke.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_to-integer.js":[function(require,module,exports){
+},{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_dom-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_dom-create.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_html":"/srv/zotero/my-publications/node_modules/core-js/modules/_html.js","./_invoke":"/srv/zotero/my-publications/node_modules/core-js/modules/_invoke.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_to-index.js":[function(require,module,exports){
+var toInteger = require('./_to-integer')
+  , max       = Math.max
+  , min       = Math.min;
+module.exports = function(index, length){
+  index = toInteger(index);
+  return index < 0 ? max(index + length, 0) : min(index, length);
+};
+},{"./_to-integer":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-integer.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_to-integer.js":[function(require,module,exports){
 // 7.1.4 ToInteger
 var ceil  = Math.ceil
   , floor = Math.floor;
@@ -668,7 +1490,26 @@ var toInteger = require('./_to-integer')
 module.exports = function(it){
   return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
 };
-},{"./_to-integer":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-integer.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js":[function(require,module,exports){
+},{"./_to-integer":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-integer.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_to-object.js":[function(require,module,exports){
+// 7.1.13 ToObject(argument)
+var defined = require('./_defined');
+module.exports = function(it){
+  return Object(defined(it));
+};
+},{"./_defined":"/srv/zotero/my-publications/node_modules/core-js/modules/_defined.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_to-primitive.js":[function(require,module,exports){
+// 7.1.1 ToPrimitive(input [, PreferredType])
+var isObject = require('./_is-object');
+// instead of the ES6 spec version, we didn't implement @@toPrimitive case
+// and the second argument - flag - preferred type is a string
+module.exports = function(it, S){
+  if(!isObject(it))return it;
+  var fn, val;
+  if(S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  if(typeof (fn = it.valueOf) == 'function' && !isObject(val = fn.call(it)))return val;
+  if(!S && typeof (fn = it.toString) == 'function' && !isObject(val = fn.call(it)))return val;
+  throw TypeError("Can't convert object to primitive value");
+};
+},{"./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js":[function(require,module,exports){
 var id = 0
   , px = Math.random();
 module.exports = function(key){
@@ -740,8 +1581,7 @@ if(test + '' != '[object z]'){
 }
 },{"./_classof":"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.promise.js":[function(require,module,exports){
 'use strict';
-var $                  = require('./_')
-  , LIBRARY            = require('./_library')
+var LIBRARY            = require('./_library')
   , global             = require('./_global')
   , ctx                = require('./_ctx')
   , classof            = require('./_classof')
@@ -783,7 +1623,7 @@ var USE_NATIVE = function(){
   try {
     works = $Promise && $Promise.resolve && testResolve();
     setProto(SubPromise, $Promise);
-    SubPromise.prototype = $.create($Promise.prototype, {constructor: {value: SubPromise}});
+    SubPromise.prototype = require('./_object-create')($Promise.prototype, {constructor: {value: SubPromise}});
     // actual Firefox has broken subclass support, test that
     if(!(SubPromise.resolve(5).then(empty) instanceof SubPromise)){
       works = false;
@@ -791,7 +1631,7 @@ var USE_NATIVE = function(){
     // V8 4.8- bug, https://code.google.com/p/v8/issues/detail?id=4162
     if(works && require('./_descriptors')){
       var thenableThenGotten = false;
-      $Promise.resolve($.setDesc({}, 'then', {
+      $Promise.resolve(require('./_object-dp').f({}, 'then', {
         get: function(){ thenableThenGotten = true; }
       }));
       works = thenableThenGotten;
@@ -1024,7 +1864,7 @@ $export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(functi
       var values    = from(iterable)
         , remaining = values.length
         , results   = Array(remaining);
-      if(remaining)$.each.call(values, function(promise, index){
+      var f = function(promise, index){
         var alreadyCalled = false;
         C.resolve(promise).then(function(value){
           if(alreadyCalled)return;
@@ -1032,7 +1872,8 @@ $export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(functi
           results[index] = value;
           --remaining || resolve(results);
         }, reject);
-      });
+      };
+      if(remaining)for(var i = 0, l = values.length; l > i; i++)f(values[i], i);
       else resolve(results);
     });
     if(abrupt)reject(abrupt.error);
@@ -1052,7 +1893,7 @@ $export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(functi
     return capability.promise;
   }
 });
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js","./_an-instance":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-instance.js","./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_array-from-iterable":"/srv/zotero/my-publications/node_modules/core-js/modules/_array-from-iterable.js","./_classof":"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js","./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_export":"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js","./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js","./_iter-detect":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-detect.js","./_library":"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js","./_microtask":"/srv/zotero/my-publications/node_modules/core-js/modules/_microtask.js","./_redefine-all":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine-all.js","./_set-proto":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-proto.js","./_set-species":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-species.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_species-constructor":"/srv/zotero/my-publications/node_modules/core-js/modules/_species-constructor.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js":[function(require,module,exports){
+},{"./_a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js","./_an-instance":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-instance.js","./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_array-from-iterable":"/srv/zotero/my-publications/node_modules/core-js/modules/_array-from-iterable.js","./_classof":"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js","./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_export":"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js","./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js","./_iter-detect":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-detect.js","./_library":"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js","./_microtask":"/srv/zotero/my-publications/node_modules/core-js/modules/_microtask.js","./_object-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-create.js","./_object-dp":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dp.js","./_redefine-all":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine-all.js","./_set-proto":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-proto.js","./_set-species":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-species.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_species-constructor":"/srv/zotero/my-publications/node_modules/core-js/modules/_species-constructor.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js":[function(require,module,exports){
 'use strict';
 var $at  = require('./_string-at')(true);
 
@@ -1071,18 +1912,19 @@ require('./_iter-define')(String, 'String', function(iterated){
   return {value: point, done: false};
 });
 },{"./_iter-define":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-define.js","./_string-at":"/srv/zotero/my-publications/node_modules/core-js/modules/_string-at.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/web.dom.iterable.js":[function(require,module,exports){
-var $iterators     = require('./es6.array.iterator')
-  , redefine       = require('./_redefine')
-  , global         = require('./_global')
-  , hide           = require('./_hide')
-  , Iterators      = require('./_iterators')
-  , wks            = require('./_wks')
-  , ITERATOR       = wks('iterator')
-  , TO_STRING_TAG  = wks('toStringTag')
-  , ArrayValues    = Iterators.Array;
+var $iterators    = require('./es6.array.iterator')
+  , redefine      = require('./_redefine')
+  , global        = require('./_global')
+  , hide          = require('./_hide')
+  , Iterators     = require('./_iterators')
+  , wks           = require('./_wks')
+  , ITERATOR      = wks('iterator')
+  , TO_STRING_TAG = wks('toStringTag')
+  , ArrayValues   = Iterators.Array;
 
-require('./_').each.call(['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], function(NAME){
-  var Collection = global[NAME]
+for(var collections = ['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], i = 0; i < 5; i++){
+  var NAME       = collections[i]
+    , Collection = global[NAME]
     , proto      = Collection && Collection.prototype
     , key;
   if(proto){
@@ -1091,8 +1933,8 @@ require('./_').each.call(['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetLi
     Iterators[NAME] = ArrayValues;
     for(key in $iterators)if(!proto[key])redefine(proto, key, $iterators[key], true);
   }
-});
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js","./es6.array.iterator":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.array.iterator.js"}],"/srv/zotero/my-publications/node_modules/d/index.js":[function(require,module,exports){
+}
+},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js","./es6.array.iterator":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.array.iterator.js"}],"/srv/zotero/my-publications/node_modules/d/index.js":[function(require,module,exports){
 'use strict';
 
 var assign        = require('es5-ext/object/assign')
@@ -1445,7 +2287,100 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js"}],"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js":[function(require,module,exports){
+},{"./is-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js"}],"/srv/zotero/my-publications/node_modules/process/browser.js":[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
+
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
+    } else {
+        queueIndex = -1;
+    }
+    if (queue.length) {
+        drainQueue();
+    }
+}
+
+function drainQueue() {
+    if (draining) {
+        return;
+    }
+    var timeout = setTimeout(cleanUpNextTick);
+    draining = true;
+
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
+        }
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    clearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
+        }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        setTimeout(drainQueue, 0);
+    }
+};
+
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
+
+},{}],"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js":[function(require,module,exports){
 (function(self) {
   'use strict';
 
@@ -1843,7 +2778,7 @@ module.exports = function (value) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = undefined;
+exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_SHORT_SYMBOL = undefined;
 exports.processResponse = processResponse;
 exports.fetchUntilExhausted = fetchUntilExhausted;
 
@@ -1859,6 +2794,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 require('es6-symbol/implement');
 var ABSTRACT_NOTE_SHORT_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
+var ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
 var AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
 var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
 
@@ -1879,6 +2815,7 @@ function processResponse(response, config) {
 				var abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
 				abstractNoteShort = abstractNoteShort.substr(0, Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' ')));
 				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
+				item.data[ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
 			}
 			if (item.data && item.data.creators) {
 				item.data[AUTHORS_SYMBOL] = item.data.creators.map(function (author) {
@@ -1998,8 +2935,6 @@ function fetchUntilExhausted(url, options, jsondata) {
 (function (global){
 'use strict';
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
-
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
@@ -2057,7 +2992,7 @@ ZoteroData.prototype.groupByType = function (expand) {
 			groupedData[item.data.itemType] = [];
 		}
 		groupedData[item.data.itemType].push(item);
-		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.contains(expand, item.data.itemType);
+		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.includes(expand, item.data.itemType);
 	}
 	this.data = groupedData;
 	this.grouped = GROUPED_BY_TYPE;
@@ -2076,43 +3011,182 @@ ZoteroData.prototype.groupByCollections = function () {
  * For grouped data each iternation returns a group of Zotero items. Additionaly group name
  * is available under GROUP_TITLE Symbol
  */
-ZoteroData.prototype[Symbol.iterator] = function () {
-	var _this = this;
+// ZoteroData.prototype[Symbol.iterator] = function () {
+// 	let i = 0;
+// 	if(this.grouped > 0) {
+// 		let keys = Object.keys(this.data);
+// 		return {
+// 			next: function() {
+// 				var group;
+// 				if(i < this.data.length) {
+// 					group = this.data[keys[i]];
+// 					group[GROUP_TITLE] = keys[i];
+// 				} else {
+// 					group = null;
+// 				}
 
-	var i = 0;
-	if (this.grouped > 0) {
-		var _ret = function () {
-			var keys = Object.keys(_this.data);
-			return {
-				v: {
-					next: function () {
-						var group = this.data[keys[i]];
-						group[GROUP_TITLE] = keys[i];
-						return {
-							value: group,
-							done: ++i === keys.length
-						};
-					}.bind(_this)
-				}
-			};
-		}();
+// 				return {
+// 					value: group,
+// 					done: i++ >= this.data.length
+// 				};
+// 			}.bind(this)
+// 		};
+// 	} else {
+// 		return {
+// 			next: function() {
+// 				return {
+// 					value: i < this.data.length ? this.data[i] : null,
+// 					done: i++ >= this.data.length
+// 				};
+// 			}.bind(this)
+// 		};
+// 	}
+// };
 
-		if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	} else {
-		return {
-			next: function () {
-				return {
-					value: i < this.data.length ? this.data[i] : null,
-					done: i++ >= this.data.length
-				};
-			}.bind(this)
-		};
-	}
-};
+ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee() {
+	var keys, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, key, group, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, value;
+
+	return regeneratorRuntime.wrap(function _callee$(_context) {
+		while (1) {
+			switch (_context.prev = _context.next) {
+				case 0:
+					if (!this.grouped) {
+						_context.next = 32;
+						break;
+					}
+
+					keys = Object.keys(this.data);
+					_iteratorNormalCompletion = true;
+					_didIteratorError = false;
+					_iteratorError = undefined;
+					_context.prev = 5;
+					_iterator = keys[Symbol.iterator]();
+
+				case 7:
+					if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+						_context.next = 16;
+						break;
+					}
+
+					key = _step.value;
+					group = this.data[key];
+
+					group[GROUP_TITLE] = key;
+					_context.next = 13;
+					return group;
+
+				case 13:
+					_iteratorNormalCompletion = true;
+					_context.next = 7;
+					break;
+
+				case 16:
+					_context.next = 22;
+					break;
+
+				case 18:
+					_context.prev = 18;
+					_context.t0 = _context['catch'](5);
+					_didIteratorError = true;
+					_iteratorError = _context.t0;
+
+				case 22:
+					_context.prev = 22;
+					_context.prev = 23;
+
+					if (!_iteratorNormalCompletion && _iterator.return) {
+						_iterator.return();
+					}
+
+				case 25:
+					_context.prev = 25;
+
+					if (!_didIteratorError) {
+						_context.next = 28;
+						break;
+					}
+
+					throw _iteratorError;
+
+				case 28:
+					return _context.finish(25);
+
+				case 29:
+					return _context.finish(22);
+
+				case 30:
+					_context.next = 58;
+					break;
+
+				case 32:
+					_iteratorNormalCompletion2 = true;
+					_didIteratorError2 = false;
+					_iteratorError2 = undefined;
+					_context.prev = 35;
+					_iterator2 = this.data[Symbol.iterator]();
+
+				case 37:
+					if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
+						_context.next = 44;
+						break;
+					}
+
+					value = _step2.value;
+					_context.next = 41;
+					return value;
+
+				case 41:
+					_iteratorNormalCompletion2 = true;
+					_context.next = 37;
+					break;
+
+				case 44:
+					_context.next = 50;
+					break;
+
+				case 46:
+					_context.prev = 46;
+					_context.t1 = _context['catch'](35);
+					_didIteratorError2 = true;
+					_iteratorError2 = _context.t1;
+
+				case 50:
+					_context.prev = 50;
+					_context.prev = 51;
+
+					if (!_iteratorNormalCompletion2 && _iterator2.return) {
+						_iterator2.return();
+					}
+
+				case 53:
+					_context.prev = 53;
+
+					if (!_didIteratorError2) {
+						_context.next = 56;
+						break;
+					}
+
+					throw _iteratorError2;
+
+				case 56:
+					return _context.finish(53);
+
+				case 57:
+					return _context.finish(50);
+
+				case 58:
+				case 'end':
+					return _context.stop();
+			}
+		}
+	}, _callee, this, [[5, 18, 22, 30], [23,, 25, 29], [35, 46, 50, 58], [51,, 53, 57]]);
+});
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/main-compat.js":[function(require,module,exports){
 'use strict';
+
+require('babel-regenerator-runtime');
 
 var _main = require('./main.js');
 
@@ -2123,9 +3197,10 @@ var _main = require('./main.js');
 require('core-js/es6/promise');
 require('whatwg-fetch');
 
+
 module.exports = _main.ZoteroPublications;
 
-},{"./main.js":"/srv/zotero/my-publications/src/js/main.js","core-js/es6/promise":"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js","whatwg-fetch":"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
+},{"./main.js":"/srv/zotero/my-publications/src/js/main.js","babel-regenerator-runtime":"/srv/zotero/my-publications/node_modules/babel-regenerator-runtime/runtime.js","core-js/es6/promise":"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js","whatwg-fetch":"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2170,25 +3245,60 @@ ZoteroPublications.prototype.defaults = {
 	limit: 100,
 	citationStyle: '',
 	include: ['data', 'citation'],
+	storeCitationPreference: false,
 	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
-	expand: 'all'
+	expand: 'all',
+	citeStyleOptions: {
+		'american-anthropological-association': 'American Anthropological Association',
+		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
+		'elsevier-harvard': 'Elsevier Harvard (with titles)',
+		'modern-humanities-research-association-author-date': 'Modern Humanities Research Association 3rd edition (author-date)',
+		'modern-language-association': 'Modern Language Association 7th edition'
+	},
+	exportFormats: {
+		'bibtex': {
+			name: 'BibTeX',
+			contentType: 'application/x-bibtex',
+			extension: 'bib'
+		},
+		'ris': {
+			name: 'RIS',
+			contentType: 'application/x-research-info-systems',
+			extension: 'ris'
+		},
+		'rdf_zotero': {
+			name: 'Zotero RDF',
+			contentType: 'application/rdf+xml',
+			extension: 'rdf'
+		}
+	}
 };
 
-ZoteroPublications.prototype.get = function (url, options) {
-	options = options || {
+/**
+ * Low-level function to fetch given url to obtain Zotero Data
+ * @param  {String} url      - A Zotero API url to get
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @param  {?Object} init    - Options forwarded to the fetch method
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.get = function (url, options, init) {
+	init = init || {
 		headers: {
 			'Accept': 'application/json'
 		}
 	};
 
+	options = _lodash2.default.extend({}, this.config, options);
+
 	return new Promise(function (resolve, reject) {
-		var promise = (0, _api.fetchUntilExhausted)(url, options);
+		var promise = (0, _api.fetchUntilExhausted)(url, init);
 		promise.then(function (responseJson) {
 			var data = new _data.ZoteroData(responseJson, this.config);
-			if (this.config.group === 'type') {
-				data.groupByType(this.config.expand);
+			if (options.group === 'type') {
+				data.groupByType(options.expand);
 			}
 			resolve(data);
 		}.bind(this));
@@ -2202,36 +3312,53 @@ ZoteroPublications.prototype.get = function (url, options) {
  * @return {Promise}         - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.getEndpoint = function (endpoint) {
+ZoteroPublications.prototype.getEndpoint = function (endpoint, options) {
+	options = options || {};
 	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = this.config.citationStyle,
-	    include = this.config.include.join(','),
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
 	    url = 'https://' + apiBase + '/' + endpoint + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
-ZoteroPublications.prototype.getPublications = function (userId, citationStyle) {
+/**
+ * Build url for getting user's publications then fetch entire dataset recursively
+ * @param  {number} userId   - User id
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.getPublications = function (userId, options) {
+	options = options || {};
 	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = citationStyle || this.config.citationStyle,
-	    include = this.config.include.join(','),
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
 	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
 
 	this.userId = userId;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
-ZoteroPublications.prototype.getItem = function (itemId, userId, citationStyle) {
+/**
+ * Build url for getting a single item from user's publications then fetch it
+ * @param  {[type]} userId   - User id
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @return {[type]}          - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.getItem = function (itemId, userId, options) {
+	options = options || {};
 	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = citationStyle || this.config.citationStyle,
-	    include = this.config.include.join(','),
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
 	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items/' + itemId + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
 /**
@@ -2240,20 +3367,31 @@ ZoteroPublications.prototype.getItem = function (itemId, userId, citationStyle) 
  * @param  {HTMLElement} container            - A DOM element where publications will be rendered
  * @return {Promise}                          - Resolved when rendered or rejected on error.
  */
-ZoteroPublications.prototype.render = function (endpointOrData, container) {
+ZoteroPublications.prototype.render = function (userIdOrendpointOrData, container) {
 	return new Promise(function (resolve, reject) {
 		if (!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
-		if (endpointOrData instanceof _data.ZoteroData) {
+		if (userIdOrendpointOrData instanceof _data.ZoteroData) {
+			var data = userIdOrendpointOrData;
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			var data = endpointOrData;
 			this.renderer.displayPublications(data);
 			resolve();
-		} else if (typeof endpointOrData === 'string') {
+		} else if (typeof userIdOrendpointOrData === 'number') {
+			var userId = userIdOrendpointOrData;
+			var promise = this.getPublications(userId);
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			var endpoint = endpointOrData;
+			promise.then(function (data) {
+				this.renderer.displayPublications(data);
+				resolve();
+			}.bind(this));
+			promise.catch(function () {
+				reject(arguments[0]);
+			});
+		} else if (typeof userIdOrendpointOrData === 'string') {
+			var endpoint = userIdOrendpointOrData;
 			var promise = this.getEndpoint(endpoint);
+			this.renderer = new _render.ZoteroRenderer(container, this);
 			promise.then(function (data) {
 				this.renderer.displayPublications(data);
 				resolve();
@@ -2307,6 +3445,10 @@ var _branding = require('./tpl/partial/branding.tpl');
 
 var _branding2 = _interopRequireDefault(_branding);
 
+var _export = require('./tpl/partial/export.tpl');
+
+var _export2 = _interopRequireDefault(_export);
+
 var _groupView = require('./tpl/group-view.tpl');
 
 var _groupView2 = _interopRequireDefault(_groupView);
@@ -2332,6 +3474,11 @@ function ZoteroRenderer(container, zotero) {
 	this.container = container;
 	this.zotero = zotero;
 	this.config = zotero.config;
+	if (this.config.storeCitationPreference) {
+		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
+	} else {
+		this.preferredCitationStyle = this.config.citationStyle;
+	}
 	this.toggleSpinner(true);
 }
 
@@ -2341,10 +3488,13 @@ function ZoteroRenderer(container, zotero) {
  * @return {String}                  - Rendered markup of a Zotero item
  */
 ZoteroRenderer.prototype.renderItem = function (zoteroItem) {
+	var citationPreference;
+
 	return (0, _item2.default)({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'renderer': this
+		'renderer': this,
+		'citationPreference': citationPreference
 	});
 };
 
@@ -2433,73 +3583,156 @@ ZoteroRenderer.prototype.displayPublications = function (data) {
 
 	this.data = data;
 	this.container.innerHTML = markup;
-
-	_lodash2.default.each(this.container.querySelectorAll('.zotero-details'), function (element) {
-		element.style.height = element.offsetHeight + 'px';
-		element.classList.add('zotero-details-collapsed');
-	});
-
 	this.toggleSpinner(false);
 	this.previous = markup;
 	this.addHandlers();
 };
 
 /**
+ * Update citation and store preference in memory/local storage
+ * depending on configuration
+ * @param  {HTMLElement} itemEl 		- dom element containing the item
+ * @param  {String} citationStyle 		- optionally set the citation style
+ */
+ZoteroRenderer.prototype.updateCitation = function (itemEl, citationStyle) {
+	var itemId = itemEl.dataset.item;
+	var citationEl = itemEl.querySelector('.zotero-citation');
+	var citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
+
+	if (citationStyle) {
+		citationStyleSelectEl.value = citationStyle;
+	} else {
+		citationStyle = citationStyleSelectEl.options[citationStyleSelectEl.selectedIndex].value;
+	}
+
+	this.preferredCitationStyle = citationStyle;
+	if (this.config.storeCitationPreference) {
+		localStorage.setItem('zotero-citation-preference', citationStyle);
+	}
+
+	citationEl.innerHTML = '';
+	citationEl.classList.add('zotero-loading-inline');
+
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'citationStyle': citationStyle,
+		'include': ['bib'],
+		'group': false
+	}).then(function (item) {
+		citationEl.classList.remove('zotero-loading-inline');
+		citationEl.innerHTML = item.raw[0].bib;
+		(0, _utils.selectText)(citationEl);
+	});
+};
+
+/**
+ * Prepare a link for downloading item export
+ */
+ZoteroRenderer.prototype.prepareExport = function (itemEl) {
+	var _this = this;
+
+	var itemId = itemEl.dataset.item;
+	var exportEl = itemEl.querySelector('.zotero-export');
+	var exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
+	var exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
+
+	exportEl.innerHTML = '';
+	exportEl.classList.add('zotero-loading-inline');
+
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'include': [exportFormat],
+		'group': false
+	}).then(function (item) {
+		var itemData = _lodash2.default.findWhere(_this.data.raw, { 'key': itemId });
+		exportEl.classList.remove('zotero-loading-inline');
+		exportEl.innerHTML = (0, _export2.default)({
+			'filename': itemData.data.title + '.' + _this.zotero.config.exportFormats[exportFormat].extension,
+			'content': item.raw[0][exportFormat],
+			'contentType': _this.zotero.config.exportFormats[exportFormat].contentType
+		});
+	});
+};
+
+/**
  * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function () {
+	var _this2 = this;
+
 	this.container.addEventListener('click', function (ev) {
 		var target;
 
 		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'details';
+			return el.dataset && el.dataset.trigger;
 		});
+
 		if (target) {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
-			var detailsEl = itemEl.querySelector('.zotero-details');
-			if (detailsEl) {
-				detailsEl.classList.toggle('zotero-details-collapsed');
-			}
-			window.history.pushState(null, null, '#' + itemEl.dataset.item);
 			ev.preventDefault();
-			return;
-		}
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'cite';
-		});
-		if (target) {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
-			var citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-			citeContainerEl.classList.toggle('zotero-cite-container-collapsed');
+			if (target.dataset.trigger === 'details') {
+				var itemEl = (0, _utils.closest)(target, function (el) {
+					return el.dataset && el.dataset.item;
+				});
+				var detailsEl = itemEl.querySelector('.zotero-details');
+				if (detailsEl) {
+					(0, _utils.toggleCollapse)(detailsEl);
+				}
+				window.history.pushState(null, null, '#' + itemEl.dataset.item);
+			} else if (target.dataset.trigger === 'cite') {
+				var itemEl = (0, _utils.closest)(target, function (el) {
+					return el.dataset && el.dataset.item;
+				});
+				var citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+				var exportContainerEl = itemEl.querySelector('.zotero-export-container');
+				var citeEl = itemEl.querySelector('.zotero-citation');
+				if (citeContainerEl) {
+					citeEl.innerHTML = '';
+					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), function (item) {
+						item.classList.remove('zotero-active');
+					});
+					var expanding = (0, _utils.toggleCollapse)(citeContainerEl);
+					if (expanding) {
+						_this2.updateCitation(itemEl, _this2.preferredCitationStyle);
+						(0, _utils.toggleCollapse)(exportContainerEl, false);
+						target.classList.add('zotero-active');
+					}
+				}
+			} else if (target.dataset.trigger === 'export') {
+				var itemEl = (0, _utils.closest)(target, function (el) {
+					return el.dataset && el.dataset.item;
+				});
+				var citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+				var exportContainerEl = itemEl.querySelector('.zotero-export-container');
+				if (exportContainerEl) {
+					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), function (item) {
+						item.classList.remove('zotero-active');
+					});
+					var expanding = (0, _utils.toggleCollapse)(exportContainerEl);
+					if (expanding) {
+						_this2.prepareExport(itemEl);
+						(0, _utils.toggleCollapse)(citeContainerEl, false);
+						target.classList.add('zotero-active');
+					}
+				}
+			}
 		}
 	});
 
 	this.container.addEventListener('change', function (ev) {
-		var _this = this;
-
-		var target;
-
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'cite-style-selection';
+		var target = (0, _utils.closest)(ev.target, function (el) {
+			return el.dataset && el.dataset.trigger;
 		});
-		if (target) {
-			(function () {
-				var itemEl = (0, _utils.closest)(target, function (el) {
-					return el.dataset && el.dataset.item;
-				});
-				var itemId = itemEl.dataset.item;
-				var citationTextareaEl = itemEl.querySelector('.zotero-citation');
-				var citationStyle = target.options[target.selectedIndex].value;
-				_this.zotero.getItem(itemId, _this.zotero.userId, citationStyle).then(function (item) {
-					citationTextareaEl.value = item.raw[0].citation;
-				});
-			})();
+
+		if (target.dataset.trigger === 'cite-style-selection') {
+			var itemEl = (0, _utils.closest)(target, function (el) {
+				return el.dataset && el.dataset.item;
+			});
+			_this2.updateCitation(itemEl);
+		} else if (target.dataset.trigger === 'export-format-selection') {
+			var itemEl = (0, _utils.closest)(target, function (el) {
+				return el.dataset && el.dataset.item;
+			});
+			_this2.prepareExport(itemEl);
 		}
-	}.bind(this));
+	});
 };
 
 /**
@@ -2513,7 +3746,7 @@ ZoteroRenderer.prototype.toggleSpinner = function (activate) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
+},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2543,6 +3776,23 @@ module.exports = function (obj) {
     __p += __j.call(arguments, '');
   };
   __p += '<div class="zotero-branding">\n\t<a href="http://www.zotero.org" class="zotero-logo-link">\n\t\t<svg class="zotero-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="90" height="20">\n\t\t\t<g>\n\t\t\t\t<path class="zotero-z" fill="#990000" d="M12.2,6.1L2.8,17.8h9.4v1.9H0v-2.2L9.4,5.8H0.8V3.9h11.4V6.1z"/>\n\t\t\t\t<path fill="#222222" d="M22.1,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C15.1,5.2,16.2,3.7,22.1,3.7z M22.1,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C17.5,17.3,17.8,18,22.1,18z"/>\n\t\t\t\t<path fill="#222222" d="M41.7,5.8h-6.1v10c0,1.7,0.5,2.1,2.2,2.1c2.2,0,2.2-1.2,2.2-2.7v-1.2h2.3v1.2c0,3.1-1.3,4.6-4.5,4.6\n\t\t\t\t\tc-3.7,0-4.5-1.1-4.5-4.8V5.8h-2.1V3.9h2.1V0.1h2.4v3.8h6.1V5.8z"/>\n\t\t\t\t<path fill="#222222" d="M58.3,14.9v0.6c0,4.2-3.2,4.4-6.7,4.4c-6.2,0-7.1-2-7.1-8.1c0-6.6,1.4-8.1,7.1-8.1c5.1,0,6.7,1.2,6.7,7v1.6\n\t\t\t\t\tH46.9c0,5,0.4,5.6,4.6,5.6c3.3,0,4.3-0.2,4.3-2.4v-0.6H58.3z M55.8,10.4c-0.1-4.5-0.7-4.8-4.3-4.8c-4.3,0-4.5,1.1-4.6,4.8H55.8z"/>\n\t\t\t\t<path fill="#222222" d="M64.6,3.9l-0.1,2l0.1,0.1c0.8-1.7,2.7-2.2,4.5-2.2c3,0,4.4,1.5,4.4,4.5v1.1h-2.3V8.3c0-2-0.7-2.6-2.6-2.6\n\t\t\t\t\tc-3,0-3.9,1.4-3.9,4.2v9.8h-2.4V3.9H64.6z"/>\n\t\t\t\t<path fill="#222222" d="M83,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C76,5.2,77.1,3.7,83,3.7z M83,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C78.4,17.3,78.7,18,83,18z"/>\n\t\t\t</g>\n\t\t</svg>\n\t</a>\n</div>';
+  return __p;
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl":[function(require,module,exports){
+(function (global){
+'use strict';
+
+var _ = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
+module.exports = function (obj) {
+  var __t,
+      __p = '',
+      __j = Array.prototype.join,
+      print = function print() {
+    __p += __j.call(arguments, '');
+  };
+  __p += '<a href="data:' + ((__t = obj.contentType) == null ? '' : _.escape(__t)) + ',' + ((__t = obj.content) == null ? '' : _.escape(__t)) + '" download="' + ((__t = obj.filename) == null ? '' : _.escape(__t)) + '">\n\tDownload\n</a>';
   return __p;
 };
 
@@ -2621,49 +3871,45 @@ module.exports = function (obj) {
   };
   __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\n\t<!-- Reference -->\n\t';
   if (obj.renderer.config.alwaysUseCitationStyle) {
-    __p += '\n\t\t<div class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</div>\n\n\t<!-- Templated -->\n\t';
+    __p += '\n\t\t<h3 class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</h3>\n\n\t<!-- Templated -->\n\t';
   } else {
     __p += '\n\t\t';
     if (obj.data.itemType == 'book') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'journalArticle') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'blogPost') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.item.citation) == null ? '' : __t) + '</a>\n\t\t\t</div>\n\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.item.citation) == null ? '' : __t) + '</a>\n\t\t\t</h3>\n\t\t';
     }
     __p += '\n\t';
   }
-  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" data-trigger="details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<div class="zotero-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t';
-  if (!obj.renderer.config.alwaysUseCitationStyle) {
-    __p += '\n\t\t\t\t<div class="zotero-reference">\n\t\t\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
-  }
-  __p += '\n\n\t\t\t';
+  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" data-trigger="details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable">\n\t\t<div class="zotero-details-inner">\n\t\t\t';
   if (obj.data.abstractNote && obj.data.abstractNote.length) {
-    __p += '\n\t\t\t\t<h3>\n\t\t\t\t\tAbstract\n\t\t\t\t</h3>\n\t\t\t\t<p class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data.abstractNote) == null ? '' : _.escape(__t)) + '\n\t\t\t\t</p>\n\t\t\t';
+    __p += '\n\t\t\t\t<h4>Abstract</h4>\n\t\t\t\t<div class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data[Symbol.for('abstractNoteProcessed')]) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
   }
   __p += '\n\n\t\t\t';
   if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) {
-    __p += '\n\t\t\t\t<h3>Notes</h3>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
+    __p += '\n\t\t\t\t<h4>Notes</h4>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -2693,7 +3939,7 @@ module.exports = function (obj) {
   }
   __p += '\n\n\t\t\t';
   if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
-    __p += '\n\t\t\t\t<h3>Attachments</h3>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
+    __p += '\n\t\t\t\t<h4>Attachments</h4>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
     var _iteratorNormalCompletion2 = true;
     var _didIteratorError2 = false;
     var _iteratorError2 = undefined;
@@ -2723,9 +3969,17 @@ module.exports = function (obj) {
   }
   __p += '\n\t\t\t';
   if (obj.renderer.zotero.userId) {
-    __p += '\n\t\t\t\t<div>\n\t\t\t\t\t<button class="zotero-cite-button" data-trigger="cite">\n\t\t\t\t\t\tCite\n\t\t\t\t\t</button>\n\t\t\t\t</div>\n\t\t\t\t<div class="zotero-cite-container">\n\t\t\t\t\t<select data-trigger="cite-style-selection">\n\t\t\t\t\t\t<option value="american-anthropological-association">\n\t\t\t\t\t\t\tAmerican Anthropological Association\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="cell">\n\t\t\t\t\t\t\tCell\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="chicago-author-date">\n\t\t\t\t\t\t\tChicago Manual of Style 16th edition (author-date)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="elsevier-harvard">\n\t\t\t\t\t\t\tElsevier Harvard (with titles)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="ieee">\n\t\t\t\t\t\t\tIEEE\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="modern-humanities-research-association-author-date">\n\t\t\t\t\t\t\tModern Humanities Research Association 3rd edition (author-date)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="modern-language-association">\n\t\t\t\t\t\t\tModern Language Association 7th edition\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="nature">\n\t\t\t\t\t\t\tNature\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="vancouver">\n\t\t\t\t\t\t\tVancouver\n\t\t\t\t\t\t</option>\n\t\t\t\t\t</select>\n\t\t\t\t\t<textarea class="zotero-citation" cols="30" rows="5">\n\t\t\t\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t\t\t\t</textarea>\n\t\t\t\t</div>\n\t\t\t';
+    __p += '\n\t\t\t\t<!-- Cite & export -->\n\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t<ul class="zotero-list-inline">\n\t\t\t\t\t\t<li><a href="" data-trigger="cite">Cite</a></li><!--\n\t\t\t\t\t\t--><li><a href="" data-trigger="export">Export</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Cite -->\n\t\t\t\t<div class="zotero-cite-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t';
+    for (var citationStyle in obj.renderer.zotero.config.citeStyleOptions) {
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.citeStyleOptions[citationStyle]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-citation"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
+    for (var exportFormat in obj.renderer.zotero.config.exportFormats) {
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = exportFormat) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.exportFormats[exportFormat].name) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-export"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t';
   }
-  __p += '\n\t\t</div>\n\t</div>\n</li>';
+  __p += '\n\t\t</div>\n\t</section>\n</li>';
   return __p;
 };
 
@@ -2785,20 +4039,34 @@ module.exports = function (obj) {
       print = function print() {
     __p += __j.call(arguments, '');
   };
-  __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderItems(items)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
+  __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderItems(obj.items)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
   return __p;
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],"/srv/zotero/my-publications/src/js/utils.js":[function(require,module,exports){
+(function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.formatDate = formatDate;
+exports.formatAbstract = formatAbstract;
 exports.formatCategoryName = formatCategoryName;
 exports.closest = closest;
+exports.once = once;
+exports.id = id;
+exports.selectText = selectText;
+exports.transitionend = transitionend;
+exports.toggleCollapse = toggleCollapse;
+
+var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /**
@@ -2828,6 +4096,10 @@ function formatDate(isoDate) {
 	return date;
 }
 
+function formatAbstract(abstract) {
+	return abstract.replace(/(^|\n)([\s\S]*?)(\n|$)/g, '<p>$2</p>');
+}
+
 /**
  * Formats category name
  * @param  {String} name 	- unformatted name
@@ -2849,5 +4121,135 @@ function closest(el, fn) {
 	return el && (fn(el) ? el : closest(el.parentNode, fn));
 }
 
+/**
+ * Register a one-time event listener.
+ *
+ * @param {EventTarget} target
+ * @param {String} type
+ * @param {Function} listener
+ * @returns {Function} deregister
+ */
+function once(target, type, listener) {
+	function deregister() {
+		target.removeEventListener(type, handler); // eslint-disable-line no-use-before-define
+	}
+
+	function handler() {
+		deregister();
+		return listener.apply(this, arguments);
+	}
+
+	target.addEventListener(type, handler);
+
+	return deregister;
+}
+
+/**
+ * Uniquely and pernamently identify a DOM element
+ * even if it has no id
+ * @param  {HTMLElement} target - DOM element to identify
+ * @return {String} 			- unique identifier
+ */
+function id(target) {
+	target.id = target.id || _lodash2.default.uniqueId(target);
+	return target.id;
+}
+
+/**
+ * Cross-browser text range selection
+ * @param  {HTMLElement} textEl		- A DOM element where text should be selected
+ */
+function selectText(textEl) {
+	if (document.body.createTextRange) {
+		var range = document.body.createTextRange();
+		range.moveToElementText(textEl);
+		range.select();
+	} else if (window.getSelection) {
+		var selection = window.getSelection(),
+		    range = document.createRange();
+		range.selectNodeContents(textEl);
+		selection.removeAllRanges();
+		selection.addRange(range);
+	}
+}
+
+/**
+ * Finds a correct name of a transitionend event
+ * @return {String} 	- transitionend event name
+ */
+function transitionend() {
+	var i,
+	    el = document.createElement('div'),
+	    transitions = {
+		'transition': 'transitionend',
+		'OTransition': 'otransitionend',
+		'MozTransition': 'transitionend',
+		'WebkitTransition': 'webkitTransitionEnd'
+	};
+
+	for (i in transitions) {
+		if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+			return transitions[i];
+		}
+	}
+}
+
+var collapsesInProgress = {};
+
+function collapse(element) {
+	var initialHeight = window.getComputedStyle(element).height;
+	element.style.height = initialHeight;
+	_lodash2.default.defer(function () {
+		element.classList.add('zotero-collapsed', 'zotero-collapsing');
+		element.style.height = null;
+		collapsesInProgress[id(element)] = once(element, transitionend(), function () {
+			element.classList.remove('zotero-collapsing');
+			delete collapsesInProgress[id(element)];
+		});
+	});
+}
+
+function uncollapse(element) {
+	element.classList.remove('zotero-collapsed');
+	var targetHeight = window.getComputedStyle(element).height;
+	element.classList.add('zotero-collapsed');
+
+	_lodash2.default.defer(function () {
+		element.classList.add('zotero-collapsing');
+		element.style.height = targetHeight;
+		collapsesInProgress[id(element)] = once(element, transitionend(), function () {
+			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
+			element.style.height = null;
+			delete collapsesInProgress[id(element)];
+		});
+	});
+}
+
+/**
+ * Collpases or uncollapses a DOM element
+ * @param  {HTMLElement} element 	- DOM element to be (un)collapsed
+ */
+function toggleCollapse(element, override) {
+	if (typeof override !== 'undefined') {
+		if (collapsesInProgress[id(element)]) {
+			collapsesInProgress[id(element)]();
+		}
+		override ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return override;
+	}
+
+	if (collapsesInProgress[id(element)]) {
+		collapsesInProgress[id(element)]();
+		var collapsing = !element.style.height;
+		collapsing ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return collapsing;
+	} else {
+		var collapsed = element.classList.contains('zotero-collapsed');
+		collapsed ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return collapsed;
+	}
+}
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}]},{},["/srv/zotero/my-publications/src/js/main-compat.js"])("/srv/zotero/my-publications/src/js/main-compat.js")
 });
