@@ -272,7 +272,9 @@ $border-radius-base: 4px;
 			background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjQuNiAzMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBvbHlnb24gZmlsbD0iIzk5MDAwMCIgcG9pbnRzPSIyNC41LDAgMjAuMiwwIDAsMCAwLDUuNSAxNS43LDUuNSAwLDI0LjUgMCwzMCAyNC41LDMwIDI0LjUsMjQuNSA4LjgsMjQuNSAyNC41LDUuNSAiLz48L3N2Zz4=")
 				0 0 no-repeat;
 			animation: loading 1s cubic-bezier(.87,-.41,.19,1.44) infinite;
-
+			position: relative;
+			left: -62px;
+			top: 0.5em;
 		}
 	}
 
