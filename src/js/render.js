@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import Clipboard from 'clipboard';
 import itemTpl from './tpl/partial/item.tpl';
 import itemsTpl from './tpl/partial/items.tpl';
 import groupTpl from './tpl/partial/group.tpl';
@@ -14,7 +15,6 @@ import {
 import {
 	formatCategoryName,
 	closest,
-	selectText,
 	toggleCollapse
 } from './utils.js';
 
@@ -175,7 +175,6 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 	}).then(item => {
 		citationEl.classList.remove('zotero-loading-inline');
 		citationEl.innerHTML = item.raw[0].bib;
-		selectText(citationEl);
 	});
 };
 
@@ -209,6 +208,7 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
  * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function() {
+	new Clipboard('.zotero-citation-copy');
 	this.container.addEventListener('click', ev => {
 		var target;
 

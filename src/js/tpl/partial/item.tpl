@@ -120,7 +120,8 @@
 								</option>
 							<% } %>
 						</select>
-						<p class="zotero-citation"></p>
+						<p class="zotero-citation" id="<%- obj.item.key %>-citation"></p>
+						<button class="zotero-citation-copy" data-clipboard-target="#<%- obj.item.key %>-citation">Copy</button>
 					</div>
 				</div>
 
