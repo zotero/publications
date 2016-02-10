@@ -208,7 +208,7 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
  * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function() {
-	new Clipboard('.zotero-citation-copy');
+	new Clipboard('.zotero-citation-copy'); //eslint-disable-line no-new
 	this.container.addEventListener('click', ev => {
 		var target;
 
@@ -220,7 +220,8 @@ ZoteroRenderer.prototype.addHandlers = function() {
 				let itemEl = closest(target, el => el.dataset && el.dataset.item);
 				let detailsEl = itemEl.querySelector('.zotero-details');
 				if(detailsEl) {
-					toggleCollapse(detailsEl);
+					let expanded = toggleCollapse(detailsEl);
+					expanded ? itemEl.classList.add('zotero-details-open') : itemEl.classList.remove('zotero-details-open'); //eslint-disable-line no-unused-expressions
 				}
 				window.history.pushState(null, null, `#${itemEl.dataset.item}`);
 			} else if(target.dataset.trigger === 'cite') {
