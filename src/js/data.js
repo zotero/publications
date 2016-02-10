@@ -65,28 +65,17 @@ ZoteroData.prototype.groupByCollections = function() {
  * For grouped data each iternation returns a group of Zotero items. Additionaly group name
  * is available under GROUP_TITLE Symbol
  */
-ZoteroData.prototype[Symbol.iterator] = function () {
-	let i = 0;
-	if(this.grouped > 0) {
+ZoteroData.prototype[Symbol.iterator] = function*() {
+	if(this.grouped) {
 		let keys = Object.keys(this.data);
-		return {
-			next: function() {
-				let group = this.data[keys[i]];
-				group[GROUP_TITLE] = keys[i];
-				return {
-					value: group,
-					done: ++i === keys.length
-				};
-			}.bind(this)
-		};
+		for(let key of keys) {
+			let group = this.data[key];
+			group[GROUP_TITLE] = key;
+			yield group;
+		}
 	} else {
-		return {
-			next: function() {
-				return {
-					value: i < this.data.length ? this.data[i] : null,
-					done: i++ >= this.data.length
-				};
-			}.bind(this)
-		};
+		for(let value of this.data) {
+			yield value;
+		}
 	}
 };

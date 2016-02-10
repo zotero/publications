@@ -1,1098 +1,665 @@
-(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js":[function(require,module,exports){
-require('../modules/es6.object.to-string');
-require('../modules/es6.string.iterator');
-require('../modules/web.dom.iterable');
-require('../modules/es6.promise');
-module.exports = require('../modules/_core').Promise;
-},{"../modules/_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","../modules/es6.object.to-string":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.object.to-string.js","../modules/es6.promise":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.promise.js","../modules/es6.string.iterator":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js","../modules/web.dom.iterable":"/srv/zotero/my-publications/node_modules/core-js/modules/web.dom.iterable.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_.js":[function(require,module,exports){
-var $Object = Object;
-module.exports = {
-  create:     $Object.create,
-  getProto:   $Object.getPrototypeOf,
-  isEnum:     {}.propertyIsEnumerable,
-  getDesc:    $Object.getOwnPropertyDescriptor,
-  setDesc:    $Object.defineProperty,
-  setDescs:   $Object.defineProperties,
-  getKeys:    $Object.keys,
-  getNames:   $Object.getOwnPropertyNames,
-  getSymbols: $Object.getOwnPropertySymbols,
-  each:       [].forEach
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js":[function(require,module,exports){
-module.exports = function(it){
-  if(typeof it != 'function')throw TypeError(it + ' is not a function!');
-  return it;
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_add-to-unscopables.js":[function(require,module,exports){
-// 22.1.3.31 Array.prototype[@@unscopables]
-var UNSCOPABLES = require('./_wks')('unscopables')
-  , ArrayProto  = Array.prototype;
-if(ArrayProto[UNSCOPABLES] == undefined)require('./_hide')(ArrayProto, UNSCOPABLES, {});
-module.exports = function(key){
-  ArrayProto[UNSCOPABLES][key] = true;
-};
-},{"./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_an-instance.js":[function(require,module,exports){
-module.exports = function(it, Constructor, name, forbiddenField){
-  if(!(it instanceof Constructor) || (forbiddenField !== undefined && forbiddenField in it)){
-    throw TypeError(name + ': incorrect invocation!');
-  } return it;
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js":[function(require,module,exports){
-var isObject = require('./_is-object');
-module.exports = function(it){
-  if(!isObject(it))throw TypeError(it + ' is not an object!');
-  return it;
-};
-},{"./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_array-from-iterable.js":[function(require,module,exports){
-var forOf = require('./_for-of');
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({"/srv/zotero/my-publications/node_modules/babel-regenerator-runtime/runtime.js":[function(require,module,exports){
+(function (process,global){
+/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
+ * additional grant of patent rights can be found in the PATENTS file in
+ * the same directory.
+ */
 
-module.exports = function(iter, ITERATOR){
-  var result = [];
-  forOf(iter, false, result.push, result, ITERATOR);
-  return result;
-};
+!(function(global) {
+  "use strict";
 
-},{"./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js":[function(require,module,exports){
-// getting tag from 19.1.3.6 Object.prototype.toString()
-var cof = require('./_cof')
-  , TAG = require('./_wks')('toStringTag')
-  // ES3 wrong here
-  , ARG = cof(function(){ return arguments; }()) == 'Arguments';
+  var hasOwn = Object.prototype.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var iteratorSymbol =
+    typeof Symbol === "function" && Symbol.iterator || "@@iterator";
 
-module.exports = function(it){
-  var O, T, B;
-  return it === undefined ? 'Undefined' : it === null ? 'Null'
-    // @@toStringTag case
-    : typeof (T = (O = Object(it))[TAG]) == 'string' ? T
-    // builtinTag case
-    : ARG ? cof(O)
-    // ES3 arguments fallback
-    : (B = cof(O)) == 'Object' && typeof O.callee == 'function' ? 'Arguments' : B;
-};
-},{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js":[function(require,module,exports){
-var toString = {}.toString;
-
-module.exports = function(it){
-  return toString.call(it).slice(8, -1);
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js":[function(require,module,exports){
-var core = module.exports = {version: '2.0.3'};
-if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js":[function(require,module,exports){
-// optional / simple context binding
-var aFunction = require('./_a-function');
-module.exports = function(fn, that, length){
-  aFunction(fn);
-  if(that === undefined)return fn;
-  switch(length){
-    case 1: return function(a){
-      return fn.call(that, a);
-    };
-    case 2: return function(a, b){
-      return fn.call(that, a, b);
-    };
-    case 3: return function(a, b, c){
-      return fn.call(that, a, b, c);
-    };
+  var inModule = typeof module === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
   }
-  return function(/* ...args */){
-    return fn.apply(that, arguments);
-  };
-};
-},{"./_a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_defined.js":[function(require,module,exports){
-// 7.2.1 RequireObjectCoercible(argument)
-module.exports = function(it){
-  if(it == undefined)throw TypeError("Can't call method on  " + it);
-  return it;
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js":[function(require,module,exports){
-// Thank's IE8 for his funny defineProperty
-module.exports = !require('./_fails')(function(){
-  return Object.defineProperty({}, 'a', {get: function(){ return 7; }}).a != 7;
-});
-},{"./_fails":"/srv/zotero/my-publications/node_modules/core-js/modules/_fails.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_dom-create.js":[function(require,module,exports){
-var isObject = require('./_is-object')
-  , document = require('./_global').document
-  // in old IE typeof document.createElement is 'object'
-  , is = isObject(document) && isObject(document.createElement);
-module.exports = function(it){
-  return is ? document.createElement(it) : {};
-};
-},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js":[function(require,module,exports){
-var global    = require('./_global')
-  , core      = require('./_core')
-  , hide      = require('./_hide')
-  , redefine  = require('./_redefine')
-  , ctx       = require('./_ctx')
-  , PROTOTYPE = 'prototype';
 
-var $export = function(type, name, source){
-  var IS_FORCED = type & $export.F
-    , IS_GLOBAL = type & $export.G
-    , IS_STATIC = type & $export.S
-    , IS_PROTO  = type & $export.P
-    , IS_BIND   = type & $export.B
-    , target    = IS_GLOBAL ? global : IS_STATIC ? global[name] || (global[name] = {}) : (global[name] || {})[PROTOTYPE]
-    , exports   = IS_GLOBAL ? core : core[name] || (core[name] = {})
-    , expProto  = exports[PROTOTYPE] || (exports[PROTOTYPE] = {})
-    , key, own, out, exp;
-  if(IS_GLOBAL)source = name;
-  for(key in source){
-    // contains in native
-    own = !IS_FORCED && target && target[key] !== undefined;
-    // export native or passed
-    out = (own ? target : source)[key];
-    // bind timers to global for call from export context
-    exp = IS_BIND && own ? ctx(out, global) : IS_PROTO && typeof out == 'function' ? ctx(Function.call, out) : out;
-    // extend global
-    if(target && !own)redefine(target, key, out, type & $export.U);
-    // export
-    if(exports[key] != out)hide(exports, key, exp);
-    if(IS_PROTO && expProto[key] != out)expProto[key] = out;
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided, then outerFn.prototype instanceof Generator.
+    var generator = Object.create((outerFn || Generator).prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
   }
-};
-global.core = core;
-// type bitmap
-$export.F = 1;   // forced
-$export.G = 2;   // global
-$export.S = 4;   // static
-$export.P = 8;   // proto
-$export.B = 16;  // bind
-$export.W = 32;  // wrap
-$export.U = 64;  // safe
-$export.R = 128; // real proto method for `library` 
-module.exports = $export;
-},{"./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_fails.js":[function(require,module,exports){
-module.exports = function(exec){
-  try {
-    return !!exec();
-  } catch(e){
-    return true;
-  }
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js":[function(require,module,exports){
-var ctx         = require('./_ctx')
-  , call        = require('./_iter-call')
-  , isArrayIter = require('./_is-array-iter')
-  , anObject    = require('./_an-object')
-  , toLength    = require('./_to-length')
-  , getIterFn   = require('./core.get-iterator-method');
-module.exports = function(iterable, entries, fn, that, ITERATOR){
-  var iterFn = ITERATOR ? function(){ return iterable; } : getIterFn(iterable)
-    , f      = ctx(fn, that, entries ? 2 : 1)
-    , index  = 0
-    , length, step, iterator;
-  if(typeof iterFn != 'function')throw TypeError(iterable + ' is not iterable!');
-  // fast case for arrays with default iterator
-  if(isArrayIter(iterFn))for(length = toLength(iterable.length); length > index; index++){
-    entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
-  } else for(iterator = iterFn.call(iterable); !(step = iterator.next()).done; ){
-    call(iterator, f, step.value, entries);
-  }
-};
-},{"./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_is-array-iter":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-array-iter.js","./_iter-call":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-call.js","./_to-length":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-length.js","./core.get-iterator-method":"/srv/zotero/my-publications/node_modules/core-js/modules/core.get-iterator-method.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js":[function(require,module,exports){
-// https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
-var global = module.exports = typeof window != 'undefined' && window.Math == Math
-  ? window : typeof self != 'undefined' && self.Math == Math ? self : Function('return this')();
-if(typeof __g == 'number')__g = global; // eslint-disable-line no-undef
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js":[function(require,module,exports){
-var hasOwnProperty = {}.hasOwnProperty;
-module.exports = function(it, key){
-  return hasOwnProperty.call(it, key);
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js":[function(require,module,exports){
-var $          = require('./_')
-  , createDesc = require('./_property-desc');
-module.exports = require('./_descriptors') ? function(object, key, value){
-  return $.setDesc(object, key, createDesc(1, value));
-} : function(object, key, value){
-  object[key] = value;
-  return object;
-};
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_html.js":[function(require,module,exports){
-module.exports = require('./_global').document && document.documentElement;
-},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_invoke.js":[function(require,module,exports){
-// fast apply, http://jsperf.lnkit.com/fast-apply/5
-module.exports = function(fn, args, that){
-  var un = that === undefined;
-  switch(args.length){
-    case 0: return un ? fn()
-                      : fn.call(that);
-    case 1: return un ? fn(args[0])
-                      : fn.call(that, args[0]);
-    case 2: return un ? fn(args[0], args[1])
-                      : fn.call(that, args[0], args[1]);
-    case 3: return un ? fn(args[0], args[1], args[2])
-                      : fn.call(that, args[0], args[1], args[2]);
-    case 4: return un ? fn(args[0], args[1], args[2], args[3])
-                      : fn.call(that, args[0], args[1], args[2], args[3]);
-  } return              fn.apply(that, args);
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iobject.js":[function(require,module,exports){
-// fallback for non-array-like ES3 and non-enumerable old V8 strings
-var cof = require('./_cof');
-module.exports = Object('z').propertyIsEnumerable(0) ? Object : function(it){
-  return cof(it) == 'String' ? it.split('') : Object(it);
-};
-},{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_is-array-iter.js":[function(require,module,exports){
-// check on default Array iterator
-var Iterators  = require('./_iterators')
-  , ITERATOR   = require('./_wks')('iterator')
-  , ArrayProto = Array.prototype;
+  runtime.wrap = wrap;
 
-module.exports = function(it){
-  return it !== undefined && (Iterators.Array === it || ArrayProto[ITERATOR] === it);
-};
-},{"./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js":[function(require,module,exports){
-module.exports = function(it){
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-call.js":[function(require,module,exports){
-// call something on iterator step with safe closing on error
-var anObject = require('./_an-object');
-module.exports = function(iterator, fn, value, entries){
-  try {
-    return entries ? fn(anObject(value)[0], value[1]) : fn(value);
-  // 7.4.6 IteratorClose(iterator, completion)
-  } catch(e){
-    var ret = iterator['return'];
-    if(ret !== undefined)anObject(ret.call(iterator));
-    throw e;
-  }
-};
-},{"./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-create.js":[function(require,module,exports){
-'use strict';
-var $              = require('./_')
-  , descriptor     = require('./_property-desc')
-  , setToStringTag = require('./_set-to-string-tag')
-  , IteratorPrototype = {};
-
-// 25.1.2.1.1 %IteratorPrototype%[@@iterator]()
-require('./_hide')(IteratorPrototype, require('./_wks')('iterator'), function(){ return this; });
-
-module.exports = function(Constructor, NAME, next){
-  Constructor.prototype = $.create(IteratorPrototype, {next: descriptor(1, next)});
-  setToStringTag(Constructor, NAME + ' Iterator');
-};
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_property-desc":"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-define.js":[function(require,module,exports){
-'use strict';
-var LIBRARY        = require('./_library')
-  , $export        = require('./_export')
-  , redefine       = require('./_redefine')
-  , hide           = require('./_hide')
-  , has            = require('./_has')
-  , Iterators      = require('./_iterators')
-  , $iterCreate    = require('./_iter-create')
-  , setToStringTag = require('./_set-to-string-tag')
-  , getProto       = require('./_').getProto
-  , ITERATOR       = require('./_wks')('iterator')
-  , BUGGY          = !([].keys && 'next' in [].keys()) // Safari has buggy iterators w/o `next`
-  , FF_ITERATOR    = '@@iterator'
-  , KEYS           = 'keys'
-  , VALUES         = 'values';
-
-var returnThis = function(){ return this; };
-
-module.exports = function(Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCED){
-  $iterCreate(Constructor, NAME, next);
-  var getMethod = function(kind){
-    if(!BUGGY && kind in proto)return proto[kind];
-    switch(kind){
-      case KEYS: return function keys(){ return new Constructor(this, kind); };
-      case VALUES: return function values(){ return new Constructor(this, kind); };
-    } return function entries(){ return new Constructor(this, kind); };
-  };
-  var TAG        = NAME + ' Iterator'
-    , DEF_VALUES = DEFAULT == VALUES
-    , VALUES_BUG = false
-    , proto      = Base.prototype
-    , $native    = proto[ITERATOR] || proto[FF_ITERATOR] || DEFAULT && proto[DEFAULT]
-    , $default   = $native || getMethod(DEFAULT)
-    , $entries   = DEFAULT ? !DEF_VALUES ? $default : getMethod('entries') : undefined
-    , $anyNative = NAME == 'Array' ? proto.entries || $native : $native
-    , methods, key, IteratorPrototype;
-  // Fix native
-  if($anyNative){
-    IteratorPrototype = getProto($anyNative.call(new Base));
-    if(IteratorPrototype !== Object.prototype){
-      // Set @@toStringTag to native iterators
-      setToStringTag(IteratorPrototype, TAG, true);
-      // fix for some old engines
-      if(!LIBRARY && !has(IteratorPrototype, ITERATOR))hide(IteratorPrototype, ITERATOR, returnThis);
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
     }
   }
-  // fix Array#{values, @@iterator}.name in V8 / FF
-  if(DEF_VALUES && $native && $native.name !== VALUES){
-    VALUES_BUG = true;
-    $default = function values(){ return $native.call(this); };
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
   }
-  // Define iterator
-  if((!LIBRARY || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR])){
-    hide(proto, ITERATOR, $default);
-  }
-  // Plug for library
-  Iterators[NAME] = $default;
-  Iterators[TAG]  = returnThis;
-  if(DEFAULT){
-    methods = {
-      values:  DEF_VALUES ? $default : getMethod(VALUES),
-      keys:    IS_SET     ? $default : getMethod(KEYS),
-      entries: $entries
-    };
-    if(FORCED)for(key in methods){
-      if(!(key in proto))redefine(proto, key, methods[key]);
-    } else $export($export.P + $export.F * (BUGGY || VALUES_BUG), NAME, methods);
-  }
-  return methods;
-};
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_export":"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js","./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_iter-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-create.js","./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_library":"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-detect.js":[function(require,module,exports){
-var ITERATOR     = require('./_wks')('iterator')
-  , SAFE_CLOSING = false;
 
-try {
-  var riter = [7][ITERATOR]();
-  riter['return'] = function(){ SAFE_CLOSING = true; };
-  Array.from(riter, function(){ throw 2; });
-} catch(e){ /* empty */ }
-
-module.exports = function(exec, skipClosing){
-  if(!skipClosing && !SAFE_CLOSING)return false;
-  var safe = false;
-  try {
-    var arr  = [7]
-      , iter = arr[ITERATOR]();
-    iter.next = function(){ safe = true; };
-    arr[ITERATOR] = function(){ return iter; };
-    exec(arr);
-  } catch(e){ /* empty */ }
-  return safe;
-};
-},{"./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-step.js":[function(require,module,exports){
-module.exports = function(done, value){
-  return {value: value, done: !!done};
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js":[function(require,module,exports){
-module.exports = {};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js":[function(require,module,exports){
-module.exports = false;
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_microtask.js":[function(require,module,exports){
-var global    = require('./_global')
-  , macrotask = require('./_task').set
-  , Observer  = global.MutationObserver || global.WebKitMutationObserver
-  , process   = global.process
-  , Promise   = global.Promise
-  , isNode    = require('./_cof')(process) == 'process'
-  , head, last, notify;
-
-var flush = function(){
-  var parent, domain, fn;
-  if(isNode && (parent = process.domain)){
-    process.domain = null;
-    parent.exit();
-  }
-  while(head){
-    domain = head.domain;
-    fn     = head.fn;
-    if(domain)domain.enter();
-    fn(); // <- currently we use it only for Promise - try / catch not required
-    if(domain)domain.exit();
-    head = head.next;
-  } last = undefined;
-  if(parent)parent.enter();
-};
-
-// Node.js
-if(isNode){
-  notify = function(){
-    process.nextTick(flush);
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
   };
-// browsers with MutationObserver
-} else if(Observer){
-  var toggle = 1
-    , node   = document.createTextNode('');
-  new Observer(flush).observe(node, {characterData: true}); // eslint-disable-line no-new
-  notify = function(){
-    node.data = toggle = -toggle;
-  };
-// environments with maybe non-completely correct, but existent Promise
-} else if(Promise && Promise.resolve){
-  notify = function(){
-    Promise.resolve().then(flush);
-  };
-// for other environments - macrotask based on:
-// - setImmediate
-// - MessageChannel
-// - window.postMessag
-// - onreadystatechange
-// - setTimeout
-} else {
-  notify = function(){
-    // strange IE + webpack dev server bug - use .call(global)
-    macrotask.call(global, flush);
-  };
-}
 
-module.exports = function asap(fn){
-  var task = {fn: fn, next: undefined, domain: isNode && process.domain};
-  if(last)last.next = task;
-  if(!head){
-    head = task;
-    notify();
-  } last = task;
-};
-},{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_property-desc.js":[function(require,module,exports){
-module.exports = function(bitmap, value){
-  return {
-    enumerable  : !(bitmap & 1),
-    configurable: !(bitmap & 2),
-    writable    : !(bitmap & 4),
-    value       : value
-  };
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine-all.js":[function(require,module,exports){
-var redefine = require('./_redefine');
-module.exports = function(target, src, safe){
-  for(var key in src)redefine(target, key, src[key], safe);
-  return target;
-};
-},{"./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js":[function(require,module,exports){
-// add fake Function#toString
-// for correct work wrapped methods / constructors with methods like LoDash isNative
-var global    = require('./_global')
-  , hide      = require('./_hide')
-  , SRC       = require('./_uid')('src')
-  , TO_STRING = 'toString'
-  , $toString = Function[TO_STRING]
-  , TPL       = ('' + $toString).split(TO_STRING);
-
-require('./_core').inspectSource = function(it){
-  return $toString.call(it);
-};
-
-(module.exports = function(O, key, val, safe){
-  if(typeof val == 'function'){
-    val.hasOwnProperty(SRC) || hide(val, SRC, O[key] ? '' + O[key] : TPL.join(String(key)));
-    val.hasOwnProperty('name') || hide(val, 'name', key);
-  }
-  if(O === global){
-    O[key] = val;
-  } else {
-    if(!safe){
-      delete O[key];
-      hide(O, key, val);
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
     } else {
-      if(O[key])O[key] = val;
-      else hide(O, key, val);
+      genFun.__proto__ = GeneratorFunctionPrototype;
     }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `value instanceof AwaitArgument` to determine if the yielded value is
+  // meant to be awaited. Some may consider the name of this method too
+  // cutesy, but they are curmudgeons.
+  runtime.awrap = function(arg) {
+    return new AwaitArgument(arg);
+  };
+
+  function AwaitArgument(arg) {
+    this.arg = arg;
   }
-})(Function.prototype, TO_STRING, function toString(){
-  return typeof this == 'function' && this[SRC] || $toString.call(this);
-});
-},{"./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_uid":"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-proto.js":[function(require,module,exports){
-// Works with __proto__ only. Old v8 can't work with null proto objects.
-/* eslint-disable no-proto */
-var getDesc  = require('./_').getDesc
-  , isObject = require('./_is-object')
-  , anObject = require('./_an-object');
-var check = function(O, proto){
-  anObject(O);
-  if(!isObject(proto) && proto !== null)throw TypeError(proto + ": can't set as prototype!");
-};
-module.exports = {
-  set: Object.setPrototypeOf || ('__proto__' in {} ? // eslint-disable-line
-    function(test, buggy, set){
-      try {
-        set = require('./_ctx')(Function.call, getDesc(Object.prototype, '__proto__').set, 2);
-        set(test, []);
-        buggy = !(test instanceof Array);
-      } catch(e){ buggy = true; }
-      return function setPrototypeOf(O, proto){
-        check(O, proto);
-        if(buggy)O.__proto__ = proto;
-        else set(O, proto);
-        return O;
-      };
-    }({}, false) : undefined),
-  check: check
-};
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-species.js":[function(require,module,exports){
-'use strict';
-var global      = require('./_global')
-  , $           = require('./_')
-  , DESCRIPTORS = require('./_descriptors')
-  , SPECIES     = require('./_wks')('species');
 
-module.exports = function(KEY){
-  var C = global[KEY];
-  if(DESCRIPTORS && C && !C[SPECIES])$.setDesc(C, SPECIES, {
-    configurable: true,
-    get: function(){ return this; }
-  });
-};
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js":[function(require,module,exports){
-var def = require('./_').setDesc
-  , has = require('./_has')
-  , TAG = require('./_wks')('toStringTag');
-
-module.exports = function(it, tag, stat){
-  if(it && !has(it = stat ? it : it.prototype, TAG))def(it, TAG, {configurable: true, value: tag});
-};
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_has":"/srv/zotero/my-publications/node_modules/core-js/modules/_has.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_shared.js":[function(require,module,exports){
-var global = require('./_global')
-  , SHARED = '__core-js_shared__'
-  , store  = global[SHARED] || (global[SHARED] = {});
-module.exports = function(key){
-  return store[key] || (store[key] = {});
-};
-},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_species-constructor.js":[function(require,module,exports){
-// 7.3.20 SpeciesConstructor(O, defaultConstructor)
-var anObject  = require('./_an-object')
-  , aFunction = require('./_a-function')
-  , SPECIES   = require('./_wks')('species');
-module.exports = function(O, D){
-  var C = anObject(O).constructor, S;
-  return C === undefined || (S = anObject(C)[SPECIES]) == undefined ? D : aFunction(S);
-};
-},{"./_a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js","./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_string-at.js":[function(require,module,exports){
-var toInteger = require('./_to-integer')
-  , defined   = require('./_defined');
-// true  -> String#at
-// false -> String#codePointAt
-module.exports = function(TO_STRING){
-  return function(that, pos){
-    var s = String(defined(that))
-      , i = toInteger(pos)
-      , l = s.length
-      , a, b;
-    if(i < 0 || i >= l)return TO_STRING ? '' : undefined;
-    a = s.charCodeAt(i);
-    return a < 0xd800 || a > 0xdbff || i + 1 === l || (b = s.charCodeAt(i + 1)) < 0xdc00 || b > 0xdfff
-      ? TO_STRING ? s.charAt(i) : a
-      : TO_STRING ? s.slice(i, i + 2) : (a - 0xd800 << 10) + (b - 0xdc00) + 0x10000;
-  };
-};
-},{"./_defined":"/srv/zotero/my-publications/node_modules/core-js/modules/_defined.js","./_to-integer":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-integer.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js":[function(require,module,exports){
-var ctx                = require('./_ctx')
-  , invoke             = require('./_invoke')
-  , html               = require('./_html')
-  , cel                = require('./_dom-create')
-  , global             = require('./_global')
-  , process            = global.process
-  , setTask            = global.setImmediate
-  , clearTask          = global.clearImmediate
-  , MessageChannel     = global.MessageChannel
-  , counter            = 0
-  , queue              = {}
-  , ONREADYSTATECHANGE = 'onreadystatechange'
-  , defer, channel, port;
-var run = function(){
-  var id = +this;
-  if(queue.hasOwnProperty(id)){
-    var fn = queue[id];
-    delete queue[id];
-    fn();
-  }
-};
-var listner = function(event){
-  run.call(event.data);
-};
-// Node.js 0.9+ & IE10+ has setImmediate, otherwise:
-if(!setTask || !clearTask){
-  setTask = function setImmediate(fn){
-    var args = [], i = 1;
-    while(arguments.length > i)args.push(arguments[i++]);
-    queue[++counter] = function(){
-      invoke(typeof fn == 'function' ? fn : Function(fn), args);
-    };
-    defer(counter);
-    return counter;
-  };
-  clearTask = function clearImmediate(id){
-    delete queue[id];
-  };
-  // Node.js 0.8-
-  if(require('./_cof')(process) == 'process'){
-    defer = function(id){
-      process.nextTick(ctx(run, id, 1));
-    };
-  // Browsers with MessageChannel, includes WebWorkers
-  } else if(MessageChannel){
-    channel = new MessageChannel;
-    port    = channel.port2;
-    channel.port1.onmessage = listner;
-    defer = ctx(port.postMessage, port, 1);
-  // Browsers with postMessage, skip WebWorkers
-  // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
-  } else if(global.addEventListener && typeof postMessage == 'function' && !global.importScripts){
-    defer = function(id){
-      global.postMessage(id + '', '*');
-    };
-    global.addEventListener('message', listner, false);
-  // IE8-
-  } else if(ONREADYSTATECHANGE in cel('script')){
-    defer = function(id){
-      html.appendChild(cel('script'))[ONREADYSTATECHANGE] = function(){
-        html.removeChild(this);
-        run.call(id);
-      };
-    };
-  // Rest old browsers
-  } else {
-    defer = function(id){
-      setTimeout(ctx(run, id, 1), 0);
-    };
-  }
-}
-module.exports = {
-  set:   setTask,
-  clear: clearTask
-};
-},{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_dom-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_dom-create.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_html":"/srv/zotero/my-publications/node_modules/core-js/modules/_html.js","./_invoke":"/srv/zotero/my-publications/node_modules/core-js/modules/_invoke.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_to-integer.js":[function(require,module,exports){
-// 7.1.4 ToInteger
-var ceil  = Math.ceil
-  , floor = Math.floor;
-module.exports = function(it){
-  return isNaN(it = +it) ? 0 : (it > 0 ? floor : ceil)(it);
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_to-iobject.js":[function(require,module,exports){
-// to indexed object, toObject with fallback for non-array-like ES3 strings
-var IObject = require('./_iobject')
-  , defined = require('./_defined');
-module.exports = function(it){
-  return IObject(defined(it));
-};
-},{"./_defined":"/srv/zotero/my-publications/node_modules/core-js/modules/_defined.js","./_iobject":"/srv/zotero/my-publications/node_modules/core-js/modules/_iobject.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_to-length.js":[function(require,module,exports){
-// 7.1.15 ToLength
-var toInteger = require('./_to-integer')
-  , min       = Math.min;
-module.exports = function(it){
-  return it > 0 ? min(toInteger(it), 0x1fffffffffffff) : 0; // pow(2, 53) - 1 == 9007199254740991
-};
-},{"./_to-integer":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-integer.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js":[function(require,module,exports){
-var id = 0
-  , px = Math.random();
-module.exports = function(key){
-  return 'Symbol('.concat(key === undefined ? '' : key, ')_', (++id + px).toString(36));
-};
-},{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js":[function(require,module,exports){
-var store      = require('./_shared')('wks')
-  , uid        = require('./_uid')
-  , Symbol     = require('./_global').Symbol
-  , USE_SYMBOL = typeof Symbol == 'function';
-module.exports = function(name){
-  return store[name] || (store[name] =
-    USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
-};
-},{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_shared":"/srv/zotero/my-publications/node_modules/core-js/modules/_shared.js","./_uid":"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/core.get-iterator-method.js":[function(require,module,exports){
-var classof   = require('./_classof')
-  , ITERATOR  = require('./_wks')('iterator')
-  , Iterators = require('./_iterators');
-module.exports = require('./_core').getIteratorMethod = function(it){
-  if(it != undefined)return it[ITERATOR]
-    || it['@@iterator']
-    || Iterators[classof(it)];
-};
-},{"./_classof":"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js","./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.array.iterator.js":[function(require,module,exports){
-'use strict';
-var addToUnscopables = require('./_add-to-unscopables')
-  , step             = require('./_iter-step')
-  , Iterators        = require('./_iterators')
-  , toIObject        = require('./_to-iobject');
-
-// 22.1.3.4 Array.prototype.entries()
-// 22.1.3.13 Array.prototype.keys()
-// 22.1.3.29 Array.prototype.values()
-// 22.1.3.30 Array.prototype[@@iterator]()
-module.exports = require('./_iter-define')(Array, 'Array', function(iterated, kind){
-  this._t = toIObject(iterated); // target
-  this._i = 0;                   // next index
-  this._k = kind;                // kind
-// 22.1.5.2.1 %ArrayIteratorPrototype%.next()
-}, function(){
-  var O     = this._t
-    , kind  = this._k
-    , index = this._i++;
-  if(!O || index >= O.length){
-    this._t = undefined;
-    return step(1);
-  }
-  if(kind == 'keys'  )return step(0, index);
-  if(kind == 'values')return step(0, O[index]);
-  return step(0, [index, O[index]]);
-}, 'values');
-
-// argumentsList[@@iterator] is %ArrayProto_values% (9.4.4.6, 9.4.4.7)
-Iterators.Arguments = Iterators.Array;
-
-addToUnscopables('keys');
-addToUnscopables('values');
-addToUnscopables('entries');
-},{"./_add-to-unscopables":"/srv/zotero/my-publications/node_modules/core-js/modules/_add-to-unscopables.js","./_iter-define":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-define.js","./_iter-step":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-step.js","./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_to-iobject":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-iobject.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.object.to-string.js":[function(require,module,exports){
-'use strict';
-// 19.1.3.6 Object.prototype.toString()
-var classof = require('./_classof')
-  , test    = {};
-test[require('./_wks')('toStringTag')] = 'z';
-if(test + '' != '[object z]'){
-  require('./_redefine')(Object.prototype, 'toString', function toString(){
-    return '[object ' + classof(this) + ']';
-  }, true);
-}
-},{"./_classof":"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.promise.js":[function(require,module,exports){
-'use strict';
-var $                  = require('./_')
-  , LIBRARY            = require('./_library')
-  , global             = require('./_global')
-  , ctx                = require('./_ctx')
-  , classof            = require('./_classof')
-  , $export            = require('./_export')
-  , isObject           = require('./_is-object')
-  , anObject           = require('./_an-object')
-  , aFunction          = require('./_a-function')
-  , anInstance         = require('./_an-instance')
-  , forOf              = require('./_for-of')
-  , from               = require('./_array-from-iterable')
-  , setProto           = require('./_set-proto').set
-  , speciesConstructor = require('./_species-constructor')
-  , task               = require('./_task').set
-  , microtask          = require('./_microtask')
-  , PROMISE            = 'Promise'
-  , TypeError          = global.TypeError
-  , process            = global.process
-  , $Promise           = global[PROMISE]
-  , isNode             = classof(process) == 'process'
-  , empty              = function(){ /* empty */ }
-  , Internal, GenericPromiseCapability, Wrapper;
-
-var testResolve = function(sub){
-  var test = new $Promise(empty), promise;
-  if(sub)test.constructor = function(exec){
-    exec(empty, empty);
-  };
-  (promise = $Promise.resolve(test))['catch'](empty);
-  return promise === test;
-};
-
-var USE_NATIVE = function(){
-  var works = false;
-  var SubPromise = function(x){
-    var self = new $Promise(x);
-    setProto(self, SubPromise.prototype);
-    return self;
-  };
-  try {
-    works = $Promise && $Promise.resolve && testResolve();
-    setProto(SubPromise, $Promise);
-    SubPromise.prototype = $.create($Promise.prototype, {constructor: {value: SubPromise}});
-    // actual Firefox has broken subclass support, test that
-    if(!(SubPromise.resolve(5).then(empty) instanceof SubPromise)){
-      works = false;
+  function AsyncIterator(generator) {
+    // This invoke function is written in a style that assumes some
+    // calling function (or Promise) will handle exceptions.
+    function invoke(method, arg) {
+      var result = generator[method](arg);
+      var value = result.value;
+      return value instanceof AwaitArgument
+        ? Promise.resolve(value.arg).then(invokeNext, invokeThrow)
+        : Promise.resolve(value).then(function(unwrapped) {
+            // When a yielded Promise is resolved, its final value becomes
+            // the .value of the Promise<{value,done}> result for the
+            // current iteration. If the Promise is rejected, however, the
+            // result for this iteration will be rejected with the same
+            // reason. Note that rejections of yielded Promises are not
+            // thrown back into the generator function, as is the case
+            // when an awaited Promise is rejected. This difference in
+            // behavior between yield and await is important, because it
+            // allows the consumer to decide what to do with the yielded
+            // rejection (swallow it and continue, manually .throw it back
+            // into the generator, abandon iteration, whatever). With
+            // await, by contrast, there is no opportunity to examine the
+            // rejection reason outside the generator function, so the
+            // only option is to throw it from the await expression, and
+            // let the generator function handle the exception.
+            result.value = unwrapped;
+            return result;
+          });
     }
-    // V8 4.8- bug, https://code.google.com/p/v8/issues/detail?id=4162
-    if(works && require('./_descriptors')){
-      var thenableThenGotten = false;
-      $Promise.resolve($.setDesc({}, 'then', {
-        get: function(){ thenableThenGotten = true; }
-      }));
-      works = thenableThenGotten;
-    }
-  } catch(e){ works = false; }
-  return !!works;
-}();
 
-// helpers
-var sameConstructor = function(a, b){
-  // with library wrapper special case
-  return a === b || a === $Promise && b === Wrapper;
-};
-var isThenable = function(it){
-  var then;
-  return isObject(it) && typeof (then = it.then) == 'function' ? then : false;
-};
-var newPromiseCapability = function(C){
-  return sameConstructor($Promise, C)
-    ? new PromiseCapability(C)
-    : new GenericPromiseCapability(C);
-};
-var PromiseCapability = GenericPromiseCapability = function(C){
-  var resolve, reject;
-  this.promise = new C(function($$resolve, $$reject){
-    if(resolve !== undefined || reject !== undefined)throw TypeError('Bad Promise constructor');
-    resolve = $$resolve;
-    reject  = $$reject;
-  });
-  this.resolve = aFunction(resolve);
-  this.reject  = aFunction(reject);
-};
-var perform = function(exec){
-  try {
-    exec();
-  } catch(e){
-    return {error: e};
+    if (typeof process === "object" && process.domain) {
+      invoke = process.domain.bind(invoke);
+    }
+
+    var invokeNext = invoke.bind(generator, "next");
+    var invokeThrow = invoke.bind(generator, "throw");
+    var invokeReturn = invoke.bind(generator, "return");
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return invoke(method, arg);
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : new Promise(function (resolve) {
+          resolve(callInvokeWithMethodAndArg());
+        });
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
   }
-};
-var notify = function(promise, isReject){
-  if(promise._n)return;
-  promise._n = true;
-  var chain = promise._c;
-  microtask(function(){
-    var value = promise._v
-      , ok    = promise._s == 1
-      , i     = 0;
-    var run = function(reaction){
-      var handler = ok ? reaction.ok : reaction.fail
-        , resolve = reaction.resolve
-        , reject  = reaction.reject
-        , result, then;
-      try {
-        if(handler){
-          if(!ok){
-            if(promise._h == 2)onHandleUnhandled(promise);
-            promise._h = 1;
+
+  defineIteratorMethods(AsyncIterator.prototype);
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          if (method === "return" ||
+              (method === "throw" && delegate.iterator[method] === undefined)) {
+            // A return or throw (when the delegate iterator has no throw
+            // method) always terminates the yield* loop.
+            context.delegate = null;
+
+            // If the delegate iterator has a return method, give it a
+            // chance to clean up.
+            var returnMethod = delegate.iterator["return"];
+            if (returnMethod) {
+              var record = tryCatch(returnMethod, delegate.iterator, arg);
+              if (record.type === "throw") {
+                // If the return method threw an exception, let that
+                // exception prevail over the original return or throw.
+                method = "throw";
+                arg = record.arg;
+                continue;
+              }
+            }
+
+            if (method === "return") {
+              // Continue with the outer return, now that the delegate
+              // iterator has been terminated.
+              continue;
+            }
           }
-          result = handler === true ? value : handler(value);
-          if(result === reaction.promise){
-            reject(TypeError('Promise-chain cycle'));
-          } else if(then = isThenable(result)){
-            then.call(result, resolve, reject);
-          } else resolve(result);
-        } else reject(value);
-      } catch(e){
-        reject(e);
+
+          var record = tryCatch(
+            delegate.iterator[method],
+            delegate.iterator,
+            arg
+          );
+
+          if (record.type === "throw") {
+            context.delegate = null;
+
+            // Like returning generator.throw(uncaught), but without the
+            // overhead of an extra function call.
+            method = "throw";
+            arg = record.arg;
+            continue;
+          }
+
+          // Delegate generator ran and handled its own exceptions so
+          // regardless of what the method was, we continue as if it is
+          // "next" with an undefined arg.
+          method = "next";
+          arg = undefined;
+
+          var info = record.arg;
+          if (info.done) {
+            context[delegate.resultName] = info.value;
+            context.next = delegate.nextLoc;
+          } else {
+            state = GenStateSuspendedYield;
+            return info;
+          }
+
+          context.delegate = null;
+        }
+
+        if (method === "next") {
+          context._sent = arg;
+
+          if (state === GenStateSuspendedYield) {
+            context.sent = arg;
+          } else {
+            context.sent = undefined;
+          }
+        } else if (method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw arg;
+          }
+
+          if (context.dispatchException(arg)) {
+            // If the dispatched exception was caught by a catch block,
+            // then let that catch block handle the exception normally.
+            method = "next";
+            arg = undefined;
+          }
+
+        } else if (method === "return") {
+          context.abrupt("return", arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          var info = {
+            value: record.arg,
+            done: context.done
+          };
+
+          if (record.arg === ContinueSentinel) {
+            if (context.delegate && method === "next") {
+              // Deliberately forget the last sent value so that we don't
+              // accidentally pass it on to the delegate.
+              arg = undefined;
+            }
+          } else {
+            return info;
+          }
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(arg) call above.
+          method = "throw";
+          arg = record.arg;
+        }
       }
     };
-    while(chain.length > i)run(chain[i++]); // variable length - can't use forEach
-    promise._c = [];
-    promise._n = false;
-    if(isReject && !promise._h)onUnhandled(promise);
-  });
-};
-var onUnhandled = function(promise){
-  task.call(global, function(){
-    if(isUnhandled(promise)){
-      var value = promise._v
-        , handler, console;
-      if(isNode){
-        process.emit('unhandledRejection', value, promise);
-      } else if(handler = global.onunhandledrejection){
-        handler({promise: promise, reason: value});
-      } else if((console = global.console) && console.error){
-        console.error('Unhandled promise rejection', value);
-      } promise._h = 2;
-    } promise._a = undefined;
-  });
-};
-var isUnhandled = function(promise){
-  var chain = promise._a || promise._c
-    , i     = 0
-    , reaction;
-  if(promise._h == 1)return false;
-  while(chain.length > i){
-    reaction = chain[i++];
-    if(reaction.fail || !isUnhandled(reaction.promise))return false;
-  } return true;
-};
-var onHandleUnhandled = function(promise){
-  task.call(global, function(){
-    var handler;
-    if(isNode){
-      process.emit('rejectionHandled', promise);
-    } else if(handler = global.onrejectionhandled){
-      handler({promise: promise, reason: promise._v});
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
     }
-  });
-};
-var $reject = function(value){
-  var promise = this;
-  if(promise._d)return;
-  promise._d = true;
-  promise = promise._w || promise; // unwrap
-  promise._v = value;
-  promise._s = 2;
-  if(!promise._a)promise._a = promise._c.slice();
-  notify(promise, true);
-};
-var $resolve = function(value){
-  var promise = this
-    , then;
-  if(promise._d)return;
-  promise._d = true;
-  promise = promise._w || promise; // unwrap
-  try {
-    if(promise === value)throw TypeError("Promise can't be resolved itself");
-    if(then = isThenable(value)){
-      microtask(function(){
-        var wrapper = {_w: promise, _d: false}; // wrap
-        try {
-          then.call(value, ctx($resolve, wrapper, 1), ctx($reject, wrapper, 1));
-        } catch(e){
-          $reject.call(wrapper, e);
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
         }
-      });
-    } else {
-      promise._v = value;
-      promise._s = 1;
-      notify(promise, false);
-    }
-  } catch(e){
-    $reject.call({_w: promise, _d: false}, e); // wrap
-  }
-};
+      }
 
-// constructor polyfill
-if(!USE_NATIVE){
-  // 25.4.3.1 Promise(executor)
-  $Promise = function Promise(executor){
-    anInstance(this, $Promise, PROMISE, '_h');
-    aFunction(executor);
-    Internal.call(this);
-    try {
-      executor(ctx($resolve, this, 1), ctx($reject, this, 1));
-    } catch(err){
-      $reject.call(this, err);
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
     }
-  };
-  Internal = function Promise(executor){
-    this._c = [];             // <- awaiting reactions
-    this._a = undefined;      // <- checked in isUnhandled reactions
-    this._s = 0;              // <- state
-    this._d = false;          // <- done
-    this._v = undefined;      // <- value
-    this._h = 0;              // <- rejection state, 0 - default, 1 - handled, 2 - unhandled
-    this._n = false;          // <- notify
-  };
-  Internal.prototype = require('./_redefine-all')($Promise.prototype, {
-    // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
-    then: function then(onFulfilled, onRejected){
-      var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
-      reaction.ok   = typeof onFulfilled == 'function' ? onFulfilled : true;
-      reaction.fail = typeof onRejected == 'function' && onRejected;
-      this._c.push(reaction);
-      if(this._a)this._a.push(reaction);
-      if(this._s)notify(this, false);
-      return reaction.promise;
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      this.sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
     },
-    // 25.4.5.1 Promise.prototype.catch(onRejected)
-    'catch': function(onRejected){
-      return this.then(undefined, onRejected);
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+        return !!caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.next = finallyEntry.finallyLoc;
+      } else {
+        this.complete(record);
+      }
+
+      return ContinueSentinel;
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = record.arg;
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      return ContinueSentinel;
     }
-  });
-  PromiseCapability = function(){
-    var promise  = new Internal;
-    this.promise = promise;
-    this.resolve = ctx($resolve, promise, 1);
-    this.reject  = ctx($reject, promise, 1);
   };
-}
+})(
+  // Among the various tricks for obtaining a reference to the global
+  // object, this seems to be the most reliable technique that does not
+  // use indirect eval (which violates Content Security Policy).
+  typeof global === "object" ? global :
+  typeof window === "object" ? window :
+  typeof self === "object" ? self : this
+);
 
-$export($export.G + $export.W + $export.F * !USE_NATIVE, {Promise: $Promise});
-require('./_set-to-string-tag')($Promise, PROMISE);
-require('./_set-species')(PROMISE);
-Wrapper = require('./_core')[PROMISE];
-
-// statics
-$export($export.S + $export.F * !USE_NATIVE, PROMISE, {
-  // 25.4.4.5 Promise.reject(r)
-  reject: function reject(r){
-    var capability = newPromiseCapability(this)
-      , $$reject   = capability.reject;
-    $$reject(r);
-    return capability.promise;
-  }
-});
-$export($export.S + $export.F * (LIBRARY || !USE_NATIVE || testResolve(true)), PROMISE, {
-  // 25.4.4.6 Promise.resolve(x)
-  resolve: function resolve(x){
-    // instanceof instead of internal slot check because we should fix it without replacement native Promise core
-    if(x instanceof $Promise && sameConstructor(x.constructor, this))return x;
-    var capability = newPromiseCapability(this)
-      , $$resolve  = capability.resolve;
-    $$resolve(x);
-    return capability.promise;
-  }
-});
-$export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(function(iter){
-  $Promise.all(iter)['catch'](empty);
-})), PROMISE, {
-  // 25.4.4.1 Promise.all(iterable)
-  all: function all(iterable){
-    var C          = this
-      , capability = newPromiseCapability(C)
-      , resolve    = capability.resolve
-      , reject     = capability.reject;
-    var abrupt = perform(function(){
-      var values    = from(iterable)
-        , remaining = values.length
-        , results   = Array(remaining);
-      if(remaining)$.each.call(values, function(promise, index){
-        var alreadyCalled = false;
-        C.resolve(promise).then(function(value){
-          if(alreadyCalled)return;
-          alreadyCalled = true;
-          results[index] = value;
-          --remaining || resolve(results);
-        }, reject);
-      });
-      else resolve(results);
-    });
-    if(abrupt)reject(abrupt.error);
-    return capability.promise;
-  },
-  // 25.4.4.4 Promise.race(iterable)
-  race: function race(iterable){
-    var C          = this
-      , capability = newPromiseCapability(C)
-      , reject     = capability.reject;
-    var abrupt = perform(function(){
-      forOf(iterable, false, function(promise){
-        C.resolve(promise).then(capability.resolve, reject);
-      });
-    });
-    if(abrupt)reject(abrupt.error);
-    return capability.promise;
-  }
-});
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js","./_an-instance":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-instance.js","./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_array-from-iterable":"/srv/zotero/my-publications/node_modules/core-js/modules/_array-from-iterable.js","./_classof":"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js","./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_export":"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js","./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js","./_iter-detect":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-detect.js","./_library":"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js","./_microtask":"/srv/zotero/my-publications/node_modules/core-js/modules/_microtask.js","./_redefine-all":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine-all.js","./_set-proto":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-proto.js","./_set-species":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-species.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_species-constructor":"/srv/zotero/my-publications/node_modules/core-js/modules/_species-constructor.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js":[function(require,module,exports){
-'use strict';
-var $at  = require('./_string-at')(true);
-
-// 21.1.3.27 String.prototype[@@iterator]()
-require('./_iter-define')(String, 'String', function(iterated){
-  this._t = String(iterated); // target
-  this._i = 0;                // next index
-// 21.1.5.2.1 %StringIteratorPrototype%.next()
-}, function(){
-  var O     = this._t
-    , index = this._i
-    , point;
-  if(index >= O.length)return {value: undefined, done: true};
-  point = $at(O, index);
-  this._i += point.length;
-  return {value: point, done: false};
-});
-},{"./_iter-define":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-define.js","./_string-at":"/srv/zotero/my-publications/node_modules/core-js/modules/_string-at.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/web.dom.iterable.js":[function(require,module,exports){
-var $iterators     = require('./es6.array.iterator')
-  , redefine       = require('./_redefine')
-  , global         = require('./_global')
-  , hide           = require('./_hide')
-  , Iterators      = require('./_iterators')
-  , wks            = require('./_wks')
-  , ITERATOR       = wks('iterator')
-  , TO_STRING_TAG  = wks('toStringTag')
-  , ArrayValues    = Iterators.Array;
-
-require('./_').each.call(['NodeList', 'DOMTokenList', 'MediaList', 'StyleSheetList', 'CSSRuleList'], function(NAME){
-  var Collection = global[NAME]
-    , proto      = Collection && Collection.prototype
-    , key;
-  if(proto){
-    if(!proto[ITERATOR])hide(proto, ITERATOR, ArrayValues);
-    if(!proto[TO_STRING_TAG])hide(proto, TO_STRING_TAG, NAME);
-    Iterators[NAME] = ArrayValues;
-    for(key in $iterators)if(!proto[key])redefine(proto, key, $iterators[key], true);
-  }
-});
-},{"./_":"/srv/zotero/my-publications/node_modules/core-js/modules/_.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_hide":"/srv/zotero/my-publications/node_modules/core-js/modules/_hide.js","./_iterators":"/srv/zotero/my-publications/node_modules/core-js/modules/_iterators.js","./_redefine":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js","./es6.array.iterator":"/srv/zotero/my-publications/node_modules/core-js/modules/es6.array.iterator.js"}],"/srv/zotero/my-publications/node_modules/d/index.js":[function(require,module,exports){
+}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"_process":"/srv/zotero/my-publications/node_modules/process/browser.js"}],"/srv/zotero/my-publications/node_modules/d/index.js":[function(require,module,exports){
 'use strict';
 
 var assign        = require('es5-ext/object/assign')
@@ -1449,8 +1016,8 @@ module.exports = function (value) {
 (function (global){
 /**
  * @license
- * lodash 4.0.1 (Custom Build) <https://lodash.com/>
- * Build: `lodash -d -o ./lodash.js`
+ * lodash 4.3.0 (Custom Build) <https://lodash.com/>
+ * Build: `lodash -d -o ./foo/lodash.js`
  * Copyright 2012-2016 The Dojo Foundation <http://dojofoundation.org/>
  * Based on Underscore.js 1.8.3 <http://underscorejs.org/LICENSE>
  * Copyright 2009-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
@@ -1462,7 +1029,7 @@ module.exports = function (value) {
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.0.1';
+  var VERSION = '4.3.0';
 
   /** Used to compose bitmasks for wrapper metadata. */
   var BIND_FLAG = 1,
@@ -1531,7 +1098,8 @@ module.exports = function (value) {
       setTag = '[object Set]',
       stringTag = '[object String]',
       symbolTag = '[object Symbol]',
-      weakMapTag = '[object WeakMap]';
+      weakMapTag = '[object WeakMap]',
+      weakSetTag = '[object WeakSet]';
 
   var arrayBufferTag = '[object ArrayBuffer]',
       float32Tag = '[object Float32Array]',
@@ -1680,8 +1248,8 @@ module.exports = function (value) {
 
   /** Used to assign default `context` object properties. */
   var contextProps = [
-    'Array', 'Date', 'Error', 'Float32Array', 'Float64Array', 'Function',
-    'Int8Array', 'Int16Array', 'Int32Array', 'Map', 'Math', 'Object',
+    'Array', 'Buffer', 'Date', 'Error', 'Float32Array', 'Float64Array',
+    'Function', 'Int8Array', 'Int16Array', 'Int32Array', 'Map', 'Math', 'Object',
     'Reflect', 'RegExp', 'Set', 'String', 'Symbol', 'TypeError', 'Uint8Array',
     'Uint8ClampedArray', 'Uint16Array', 'Uint32Array', 'WeakMap', '_',
     'clearTimeout', 'isFinite', 'parseInt', 'setTimeout'
@@ -1846,11 +1414,11 @@ module.exports = function (value) {
    * @private
    * @param {Function} func The function to invoke.
    * @param {*} thisArg The `this` binding of `func`.
-   * @param {...*} [args] The arguments to invoke `func` with.
+   * @param {...*} args The arguments to invoke `func` with.
    * @returns {*} Returns the result of `func`.
    */
   function apply(func, thisArg, args) {
-    var length = args ? args.length : 0;
+    var length = args.length;
     switch (length) {
       case 0: return func.call(thisArg);
       case 1: return func.call(thisArg, args[0]);
@@ -1858,6 +1426,27 @@ module.exports = function (value) {
       case 3: return func.call(thisArg, args[0], args[1], args[2]);
     }
     return func.apply(thisArg, args);
+  }
+
+  /**
+   * A specialized version of `baseAggregator` for arrays.
+   *
+   * @private
+   * @param {Array} array The array to iterate over.
+   * @param {Function} setter The function to set `accumulator` values.
+   * @param {Function} iteratee The iteratee to transform keys.
+   * @param {Object} accumulator The initial aggregated object.
+   * @returns {Function} Returns `accumulator`.
+   */
+  function arrayAggregator(array, setter, iteratee, accumulator) {
+    var index = -1,
+        length = array.length;
+
+    while (++index < length) {
+      var value = array[index];
+      setter(accumulator, value, iteratee(value), array);
+    }
+    return accumulator;
   }
 
   /**
@@ -2682,14 +2271,14 @@ module.exports = function (value) {
    * lodash.isFunction(lodash.bar);
    * // => true
    *
-   * // using `context` to mock `Date#getTime` use in `_.now`
+   * // Use `context` to mock `Date#getTime` use in `_.now`.
    * var mock = _.runInContext({
    *   'Date': function() {
    *     return { 'getTime': getTimeMock };
    *   }
    * });
    *
-   * // or creating a suped-up `defer` in Node.js
+   * // Create a suped-up `defer` in Node.js.
    * var defer = _.runInContext({ 'setTimeout': setImmediate }).defer;
    */
   function runInContext(context) {
@@ -2734,7 +2323,8 @@ module.exports = function (value) {
     );
 
     /** Built-in value references. */
-    var Reflect = context.Reflect,
+    var Buffer = moduleExports ? context.Buffer : undefined,
+        Reflect = context.Reflect,
         Symbol = context.Symbol,
         Uint8Array = context.Uint8Array,
         clearTimeout = context.clearTimeout,
@@ -2767,9 +2357,10 @@ module.exports = function (value) {
     /** Used to store function metadata. */
     var metaMap = WeakMap && new WeakMap;
 
-    /** Used to detect maps and sets. */
+    /** Used to detect maps, sets, and weakmaps. */
     var mapCtorString = Map ? funcToString.call(Map) : '',
-        setCtorString = Set ? funcToString.call(Set) : '';
+        setCtorString = Set ? funcToString.call(Set) : '',
+        weakMapCtorString = WeakMap ? funcToString.call(WeakMap) : '';
 
     /** Used to convert symbols to primitives and strings. */
     var symbolProto = Symbol ? Symbol.prototype : undefined,
@@ -2827,20 +2418,21 @@ module.exports = function (value) {
      * `differenceBy`, `differenceWith`, `drop`, `dropRight`, `dropRightWhile`,
      * `dropWhile`, `fill`, `filter`, `flatten`, `flattenDeep`, `flip`, `flow`,
      * `flowRight`, `fromPairs`, `functions`, `functionsIn`, `groupBy`, `initial`,
-     * `intersection`, `intersectionBy`, `intersectionWith`, `invert`, `invokeMap`,
-     * `iteratee`, `keyBy`, `keys`, `keysIn`, `map`, `mapKeys`, `mapValues`,
-     * `matches`, `matchesProperty`, `memoize`, `merge`, `mergeWith`, `method`,
-     * `methodOf`, `mixin`, `negate`, `nthArg`, `omit`, `omitBy`, `once`, `orderBy`,
-     * `over`, `overArgs`, `overEvery`, `overSome`, `partial`, `partialRight`,
-     * `partition`, `pick`, `pickBy`, `plant`, `property`, `propertyOf`, `pull`,
-     * `pullAll`, `pullAllBy`, `pullAt`, `push`, `range`, `rangeRight`, `rearg`,
-     * `reject`, `remove`, `rest`, `reverse`, `sampleSize`, `set`, `setWith`,
-     * `shuffle`, `slice`, `sort`, `sortBy`, `splice`, `spread`, `tail`, `take`,
-     * `takeRight`, `takeRightWhile`, `takeWhile`, `tap`, `throttle`, `thru`,
-     * `toArray`, `toPairs`, `toPairsIn`, `toPath`, `toPlainObject`, `transform`,
-     * `unary`, `union`, `unionBy`, `unionWith`, `uniq`, `uniqBy`, `uniqWith`,
-     * `unset`, `unshift`, `unzip`, `unzipWith`, `values`, `valuesIn`, `without`,
-     * `wrap`, `xor`, `xorBy`, `xorWith`, `zip`, `zipObject`, and `zipWith`
+     * `intersection`, `intersectionBy`, `intersectionWith`, `invert`, `invertBy`,
+     * `invokeMap`, `iteratee`, `keyBy`, `keys`, `keysIn`, `map`, `mapKeys`,
+     * `mapValues`, `matches`, `matchesProperty`, `memoize`, `merge`, `mergeWith`,
+     * `method`, `methodOf`, `mixin`, `negate`, `nthArg`, `omit`, `omitBy`, `once`,
+     * `orderBy`, `over`, `overArgs`, `overEvery`, `overSome`, `partial`,
+     * `partialRight`, `partition`, `pick`, `pickBy`, `plant`, `property`,
+     * `propertyOf`, `pull`, `pullAll`, `pullAllBy`, `pullAt`, `push`, `range`,
+     * `rangeRight`, `rearg`, `reject`, `remove`, `rest`, `reverse`, `sampleSize`,
+     * `set`, `setWith`, `shuffle`, `slice`, `sort`, `sortBy`, `splice`, `spread`,
+     * `tail`, `take`, `takeRight`, `takeRightWhile`, `takeWhile`, `tap`, `throttle`,
+     * `thru`, `toArray`, `toPairs`, `toPairsIn`, `toPath`, `toPlainObject`,
+     * `transform`, `unary`, `union`, `unionBy`, `unionWith`, `uniq`, `uniqBy`,
+     * `uniqWith`, `unset`, `unshift`, `unzip`, `unzipWith`, `values`, `valuesIn`,
+     * `without`, `wrap`, `xor`, `xorBy`, `xorWith`, `zip`, `zipObject`,
+     * `zipObjectDeep`, and `zipWith`
      *
      * The wrapper methods that are **not** chainable by default are:
      * `add`, `attempt`, `camelCase`, `capitalize`, `ceil`, `clamp`, `clone`,
@@ -2878,11 +2470,11 @@ module.exports = function (value) {
      *
      * var wrapped = _([1, 2, 3]);
      *
-     * // returns an unwrapped value
+     * // Returns an unwrapped value.
      * wrapped.reduce(_.add);
      * // => 6
      *
-     * // returns a wrapped value
+     * // Returns a wrapped value.
      * var squares = wrapped.map(square);
      *
      * _.isArray(squares);
@@ -3573,6 +3165,24 @@ module.exports = function (value) {
     }
 
     /**
+     * Aggregates elements of `collection` on `accumulator` with keys transformed
+     * by `iteratee` and values set by `setter`.
+     *
+     * @private
+     * @param {Array|Object} collection The collection to iterate over.
+     * @param {Function} setter The function to set `accumulator` values.
+     * @param {Function} iteratee The iteratee to transform keys.
+     * @param {Object} accumulator The initial aggregated object.
+     * @returns {Function} Returns `accumulator`.
+     */
+    function baseAggregator(collection, setter, iteratee, accumulator) {
+      baseEach(collection, function(value, key, collection) {
+        setter(accumulator, value, iteratee(value), collection);
+      });
+      return accumulator;
+    }
+
+    /**
      * The base implementation of `_.assign` without support for multiple sources
      * or `customizer` functions.
      *
@@ -3660,6 +3270,9 @@ module.exports = function (value) {
         var tag = getTag(value),
             isFunc = tag == funcTag || tag == genTag;
 
+        if (isBuffer(value)) {
+          return cloneBuffer(value, isDeep);
+        }
         if (tag == objectTag || tag == argsTag || (isFunc && !object)) {
           if (isHostObject(value)) {
             return object ? value : {};
@@ -3745,7 +3358,7 @@ module.exports = function (value) {
      * @private
      * @param {Function} func The function to delay.
      * @param {number} wait The number of milliseconds to delay invocation.
-     * @param {Object} args The arguments provide to `func`.
+     * @param {Object} args The arguments to provide to `func`.
      * @returns {number} Returns the timer id.
      */
     function baseDelay(func, wait, args) {
@@ -3990,7 +3603,7 @@ module.exports = function (value) {
 
     /**
      * The base implementation of `_.functions` which creates an array of
-     * `object` function property names filtered from those provided.
+     * `object` function property names filtered from `props`.
      *
      * @private
      * @param {Object} object The object to inspect.
@@ -4116,6 +3729,24 @@ module.exports = function (value) {
         }
       }
       return result;
+    }
+
+    /**
+     * The base implementation of `_.invert` and `_.invertBy` which inverts
+     * `object` with values transformed by `iteratee` and set by `setter`.
+     *
+     * @private
+     * @param {Object} object The object to iterate over.
+     * @param {Function} setter The function to set `accumulator` values.
+     * @param {Function} iteratee The iteratee to transform values.
+     * @param {Object} accumulator The initial inverted object.
+     * @returns {Function} Returns `accumulator`.
+     */
+    function baseInverter(object, setter, iteratee, accumulator) {
+      baseForOwn(object, function(value, key, object) {
+        setter(accumulator, iteratee(value), key, object);
+      });
+      return accumulator;
     }
 
     /**
@@ -4448,7 +4079,7 @@ module.exports = function (value) {
     function baseMergeDeep(object, source, key, srcIndex, mergeFunc, customizer, stack) {
       var objValue = object[key],
           srcValue = source[key],
-          stacked = stack.get(srcValue) || stack.get(objValue);
+          stacked = stack.get(srcValue);
 
       if (stacked) {
         assignMergeValue(object, key, stacked);
@@ -4467,6 +4098,7 @@ module.exports = function (value) {
             newValue = copyArray(objValue);
           }
           else {
+            isCommon = false;
             newValue = baseClone(srcValue);
           }
         }
@@ -4475,6 +4107,7 @@ module.exports = function (value) {
             newValue = toPlainObject(objValue);
           }
           else if (!isObject(objValue) || (srcIndex && isFunction(objValue))) {
+            isCommon = false;
             newValue = baseClone(srcValue);
           }
           else {
@@ -5076,18 +4709,58 @@ module.exports = function (value) {
     }
 
     /**
-     * Creates a clone of `buffer`.
+     * This base implementation of `_.zipObject` which assigns values using `assignFunc`.
      *
      * @private
-     * @param {ArrayBuffer} buffer The array buffer to clone.
+     * @param {Array} props The property names.
+     * @param {Array} values The property values.
+     * @param {Function} assignFunc The function to assign values.
+     * @returns {Object} Returns the new object.
+     */
+    function baseZipObject(props, values, assignFunc) {
+      var index = -1,
+          length = props.length,
+          valsLength = values.length,
+          result = {};
+
+      while (++index < length) {
+        assignFunc(result, props[index], index < valsLength ? values[index] : undefined);
+      }
+      return result;
+    }
+
+    /**
+     * Creates a clone of  `buffer`.
+     *
+     * @private
+     * @param {Buffer} buffer The buffer to clone.
+     * @param {boolean} [isDeep] Specify a deep clone.
+     * @returns {Buffer} Returns the cloned buffer.
+     */
+    function cloneBuffer(buffer, isDeep) {
+      if (isDeep) {
+        return buffer.slice();
+      }
+      var Ctor = buffer.constructor,
+          result = new Ctor(buffer.length);
+
+      buffer.copy(result);
+      return result;
+    }
+
+    /**
+     * Creates a clone of `arrayBuffer`.
+     *
+     * @private
+     * @param {ArrayBuffer} arrayBuffer The array buffer to clone.
      * @returns {ArrayBuffer} Returns the cloned array buffer.
      */
-    function cloneBuffer(buffer) {
-      var Ctor = buffer.constructor,
-          result = new Ctor(buffer.byteLength),
+    function cloneArrayBuffer(arrayBuffer) {
+      var Ctor = arrayBuffer.constructor,
+          result = new Ctor(arrayBuffer.byteLength),
           view = new Uint8Array(result);
 
-      view.set(new Uint8Array(buffer));
+      view.set(new Uint8Array(arrayBuffer));
       return result;
     }
 
@@ -5153,7 +4826,7 @@ module.exports = function (value) {
       var buffer = typedArray.buffer,
           Ctor = typedArray.constructor;
 
-      return new Ctor(isDeep ? cloneBuffer(buffer) : buffer, typedArray.byteOffset, typedArray.length);
+      return new Ctor(isDeep ? cloneArrayBuffer(buffer) : buffer, typedArray.byteOffset, typedArray.length);
     }
 
     /**
@@ -5292,29 +4965,16 @@ module.exports = function (value) {
      * Creates a function like `_.groupBy`.
      *
      * @private
-     * @param {Function} setter The function to set keys and values of the accumulator object.
-     * @param {Function} [initializer] The function to initialize the accumulator object.
+     * @param {Function} setter The function to set accumulator values.
+     * @param {Function} [initializer] The accumulator object initializer.
      * @returns {Function} Returns the new aggregator function.
      */
     function createAggregator(setter, initializer) {
       return function(collection, iteratee) {
-        var result = initializer ? initializer() : {};
-        iteratee = getIteratee(iteratee);
+        var func = isArray(collection) ? arrayAggregator : baseAggregator,
+            accumulator = initializer ? initializer() : {};
 
-        if (isArray(collection)) {
-          var index = -1,
-              length = collection.length;
-
-          while (++index < length) {
-            var value = collection[index];
-            setter(result, value, iteratee(value), collection);
-          }
-        } else {
-          baseEach(collection, function(value, key, collection) {
-            setter(result, value, iteratee(value), collection);
-          });
-        }
-        return result;
+        return func(collection, setter, getIteratee(iteratee), accumulator);
       };
     }
 
@@ -5504,7 +5164,7 @@ module.exports = function (value) {
             index = length,
             args = Array(length),
             fn = (this && this !== root && this instanceof wrapper) ? Ctor : func,
-            placeholder = wrapper.placeholder;
+            placeholder = lodash.placeholder || wrapper.placeholder;
 
         while (index--) {
           args[index] = arguments[index];
@@ -5620,7 +5280,7 @@ module.exports = function (value) {
           args = composeArgsRight(args, partialsRight, holdersRight);
         }
         if (isCurry || isCurryRight) {
-          var placeholder = wrapper.placeholder,
+          var placeholder = lodash.placeholder || wrapper.placeholder,
               argsHolders = replaceHolders(args, placeholder);
 
           length -= argsHolders.length;
@@ -5645,6 +5305,20 @@ module.exports = function (value) {
         return fn.apply(thisBinding, args);
       }
       return wrapper;
+    }
+
+    /**
+     * Creates a function like `_.invertBy`.
+     *
+     * @private
+     * @param {Function} setter The function to set accumulator values.
+     * @param {Function} toIteratee The function to resolve iteratees.
+     * @returns {Function} Returns the new inverter function.
+     */
+    function createInverter(setter, toIteratee) {
+      return function(object, iteratee) {
+        return baseInverter(object, setter, toIteratee(iteratee), {});
+      };
     }
 
     /**
@@ -6220,19 +5894,20 @@ module.exports = function (value) {
       return objectToString.call(value);
     }
 
-    // Fallback for IE 11 providing `toStringTag` values for maps and sets.
-    if ((Map && getTag(new Map) != mapTag) || (Set && getTag(new Set) != setTag)) {
+    // Fallback for IE 11 providing `toStringTag` values for maps, sets, and weakmaps.
+    if ((Map && getTag(new Map) != mapTag) ||
+        (Set && getTag(new Set) != setTag) ||
+        (WeakMap && getTag(new WeakMap) != weakMapTag)) {
       getTag = function(value) {
         var result = objectToString.call(value),
             Ctor = result == objectTag ? value.constructor : null,
             ctorString = typeof Ctor == 'function' ? funcToString.call(Ctor) : '';
 
         if (ctorString) {
-          if (ctorString == mapCtorString) {
-            return mapTag;
-          }
-          if (ctorString == setCtorString) {
-            return setTag;
+          switch (ctorString) {
+            case mapCtorString: return mapTag;
+            case setCtorString: return setTag;
+            case weakMapCtorString: return weakMapTag;
           }
         }
         return result;
@@ -6289,8 +5964,11 @@ module.exports = function (value) {
           result = hasFunc(object, path);
         }
       }
-      return result || (isLength(object && object.length) && isIndex(path, object.length) &&
-        (isArray(object) || isString(object) || isArguments(object)));
+      var length = object ? object.length : undefined;
+      return result || (
+        !!length && isLength(length) && isIndex(path, length) &&
+        (isArray(object) || isString(object) || isArguments(object))
+      );
     }
 
     /**
@@ -6320,6 +5998,9 @@ module.exports = function (value) {
      * @returns {Object} Returns the initialized clone.
      */
     function initCloneObject(object) {
+      if (isPrototype(object)) {
+        return {};
+      }
       var Ctor = object.constructor;
       return baseCreate(isFunction(Ctor) ? Ctor.prototype : undefined);
     }
@@ -6340,7 +6021,7 @@ module.exports = function (value) {
       var Ctor = object.constructor;
       switch (tag) {
         case arrayBufferTag:
-          return cloneBuffer(object);
+          return cloneArrayBuffer(object);
 
         case boolTag:
         case dateTag:
@@ -6379,13 +6060,15 @@ module.exports = function (value) {
      */
     function indexKeys(object) {
       var length = object ? object.length : undefined;
-      return (isLength(length) && (isArray(object) || isString(object) || isArguments(object)))
-        ? baseTimes(length, String)
-        : null;
+      if (isLength(length) &&
+          (isArray(object) || isString(object) || isArguments(object))) {
+        return baseTimes(length, String);
+      }
+      return null;
     }
 
     /**
-     * Checks if the provided arguments are from an iteratee call.
+     * Checks if the given arguments are from an iteratee call.
      *
      * @private
      * @param {*} value The potential iteratee value argument.
@@ -6793,7 +6476,7 @@ module.exports = function (value) {
 
     /**
      * Creates an array of unique `array` values not included in the other
-     * provided arrays using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * given arrays using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
      * for equality comparisons.
      *
      * @static
@@ -6830,7 +6513,7 @@ module.exports = function (value) {
      * _.differenceBy([3.1, 2.2, 1.3], [4.4, 2.5], Math.floor);
      * // => [3.1, 1.3]
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.differenceBy([{ 'x': 2 }, { 'x': 1 }], [{ 'x': 1 }], 'x');
      * // => [{ 'x': 2 }]
      */
@@ -6962,15 +6645,15 @@ module.exports = function (value) {
      * _.dropRightWhile(users, function(o) { return !o.active; });
      * // => objects for ['barney']
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.dropRightWhile(users, { 'user': 'pebbles', 'active': false });
      * // => objects for ['barney', 'fred']
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.dropRightWhile(users, ['active', false]);
      * // => objects for ['barney']
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.dropRightWhile(users, 'active');
      * // => objects for ['barney', 'fred', 'pebbles']
      */
@@ -7002,15 +6685,15 @@ module.exports = function (value) {
      * _.dropWhile(users, function(o) { return !o.active; });
      * // => objects for ['pebbles']
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.dropWhile(users, { 'user': 'barney', 'active': false });
      * // => objects for ['fred', 'pebbles']
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.dropWhile(users, ['active', false]);
      * // => objects for ['pebbles']
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.dropWhile(users, 'active');
      * // => objects for ['barney', 'fred', 'pebbles']
      */
@@ -7081,15 +6764,15 @@ module.exports = function (value) {
      * _.findIndex(users, function(o) { return o.user == 'barney'; });
      * // => 0
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.findIndex(users, { 'user': 'fred', 'active': false });
      * // => 1
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.findIndex(users, ['active', false]);
      * // => 0
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.findIndex(users, 'active');
      * // => 2
      */
@@ -7120,15 +6803,15 @@ module.exports = function (value) {
      * _.findLastIndex(users, function(o) { return o.user == 'pebbles'; });
      * // => 2
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.findLastIndex(users, { 'user': 'barney', 'active': true });
      * // => 0
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.findLastIndex(users, ['active', false]);
      * // => 2
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.findLastIndex(users, 'active');
      * // => 0
      */
@@ -7136,31 +6819,6 @@ module.exports = function (value) {
       return (array && array.length)
         ? baseFindIndex(array, getIteratee(predicate, 3), true)
         : -1;
-    }
-
-    /**
-     * Creates an array of flattened values by running each element in `array`
-     * through `iteratee` and concating its result to the other mapped values.
-     * The iteratee is invoked with three arguments: (value, index|key, array).
-     *
-     * @static
-     * @memberOf _
-     * @category Array
-     * @param {Array} array The array to iterate over.
-     * @param {Function|Object|string} [iteratee=_.identity] The function invoked per iteration.
-     * @returns {Array} Returns the new array.
-     * @example
-     *
-     * function duplicate(n) {
-     *   return [n, n];
-     * }
-     *
-     * _.flatMap([1, 2], duplicate);
-     * // => [1, 1, 2, 2]
-     */
-    function flatMap(array, iteratee) {
-      var length = array ? array.length : 0;
-      return length ? baseFlatten(arrayMap(array, getIteratee(iteratee, 3))) : [];
     }
 
     /**
@@ -7250,8 +6908,7 @@ module.exports = function (value) {
      * Gets the index at which the first occurrence of `value` is found in `array`
      * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
      * for equality comparisons. If `fromIndex` is negative, it's used as the offset
-     * from the end of `array`. If `array` is sorted providing `true` for `fromIndex`
-     * performs a faster binary search.
+     * from the end of `array`.
      *
      * @static
      * @memberOf _
@@ -7265,7 +6922,7 @@ module.exports = function (value) {
      * _.indexOf([1, 2, 1, 2], 2);
      * // => 1
      *
-     * // using `fromIndex`
+     * // Search from the `fromIndex`.
      * _.indexOf([1, 2, 1, 2], 2, 2);
      * // => 3
      */
@@ -7299,8 +6956,8 @@ module.exports = function (value) {
     }
 
     /**
-     * Creates an array of unique values that are included in all of the provided
-     * arrays using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * Creates an array of unique values that are included in all given arrays
+     * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
      * for equality comparisons.
      *
      * @static
@@ -7336,7 +6993,7 @@ module.exports = function (value) {
      * _.intersectionBy([2.1, 1.2], [4.3, 2.4], Math.floor);
      * // => [2.1]
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.intersectionBy([{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x');
      * // => [{ 'x': 1 }]
      */
@@ -7439,7 +7096,7 @@ module.exports = function (value) {
      * _.lastIndexOf([1, 2, 1, 2], 2);
      * // => 3
      *
-     * // using `fromIndex`
+     * // Search from the `fromIndex`.
      * _.lastIndexOf([1, 2, 1, 2], 2, 2);
      * // => 1
      */
@@ -7465,7 +7122,7 @@ module.exports = function (value) {
     }
 
     /**
-     * Removes all provided values from `array` using
+     * Removes all given values from `array` using
      * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
      * for equality comparisons.
      *
@@ -7514,7 +7171,7 @@ module.exports = function (value) {
 
     /**
      * This method is like `_.pullAll` except that it accepts `iteratee` which is
-     * invoked for each element of `array` and `values` to to generate the criterion
+     * invoked for each element of `array` and `values` to generate the criterion
      * by which uniqueness is computed. The iteratee is invoked with one argument: (value).
      *
      * **Note:** Unlike `_.differenceBy`, this method mutates `array`.
@@ -7715,7 +7372,7 @@ module.exports = function (value) {
      * _.sortedIndexBy(['thirty', 'fifty'], 'forty', _.propertyOf(dict));
      * // => 1
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.sortedIndexBy([{ 'x': 4 }, { 'x': 5 }], { 'x': 4 }, 'x');
      * // => 0
      */
@@ -7783,7 +7440,7 @@ module.exports = function (value) {
      * @returns {number} Returns the index at which `value` should be inserted into `array`.
      * @example
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.sortedLastIndexBy([{ 'x': 4 }, { 'x': 5 }], { 'x': 4 }, 'x');
      * // => 1
      */
@@ -7850,7 +7507,7 @@ module.exports = function (value) {
      * @example
      *
      * _.sortedUniqBy([1.1, 1.2, 2.3, 2.4], Math.floor);
-     * // => [1.1, 2.2]
+     * // => [1.1, 2.3]
      */
     function sortedUniqBy(array, iteratee) {
       return (array && array.length)
@@ -7963,15 +7620,15 @@ module.exports = function (value) {
      * _.takeRightWhile(users, function(o) { return !o.active; });
      * // => objects for ['fred', 'pebbles']
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.takeRightWhile(users, { 'user': 'pebbles', 'active': false });
      * // => objects for ['pebbles']
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.takeRightWhile(users, ['active', false]);
      * // => objects for ['fred', 'pebbles']
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.takeRightWhile(users, 'active');
      * // => []
      */
@@ -8003,15 +7660,15 @@ module.exports = function (value) {
      * _.takeWhile(users, function(o) { return !o.active; });
      * // => objects for ['barney', 'fred']
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.takeWhile(users, { 'user': 'barney', 'active': false });
      * // => objects for ['barney']
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.takeWhile(users, ['active', false]);
      * // => objects for ['barney', 'fred']
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.takeWhile(users, 'active');
      * // => []
      */
@@ -8022,8 +7679,8 @@ module.exports = function (value) {
     }
 
     /**
-     * Creates an array of unique values, in order, from all of the provided arrays
-     * using [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
+     * Creates an array of unique values, in order, from all given arrays using
+     * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
      * for equality comparisons.
      *
      * @static
@@ -8056,7 +7713,7 @@ module.exports = function (value) {
      * _.unionBy([2.1, 1.2], [4.3, 2.4], Math.floor);
      * // => [2.1, 1.2, 4.3]
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.unionBy([{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x');
      * // => [{ 'x': 1 }, { 'x': 2 }]
      */
@@ -8133,7 +7790,7 @@ module.exports = function (value) {
      * _.uniqBy([2.1, 1.2, 2.3], Math.floor);
      * // => [2.1, 1.2]
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.uniqBy([{ 'x': 1 }, { 'x': 2 }, { 'x': 1 }], 'x');
      * // => [{ 'x': 1 }, { 'x': 2 }]
      */
@@ -8234,7 +7891,7 @@ module.exports = function (value) {
     }
 
     /**
-     * Creates an array excluding all provided values using
+     * Creates an array excluding all given values using
      * [`SameValueZero`](http://ecma-international.org/ecma-262/6.0/#sec-samevaluezero)
      * for equality comparisons.
      *
@@ -8257,7 +7914,7 @@ module.exports = function (value) {
 
     /**
      * Creates an array of unique values that is the [symmetric difference](https://en.wikipedia.org/wiki/Symmetric_difference)
-     * of the provided arrays.
+     * of the given arrays.
      *
      * @static
      * @memberOf _
@@ -8289,7 +7946,7 @@ module.exports = function (value) {
      * _.xorBy([2.1, 1.2], [4.3, 2.4], Math.floor);
      * // => [1.2, 4.3]
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.xorBy([{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x');
      * // => [{ 'x': 2 }]
      */
@@ -8357,19 +8014,29 @@ module.exports = function (value) {
      * @returns {Object} Returns the new object.
      * @example
      *
-     * _.zipObject(['fred', 'barney'], [30, 40]);
-     * // => { 'fred': 30, 'barney': 40 }
+     * _.zipObject(['a', 'b'], [1, 2]);
+     * // => { 'a': 1, 'b': 2 }
      */
     function zipObject(props, values) {
-      var index = -1,
-          length = props ? props.length : 0,
-          valsLength = values ? values.length : 0,
-          result = {};
+      return baseZipObject(props || [], values || [], assignValue);
+    }
 
-      while (++index < length) {
-        baseSet(result, props[index], index < valsLength ? values[index] : undefined);
-      }
-      return result;
+    /**
+     * This method is like `_.zipObject` except that it supports property paths.
+     *
+     * @static
+     * @memberOf _
+     * @category Array
+     * @param {Array} [props=[]] The property names.
+     * @param {Array} [values=[]] The property values.
+     * @returns {Object} Returns the new object.
+     * @example
+     *
+     * _.zipObjectDeep(['a.b[0].c', 'a.b[1].d'], [1, 2]);
+     * // => { 'a': { 'b': [{ 'c': 1 }, { 'd': 2 }] } }
+     */
+    function zipObjectDeep(props, values) {
+      return baseZipObject(props || [], values || [], baseSet);
     }
 
     /**
@@ -8434,10 +8101,9 @@ module.exports = function (value) {
     }
 
     /**
-     * This method invokes `interceptor` and returns `value`. The interceptor is
-     * invoked with one argument; (value). The purpose of this method is to "tap into"
-     * a method chain in order to perform operations on intermediate results within
-     * the chain.
+     * This method invokes `interceptor` and returns `value`. The interceptor
+     * is invoked with one argument; (value). The purpose of this method is to
+     * "tap into" a method chain in order to modify intermediate results.
      *
      * @static
      * @memberOf _
@@ -8449,6 +8115,7 @@ module.exports = function (value) {
      *
      * _([1, 2, 3])
      *  .tap(function(array) {
+     *    // Mutate input array.
      *    array.pop();
      *  })
      *  .reverse()
@@ -8462,6 +8129,8 @@ module.exports = function (value) {
 
     /**
      * This method is like `_.tap` except that it returns the result of `interceptor`.
+     * The purpose of this method is to "pass thru" values replacing intermediate
+     * results in a method chain.
      *
      * @static
      * @memberOf _
@@ -8537,11 +8206,11 @@ module.exports = function (value) {
      *   { 'user': 'fred',   'age': 40 }
      * ];
      *
-     * // without explicit chaining
+     * // A sequence without explicit chaining.
      * _(users).head();
      * // => { 'user': 'barney', 'age': 36 }
      *
-     * // with explicit chaining
+     * // A sequence with explicit chaining.
      * _(users)
      *   .chain()
      *   .head()
@@ -8796,15 +8465,15 @@ module.exports = function (value) {
      *   { 'user': 'fred',   'active': false }
      * ];
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.every(users, { 'user': 'barney', 'active': false });
      * // => false
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.every(users, ['active', false]);
      * // => true
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.every(users, 'active');
      * // => false
      */
@@ -8837,15 +8506,15 @@ module.exports = function (value) {
      * _.filter(users, function(o) { return !o.active; });
      * // => objects for ['fred']
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.filter(users, { 'age': 36, 'active': true });
      * // => objects for ['barney']
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.filter(users, ['active', false]);
      * // => objects for ['fred']
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.filter(users, 'active');
      * // => objects for ['barney']
      */
@@ -8876,15 +8545,15 @@ module.exports = function (value) {
      * _.find(users, function(o) { return o.age < 40; });
      * // => object for 'barney'
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.find(users, { 'age': 1, 'active': true });
      * // => object for 'pebbles'
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.find(users, ['active', false]);
      * // => object for 'fred'
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.find(users, 'active');
      * // => object for 'barney'
      */
@@ -8921,6 +8590,30 @@ module.exports = function (value) {
         return index > -1 ? collection[index] : undefined;
       }
       return baseFind(collection, predicate, baseEachRight);
+    }
+
+    /**
+     * Creates an array of flattened values by running each element in `collection`
+     * through `iteratee` and concating its result to the other mapped values.
+     * The iteratee is invoked with three arguments: (value, index|key, collection).
+     *
+     * @static
+     * @memberOf _
+     * @category Collection
+     * @param {Array|Object} collection The collection to iterate over.
+     * @param {Function|Object|string} [iteratee=_.identity] The function invoked per iteration.
+     * @returns {Array} Returns the new flattened array.
+     * @example
+     *
+     * function duplicate(n) {
+     *   return [n, n];
+     * }
+     *
+     * _.flatMap([1, 2], duplicate);
+     * // => [1, 1, 2, 2]
+     */
+    function flatMap(collection, iteratee) {
+      return baseFlatten(map(collection, iteratee));
     }
 
     /**
@@ -8998,7 +8691,7 @@ module.exports = function (value) {
      * _.groupBy([6.1, 4.2, 6.3], Math.floor);
      * // => { '4': [4.2], '6': [6.1, 6.3] }
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.groupBy(['one', 'two', 'three'], 'length');
      * // => { '3': ['one', 'two'], '5': ['three'] }
      */
@@ -9100,17 +8793,17 @@ module.exports = function (value) {
      * @returns {Object} Returns the composed aggregate object.
      * @example
      *
-     * var keyData = [
+     * var array = [
      *   { 'dir': 'left', 'code': 97 },
      *   { 'dir': 'right', 'code': 100 }
      * ];
      *
-     * _.keyBy(keyData, function(o) {
+     * _.keyBy(array, function(o) {
      *   return String.fromCharCode(o.code);
      * });
      * // => { 'a': { 'dir': 'left', 'code': 97 }, 'd': { 'dir': 'right', 'code': 100 } }
      *
-     * _.keyBy(keyData, 'dir');
+     * _.keyBy(array, 'dir');
      * // => { 'left': { 'dir': 'left', 'code': 97 }, 'right': { 'dir': 'right', 'code': 100 } }
      */
     var keyBy = createAggregator(function(result, value, key) {
@@ -9154,7 +8847,7 @@ module.exports = function (value) {
      *   { 'user': 'fred' }
      * ];
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.map(users, 'user');
      * // => ['barney', 'fred']
      */
@@ -9186,7 +8879,7 @@ module.exports = function (value) {
      *   { 'user': 'barney', 'age': 36 }
      * ];
      *
-     * // sort by `user` in ascending order and by `age` in descending order
+     * // Sort by `user` in ascending order and by `age` in descending order.
      * _.orderBy(users, ['user', 'age'], ['asc', 'desc']);
      * // => objects for [['barney', 36], ['barney', 34], ['fred', 48], ['fred', 42]]
      */
@@ -9227,15 +8920,15 @@ module.exports = function (value) {
      * _.partition(users, function(o) { return o.active; });
      * // => objects for [['fred'], ['barney', 'pebbles']]
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.partition(users, { 'age': 1, 'active': false });
      * // => objects for [['pebbles'], ['barney', 'fred']]
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.partition(users, ['active', false]);
      * // => objects for [['barney', 'pebbles'], ['fred']]
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.partition(users, 'active');
      * // => objects for [['fred'], ['barney', 'pebbles']]
      */
@@ -9247,7 +8940,7 @@ module.exports = function (value) {
      * Reduces `collection` to a value which is the accumulated result of running
      * each element in `collection` through `iteratee`, where each successive
      * invocation is supplied the return value of the previous. If `accumulator`
-     * is not provided the first element of `collection` is used as the initial
+     * is not given the first element of `collection` is used as the initial
      * value. The iteratee is invoked with four arguments:
      * (accumulator, value, index|key, collection).
      *
@@ -9269,7 +8962,7 @@ module.exports = function (value) {
      *
      * _.reduce([1, 2], function(sum, n) {
      *   return sum + n;
-     * });
+     * }, 0);
      * // => 3
      *
      * _.reduce({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
@@ -9332,15 +9025,15 @@ module.exports = function (value) {
      * _.reject(users, function(o) { return !o.active; });
      * // => objects for ['fred']
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.reject(users, { 'age': 40, 'active': true });
      * // => objects for ['barney']
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.reject(users, ['active', false]);
      * // => objects for ['fred']
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.reject(users, 'active');
      * // => objects for ['barney']
      */
@@ -9479,15 +9172,15 @@ module.exports = function (value) {
      *   { 'user': 'fred',   'active': false }
      * ];
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.some(users, { 'user': 'barney', 'active': false });
      * // => false
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.some(users, ['active', false]);
      * // => true
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.some(users, 'active');
      * // => true
      */
@@ -9687,7 +9380,7 @@ module.exports = function (value) {
      * bound('!');
      * // => 'hi fred!'
      *
-     * // using placeholders
+     * // Bound with placeholders.
      * var bound = _.bind(greet, object, _, '!');
      * bound('hi');
      * // => 'hi fred!'
@@ -9695,7 +9388,9 @@ module.exports = function (value) {
     var bind = rest(function(func, thisArg, partials) {
       var bitmask = BIND_FLAG;
       if (partials.length) {
-        var holders = replaceHolders(partials, bind.placeholder);
+        var placeholder = lodash.placeholder || bind.placeholder,
+            holders = replaceHolders(partials, placeholder);
+
         bitmask |= PARTIAL_FLAG;
       }
       return createWrapper(func, bitmask, thisArg, partials, holders);
@@ -9740,7 +9435,7 @@ module.exports = function (value) {
      * bound('!');
      * // => 'hiya fred!'
      *
-     * // using placeholders
+     * // Bound with placeholders.
      * var bound = _.bindKey(object, 'greet', _, '!');
      * bound('hi');
      * // => 'hiya fred!'
@@ -9748,7 +9443,9 @@ module.exports = function (value) {
     var bindKey = rest(function(object, key, partials) {
       var bitmask = BIND_FLAG | BIND_KEY_FLAG;
       if (partials.length) {
-        var holders = replaceHolders(partials, bindKey.placeholder);
+        var placeholder = lodash.placeholder || bindKey.placeholder,
+            holders = replaceHolders(partials, placeholder);
+
         bitmask |= PARTIAL_FLAG;
       }
       return createWrapper(key, bitmask, object, partials, holders);
@@ -9790,14 +9487,14 @@ module.exports = function (value) {
      * curried(1, 2, 3);
      * // => [1, 2, 3]
      *
-     * // using placeholders
+     * // Curried with placeholders.
      * curried(1)(_, 3)(2);
      * // => [1, 2, 3]
      */
     function curry(func, arity, guard) {
       arity = guard ? undefined : arity;
       var result = createWrapper(func, CURRY_FLAG, undefined, undefined, undefined, undefined, undefined, arity);
-      result.placeholder = curry.placeholder;
+      result.placeholder = lodash.placeholder || curry.placeholder;
       return result;
     }
 
@@ -9834,14 +9531,14 @@ module.exports = function (value) {
      * curried(1, 2, 3);
      * // => [1, 2, 3]
      *
-     * // using placeholders
+     * // Curried with placeholders.
      * curried(3)(1, _)(2);
      * // => [1, 2, 3]
      */
     function curryRight(func, arity, guard) {
       arity = guard ? undefined : arity;
       var result = createWrapper(func, CURRY_RIGHT_FLAG, undefined, undefined, undefined, undefined, undefined, arity);
-      result.placeholder = curryRight.placeholder;
+      result.placeholder = lodash.placeholder || curryRight.placeholder;
       return result;
     }
 
@@ -9856,7 +9553,7 @@ module.exports = function (value) {
      * to the debounced function return the result of the last `func` invocation.
      *
      * **Note:** If `leading` and `trailing` options are `true`, `func` is invoked
-     * on the trailing edge of the timeout only if the the debounced function is
+     * on the trailing edge of the timeout only if the debounced function is
      * invoked more than once during the `wait` timeout.
      *
      * See [David Corbacho's article](http://drupalmotion.com/article/debounce-and-throttle-visual-explanation)
@@ -9877,21 +9574,21 @@ module.exports = function (value) {
      * @returns {Function} Returns the new debounced function.
      * @example
      *
-     * // avoid costly calculations while the window size is in flux
+     * // Avoid costly calculations while the window size is in flux.
      * jQuery(window).on('resize', _.debounce(calculateLayout, 150));
      *
-     * // invoke `sendMail` when clicked, debouncing subsequent calls
+     * // Invoke `sendMail` when clicked, debouncing subsequent calls.
      * jQuery(element).on('click', _.debounce(sendMail, 300, {
      *   'leading': true,
      *   'trailing': false
      * }));
      *
-     * // ensure `batchLog` is invoked once after 1 second of debounced calls
+     * // Ensure `batchLog` is invoked once after 1 second of debounced calls.
      * var debounced = _.debounce(batchLog, 250, { 'maxWait': 1000 });
      * var source = new EventSource('/stream');
      * jQuery(source).on('message', debounced);
      *
-     * // cancel a trailing debounced invocation
+     * // Cancel the trailing debounced invocation.
      * jQuery(window).on('popstate', debounced.cancel);
      */
     function debounce(func, wait, options) {
@@ -9972,7 +9669,7 @@ module.exports = function (value) {
         if (maxWait === false) {
           var leadingCall = leading && !timeoutId;
         } else {
-          if (!maxTimeoutId && !leading) {
+          if (!lastCalled && !maxTimeoutId && !leading) {
             lastCalled = stamp;
           }
           var remaining = maxWait - (stamp - lastCalled),
@@ -10024,7 +9721,7 @@ module.exports = function (value) {
      * _.defer(function(text) {
      *   console.log(text);
      * }, 'deferred');
-     * // logs 'deferred' after one or more milliseconds
+     * // => logs 'deferred' after one or more milliseconds
      */
     var defer = rest(function(func, args) {
       return baseDelay(func, 1, args);
@@ -10107,12 +9804,12 @@ module.exports = function (value) {
      * values(object);
      * // => [1, 2]
      *
-     * // modifying the result cache
+     * // Modify the result cache.
      * values.cache.set(object, ['a', 'b']);
      * values(object);
      * // => ['a', 'b']
      *
-     * // replacing `_.memoize.Cache`
+     * // Replace `_.memoize.Cache`.
      * _.memoize.Cache = WeakMap;
      */
     function memoize(func, resolver) {
@@ -10257,13 +9954,15 @@ module.exports = function (value) {
      * sayHelloTo('fred');
      * // => 'hello fred'
      *
-     * // using placeholders
+     * // Partially applied with placeholders.
      * var greetFred = _.partial(greet, _, 'fred');
      * greetFred('hi');
      * // => 'hi fred'
      */
     var partial = rest(function(func, partials) {
-      var holders = replaceHolders(partials, partial.placeholder);
+      var placeholder = lodash.placeholder || partial.placeholder,
+          holders = replaceHolders(partials, placeholder);
+
       return createWrapper(func, PARTIAL_FLAG, undefined, partials, holders);
     });
 
@@ -10293,13 +9992,15 @@ module.exports = function (value) {
      * greetFred('hi');
      * // => 'hi fred'
      *
-     * // using placeholders
+     * // Partially applied with placeholders.
      * var sayHelloTo = _.partialRight(greet, 'hello', _);
      * sayHelloTo('fred');
      * // => 'hello fred'
      */
     var partialRight = rest(function(func, partials) {
-      var holders = replaceHolders(partials, partialRight.placeholder);
+      var placeholder = lodash.placeholder || partialRight.placeholder,
+          holders = replaceHolders(partials, placeholder);
+
       return createWrapper(func, PARTIAL_RIGHT_FLAG, undefined, partials, holders);
     });
 
@@ -10390,6 +10091,7 @@ module.exports = function (value) {
      * @memberOf _
      * @category Function
      * @param {Function} func The function to spread arguments over.
+     * @param {number} [start=0] The start position of the spread.
      * @returns {Function} Returns the new function.
      * @example
      *
@@ -10400,7 +10102,6 @@ module.exports = function (value) {
      * say(['fred', 'hello']);
      * // => 'fred says hello'
      *
-     * // with a Promise
      * var numbers = Promise.all([
      *   Promise.resolve(40),
      *   Promise.resolve(36)
@@ -10411,13 +10112,20 @@ module.exports = function (value) {
      * }));
      * // => a Promise of 76
      */
-    function spread(func) {
+    function spread(func, start) {
       if (typeof func != 'function') {
         throw new TypeError(FUNC_ERROR_TEXT);
       }
-      return function(array) {
-        return apply(func, this, array);
-      };
+      start = start === undefined ? 0 : nativeMax(toInteger(start), 0);
+      return rest(function(args) {
+        var array = args[start],
+            otherArgs = args.slice(0, start);
+
+        if (array) {
+          arrayPush(otherArgs, array);
+        }
+        return apply(func, this, otherArgs);
+      });
     }
 
     /**
@@ -10431,7 +10139,7 @@ module.exports = function (value) {
      * result of the last `func` invocation.
      *
      * **Note:** If `leading` and `trailing` options are `true`, `func` is invoked
-     * on the trailing edge of the timeout only if the the throttled function is
+     * on the trailing edge of the timeout only if the throttled function is
      * invoked more than once during the `wait` timeout.
      *
      * See [David Corbacho's article](http://drupalmotion.com/article/debounce-and-throttle-visual-explanation)
@@ -10450,14 +10158,14 @@ module.exports = function (value) {
      * @returns {Function} Returns the new throttled function.
      * @example
      *
-     * // avoid excessively updating the position while scrolling
+     * // Avoid excessively updating the position while scrolling.
      * jQuery(window).on('scroll', _.throttle(updatePosition, 100));
      *
-     * // invoke `renewToken` when the click event is fired, but not more than once every 5 minutes
+     * // Invoke `renewToken` when the click event is fired, but not more than once every 5 minutes.
      * var throttled = _.throttle(renewToken, 300000, { 'trailing': false });
      * jQuery(element).on('click', throttled);
      *
-     * // cancel a trailing throttled invocation
+     * // Cancel the trailing throttled invocation.
      * jQuery(window).on('popstate', throttled.cancel);
      */
     function throttle(func, wait, options) {
@@ -10761,6 +10469,27 @@ module.exports = function (value) {
     var isArray = Array.isArray;
 
     /**
+     * Checks if `value` is classified as an `ArrayBuffer` object.
+     *
+     * @static
+     * @memberOf _
+     * @type Function
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+     * @example
+     *
+     * _.isArrayBuffer(new ArrayBuffer(2));
+     * // => true
+     *
+     * _.isArrayBuffer(new Array(2));
+     * // => false
+     */
+    function isArrayBuffer(value) {
+      return isObjectLike(value) && objectToString.call(value) == arrayBufferTag;
+    }
+
+    /**
      * Checks if `value` is array-like. A value is considered array-like if it's
      * not a function and has a `value.length` that's an integer greater than or
      * equal to `0` and less than or equal to `Number.MAX_SAFE_INTEGER`.
@@ -10840,6 +10569,26 @@ module.exports = function (value) {
     }
 
     /**
+     * Checks if `value` is a buffer.
+     *
+     * @static
+     * @memberOf _
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a buffer, else `false`.
+     * @example
+     *
+     * _.isBuffer(new Buffer(2));
+     * // => true
+     *
+     * _.isBuffer(new Uint8Array(2));
+     * // => false
+     */
+    var isBuffer = !Buffer ? constant(false) : function(value) {
+      return value instanceof Buffer;
+    };
+
+    /**
      * Checks if `value` is classified as a `Date` object.
      *
      * @static
@@ -10907,9 +10656,16 @@ module.exports = function (value) {
      * // => false
      */
     function isEmpty(value) {
-      return (!isObjectLike(value) || isFunction(value.splice))
-        ? !size(value)
-        : !keys(value).length;
+      if (isArrayLike(value) &&
+          (isArray(value) || isString(value) || isFunction(value.splice) || isArguments(value))) {
+        return !value.length;
+      }
+      for (var key in value) {
+        if (hasOwnProperty.call(value, key)) {
+          return false;
+        }
+      }
+      return true;
     }
 
     /**
@@ -11134,8 +10890,6 @@ module.exports = function (value) {
      * // => false
      */
     function isObject(value) {
-      // Avoid a V8 JIT bug in Chrome 19-20.
-      // See https://code.google.com/p/v8/issues/detail?id=2291 for more details.
       var type = typeof value;
       return !!value && (type == 'object' || type == 'function');
     }
@@ -11165,6 +10919,26 @@ module.exports = function (value) {
      */
     function isObjectLike(value) {
       return !!value && typeof value == 'object';
+    }
+
+    /**
+     * Checks if `value` is classified as a `Map` object.
+     *
+     * @static
+     * @memberOf _
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+     * @example
+     *
+     * _.isMap(new Map);
+     * // => true
+     *
+     * _.isMap(new WeakMap);
+     * // => false
+     */
+    function isMap(value) {
+      return isObjectLike(value) && getTag(value) == mapTag;
     }
 
     /**
@@ -11453,6 +11227,26 @@ module.exports = function (value) {
     }
 
     /**
+     * Checks if `value` is classified as a `Set` object.
+     *
+     * @static
+     * @memberOf _
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+     * @example
+     *
+     * _.isSet(new Set);
+     * // => true
+     *
+     * _.isSet(new WeakSet);
+     * // => false
+     */
+    function isSet(value) {
+      return isObjectLike(value) && getTag(value) == setTag;
+    }
+
+    /**
      * Checks if `value` is classified as a `String` primitive or object.
      *
      * @static
@@ -11532,6 +11326,46 @@ module.exports = function (value) {
      */
     function isUndefined(value) {
       return value === undefined;
+    }
+
+    /**
+     * Checks if `value` is classified as a `WeakMap` object.
+     *
+     * @static
+     * @memberOf _
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+     * @example
+     *
+     * _.isWeakMap(new WeakMap);
+     * // => true
+     *
+     * _.isWeakMap(new Map);
+     * // => false
+     */
+    function isWeakMap(value) {
+      return isObjectLike(value) && getTag(value) == weakMapTag;
+    }
+
+    /**
+     * Checks if `value` is classified as a `WeakSet` object.
+     *
+     * @static
+     * @memberOf _
+     * @category Lang
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is correctly classified, else `false`.
+     * @example
+     *
+     * _.isWeakSet(new WeakSet);
+     * // => true
+     *
+     * _.isWeakSet(new Set);
+     * // => false
+     */
+    function isWeakSet(value) {
+      return isObjectLike(value) && objectToString.call(value) == weakSetTag;
     }
 
     /**
@@ -11968,7 +11802,7 @@ module.exports = function (value) {
 
     /**
      * Creates an object that inherits from the `prototype` object. If a `properties`
-     * object is provided its own enumerable properties are assigned to the created object.
+     * object is given its own enumerable properties are assigned to the created object.
      *
      * @static
      * @memberOf _
@@ -12071,15 +11905,15 @@ module.exports = function (value) {
      * _.findKey(users, function(o) { return o.age < 40; });
      * // => 'barney' (iteration order is not guaranteed)
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.findKey(users, { 'age': 1, 'active': true });
      * // => 'pebbles'
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.findKey(users, ['active', false]);
      * // => 'fred'
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.findKey(users, 'active');
      * // => 'barney'
      */
@@ -12108,15 +11942,15 @@ module.exports = function (value) {
      * _.findLastKey(users, function(o) { return o.age < 40; });
      * // => returns 'pebbles' assuming `_.findKey` returns 'barney'
      *
-     * // using the `_.matches` iteratee shorthand
+     * // The `_.matches` iteratee shorthand.
      * _.findLastKey(users, { 'age': 36, 'active': true });
      * // => 'barney'
      *
-     * // using the `_.matchesProperty` iteratee shorthand
+     * // The `_.matchesProperty` iteratee shorthand.
      * _.findLastKey(users, ['active', false]);
      * // => 'fred'
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.findLastKey(users, 'active');
      * // => 'pebbles'
      */
@@ -12381,14 +12215,12 @@ module.exports = function (value) {
     /**
      * Creates an object composed of the inverted keys and values of `object`.
      * If `object` contains duplicate values, subsequent values overwrite property
-     * assignments of previous values unless `multiVal` is `true`.
+     * assignments of previous values.
      *
      * @static
      * @memberOf _
      * @category Object
      * @param {Object} object The object to invert.
-     * @param {boolean} [multiVal] Allow multiple values per key.
-     * @param- {Object} [guard] Enables use as an iteratee for functions like `_.map`.
      * @returns {Object} Returns the new inverted object.
      * @example
      *
@@ -12396,27 +12228,43 @@ module.exports = function (value) {
      *
      * _.invert(object);
      * // => { '1': 'c', '2': 'b' }
-     *
-     * // with `multiVal`
-     * _.invert(object, true);
-     * // => { '1': ['a', 'c'], '2': ['b'] }
      */
-    function invert(object, multiVal, guard) {
-      return arrayReduce(keys(object), function(result, key) {
-        var value = object[key];
-        if (multiVal && !guard) {
-          if (hasOwnProperty.call(result, value)) {
-            result[value].push(key);
-          } else {
-            result[value] = [key];
-          }
-        }
-        else {
-          result[value] = key;
-        }
-        return result;
-      }, {});
-    }
+    var invert = createInverter(function(result, value, key) {
+      result[value] = key;
+    }, constant(identity));
+
+    /**
+     * This method is like `_.invert` except that the inverted object is generated
+     * from the results of running each element of `object` through `iteratee`.
+     * The corresponding inverted value of each inverted key is an array of keys
+     * responsible for generating the inverted value. The iteratee is invoked
+     * with one argument: (value).
+     *
+     * @static
+     * @memberOf _
+     * @category Object
+     * @param {Object} object The object to invert.
+     * @param {Function|Object|string} [iteratee=_.identity] The iteratee invoked per element.
+     * @returns {Object} Returns the new inverted object.
+     * @example
+     *
+     * var object = { 'a': 1, 'b': 2, 'c': 1 };
+     *
+     * _.invertBy(object);
+     * // => { '1': ['a', 'c'], '2': ['b'] }
+     *
+     * _.invertBy(object, function(value) {
+     *   return 'group' + value;
+     * });
+     * // => { 'group1': ['a', 'c'], 'group2': ['b'] }
+     */
+    var invertBy = createInverter(function(result, value, key) {
+      if (hasOwnProperty.call(result, value)) {
+        result[value].push(key);
+      } else {
+        result[value] = [key];
+      }
+    }, getIteratee);
 
     /**
      * Invokes the method at `path` of `object`.
@@ -12575,7 +12423,7 @@ module.exports = function (value) {
      * _.mapValues(users, function(o) { return o.age; });
      * // => { 'fred': 40, 'pebbles': 1 } (iteration order is not guaranteed)
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.mapValues(users, 'age');
      * // => { 'fred': 40, 'pebbles': 1 } (iteration order is not guaranteed)
      */
@@ -12628,6 +12476,8 @@ module.exports = function (value) {
      * properties. If `customizer` returns `undefined` merging is handled by the
      * method instead. The `customizer` is invoked with seven arguments:
      * (objValue, srcValue, key, object, source, stack).
+     *
+     * **Note:** This method mutates `object`.
      *
      * @static
      * @memberOf _
@@ -12735,7 +12585,7 @@ module.exports = function (value) {
 
     /**
      * Creates an object composed of the `object` properties `predicate` returns
-     * truthy for. The predicate is invoked with one argument: (value).
+     * truthy for. The predicate is invoked with two arguments: (value, key).
      *
      * @static
      * @memberOf _
@@ -12802,6 +12652,8 @@ module.exports = function (value) {
      * are created for all other missing properties. Use `_.setWith` to customize
      * `path` creation.
      *
+     * **Note:** This method mutates `object`.
+     *
      * @static
      * @memberOf _
      * @category Object
@@ -12830,6 +12682,8 @@ module.exports = function (value) {
      * invoked to produce the objects of `path`.  If `customizer` returns `undefined`
      * path creation is handled by the method instead. The `customizer` is invoked
      * with three arguments: (nsValue, key, nsObject).
+     *
+     * **Note:** This method mutates `object`.
      *
      * @static
      * @memberOf _
@@ -12917,12 +12771,12 @@ module.exports = function (value) {
      * _.transform([2, 3, 4], function(result, n) {
      *   result.push(n *= n);
      *   return n % 2 == 0;
-     * });
+     * }, []);
      * // => [4, 9]
      *
      * _.transform({ 'a': 1, 'b': 2, 'c': 1 }, function(result, value, key) {
      *   (result[value] || (result[value] = [])).push(key);
-     * });
+     * }, {});
      * // => { '1': ['a', 'c'], '2': ['b'] }
      */
     function transform(object, iteratee, accumulator) {
@@ -12949,6 +12803,8 @@ module.exports = function (value) {
 
     /**
      * Removes the property at `path` of `object`.
+     *
+     * **Note:** This method mutates `object`.
      *
      * @static
      * @memberOf _
@@ -13712,7 +13568,7 @@ module.exports = function (value) {
      * in "interpolate" delimiters, HTML-escape interpolated data properties in
      * "escape" delimiters, and execute JavaScript in "evaluate" delimiters. Data
      * properties may be accessed as free variables in the template. If a setting
-     * object is provided it takes precedence over `_.templateSettings` values.
+     * object is given it takes precedence over `_.templateSettings` values.
      *
      * **Note:** In the development build `_.template` utilizes
      * [sourceURLs](http://www.html5rocks.com/en/tutorials/developertools/sourcemaps/#toc-sourceurl)
@@ -13739,54 +13595,54 @@ module.exports = function (value) {
      * @returns {Function} Returns the compiled template function.
      * @example
      *
-     * // using the "interpolate" delimiter to create a compiled template
+     * // Use the "interpolate" delimiter to create a compiled template.
      * var compiled = _.template('hello <%= user %>!');
      * compiled({ 'user': 'fred' });
      * // => 'hello fred!'
      *
-     * // using the HTML "escape" delimiter to escape data property values
+     * // Use the HTML "escape" delimiter to escape data property values.
      * var compiled = _.template('<b><%- value %></b>');
      * compiled({ 'value': '<script>' });
      * // => '<b>&lt;script&gt;</b>'
      *
-     * // using the "evaluate" delimiter to execute JavaScript and generate HTML
+     * // Use the "evaluate" delimiter to execute JavaScript and generate HTML.
      * var compiled = _.template('<% _.forEach(users, function(user) { %><li><%- user %></li><% }); %>');
      * compiled({ 'users': ['fred', 'barney'] });
      * // => '<li>fred</li><li>barney</li>'
      *
-     * // using the internal `print` function in "evaluate" delimiters
+     * // Use the internal `print` function in "evaluate" delimiters.
      * var compiled = _.template('<% print("hello " + user); %>!');
      * compiled({ 'user': 'barney' });
      * // => 'hello barney!'
      *
-     * // using the ES delimiter as an alternative to the default "interpolate" delimiter
+     * // Use the ES delimiter as an alternative to the default "interpolate" delimiter.
      * var compiled = _.template('hello ${ user }!');
      * compiled({ 'user': 'pebbles' });
      * // => 'hello pebbles!'
      *
-     * // using custom template delimiters
+     * // Use custom template delimiters.
      * _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
      * var compiled = _.template('hello {{ user }}!');
      * compiled({ 'user': 'mustache' });
      * // => 'hello mustache!'
      *
-     * // using backslashes to treat delimiters as plain text
+     * // Use backslashes to treat delimiters as plain text.
      * var compiled = _.template('<%= "\\<%- value %\\>" %>');
      * compiled({ 'value': 'ignored' });
      * // => '<%- value %>'
      *
-     * // using the `imports` option to import `jQuery` as `jq`
+     * // Use the `imports` option to import `jQuery` as `jq`.
      * var text = '<% jq.each(users, function(user) { %><li><%- user %></li><% }); %>';
      * var compiled = _.template(text, { 'imports': { 'jq': jQuery } });
      * compiled({ 'users': ['fred', 'barney'] });
      * // => '<li>fred</li><li>barney</li>'
      *
-     * // using the `sourceURL` option to specify a custom sourceURL for the template
+     * // Use the `sourceURL` option to specify a custom sourceURL for the template.
      * var compiled = _.template('hello <%= user %>!', { 'sourceURL': '/basic/greeting.jst' });
      * compiled(data);
      * // => find the source of "greeting.jst" under the Sources tab or Resources panel of the web inspector
      *
-     * // using the `variable` option to ensure a with-statement isn't used in the compiled template
+     * // Use the `variable` option to ensure a with-statement isn't used in the compiled template.
      * var compiled = _.template('hi <%= data.user %>!', { 'variable': 'data' });
      * compiled.source;
      * // => function(data) {
@@ -13795,8 +13651,8 @@ module.exports = function (value) {
      * //   return __p;
      * // }
      *
-     * // using the `source` property to inline compiled templates for meaningful
-     * // line numbers in error messages and a stack trace
+     * // Use the `source` property to inline compiled templates for meaningful
+     * // line numbers in error messages and stack traces.
      * fs.writeFileSync(path.join(cwd, 'jst.js'), '\
      *   var JST = {\
      *     "main": ' + _.template(mainText).source + '\
@@ -14243,7 +14099,7 @@ module.exports = function (value) {
      * @returns {*} Returns the `func` result or error object.
      * @example
      *
-     * // avoid throwing errors for invalid selectors
+     * // Avoid throwing errors for invalid selectors.
      * var elements = _.attempt(function(selector) {
      *   return document.querySelectorAll(selector);
      * }, '>_>');
@@ -14256,7 +14112,7 @@ module.exports = function (value) {
       try {
         return apply(func, undefined, args);
       } catch (e) {
-        return isError(e) ? e : new Error(e);
+        return isObject(e) ? e : new Error(e);
       }
     });
 
@@ -14390,9 +14246,9 @@ module.exports = function (value) {
     }
 
     /**
-     * Creates a function that returns the result of invoking the provided
-     * functions with the `this` binding of the created function, where each
-     * successive invocation is supplied the return value of the previous.
+     * Creates a function that returns the result of invoking the given functions
+     * with the `this` binding of the created function, where each successive
+     * invocation is supplied the return value of the previous.
      *
      * @static
      * @memberOf _
@@ -14413,7 +14269,7 @@ module.exports = function (value) {
 
     /**
      * This method is like `_.flow` except that it creates a function that
-     * invokes the provided functions from right to left.
+     * invokes the given functions from right to left.
      *
      * @static
      * @memberOf _
@@ -14433,7 +14289,7 @@ module.exports = function (value) {
     var flowRight = createFlow(true);
 
     /**
-     * This method returns the first argument provided to it.
+     * This method returns the first argument given to it.
      *
      * @static
      * @memberOf _
@@ -14469,7 +14325,7 @@ module.exports = function (value) {
      *   { 'user': 'fred',   'age': 40 }
      * ];
      *
-     * // create custom iteratee shorthands
+     * // Create custom iteratee shorthands.
      * _.iteratee = _.wrap(_.iteratee, function(callback, func) {
      *   var p = /^(\S+)\s*([<>])\s*(\S+)$/.exec(func);
      *   return !p ? callback(func) : function(object) {
@@ -14481,9 +14337,7 @@ module.exports = function (value) {
      * // => [{ 'user': 'fred', 'age': 40 }]
      */
     function iteratee(func) {
-      return (isObjectLike(func) && !isArray(func))
-        ? matches(func)
-        : baseIteratee(func);
+      return baseIteratee(typeof func == 'function' ? func : baseClone(func, true));
     }
 
     /**
@@ -14987,7 +14841,7 @@ module.exports = function (value) {
     }
 
     /**
-     * Generates a unique ID. If `prefix` is provided the ID is appended to it.
+     * Generates a unique ID. If `prefix` is given the ID is appended to it.
      *
      * @static
      * @memberOf _
@@ -15025,6 +14879,9 @@ module.exports = function (value) {
      */
     function add(augend, addend) {
       var result;
+      if (augend === undefined && addend === undefined) {
+        return 0;
+      }
       if (augend !== undefined) {
         result = augend;
       }
@@ -15119,7 +14976,7 @@ module.exports = function (value) {
      * _.maxBy(objects, function(o) { return o.n; });
      * // => { 'n': 2 }
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.maxBy(objects, 'n');
      * // => { 'n': 2 }
      */
@@ -15187,7 +15044,7 @@ module.exports = function (value) {
      * _.minBy(objects, function(o) { return o.n; });
      * // => { 'n': 1 }
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.minBy(objects, 'n');
      * // => { 'n': 1 }
      */
@@ -15235,6 +15092,9 @@ module.exports = function (value) {
      */
     function subtract(minuend, subtrahend) {
       var result;
+      if (minuend === undefined && subtrahend === undefined) {
+        return 0;
+      }
       if (minuend !== undefined) {
         result = minuend;
       }
@@ -15260,7 +15120,7 @@ module.exports = function (value) {
     function sum(array) {
       return (array && array.length)
         ? baseSum(array, identity)
-        : undefined;
+        : 0;
     }
 
     /**
@@ -15281,14 +15141,14 @@ module.exports = function (value) {
      * _.sumBy(objects, function(o) { return o.n; });
      * // => 20
      *
-     * // using the `_.property` iteratee shorthand
+     * // The `_.property` iteratee shorthand.
      * _.sumBy(objects, 'n');
      * // => 20
      */
     function sumBy(array, iteratee) {
       return (array && array.length)
         ? baseSum(array, getIteratee(iteratee))
-        : undefined;
+        : 0;
     }
 
     /*------------------------------------------------------------------------*/
@@ -15377,6 +15237,7 @@ module.exports = function (value) {
     lodash.intersectionBy = intersectionBy;
     lodash.intersectionWith = intersectionWith;
     lodash.invert = invert;
+    lodash.invertBy = invertBy;
     lodash.invokeMap = invokeMap;
     lodash.iteratee = iteratee;
     lodash.keyBy = keyBy;
@@ -15465,6 +15326,7 @@ module.exports = function (value) {
     lodash.xorWith = xorWith;
     lodash.zip = zip;
     lodash.zipObject = zipObject;
+    lodash.zipObjectDeep = zipObjectDeep;
     lodash.zipWith = zipWith;
 
     // Add aliases.
@@ -15519,9 +15381,11 @@ module.exports = function (value) {
     lodash.invoke = invoke;
     lodash.isArguments = isArguments;
     lodash.isArray = isArray;
+    lodash.isArrayBuffer = isArrayBuffer;
     lodash.isArrayLike = isArrayLike;
     lodash.isArrayLikeObject = isArrayLikeObject;
     lodash.isBoolean = isBoolean;
+    lodash.isBuffer = isBuffer;
     lodash.isDate = isDate;
     lodash.isElement = isElement;
     lodash.isEmpty = isEmpty;
@@ -15532,6 +15396,7 @@ module.exports = function (value) {
     lodash.isFunction = isFunction;
     lodash.isInteger = isInteger;
     lodash.isLength = isLength;
+    lodash.isMap = isMap;
     lodash.isMatch = isMatch;
     lodash.isMatchWith = isMatchWith;
     lodash.isNaN = isNaN;
@@ -15544,10 +15409,13 @@ module.exports = function (value) {
     lodash.isPlainObject = isPlainObject;
     lodash.isRegExp = isRegExp;
     lodash.isSafeInteger = isSafeInteger;
+    lodash.isSet = isSet;
     lodash.isString = isString;
     lodash.isSymbol = isSymbol;
     lodash.isTypedArray = isTypedArray;
     lodash.isUndefined = isUndefined;
+    lodash.isWeakMap = isWeakMap;
+    lodash.isWeakSet = isWeakSet;
     lodash.join = join;
     lodash.kebabCase = kebabCase;
     lodash.last = last;
@@ -15879,396 +15747,98 @@ module.exports = function (value) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js":[function(require,module,exports){
-(function(self) {
-  'use strict';
+},{}],"/srv/zotero/my-publications/node_modules/process/browser.js":[function(require,module,exports){
+// shim for using process in browser
 
-  if (self.fetch) {
-    return
-  }
+var process = module.exports = {};
+var queue = [];
+var draining = false;
+var currentQueue;
+var queueIndex = -1;
 
-  function normalizeName(name) {
-    if (typeof name !== 'string') {
-      name = String(name)
-    }
-    if (/[^a-z0-9\-#$%&'*+.\^_`|~]/i.test(name)) {
-      throw new TypeError('Invalid character in header field name')
-    }
-    return name.toLowerCase()
-  }
-
-  function normalizeValue(value) {
-    if (typeof value !== 'string') {
-      value = String(value)
-    }
-    return value
-  }
-
-  function Headers(headers) {
-    this.map = {}
-
-    if (headers instanceof Headers) {
-      headers.forEach(function(value, name) {
-        this.append(name, value)
-      }, this)
-
-    } else if (headers) {
-      Object.getOwnPropertyNames(headers).forEach(function(name) {
-        this.append(name, headers[name])
-      }, this)
-    }
-  }
-
-  Headers.prototype.append = function(name, value) {
-    name = normalizeName(name)
-    value = normalizeValue(value)
-    var list = this.map[name]
-    if (!list) {
-      list = []
-      this.map[name] = list
-    }
-    list.push(value)
-  }
-
-  Headers.prototype['delete'] = function(name) {
-    delete this.map[normalizeName(name)]
-  }
-
-  Headers.prototype.get = function(name) {
-    var values = this.map[normalizeName(name)]
-    return values ? values[0] : null
-  }
-
-  Headers.prototype.getAll = function(name) {
-    return this.map[normalizeName(name)] || []
-  }
-
-  Headers.prototype.has = function(name) {
-    return this.map.hasOwnProperty(normalizeName(name))
-  }
-
-  Headers.prototype.set = function(name, value) {
-    this.map[normalizeName(name)] = [normalizeValue(value)]
-  }
-
-  Headers.prototype.forEach = function(callback, thisArg) {
-    Object.getOwnPropertyNames(this.map).forEach(function(name) {
-      this.map[name].forEach(function(value) {
-        callback.call(thisArg, value, name, this)
-      }, this)
-    }, this)
-  }
-
-  function consumed(body) {
-    if (body.bodyUsed) {
-      return Promise.reject(new TypeError('Already read'))
-    }
-    body.bodyUsed = true
-  }
-
-  function fileReaderReady(reader) {
-    return new Promise(function(resolve, reject) {
-      reader.onload = function() {
-        resolve(reader.result)
-      }
-      reader.onerror = function() {
-        reject(reader.error)
-      }
-    })
-  }
-
-  function readBlobAsArrayBuffer(blob) {
-    var reader = new FileReader()
-    reader.readAsArrayBuffer(blob)
-    return fileReaderReady(reader)
-  }
-
-  function readBlobAsText(blob) {
-    var reader = new FileReader()
-    reader.readAsText(blob)
-    return fileReaderReady(reader)
-  }
-
-  var support = {
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
-      try {
-        new Blob();
-        return true
-      } catch(e) {
-        return false
-      }
-    })(),
-    formData: 'FormData' in self,
-    arrayBuffer: 'ArrayBuffer' in self
-  }
-
-  function Body() {
-    this.bodyUsed = false
-
-
-    this._initBody = function(body) {
-      this._bodyInit = body
-      if (typeof body === 'string') {
-        this._bodyText = body
-      } else if (support.blob && Blob.prototype.isPrototypeOf(body)) {
-        this._bodyBlob = body
-      } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
-        this._bodyFormData = body
-      } else if (!body) {
-        this._bodyText = ''
-      } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
-        // Only support ArrayBuffers for POST method.
-        // Receiving ArrayBuffers happens via Blobs, instead.
-      } else {
-        throw new Error('unsupported BodyInit type')
-      }
-
-      if (!this.headers.get('content-type')) {
-        if (typeof body === 'string') {
-          this.headers.set('content-type', 'text/plain;charset=UTF-8')
-        } else if (this._bodyBlob && this._bodyBlob.type) {
-          this.headers.set('content-type', this._bodyBlob.type)
-        }
-      }
-    }
-
-    if (support.blob) {
-      this.blob = function() {
-        var rejected = consumed(this)
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return Promise.resolve(this._bodyBlob)
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as blob')
-        } else {
-          return Promise.resolve(new Blob([this._bodyText]))
-        }
-      }
-
-      this.arrayBuffer = function() {
-        return this.blob().then(readBlobAsArrayBuffer)
-      }
-
-      this.text = function() {
-        var rejected = consumed(this)
-        if (rejected) {
-          return rejected
-        }
-
-        if (this._bodyBlob) {
-          return readBlobAsText(this._bodyBlob)
-        } else if (this._bodyFormData) {
-          throw new Error('could not read FormData body as text')
-        } else {
-          return Promise.resolve(this._bodyText)
-        }
-      }
+function cleanUpNextTick() {
+    draining = false;
+    if (currentQueue.length) {
+        queue = currentQueue.concat(queue);
     } else {
-      this.text = function() {
-        var rejected = consumed(this)
-        return rejected ? rejected : Promise.resolve(this._bodyText)
-      }
+        queueIndex = -1;
     }
-
-    if (support.formData) {
-      this.formData = function() {
-        return this.text().then(decode)
-      }
+    if (queue.length) {
+        drainQueue();
     }
+}
 
-    this.json = function() {
-      return this.text().then(JSON.parse)
-    }
-
-    return this
-  }
-
-  // HTTP methods whose capitalization should be normalized
-  var methods = ['DELETE', 'GET', 'HEAD', 'OPTIONS', 'POST', 'PUT']
-
-  function normalizeMethod(method) {
-    var upcased = method.toUpperCase()
-    return (methods.indexOf(upcased) > -1) ? upcased : method
-  }
-
-  function Request(input, options) {
-    options = options || {}
-    var body = options.body
-    if (Request.prototype.isPrototypeOf(input)) {
-      if (input.bodyUsed) {
-        throw new TypeError('Already read')
-      }
-      this.url = input.url
-      this.credentials = input.credentials
-      if (!options.headers) {
-        this.headers = new Headers(input.headers)
-      }
-      this.method = input.method
-      this.mode = input.mode
-      if (!body) {
-        body = input._bodyInit
-        input.bodyUsed = true
-      }
-    } else {
-      this.url = input
-    }
-
-    this.credentials = options.credentials || this.credentials || 'omit'
-    if (options.headers || !this.headers) {
-      this.headers = new Headers(options.headers)
-    }
-    this.method = normalizeMethod(options.method || this.method || 'GET')
-    this.mode = options.mode || this.mode || null
-    this.referrer = null
-
-    if ((this.method === 'GET' || this.method === 'HEAD') && body) {
-      throw new TypeError('Body not allowed for GET or HEAD requests')
-    }
-    this._initBody(body)
-  }
-
-  Request.prototype.clone = function() {
-    return new Request(this)
-  }
-
-  function decode(body) {
-    var form = new FormData()
-    body.trim().split('&').forEach(function(bytes) {
-      if (bytes) {
-        var split = bytes.split('=')
-        var name = split.shift().replace(/\+/g, ' ')
-        var value = split.join('=').replace(/\+/g, ' ')
-        form.append(decodeURIComponent(name), decodeURIComponent(value))
-      }
-    })
-    return form
-  }
-
-  function headers(xhr) {
-    var head = new Headers()
-    var pairs = xhr.getAllResponseHeaders().trim().split('\n')
-    pairs.forEach(function(header) {
-      var split = header.trim().split(':')
-      var key = split.shift().trim()
-      var value = split.join(':').trim()
-      head.append(key, value)
-    })
-    return head
-  }
-
-  Body.call(Request.prototype)
-
-  function Response(bodyInit, options) {
-    if (!options) {
-      options = {}
-    }
-
-    this.type = 'default'
-    this.status = options.status
-    this.ok = this.status >= 200 && this.status < 300
-    this.statusText = options.statusText
-    this.headers = options.headers instanceof Headers ? options.headers : new Headers(options.headers)
-    this.url = options.url || ''
-    this._initBody(bodyInit)
-  }
-
-  Body.call(Response.prototype)
-
-  Response.prototype.clone = function() {
-    return new Response(this._bodyInit, {
-      status: this.status,
-      statusText: this.statusText,
-      headers: new Headers(this.headers),
-      url: this.url
-    })
-  }
-
-  Response.error = function() {
-    var response = new Response(null, {status: 0, statusText: ''})
-    response.type = 'error'
-    return response
-  }
-
-  var redirectStatuses = [301, 302, 303, 307, 308]
-
-  Response.redirect = function(url, status) {
-    if (redirectStatuses.indexOf(status) === -1) {
-      throw new RangeError('Invalid status code')
-    }
-
-    return new Response(null, {status: status, headers: {location: url}})
-  }
-
-  self.Headers = Headers;
-  self.Request = Request;
-  self.Response = Response;
-
-  self.fetch = function(input, init) {
-    return new Promise(function(resolve, reject) {
-      var request
-      if (Request.prototype.isPrototypeOf(input) && !init) {
-        request = input
-      } else {
-        request = new Request(input, init)
-      }
-
-      var xhr = new XMLHttpRequest()
-
-      function responseURL() {
-        if ('responseURL' in xhr) {
-          return xhr.responseURL
-        }
-
-        // Avoid security warnings on getResponseHeader when not allowed by CORS
-        if (/^X-Request-URL:/m.test(xhr.getAllResponseHeaders())) {
-          return xhr.getResponseHeader('X-Request-URL')
-        }
-
+function drainQueue() {
+    if (draining) {
         return;
-      }
+    }
+    var timeout = setTimeout(cleanUpNextTick);
+    draining = true;
 
-      xhr.onload = function() {
-        var status = (xhr.status === 1223) ? 204 : xhr.status
-        if (status < 100 || status > 599) {
-          reject(new TypeError('Network request failed'))
-          return
+    var len = queue.length;
+    while(len) {
+        currentQueue = queue;
+        queue = [];
+        while (++queueIndex < len) {
+            if (currentQueue) {
+                currentQueue[queueIndex].run();
+            }
         }
-        var options = {
-          status: status,
-          statusText: xhr.statusText,
-          headers: headers(xhr),
-          url: responseURL()
+        queueIndex = -1;
+        len = queue.length;
+    }
+    currentQueue = null;
+    draining = false;
+    clearTimeout(timeout);
+}
+
+process.nextTick = function (fun) {
+    var args = new Array(arguments.length - 1);
+    if (arguments.length > 1) {
+        for (var i = 1; i < arguments.length; i++) {
+            args[i - 1] = arguments[i];
         }
-        var body = 'response' in xhr ? xhr.response : xhr.responseText;
-        resolve(new Response(body, options))
-      }
+    }
+    queue.push(new Item(fun, args));
+    if (queue.length === 1 && !draining) {
+        setTimeout(drainQueue, 0);
+    }
+};
 
-      xhr.onerror = function() {
-        reject(new TypeError('Network request failed'))
-      }
+// v8 likes predictible objects
+function Item(fun, array) {
+    this.fun = fun;
+    this.array = array;
+}
+Item.prototype.run = function () {
+    this.fun.apply(null, this.array);
+};
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+process.version = ''; // empty string to avoid regexp issues
+process.versions = {};
 
-      xhr.open(request.method, request.url, true)
+function noop() {}
 
-      if (request.credentials === 'include') {
-        xhr.withCredentials = true
-      }
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
 
-      if ('responseType' in xhr && support.blob) {
-        xhr.responseType = 'blob'
-      }
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
 
-      request.headers.forEach(function(value, name) {
-        xhr.setRequestHeader(name, value)
-      })
-
-      xhr.send(typeof request._bodyInit === 'undefined' ? null : request._bodyInit)
-    })
-  }
-  self.fetch.polyfill = true
-})(typeof self !== 'undefined' ? self : this);
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+process.umask = function() { return 0; };
 
 },{}],"/srv/zotero/my-publications/src/js/api.js":[function(require,module,exports){
 'use strict';
@@ -16276,7 +15846,7 @@ module.exports = function (value) {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = undefined;
+exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_SHORT_SYMBOL = undefined;
 exports.processResponse = processResponse;
 exports.fetchUntilExhausted = fetchUntilExhausted;
 
@@ -16291,9 +15861,10 @@ var _data = require('./data.js');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('es6-symbol/implement');
-var ABSTRACT_NOTE_SHORT_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
-var AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
-var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
+const ABSTRACT_NOTE_SHORT_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
+const ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
+const AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
+const FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
 
 /**
  * Process raw API response
@@ -16303,20 +15874,19 @@ var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formatte
  */
 function processResponse(response, config) {
 	if (response) {
-		var childItems = [];
-		var index = {};
+		let childItems = [];
+		let index = {};
 
 		for (var i = response.length; i--;) {
-			var item = response[i];
+			let item = response[i];
 			if (item.data && item.data.abstractNote) {
-				var abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
+				let abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
 				abstractNoteShort = abstractNoteShort.substr(0, Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' ')));
 				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
+				item.data[ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
 			}
 			if (item.data && item.data.creators) {
-				item.data[AUTHORS_SYMBOL] = item.data.creators.map(function (author) {
-					return author.firstName + ' ' + author.lastName;
-				}).join(' & ');
+				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => author.firstName + ' ' + author.lastName).join(' & ');
 			}
 			if (item.data && item.meta.parsedDate) {
 				item.data[FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
@@ -16334,10 +15904,10 @@ function processResponse(response, config) {
 
 		try {
 			for (var _iterator = childItems[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-				var item = _step.value;
+				let item = _step.value;
 
 				if (!index[item.data.parentItem]) {
-					console.warn('item ' + item.key + ' has parentItem ' + item.data.parentItem + ' that does not exist in the dataset');
+					console.warn(`item ${ item.key } has parentItem ${ item.data.parentItem } that does not exist in the dataset`);
 					continue;
 				}
 
@@ -16384,31 +15954,29 @@ function processResponse(response, config) {
  * @return {Promise}                - Resolved with complete dataset or rejected on error
  */
 function fetchUntilExhausted(url, options, jsondata) {
-	var relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
+	let relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
 	jsondata = jsondata || [];
 
 	return new Promise(function (resolve, reject) {
 		fetch(url, options).then(function (response) {
 			if (response.status >= 200 && response.status < 300) {
 				if (response.headers.has('Link')) {
-					(function () {
-						var matches = response.headers.get('Link').match(relRegex);
-						if (matches && matches.length >= 2) {
-							response.json().then(function (jsonDataPart) {
-								if (!(jsonDataPart instanceof Array)) {
-									jsonDataPart = [jsonDataPart];
-								}
-								resolve(fetchUntilExhausted(matches[1], options, _lodash2.default.union(jsondata, jsonDataPart)));
-							});
-						} else {
-							response.json().then(function (jsonDataPart) {
-								if (!(jsonDataPart instanceof Array)) {
-									jsonDataPart = [jsonDataPart];
-								}
-								resolve(_lodash2.default.union(jsondata, jsonDataPart));
-							});
-						}
-					})();
+					let matches = response.headers.get('Link').match(relRegex);
+					if (matches && matches.length >= 2) {
+						response.json().then(function (jsonDataPart) {
+							if (!(jsonDataPart instanceof Array)) {
+								jsonDataPart = [jsonDataPart];
+							}
+							resolve(fetchUntilExhausted(matches[1], options, _lodash2.default.union(jsondata, jsonDataPart)));
+						});
+					} else {
+						response.json().then(function (jsonDataPart) {
+							if (!(jsonDataPart instanceof Array)) {
+								jsonDataPart = [jsonDataPart];
+							}
+							resolve(_lodash2.default.union(jsondata, jsonDataPart));
+						});
+					}
 				} else {
 					response.json().then(function (jsonDataPart) {
 						if (!(jsonDataPart instanceof Array)) {
@@ -16418,18 +15986,16 @@ function fetchUntilExhausted(url, options, jsondata) {
 					});
 				}
 			} else {
-				reject(new Error('Unexpected status code ' + response.status + ' when requesting ' + url));
+				reject(new Error(`Unexpected status code ${ response.status } when requesting ${ url }`));
 			}
 		}).catch(function () {
-			reject(new Error('Unexpected error when requesting ' + url));
+			reject(new Error(`Unexpected error when requesting ${ url }`));
 		});
 	});
 }
 
 },{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/data.js":[function(require,module,exports){
 'use strict';
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
@@ -16446,14 +16012,14 @@ var _api = require('./api.js');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('es6-symbol/implement');
-var GROUPED_NONE = exports.GROUPED_NONE = 0;
-var GROUPED_BY_TYPE = exports.GROUPED_BY_TYPE = 1;
-var GROUPED_BY_COLLECTION = exports.GROUPED_BY_COLLECTION = 2;
-var CHILD_NOTES = exports.CHILD_NOTES = Symbol.for('childNotes');
-var CHILD_ATTACHMENTS = exports.CHILD_ATTACHMENTS = Symbol.for('childAttachments');
-var CHILD_OTHER = exports.CHILD_OTHER = Symbol.for('childOther');
-var GROUP_EXPANDED_SUMBOL = exports.GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
-var GROUP_TITLE = exports.GROUP_TITLE = Symbol.for('groupTitle');
+const GROUPED_NONE = exports.GROUPED_NONE = 0;
+const GROUPED_BY_TYPE = exports.GROUPED_BY_TYPE = 1;
+const GROUPED_BY_COLLECTION = exports.GROUPED_BY_COLLECTION = 2;
+const CHILD_NOTES = exports.CHILD_NOTES = Symbol.for('childNotes');
+const CHILD_ATTACHMENTS = exports.CHILD_ATTACHMENTS = Symbol.for('childAttachments');
+const CHILD_OTHER = exports.CHILD_OTHER = Symbol.for('childOther');
+const GROUP_EXPANDED_SUMBOL = exports.GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
+const GROUP_TITLE = exports.GROUP_TITLE = Symbol.for('groupTitle');
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
@@ -16467,7 +16033,7 @@ function ZoteroData(data, config) {
 	Object.defineProperty(this, 'length', {
 		enumerable: false,
 		configurable: false,
-		get: function get() {
+		get: function () {
 			return this.data.length;
 		}
 	});
@@ -16479,16 +16045,16 @@ function ZoteroData(data, config) {
  *                                         Alternatively string "all" is accepted.
  */
 ZoteroData.prototype.groupByType = function (expand) {
-	var groupedData = {};
+	let groupedData = {};
 	expand = expand || [];
-	for (var i = this.raw.length; i--;) {
-		var item = this.raw[i];
+	for (let i = this.raw.length; i--;) {
+		let item = this.raw[i];
 
 		if (!groupedData[item.data.itemType]) {
 			groupedData[item.data.itemType] = [];
 		}
 		groupedData[item.data.itemType].push(item);
-		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.contains(expand, item.data.itemType);
+		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.includes(expand, item.data.itemType);
 	}
 	this.data = groupedData;
 	this.grouped = GROUPED_BY_TYPE;
@@ -16507,55 +16073,185 @@ ZoteroData.prototype.groupByCollections = function () {
  * For grouped data each iternation returns a group of Zotero items. Additionaly group name
  * is available under GROUP_TITLE Symbol
  */
-ZoteroData.prototype[Symbol.iterator] = function () {
-	var _this = this;
+// ZoteroData.prototype[Symbol.iterator] = function () {
+// 	let i = 0;
+// 	if(this.grouped > 0) {
+// 		let keys = Object.keys(this.data);
+// 		return {
+// 			next: function() {
+// 				var group;
+// 				if(i < this.data.length) {
+// 					group = this.data[keys[i]];
+// 					group[GROUP_TITLE] = keys[i];
+// 				} else {
+// 					group = null;
+// 				}
 
-	var i = 0;
-	if (this.grouped > 0) {
-		var _ret = function () {
-			var keys = Object.keys(_this.data);
-			return {
-				v: {
-					next: function () {
-						var group = this.data[keys[i]];
-						group[GROUP_TITLE] = keys[i];
-						return {
-							value: group,
-							done: ++i === keys.length
-						};
-					}.bind(_this)
+// 				return {
+// 					value: group,
+// 					done: i++ >= this.data.length
+// 				};
+// 			}.bind(this)
+// 		};
+// 	} else {
+// 		return {
+// 			next: function() {
+// 				return {
+// 					value: i < this.data.length ? this.data[i] : null,
+// 					done: i++ >= this.data.length
+// 				};
+// 			}.bind(this)
+// 		};
+// 	}
+// };
+
+ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee() {
+	var keys, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, key, group, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, value;
+
+	return regeneratorRuntime.wrap(function _callee$(_context) {
+		while (1) switch (_context.prev = _context.next) {
+			case 0:
+				if (!this.grouped) {
+					_context.next = 32;
+					break;
 				}
-			};
-		}();
 
-		if ((typeof _ret === 'undefined' ? 'undefined' : _typeof(_ret)) === "object") return _ret.v;
-	} else {
-		return {
-			next: function () {
-				return {
-					value: i < this.data.length ? this.data[i] : null,
-					done: i++ >= this.data.length
-				};
-			}.bind(this)
-		};
-	}
-};
+				keys = Object.keys(this.data);
+				_iteratorNormalCompletion = true;
+				_didIteratorError = false;
+				_iteratorError = undefined;
+				_context.prev = 5;
+				_iterator = keys[Symbol.iterator]();
 
-},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/main-compat.js":[function(require,module,exports){
+			case 7:
+				if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+					_context.next = 16;
+					break;
+				}
+
+				key = _step.value;
+				group = this.data[key];
+
+				group[GROUP_TITLE] = key;
+				_context.next = 13;
+				return group;
+
+			case 13:
+				_iteratorNormalCompletion = true;
+				_context.next = 7;
+				break;
+
+			case 16:
+				_context.next = 22;
+				break;
+
+			case 18:
+				_context.prev = 18;
+				_context.t0 = _context['catch'](5);
+				_didIteratorError = true;
+				_iteratorError = _context.t0;
+
+			case 22:
+				_context.prev = 22;
+				_context.prev = 23;
+
+				if (!_iteratorNormalCompletion && _iterator.return) {
+					_iterator.return();
+				}
+
+			case 25:
+				_context.prev = 25;
+
+				if (!_didIteratorError) {
+					_context.next = 28;
+					break;
+				}
+
+				throw _iteratorError;
+
+			case 28:
+				return _context.finish(25);
+
+			case 29:
+				return _context.finish(22);
+
+			case 30:
+				_context.next = 58;
+				break;
+
+			case 32:
+				_iteratorNormalCompletion2 = true;
+				_didIteratorError2 = false;
+				_iteratorError2 = undefined;
+				_context.prev = 35;
+				_iterator2 = this.data[Symbol.iterator]();
+
+			case 37:
+				if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
+					_context.next = 44;
+					break;
+				}
+
+				value = _step2.value;
+				_context.next = 41;
+				return value;
+
+			case 41:
+				_iteratorNormalCompletion2 = true;
+				_context.next = 37;
+				break;
+
+			case 44:
+				_context.next = 50;
+				break;
+
+			case 46:
+				_context.prev = 46;
+				_context.t1 = _context['catch'](35);
+				_didIteratorError2 = true;
+				_iteratorError2 = _context.t1;
+
+			case 50:
+				_context.prev = 50;
+				_context.prev = 51;
+
+				if (!_iteratorNormalCompletion2 && _iterator2.return) {
+					_iterator2.return();
+				}
+
+			case 53:
+				_context.prev = 53;
+
+				if (!_didIteratorError2) {
+					_context.next = 56;
+					break;
+				}
+
+				throw _iteratorError2;
+
+			case 56:
+				return _context.finish(53);
+
+			case 57:
+				return _context.finish(50);
+
+			case 58:
+			case 'end':
+				return _context.stop();
+		}
+	}, _callee, this, [[5, 18, 22, 30], [23,, 25, 29], [35, 46, 50, 58], [51,, 53, 57]]);
+});
+
+},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/main-modern.js":[function(require,module,exports){
 'use strict';
+
+require('babel-regenerator-runtime');
 
 var _main = require('./main.js');
 
-// require('core-js/es5');
-
-// doesn't seem to work very well in IE
-// require('es6-promise').polyfill();
-require('core-js/es6/promise');
-require('whatwg-fetch');
-
 module.exports = _main.ZoteroPublications;
 
-},{"./main.js":"/srv/zotero/my-publications/src/js/main.js","core-js/es6/promise":"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js","whatwg-fetch":"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
+},{"./main.js":"/srv/zotero/my-publications/src/js/main.js","babel-regenerator-runtime":"/srv/zotero/my-publications/node_modules/babel-regenerator-runtime/runtime.js"}],"/srv/zotero/my-publications/src/js/main.js":[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -16599,25 +16295,60 @@ ZoteroPublications.prototype.defaults = {
 	limit: 100,
 	citationStyle: '',
 	include: ['data', 'citation'],
+	storeCitationPreference: false,
 	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
-	expand: 'all'
+	expand: 'all',
+	citeStyleOptions: {
+		'american-anthropological-association': 'American Anthropological Association',
+		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
+		'elsevier-harvard': 'Elsevier Harvard (with titles)',
+		'modern-humanities-research-association-author-date': 'Modern Humanities Research Association 3rd edition (author-date)',
+		'modern-language-association': 'Modern Language Association 7th edition'
+	},
+	exportFormats: {
+		'bibtex': {
+			name: 'BibTeX',
+			contentType: 'application/x-bibtex',
+			extension: 'bib'
+		},
+		'ris': {
+			name: 'RIS',
+			contentType: 'application/x-research-info-systems',
+			extension: 'ris'
+		},
+		'rdf_zotero': {
+			name: 'Zotero RDF',
+			contentType: 'application/rdf+xml',
+			extension: 'rdf'
+		}
+	}
 };
 
-ZoteroPublications.prototype.get = function (url, options) {
-	options = options || {
+/**
+ * Low-level function to fetch given url to obtain Zotero Data
+ * @param  {String} url      - A Zotero API url to get
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @param  {?Object} init    - Options forwarded to the fetch method
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.get = function (url, options, init) {
+	init = init || {
 		headers: {
 			'Accept': 'application/json'
 		}
 	};
 
+	options = _lodash2.default.extend({}, this.config, options);
+
 	return new Promise(function (resolve, reject) {
-		var promise = (0, _api.fetchUntilExhausted)(url, options);
+		let promise = (0, _api.fetchUntilExhausted)(url, init);
 		promise.then(function (responseJson) {
-			var data = new _data.ZoteroData(responseJson, this.config);
-			if (this.config.group === 'type') {
-				data.groupByType(this.config.expand);
+			let data = new _data.ZoteroData(responseJson, this.config);
+			if (options.group === 'type') {
+				data.groupByType(options.expand);
 			}
 			resolve(data);
 		}.bind(this));
@@ -16631,36 +16362,53 @@ ZoteroPublications.prototype.get = function (url, options) {
  * @return {Promise}         - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.getEndpoint = function (endpoint) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/' + endpoint + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+ZoteroPublications.prototype.getEndpoint = function (endpoint, options) {
+	options = options || {};
+	let apiBase = this.config.apiBase,
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
+	    url = `https://${ apiBase }/${ endpoint }?include=${ include }&limit=${ limit }&linkwrap=1&order=dateModified&sort=desc&start=0&style=${ style }`;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
-ZoteroPublications.prototype.getPublications = function (userId, citationStyle) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = citationStyle || this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+/**
+ * Build url for getting user's publications then fetch entire dataset recursively
+ * @param  {number} userId   - User id
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @return {Promise}         - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.getPublications = function (userId, options) {
+	options = options || {};
+	let apiBase = this.config.apiBase,
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
+	    url = `https://${ apiBase }/users/${ userId }/publications/items?include=${ include }&limit=${ limit }&linkwrap=1&order=dateModified&sort=desc&start=0&style=${ style }`;
 
 	this.userId = userId;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
-ZoteroPublications.prototype.getItem = function (itemId, userId, citationStyle) {
-	var apiBase = this.config.apiBase,
-	    limit = this.config.limit,
-	    style = citationStyle || this.config.citationStyle,
-	    include = this.config.include.join(','),
-	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items/' + itemId + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+/**
+ * Build url for getting a single item from user's publications then fetch it
+ * @param  {[type]} userId   - User id
+ * @param  {?Object} options - Settings that can complement or override instance config
+ * @return {[type]}          - Resolved with ZoteroData object on success, rejected
+ *                             in case of any network/response problems
+ */
+ZoteroPublications.prototype.getItem = function (itemId, userId, options) {
+	options = options || {};
+	let apiBase = this.config.apiBase,
+	    limit = options.limit || this.config.limit,
+	    style = options.citationStyle || this.config.citationStyle,
+	    include = options.include && options.include.join(',') || this.config.include.join(','),
+	    url = `https://${ apiBase }/users/${ userId }/publications/items/${ itemId }?include=${ include }&limit=${ limit }&linkwrap=1&order=dateModified&sort=desc&start=0&style=${ style }`;
 
-	return this.get(url);
+	return this.get(url, options);
 };
 
 /**
@@ -16669,20 +16417,31 @@ ZoteroPublications.prototype.getItem = function (itemId, userId, citationStyle) 
  * @param  {HTMLElement} container            - A DOM element where publications will be rendered
  * @return {Promise}                          - Resolved when rendered or rejected on error.
  */
-ZoteroPublications.prototype.render = function (endpointOrData, container) {
+ZoteroPublications.prototype.render = function (userIdOrendpointOrData, container) {
 	return new Promise(function (resolve, reject) {
 		if (!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
-		if (endpointOrData instanceof _data.ZoteroData) {
+		if (userIdOrendpointOrData instanceof _data.ZoteroData) {
+			let data = userIdOrendpointOrData;
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			var data = endpointOrData;
 			this.renderer.displayPublications(data);
 			resolve();
-		} else if (typeof endpointOrData === 'string') {
+		} else if (typeof userIdOrendpointOrData === 'number') {
+			let userId = userIdOrendpointOrData;
+			let promise = this.getPublications(userId);
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			var endpoint = endpointOrData;
-			var promise = this.getEndpoint(endpoint);
+			promise.then(function (data) {
+				this.renderer.displayPublications(data);
+				resolve();
+			}.bind(this));
+			promise.catch(function () {
+				reject(arguments[0]);
+			});
+		} else if (typeof userIdOrendpointOrData === 'string') {
+			let endpoint = userIdOrendpointOrData;
+			let promise = this.getEndpoint(endpoint);
+			this.renderer = new _render.ZoteroRenderer(container, this);
 			promise.then(function (data) {
 				this.renderer.displayPublications(data);
 				resolve();
@@ -16734,6 +16493,10 @@ var _branding = require('./tpl/partial/branding.tpl');
 
 var _branding2 = _interopRequireDefault(_branding);
 
+var _export = require('./tpl/partial/export.tpl');
+
+var _export2 = _interopRequireDefault(_export);
+
 var _groupView = require('./tpl/group-view.tpl');
 
 var _groupView2 = _interopRequireDefault(_groupView);
@@ -16759,6 +16522,11 @@ function ZoteroRenderer(container, zotero) {
 	this.container = container;
 	this.zotero = zotero;
 	this.config = zotero.config;
+	if (this.config.storeCitationPreference) {
+		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
+	} else {
+		this.preferredCitationStyle = this.config.citationStyle;
+	}
 	this.toggleSpinner(true);
 }
 
@@ -16768,10 +16536,13 @@ function ZoteroRenderer(container, zotero) {
  * @return {String}                  - Rendered markup of a Zotero item
  */
 ZoteroRenderer.prototype.renderItem = function (zoteroItem) {
+	var citationPreference;
+
 	return (0, _item2.default)({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'renderer': this
+		'renderer': this,
+		'citationPreference': citationPreference
 	});
 };
 
@@ -16860,73 +16631,138 @@ ZoteroRenderer.prototype.displayPublications = function (data) {
 
 	this.data = data;
 	this.container.innerHTML = markup;
-
-	_lodash2.default.each(this.container.querySelectorAll('.zotero-details'), function (element) {
-		element.style.height = element.offsetHeight + 'px';
-		element.classList.add('zotero-details-collapsed');
-	});
-
 	this.toggleSpinner(false);
 	this.previous = markup;
 	this.addHandlers();
 };
 
 /**
+ * Update citation and store preference in memory/local storage
+ * depending on configuration
+ * @param  {HTMLElement} itemEl 		- dom element containing the item
+ * @param  {String} citationStyle 		- optionally set the citation style
+ */
+ZoteroRenderer.prototype.updateCitation = function (itemEl, citationStyle) {
+	let itemId = itemEl.dataset.item;
+	let citationEl = itemEl.querySelector('.zotero-citation');
+	let citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
+
+	if (citationStyle) {
+		citationStyleSelectEl.value = citationStyle;
+	} else {
+		citationStyle = citationStyleSelectEl.options[citationStyleSelectEl.selectedIndex].value;
+	}
+
+	this.preferredCitationStyle = citationStyle;
+	if (this.config.storeCitationPreference) {
+		localStorage.setItem('zotero-citation-preference', citationStyle);
+	}
+
+	citationEl.innerHTML = '';
+	citationEl.classList.add('zotero-loading-inline');
+
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'citationStyle': citationStyle,
+		'include': ['bib'],
+		'group': false
+	}).then(item => {
+		citationEl.classList.remove('zotero-loading-inline');
+		citationEl.innerHTML = item.raw[0].bib;
+		(0, _utils.selectText)(citationEl);
+	});
+};
+
+/**
+ * Prepare a link for downloading item export
+ */
+ZoteroRenderer.prototype.prepareExport = function (itemEl) {
+	let itemId = itemEl.dataset.item;
+	let exportEl = itemEl.querySelector('.zotero-export');
+	let exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
+	let exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
+
+	exportEl.innerHTML = '';
+	exportEl.classList.add('zotero-loading-inline');
+
+	this.zotero.getItem(itemId, this.zotero.userId, {
+		'include': [exportFormat],
+		'group': false
+	}).then(item => {
+		let itemData = _lodash2.default.findWhere(this.data.raw, { 'key': itemId });
+		exportEl.classList.remove('zotero-loading-inline');
+		exportEl.innerHTML = (0, _export2.default)({
+			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
+			'content': item.raw[0][exportFormat],
+			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
+		});
+	});
+};
+
+/**
  * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function () {
-	this.container.addEventListener('click', function (ev) {
+	this.container.addEventListener('click', ev => {
 		var target;
 
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'details';
-		});
+		target = (0, _utils.closest)(ev.target, el => el.dataset && el.dataset.trigger);
+
 		if (target) {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
-			var detailsEl = itemEl.querySelector('.zotero-details');
-			if (detailsEl) {
-				detailsEl.classList.toggle('zotero-details-collapsed');
-			}
-			window.history.pushState(null, null, '#' + itemEl.dataset.item);
 			ev.preventDefault();
-			return;
-		}
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'cite';
-		});
-		if (target) {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
-			var citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-			citeContainerEl.classList.toggle('zotero-cite-container-collapsed');
+			if (target.dataset.trigger === 'details') {
+				let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+				let detailsEl = itemEl.querySelector('.zotero-details');
+				if (detailsEl) {
+					(0, _utils.toggleCollapse)(detailsEl);
+				}
+				window.history.pushState(null, null, `#${ itemEl.dataset.item }`);
+			} else if (target.dataset.trigger === 'cite') {
+				let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
+				let citeEl = itemEl.querySelector('.zotero-citation');
+				if (citeContainerEl) {
+					citeEl.innerHTML = '';
+					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), function (item) {
+						item.classList.remove('zotero-active');
+					});
+					let expanding = (0, _utils.toggleCollapse)(citeContainerEl);
+					if (expanding) {
+						this.updateCitation(itemEl, this.preferredCitationStyle);
+						(0, _utils.toggleCollapse)(exportContainerEl, false);
+						target.classList.add('zotero-active');
+					}
+				}
+			} else if (target.dataset.trigger === 'export') {
+				let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
+				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
+				if (exportContainerEl) {
+					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), function (item) {
+						item.classList.remove('zotero-active');
+					});
+					let expanding = (0, _utils.toggleCollapse)(exportContainerEl);
+					if (expanding) {
+						this.prepareExport(itemEl);
+						(0, _utils.toggleCollapse)(citeContainerEl, false);
+						target.classList.add('zotero-active');
+					}
+				}
+			}
 		}
 	});
 
-	this.container.addEventListener('change', function (ev) {
-		var _this = this;
+	this.container.addEventListener('change', ev => {
+		var target = (0, _utils.closest)(ev.target, el => el.dataset && el.dataset.trigger);
 
-		var target;
-
-		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger === 'cite-style-selection';
-		});
-		if (target) {
-			(function () {
-				var itemEl = (0, _utils.closest)(target, function (el) {
-					return el.dataset && el.dataset.item;
-				});
-				var itemId = itemEl.dataset.item;
-				var citationTextareaEl = itemEl.querySelector('.zotero-citation');
-				var citationStyle = target.options[target.selectedIndex].value;
-				_this.zotero.getItem(itemId, _this.zotero.userId, citationStyle).then(function (item) {
-					citationTextareaEl.value = item.raw[0].citation;
-				});
-			})();
+		if (target.dataset.trigger === 'cite-style-selection') {
+			let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+			this.updateCitation(itemEl);
+		} else if (target.dataset.trigger === 'export-format-selection') {
+			let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
+			this.prepareExport(itemEl);
 		}
-	}.bind(this));
+	});
 };
 
 /**
@@ -16939,7 +16775,7 @@ ZoteroRenderer.prototype.toggleSpinner = function (activate) {
 	method.call(this.container.classList, 'zotero-loading');
 };
 
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
+},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -16947,7 +16783,7 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderGroups(obj.groups)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
@@ -16962,10 +16798,25 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<div class="zotero-branding">\n\t<a href="http://www.zotero.org" class="zotero-logo-link">\n\t\t<svg class="zotero-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="90" height="20">\n\t\t\t<g>\n\t\t\t\t<path class="zotero-z" fill="#990000" d="M12.2,6.1L2.8,17.8h9.4v1.9H0v-2.2L9.4,5.8H0.8V3.9h11.4V6.1z"/>\n\t\t\t\t<path fill="#222222" d="M22.1,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C15.1,5.2,16.2,3.7,22.1,3.7z M22.1,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C17.5,17.3,17.8,18,22.1,18z"/>\n\t\t\t\t<path fill="#222222" d="M41.7,5.8h-6.1v10c0,1.7,0.5,2.1,2.2,2.1c2.2,0,2.2-1.2,2.2-2.7v-1.2h2.3v1.2c0,3.1-1.3,4.6-4.5,4.6\n\t\t\t\t\tc-3.7,0-4.5-1.1-4.5-4.8V5.8h-2.1V3.9h2.1V0.1h2.4v3.8h6.1V5.8z"/>\n\t\t\t\t<path fill="#222222" d="M58.3,14.9v0.6c0,4.2-3.2,4.4-6.7,4.4c-6.2,0-7.1-2-7.1-8.1c0-6.6,1.4-8.1,7.1-8.1c5.1,0,6.7,1.2,6.7,7v1.6\n\t\t\t\t\tH46.9c0,5,0.4,5.6,4.6,5.6c3.3,0,4.3-0.2,4.3-2.4v-0.6H58.3z M55.8,10.4c-0.1-4.5-0.7-4.8-4.3-4.8c-4.3,0-4.5,1.1-4.6,4.8H55.8z"/>\n\t\t\t\t<path fill="#222222" d="M64.6,3.9l-0.1,2l0.1,0.1c0.8-1.7,2.7-2.2,4.5-2.2c3,0,4.4,1.5,4.4,4.5v1.1h-2.3V8.3c0-2-0.7-2.6-2.6-2.6\n\t\t\t\t\tc-3,0-3.9,1.4-3.9,4.2v9.8h-2.4V3.9H64.6z"/>\n\t\t\t\t<path fill="#222222" d="M83,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C76,5.2,77.1,3.7,83,3.7z M83,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C78.4,17.3,78.7,18,83,18z"/>\n\t\t\t</g>\n\t\t</svg>\n\t</a>\n</div>';
+  return __p;
+};
+
+},{"lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl":[function(require,module,exports){
+'use strict';
+
+var _ = require("lodash");
+module.exports = function (obj) {
+  var __t,
+      __p = '',
+      __j = Array.prototype.join,
+      print = function () {
+    __p += __j.call(arguments, '');
+  };
+  __p += '<a href="data:' + ((__t = obj.contentType) == null ? '' : _.escape(__t)) + ',' + ((__t = obj.content) == null ? '' : _.escape(__t)) + '" download="' + ((__t = obj.filename) == null ? '' : _.escape(__t)) + '">\n\tDownload\n</a>';
   return __p;
 };
 
@@ -16977,7 +16828,7 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<li class="zotero-group' + ((__t = obj.expand ? ' zotero-group-expanded' : '') == null ? '' : _.escape(__t)) + '" aria-expanded="' + ((__t = obj.expand ? ' true' : 'false') == null ? '' : _.escape(__t)) + '" >\n\t<h2 class="zotero-group-title" data-trigger="expand-group">' + ((__t = obj.title) == null ? '' : _.escape(__t)) + '</h2>\n\t' + ((__t = obj.renderer.renderItems(obj.items)) == null ? '' : __t) + '\n</li>';
@@ -16992,7 +16843,7 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<ul class="zotero-groups">\n\t';
@@ -17033,54 +16884,50 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\n\t<!-- Reference -->\n\t';
   if (obj.renderer.config.alwaysUseCitationStyle) {
-    __p += '\n\t\t<div class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</div>\n\n\t<!-- Templated -->\n\t';
+    __p += '\n\t\t<h3 class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</h3>\n\n\t<!-- Templated -->\n\t';
   } else {
     __p += '\n\t\t';
     if (obj.data.itemType == 'book') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'journalArticle') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else if (obj.data.itemType == 'blogPost') {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</div>\n\t\t\t<div class="zotoero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
         __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
       }
       __p += '\n\t\t\t</div>\n\n\t\t';
     } else {
-      __p += '\n\t\t\t<div class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.item.citation) == null ? '' : __t) + '</a>\n\t\t\t</div>\n\t\t';
+      __p += '\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t<a href="#">' + ((__t = obj.item.citation) == null ? '' : __t) + '</a>\n\t\t\t</h3>\n\t\t';
     }
     __p += '\n\t';
   }
-  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" data-trigger="details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<div class="zotero-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t';
-  if (!obj.renderer.config.alwaysUseCitationStyle) {
-    __p += '\n\t\t\t\t<div class="zotero-reference">\n\t\t\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
-  }
-  __p += '\n\n\t\t\t';
+  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" data-trigger="details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable">\n\t\t<div class="zotero-details-inner">\n\t\t\t';
   if (obj.data.abstractNote && obj.data.abstractNote.length) {
-    __p += '\n\t\t\t\t<h3>\n\t\t\t\t\tAbstract\n\t\t\t\t</h3>\n\t\t\t\t<p class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data.abstractNote) == null ? '' : _.escape(__t)) + '\n\t\t\t\t</p>\n\t\t\t';
+    __p += '\n\t\t\t\t<h4>Abstract</h4>\n\t\t\t\t<div class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data[Symbol.for('abstractNoteProcessed')]) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
   }
   __p += '\n\n\t\t\t';
   if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) {
-    __p += '\n\t\t\t\t<h3>Notes</h3>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
+    __p += '\n\t\t\t\t<h4>Notes</h4>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
     var _iteratorNormalCompletion = true;
     var _didIteratorError = false;
     var _iteratorError = undefined;
@@ -17110,7 +16957,7 @@ module.exports = function (obj) {
   }
   __p += '\n\n\t\t\t';
   if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
-    __p += '\n\t\t\t\t<h3>Attachments</h3>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
+    __p += '\n\t\t\t\t<h4>Attachments</h4>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
     var _iteratorNormalCompletion2 = true;
     var _didIteratorError2 = false;
     var _iteratorError2 = undefined;
@@ -17140,9 +16987,17 @@ module.exports = function (obj) {
   }
   __p += '\n\t\t\t';
   if (obj.renderer.zotero.userId) {
-    __p += '\n\t\t\t\t<div>\n\t\t\t\t\t<button class="zotero-cite-button" data-trigger="cite">\n\t\t\t\t\t\tCite\n\t\t\t\t\t</button>\n\t\t\t\t</div>\n\t\t\t\t<div class="zotero-cite-container">\n\t\t\t\t\t<select data-trigger="cite-style-selection">\n\t\t\t\t\t\t<option value="american-anthropological-association">\n\t\t\t\t\t\t\tAmerican Anthropological Association\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="cell">\n\t\t\t\t\t\t\tCell\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="chicago-author-date">\n\t\t\t\t\t\t\tChicago Manual of Style 16th edition (author-date)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="elsevier-harvard">\n\t\t\t\t\t\t\tElsevier Harvard (with titles)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="ieee">\n\t\t\t\t\t\t\tIEEE\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="modern-humanities-research-association-author-date">\n\t\t\t\t\t\t\tModern Humanities Research Association 3rd edition (author-date)\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="modern-language-association">\n\t\t\t\t\t\t\tModern Language Association 7th edition\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="nature">\n\t\t\t\t\t\t\tNature\n\t\t\t\t\t\t</option>\n\t\t\t\t\t\t<option value="vancouver">\n\t\t\t\t\t\t\tVancouver\n\t\t\t\t\t\t</option>\n\t\t\t\t\t</select>\n\t\t\t\t\t<textarea class="zotero-citation" cols="30" rows="5">\n\t\t\t\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t\t\t\t</textarea>\n\t\t\t\t</div>\n\t\t\t';
+    __p += '\n\t\t\t\t<!-- Cite & export -->\n\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t<ul class="zotero-list-inline">\n\t\t\t\t\t\t<li><a href="" data-trigger="cite">Cite</a></li><!--\n\t\t\t\t\t\t--><li><a href="" data-trigger="export">Export</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Cite -->\n\t\t\t\t<div class="zotero-cite-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t';
+    for (var citationStyle in obj.renderer.zotero.config.citeStyleOptions) {
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.citeStyleOptions[citationStyle]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-citation"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
+    for (var exportFormat in obj.renderer.zotero.config.exportFormats) {
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = exportFormat) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.exportFormats[exportFormat].name) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-export"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t';
   }
-  __p += '\n\t\t</div>\n\t</div>\n</li>';
+  __p += '\n\t\t</div>\n\t</section>\n</li>';
   return __p;
 };
 
@@ -17154,7 +17009,7 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
   __p += '<ul class="zotero-items">\n\t';
@@ -17195,10 +17050,10 @@ module.exports = function (obj) {
   var __t,
       __p = '',
       __j = Array.prototype.join,
-      print = function print() {
+      print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderItems(items)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
+  __p += '<div class="zotero-publications">\n\t' + ((__t = obj.renderer.renderItems(obj.items)) == null ? '' : __t) + '\n\t' + ((__t = obj.renderer.renderBranding()) == null ? '' : __t) + '\n</div>';
   return __p;
 };
 
@@ -17209,8 +17064,21 @@ Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 exports.formatDate = formatDate;
+exports.formatAbstract = formatAbstract;
 exports.formatCategoryName = formatCategoryName;
 exports.closest = closest;
+exports.once = once;
+exports.id = id;
+exports.selectText = selectText;
+exports.transitionend = transitionend;
+exports.toggleCollapse = toggleCollapse;
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 /**
@@ -17219,25 +17087,29 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
  * @return {String}         - formatted date
  */
 function formatDate(isoDate) {
-	var matches = isoDate.match(/(\d{4})\-?(\d{2})?-?(\d{2})?/);
-	var date = isoDate;
+	let matches = isoDate.match(/(\d{4})\-?(\d{2})?-?(\d{2})?/);
+	let date = isoDate;
 
 	if (matches.length >= 4) {
-		var year = matches[1];
-		var month = months[parseInt(matches[2], 10) - 1];
-		var day = parseInt(matches[3], 10);
-		date = month + ' ' + day + ', ' + year;
+		let year = matches[1];
+		let month = months[parseInt(matches[2], 10) - 1];
+		let day = parseInt(matches[3], 10);
+		date = `${ month } ${ day }, ${ year }`;
 	}
 	if (matches.length >= 3) {
-		var year = matches[1];
-		var month = months[parseInt(matches[2], 10) - 1];
-		date = month + ' ' + year;
+		let year = matches[1];
+		let month = months[parseInt(matches[2], 10) - 1];
+		date = `${ month } ${ year }`;
 	}
 	if (matches.length >= 2) {
 		date = matches[1];
 	}
 
 	return date;
+}
+
+function formatAbstract(abstract) {
+	return abstract.replace(/(^|\n)([\s\S]*?)(\n|$)/g, '<p>$2</p>');
 }
 
 /**
@@ -17261,5 +17133,134 @@ function closest(el, fn) {
 	return el && (fn(el) ? el : closest(el.parentNode, fn));
 }
 
-},{}]},{},["/srv/zotero/my-publications/src/js/main-compat.js"])("/srv/zotero/my-publications/src/js/main-compat.js")
+/**
+ * Register a one-time event listener.
+ *
+ * @param {EventTarget} target
+ * @param {String} type
+ * @param {Function} listener
+ * @returns {Function} deregister
+ */
+function once(target, type, listener) {
+	function deregister() {
+		target.removeEventListener(type, handler); // eslint-disable-line no-use-before-define
+	}
+
+	function handler() {
+		deregister();
+		return listener.apply(this, arguments);
+	}
+
+	target.addEventListener(type, handler);
+
+	return deregister;
+}
+
+/**
+ * Uniquely and pernamently identify a DOM element
+ * even if it has no id
+ * @param  {HTMLElement} target - DOM element to identify
+ * @return {String} 			- unique identifier
+ */
+function id(target) {
+	target.id = target.id || _lodash2.default.uniqueId(target);
+	return target.id;
+}
+
+/**
+ * Cross-browser text range selection
+ * @param  {HTMLElement} textEl		- A DOM element where text should be selected
+ */
+function selectText(textEl) {
+	if (document.body.createTextRange) {
+		let range = document.body.createTextRange();
+		range.moveToElementText(textEl);
+		range.select();
+	} else if (window.getSelection) {
+		let selection = window.getSelection(),
+		    range = document.createRange();
+		range.selectNodeContents(textEl);
+		selection.removeAllRanges();
+		selection.addRange(range);
+	}
+}
+
+/**
+ * Finds a correct name of a transitionend event
+ * @return {String} 	- transitionend event name
+ */
+function transitionend() {
+	var i,
+	    el = document.createElement('div'),
+	    transitions = {
+		'transition': 'transitionend',
+		'OTransition': 'otransitionend',
+		'MozTransition': 'transitionend',
+		'WebkitTransition': 'webkitTransitionEnd'
+	};
+
+	for (i in transitions) {
+		if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
+			return transitions[i];
+		}
+	}
+}
+
+var collapsesInProgress = {};
+
+function collapse(element) {
+	let initialHeight = window.getComputedStyle(element).height;
+	element.style.height = initialHeight;
+	_lodash2.default.defer(() => {
+		element.classList.add('zotero-collapsed', 'zotero-collapsing');
+		element.style.height = null;
+		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
+			element.classList.remove('zotero-collapsing');
+			delete collapsesInProgress[id(element)];
+		});
+	});
+}
+
+function uncollapse(element) {
+	element.classList.remove('zotero-collapsed');
+	let targetHeight = window.getComputedStyle(element).height;
+	element.classList.add('zotero-collapsed');
+
+	_lodash2.default.defer(() => {
+		element.classList.add('zotero-collapsing');
+		element.style.height = targetHeight;
+		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
+			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
+			element.style.height = null;
+			delete collapsesInProgress[id(element)];
+		});
+	});
+}
+
+/**
+ * Collpases or uncollapses a DOM element
+ * @param  {HTMLElement} element 	- DOM element to be (un)collapsed
+ */
+function toggleCollapse(element, override) {
+	if (typeof override !== 'undefined') {
+		if (collapsesInProgress[id(element)]) {
+			collapsesInProgress[id(element)]();
+		}
+		override ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return override;
+	}
+
+	if (collapsesInProgress[id(element)]) {
+		collapsesInProgress[id(element)]();
+		let collapsing = !element.style.height;
+		collapsing ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return collapsing;
+	} else {
+		let collapsed = element.classList.contains('zotero-collapsed');
+		collapsed ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+		return collapsed;
+	}
+}
+
+},{"lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}]},{},["/srv/zotero/my-publications/src/js/main-modern.js"])("/srv/zotero/my-publications/src/js/main-modern.js")
 });
