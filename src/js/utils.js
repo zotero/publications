@@ -115,6 +115,9 @@ var collapsesInProgress = {};
 function collapse(element) {
 	let initialHeight = window.getComputedStyle(element).height;
 	element.style.height = initialHeight;
+	//repaint shenanigans
+	element.offsetHeight; // eslint-disable-line no-unused-expressions
+
 	_.defer(() => {
 		element.classList.add('zotero-collapsed', 'zotero-collapsing');
 		element.style.height = null;

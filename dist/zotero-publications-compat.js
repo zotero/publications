@@ -659,7 +659,419 @@
 );
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":"/srv/zotero/my-publications/node_modules/process/browser.js"}],"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js":[function(require,module,exports){
+},{"_process":"/srv/zotero/my-publications/node_modules/process/browser.js"}],"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard-action.js":[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var _select = require('select');
+
+var _select2 = _interopRequireDefault(_select);
+
+/**
+ * Inner class which performs selection from either `text` or `target`
+ * properties and then executes copy or cut operations.
+ */
+
+var ClipboardAction = (function () {
+    /**
+     * @param {Object} options
+     */
+
+    function ClipboardAction(options) {
+        _classCallCheck(this, ClipboardAction);
+
+        this.resolveOptions(options);
+        this.initSelection();
+    }
+
+    /**
+     * Defines base properties passed from constructor.
+     * @param {Object} options
+     */
+
+    ClipboardAction.prototype.resolveOptions = function resolveOptions() {
+        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+        this.action = options.action;
+        this.emitter = options.emitter;
+        this.target = options.target;
+        this.text = options.text;
+        this.trigger = options.trigger;
+
+        this.selectedText = '';
+    };
+
+    /**
+     * Decides which selection strategy is going to be applied based
+     * on the existence of `text` and `target` properties.
+     */
+
+    ClipboardAction.prototype.initSelection = function initSelection() {
+        if (this.text && this.target) {
+            throw new Error('Multiple attributes declared, use either "target" or "text"');
+        } else if (this.text) {
+            this.selectFake();
+        } else if (this.target) {
+            this.selectTarget();
+        } else {
+            throw new Error('Missing required attributes, use either "target" or "text"');
+        }
+    };
+
+    /**
+     * Creates a fake textarea element, sets its value from `text` property,
+     * and makes a selection on it.
+     */
+
+    ClipboardAction.prototype.selectFake = function selectFake() {
+        var _this = this;
+
+        var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
+
+        this.removeFake();
+
+        this.fakeHandler = document.body.addEventListener('click', function () {
+            return _this.removeFake();
+        });
+
+        this.fakeElem = document.createElement('textarea');
+        // Prevent zooming on iOS
+        this.fakeElem.style.fontSize = '12pt';
+        // Reset box model
+        this.fakeElem.style.border = '0';
+        this.fakeElem.style.padding = '0';
+        this.fakeElem.style.margin = '0';
+        // Move element out of screen horizontally
+        this.fakeElem.style.position = 'absolute';
+        this.fakeElem.style[isRTL ? 'right' : 'left'] = '-9999px';
+        // Move element to the same position vertically
+        this.fakeElem.style.top = (window.pageYOffset || document.documentElement.scrollTop) + 'px';
+        this.fakeElem.setAttribute('readonly', '');
+        this.fakeElem.value = this.text;
+
+        document.body.appendChild(this.fakeElem);
+
+        this.selectedText = _select2['default'](this.fakeElem);
+        this.copyText();
+    };
+
+    /**
+     * Only removes the fake element after another click event, that way
+     * a user can hit `Ctrl+C` to copy because selection still exists.
+     */
+
+    ClipboardAction.prototype.removeFake = function removeFake() {
+        if (this.fakeHandler) {
+            document.body.removeEventListener('click');
+            this.fakeHandler = null;
+        }
+
+        if (this.fakeElem) {
+            document.body.removeChild(this.fakeElem);
+            this.fakeElem = null;
+        }
+    };
+
+    /**
+     * Selects the content from element passed on `target` property.
+     */
+
+    ClipboardAction.prototype.selectTarget = function selectTarget() {
+        this.selectedText = _select2['default'](this.target);
+        this.copyText();
+    };
+
+    /**
+     * Executes the copy operation based on the current selection.
+     */
+
+    ClipboardAction.prototype.copyText = function copyText() {
+        var succeeded = undefined;
+
+        try {
+            succeeded = document.execCommand(this.action);
+        } catch (err) {
+            succeeded = false;
+        }
+
+        this.handleResult(succeeded);
+    };
+
+    /**
+     * Fires an event based on the copy operation result.
+     * @param {Boolean} succeeded
+     */
+
+    ClipboardAction.prototype.handleResult = function handleResult(succeeded) {
+        if (succeeded) {
+            this.emitter.emit('success', {
+                action: this.action,
+                text: this.selectedText,
+                trigger: this.trigger,
+                clearSelection: this.clearSelection.bind(this)
+            });
+        } else {
+            this.emitter.emit('error', {
+                action: this.action,
+                trigger: this.trigger,
+                clearSelection: this.clearSelection.bind(this)
+            });
+        }
+    };
+
+    /**
+     * Removes current selection and focus from `target` element.
+     */
+
+    ClipboardAction.prototype.clearSelection = function clearSelection() {
+        if (this.target) {
+            this.target.blur();
+        }
+
+        window.getSelection().removeAllRanges();
+    };
+
+    /**
+     * Sets the `action` to be performed which can be either 'copy' or 'cut'.
+     * @param {String} action
+     */
+
+    /**
+     * Destroy lifecycle.
+     */
+
+    ClipboardAction.prototype.destroy = function destroy() {
+        this.removeFake();
+    };
+
+    _createClass(ClipboardAction, [{
+        key: 'action',
+        set: function set() {
+            var action = arguments.length <= 0 || arguments[0] === undefined ? 'copy' : arguments[0];
+
+            this._action = action;
+
+            if (this._action !== 'copy' && this._action !== 'cut') {
+                throw new Error('Invalid "action" value, use either "copy" or "cut"');
+            }
+        },
+
+        /**
+         * Gets the `action` property.
+         * @return {String}
+         */
+        get: function get() {
+            return this._action;
+        }
+
+        /**
+         * Sets the `target` property using an element
+         * that will be have its content copied.
+         * @param {Element} target
+         */
+    }, {
+        key: 'target',
+        set: function set(target) {
+            if (target !== undefined) {
+                if (target && typeof target === 'object' && target.nodeType === 1) {
+                    this._target = target;
+                } else {
+                    throw new Error('Invalid "target" value, use a valid Element');
+                }
+            }
+        },
+
+        /**
+         * Gets the `target` property.
+         * @return {String|HTMLElement}
+         */
+        get: function get() {
+            return this._target;
+        }
+    }]);
+
+    return ClipboardAction;
+})();
+
+exports['default'] = ClipboardAction;
+module.exports = exports['default'];
+},{"select":"/srv/zotero/my-publications/node_modules/select/src/select.js"}],"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js":[function(require,module,exports){
+'use strict';
+
+exports.__esModule = true;
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var _clipboardAction = require('./clipboard-action');
+
+var _clipboardAction2 = _interopRequireDefault(_clipboardAction);
+
+var _tinyEmitter = require('tiny-emitter');
+
+var _tinyEmitter2 = _interopRequireDefault(_tinyEmitter);
+
+var _goodListener = require('good-listener');
+
+var _goodListener2 = _interopRequireDefault(_goodListener);
+
+/**
+ * Base class which takes one or more elements, adds event listeners to them,
+ * and instantiates a new `ClipboardAction` on each click.
+ */
+
+var Clipboard = (function (_Emitter) {
+    _inherits(Clipboard, _Emitter);
+
+    /**
+     * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
+     * @param {Object} options
+     */
+
+    function Clipboard(trigger, options) {
+        _classCallCheck(this, Clipboard);
+
+        _Emitter.call(this);
+
+        this.resolveOptions(options);
+        this.listenClick(trigger);
+    }
+
+    /**
+     * Helper function to retrieve attribute value.
+     * @param {String} suffix
+     * @param {Element} element
+     */
+
+    /**
+     * Defines if attributes would be resolved using internal setter functions
+     * or custom functions that were passed in the constructor.
+     * @param {Object} options
+     */
+
+    Clipboard.prototype.resolveOptions = function resolveOptions() {
+        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+        this.action = typeof options.action === 'function' ? options.action : this.defaultAction;
+        this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
+        this.text = typeof options.text === 'function' ? options.text : this.defaultText;
+    };
+
+    /**
+     * Adds a click event listener to the passed trigger.
+     * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
+     */
+
+    Clipboard.prototype.listenClick = function listenClick(trigger) {
+        var _this = this;
+
+        this.listener = _goodListener2['default'](trigger, 'click', function (e) {
+            return _this.onClick(e);
+        });
+    };
+
+    /**
+     * Defines a new `ClipboardAction` on each click event.
+     * @param {Event} e
+     */
+
+    Clipboard.prototype.onClick = function onClick(e) {
+        var trigger = e.delegateTarget || e.currentTarget;
+
+        if (this.clipboardAction) {
+            this.clipboardAction = null;
+        }
+
+        this.clipboardAction = new _clipboardAction2['default']({
+            action: this.action(trigger),
+            target: this.target(trigger),
+            text: this.text(trigger),
+            trigger: trigger,
+            emitter: this
+        });
+    };
+
+    /**
+     * Default `action` lookup function.
+     * @param {Element} trigger
+     */
+
+    Clipboard.prototype.defaultAction = function defaultAction(trigger) {
+        return getAttributeValue('action', trigger);
+    };
+
+    /**
+     * Default `target` lookup function.
+     * @param {Element} trigger
+     */
+
+    Clipboard.prototype.defaultTarget = function defaultTarget(trigger) {
+        var selector = getAttributeValue('target', trigger);
+
+        if (selector) {
+            return document.querySelector(selector);
+        }
+    };
+
+    /**
+     * Default `text` lookup function.
+     * @param {Element} trigger
+     */
+
+    Clipboard.prototype.defaultText = function defaultText(trigger) {
+        return getAttributeValue('text', trigger);
+    };
+
+    /**
+     * Destroy lifecycle.
+     */
+
+    Clipboard.prototype.destroy = function destroy() {
+        this.listener.destroy();
+
+        if (this.clipboardAction) {
+            this.clipboardAction.destroy();
+            this.clipboardAction = null;
+        }
+    };
+
+    return Clipboard;
+})(_tinyEmitter2['default']);
+
+exports['default'] = Clipboard;
+function getAttributeValue(suffix, element) {
+    var attribute = 'data-clipboard-' + suffix;
+
+    if (!element.hasAttribute(attribute)) {
+        return;
+    }
+
+    return element.getAttribute(attribute);
+}
+module.exports = exports['default'];
+},{"./clipboard-action":"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard-action.js","good-listener":"/srv/zotero/my-publications/node_modules/good-listener/src/listen.js","tiny-emitter":"/srv/zotero/my-publications/node_modules/tiny-emitter/index.js"}],"/srv/zotero/my-publications/node_modules/closest/index.js":[function(require,module,exports){
+var matches = require('matches-selector')
+
+module.exports = function (element, selector, checkYoSelf) {
+  var parent = checkYoSelf ? element : element.parentNode
+
+  while (parent && parent !== document) {
+    if (matches(parent, selector)) return parent;
+    parent = parent.parentNode
+  }
+}
+
+},{"matches-selector":"/srv/zotero/my-publications/node_modules/matches-selector/index.js"}],"/srv/zotero/my-publications/node_modules/core-js/es6/promise.js":[function(require,module,exports){
 require('../modules/es6.object.to-string');
 require('../modules/es6.string.iterator');
 require('../modules/web.dom.iterable');
@@ -1999,7 +2411,53 @@ d.gs = function (dscr, get, set/*, options*/) {
 	return !options ? desc : assign(normalizeOpts(options), desc);
 };
 
-},{"es5-ext/object/assign":"/srv/zotero/my-publications/node_modules/es5-ext/object/assign/index.js","es5-ext/object/is-callable":"/srv/zotero/my-publications/node_modules/es5-ext/object/is-callable.js","es5-ext/object/normalize-options":"/srv/zotero/my-publications/node_modules/es5-ext/object/normalize-options.js","es5-ext/string/#/contains":"/srv/zotero/my-publications/node_modules/es5-ext/string/#/contains/index.js"}],"/srv/zotero/my-publications/node_modules/es5-ext/global.js":[function(require,module,exports){
+},{"es5-ext/object/assign":"/srv/zotero/my-publications/node_modules/es5-ext/object/assign/index.js","es5-ext/object/is-callable":"/srv/zotero/my-publications/node_modules/es5-ext/object/is-callable.js","es5-ext/object/normalize-options":"/srv/zotero/my-publications/node_modules/es5-ext/object/normalize-options.js","es5-ext/string/#/contains":"/srv/zotero/my-publications/node_modules/es5-ext/string/#/contains/index.js"}],"/srv/zotero/my-publications/node_modules/delegate/src/delegate.js":[function(require,module,exports){
+var closest = require('closest');
+
+/**
+ * Delegates event to a selector.
+ *
+ * @param {Element} element
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} callback
+ * @param {Boolean} useCapture
+ * @return {Object}
+ */
+function delegate(element, selector, type, callback, useCapture) {
+    var listenerFn = listener.apply(this, arguments);
+
+    element.addEventListener(type, listenerFn, useCapture);
+
+    return {
+        destroy: function() {
+            element.removeEventListener(type, listenerFn, useCapture);
+        }
+    }
+}
+
+/**
+ * Finds closest match and invokes callback.
+ *
+ * @param {Element} element
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Function}
+ */
+function listener(element, selector, type, callback) {
+    return function(e) {
+        e.delegateTarget = closest(e.target, selector, true);
+
+        if (e.delegateTarget) {
+            callback.call(element, e);
+        }
+    }
+}
+
+module.exports = delegate;
+
+},{"closest":"/srv/zotero/my-publications/node_modules/closest/index.js"}],"/srv/zotero/my-publications/node_modules/es5-ext/global.js":[function(require,module,exports){
 'use strict';
 
 module.exports = new Function("return this")();
@@ -2287,7 +2745,196 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js"}],"/srv/zotero/my-publications/node_modules/process/browser.js":[function(require,module,exports){
+},{"./is-symbol":"/srv/zotero/my-publications/node_modules/es6-symbol/is-symbol.js"}],"/srv/zotero/my-publications/node_modules/good-listener/src/is.js":[function(require,module,exports){
+/**
+ * Check if argument is a HTML element.
+ *
+ * @param {Object} value
+ * @return {Boolean}
+ */
+exports.node = function(value) {
+    return value !== undefined
+        && value instanceof HTMLElement
+        && value.nodeType === 1;
+};
+
+/**
+ * Check if argument is a list of HTML elements.
+ *
+ * @param {Object} value
+ * @return {Boolean}
+ */
+exports.nodeList = function(value) {
+    var type = Object.prototype.toString.call(value);
+
+    return value !== undefined
+        && (type === '[object NodeList]' || type === '[object HTMLCollection]')
+        && ('length' in value)
+        && (value.length === 0 || exports.node(value[0]));
+};
+
+/**
+ * Check if argument is a string.
+ *
+ * @param {Object} value
+ * @return {Boolean}
+ */
+exports.string = function(value) {
+    return typeof value === 'string'
+        || value instanceof String;
+};
+
+/**
+ * Check if argument is a function.
+ *
+ * @param {Object} value
+ * @return {Boolean}
+ */
+exports.fn = function(value) {
+    var type = Object.prototype.toString.call(value);
+
+    return type === '[object Function]';
+};
+
+},{}],"/srv/zotero/my-publications/node_modules/good-listener/src/listen.js":[function(require,module,exports){
+var is = require('./is');
+var delegate = require('delegate');
+
+/**
+ * Validates all params and calls the right
+ * listener function based on its target type.
+ *
+ * @param {String|HTMLElement|HTMLCollection|NodeList} target
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Object}
+ */
+function listen(target, type, callback) {
+    if (!target && !type && !callback) {
+        throw new Error('Missing required arguments');
+    }
+
+    if (!is.string(type)) {
+        throw new TypeError('Second argument must be a String');
+    }
+
+    if (!is.fn(callback)) {
+        throw new TypeError('Third argument must be a Function');
+    }
+
+    if (is.node(target)) {
+        return listenNode(target, type, callback);
+    }
+    else if (is.nodeList(target)) {
+        return listenNodeList(target, type, callback);
+    }
+    else if (is.string(target)) {
+        return listenSelector(target, type, callback);
+    }
+    else {
+        throw new TypeError('First argument must be a String, HTMLElement, HTMLCollection, or NodeList');
+    }
+}
+
+/**
+ * Adds an event listener to a HTML element
+ * and returns a remove listener function.
+ *
+ * @param {HTMLElement} node
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Object}
+ */
+function listenNode(node, type, callback) {
+    node.addEventListener(type, callback);
+
+    return {
+        destroy: function() {
+            node.removeEventListener(type, callback);
+        }
+    }
+}
+
+/**
+ * Add an event listener to a list of HTML elements
+ * and returns a remove listener function.
+ *
+ * @param {NodeList|HTMLCollection} nodeList
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Object}
+ */
+function listenNodeList(nodeList, type, callback) {
+    Array.prototype.forEach.call(nodeList, function(node) {
+        node.addEventListener(type, callback);
+    });
+
+    return {
+        destroy: function() {
+            Array.prototype.forEach.call(nodeList, function(node) {
+                node.removeEventListener(type, callback);
+            });
+        }
+    }
+}
+
+/**
+ * Add an event listener to a selector
+ * and returns a remove listener function.
+ *
+ * @param {String} selector
+ * @param {String} type
+ * @param {Function} callback
+ * @return {Object}
+ */
+function listenSelector(selector, type, callback) {
+    return delegate(document.body, selector, type, callback);
+}
+
+module.exports = listen;
+
+},{"./is":"/srv/zotero/my-publications/node_modules/good-listener/src/is.js","delegate":"/srv/zotero/my-publications/node_modules/delegate/src/delegate.js"}],"/srv/zotero/my-publications/node_modules/matches-selector/index.js":[function(require,module,exports){
+
+/**
+ * Element prototype.
+ */
+
+var proto = Element.prototype;
+
+/**
+ * Vendor function.
+ */
+
+var vendor = proto.matchesSelector
+  || proto.webkitMatchesSelector
+  || proto.mozMatchesSelector
+  || proto.msMatchesSelector
+  || proto.oMatchesSelector;
+
+/**
+ * Expose `match()`.
+ */
+
+module.exports = match;
+
+/**
+ * Match `el` to `selector`.
+ *
+ * @param {Element} el
+ * @param {String} selector
+ * @return {Boolean}
+ * @api public
+ */
+
+function match(el, selector) {
+  if (vendor) return vendor.call(el, selector);
+  var nodes = el.parentNode.querySelectorAll(selector);
+  for (var i = 0; i < nodes.length; ++i) {
+    if (nodes[i] == el) return true;
+  }
+  return false;
+}
+},{}],"/srv/zotero/my-publications/node_modules/process/browser.js":[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -2379,6 +3026,104 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
+
+},{}],"/srv/zotero/my-publications/node_modules/select/src/select.js":[function(require,module,exports){
+function select(element) {
+    var selectedText;
+
+    if (element.nodeName === 'INPUT' || element.nodeName === 'TEXTAREA') {
+        element.focus();
+        element.setSelectionRange(0, element.value.length);
+
+        selectedText = element.value;
+    }
+    else {
+        if (element.hasAttribute('contenteditable')) {
+            element.focus();
+        }
+
+        var selection = window.getSelection();
+        var range = document.createRange();
+
+        range.selectNodeContents(element);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        selectedText = selection.toString();
+    }
+
+    return selectedText;
+}
+
+module.exports = select;
+
+},{}],"/srv/zotero/my-publications/node_modules/tiny-emitter/index.js":[function(require,module,exports){
+function E () {
+	// Keep this empty so it's easier to inherit from
+  // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
+}
+
+E.prototype = {
+	on: function (name, callback, ctx) {
+    var e = this.e || (this.e = {});
+
+    (e[name] || (e[name] = [])).push({
+      fn: callback,
+      ctx: ctx
+    });
+
+    return this;
+  },
+
+  once: function (name, callback, ctx) {
+    var self = this;
+    function listener () {
+      self.off(name, listener);
+      callback.apply(ctx, arguments);
+    };
+
+    listener._ = callback
+    return this.on(name, listener, ctx);
+  },
+
+  emit: function (name) {
+    var data = [].slice.call(arguments, 1);
+    var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
+    var i = 0;
+    var len = evtArr.length;
+
+    for (i; i < len; i++) {
+      evtArr[i].fn.apply(evtArr[i].ctx, data);
+    }
+
+    return this;
+  },
+
+  off: function (name, callback) {
+    var e = this.e || (this.e = {});
+    var evts = e[name];
+    var liveEvents = [];
+
+    if (evts && callback) {
+      for (var i = 0, len = evts.length; i < len; i++) {
+        if (evts[i].fn !== callback && evts[i].fn._ !== callback)
+          liveEvents.push(evts[i]);
+      }
+    }
+
+    // Remove event from queue to prevent memory leak
+    // Suggested by https://github.com/lazd
+    // Ref: https://github.com/scottcorgan/tiny-emitter/commit/c6ebfaa9bc973b33d110a84a307742b7cf94c953#commitcomment-5024910
+
+    (liveEvents.length)
+      ? e[name] = liveEvents
+      : delete e[name];
+
+    return this;
+  }
+};
+
+module.exports = E;
 
 },{}],"/srv/zotero/my-publications/node_modules/whatwg-fetch/fetch.js":[function(require,module,exports){
 (function(self) {
@@ -3011,38 +3756,6 @@ ZoteroData.prototype.groupByCollections = function () {
  * For grouped data each iternation returns a group of Zotero items. Additionaly group name
  * is available under GROUP_TITLE Symbol
  */
-// ZoteroData.prototype[Symbol.iterator] = function () {
-// 	let i = 0;
-// 	if(this.grouped > 0) {
-// 		let keys = Object.keys(this.data);
-// 		return {
-// 			next: function() {
-// 				var group;
-// 				if(i < this.data.length) {
-// 					group = this.data[keys[i]];
-// 					group[GROUP_TITLE] = keys[i];
-// 				} else {
-// 					group = null;
-// 				}
-
-// 				return {
-// 					value: group,
-// 					done: i++ >= this.data.length
-// 				};
-// 			}.bind(this)
-// 		};
-// 	} else {
-// 		return {
-// 			next: function() {
-// 				return {
-// 					value: i < this.data.length ? this.data[i] : null,
-// 					done: i++ >= this.data.length
-// 				};
-// 			}.bind(this)
-// 		};
-// 	}
-// };
-
 ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee() {
 	var keys, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, key, group, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, value;
 
@@ -3425,6 +4138,10 @@ var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
+var _clipboard = require('clipboard');
+
+var _clipboard2 = _interopRequireDefault(_clipboard);
+
 var _item = require('./tpl/partial/item.tpl');
 
 var _item2 = _interopRequireDefault(_item);
@@ -3620,7 +4337,6 @@ ZoteroRenderer.prototype.updateCitation = function (itemEl, citationStyle) {
 	}).then(function (item) {
 		citationEl.classList.remove('zotero-loading-inline');
 		citationEl.innerHTML = item.raw[0].bib;
-		(0, _utils.selectText)(citationEl);
 	});
 };
 
@@ -3658,6 +4374,7 @@ ZoteroRenderer.prototype.prepareExport = function (itemEl) {
 ZoteroRenderer.prototype.addHandlers = function () {
 	var _this2 = this;
 
+	new _clipboard2.default('.zotero-citation-copy'); //eslint-disable-line no-new
 	this.container.addEventListener('click', function (ev) {
 		var target;
 
@@ -3673,7 +4390,8 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				});
 				var detailsEl = itemEl.querySelector('.zotero-details');
 				if (detailsEl) {
-					(0, _utils.toggleCollapse)(detailsEl);
+					var expanded = (0, _utils.toggleCollapse)(detailsEl);
+					expanded ? itemEl.classList.add('zotero-details-open') : itemEl.classList.remove('zotero-details-open'); //eslint-disable-line no-unused-expressions
 				}
 				window.history.pushState(null, null, '#' + itemEl.dataset.item);
 			} else if (target.dataset.trigger === 'cite') {
@@ -3746,7 +4464,7 @@ ZoteroRenderer.prototype.toggleSpinner = function (activate) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
+},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","clipboard":"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -3869,7 +4587,7 @@ module.exports = function (obj) {
       print = function print() {
     __p += __j.call(arguments, '');
   };
-  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\n\t<!-- Reference -->\n\t';
+  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + ' zotero-details-open" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\t<a href="#" class="zotero-line"></a>\n\n\t<!-- Reference -->\n\t';
   if (obj.renderer.config.alwaysUseCitationStyle) {
     __p += '\n\t\t<h3 class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</h3>\n\n\t<!-- Templated -->\n\t';
   } else {
@@ -3973,9 +4691,9 @@ module.exports = function (obj) {
     for (var citationStyle in obj.renderer.zotero.config.citeStyleOptions) {
       __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.citeStyleOptions[citationStyle]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
     }
-    __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-citation"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
+    __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-citation" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation"></p>\n\t\t\t\t\t\t<button class="zotero-citation-copy" data-clipboard-target="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation">Copy</button>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
     for (var exportFormat in obj.renderer.zotero.config.exportFormats) {
-      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = exportFormat) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.exportFormats[exportFormat].name) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = exportFormat) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.exportFormats[exportFormat]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-export"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t';
   }
@@ -4057,7 +4775,6 @@ exports.formatCategoryName = formatCategoryName;
 exports.closest = closest;
 exports.once = once;
 exports.id = id;
-exports.selectText = selectText;
 exports.transitionend = transitionend;
 exports.toggleCollapse = toggleCollapse;
 
@@ -4156,24 +4873,6 @@ function id(target) {
 }
 
 /**
- * Cross-browser text range selection
- * @param  {HTMLElement} textEl		- A DOM element where text should be selected
- */
-function selectText(textEl) {
-	if (document.body.createTextRange) {
-		var range = document.body.createTextRange();
-		range.moveToElementText(textEl);
-		range.select();
-	} else if (window.getSelection) {
-		var selection = window.getSelection(),
-		    range = document.createRange();
-		range.selectNodeContents(textEl);
-		selection.removeAllRanges();
-		selection.addRange(range);
-	}
-}
-
-/**
  * Finds a correct name of a transitionend event
  * @return {String} 	- transitionend event name
  */
@@ -4199,6 +4898,9 @@ var collapsesInProgress = {};
 function collapse(element) {
 	var initialHeight = window.getComputedStyle(element).height;
 	element.style.height = initialHeight;
+	//repaint shenanigans
+	element.offsetHeight; // eslint-disable-line no-unused-expressions
+
 	_lodash2.default.defer(function () {
 		element.classList.add('zotero-collapsed', 'zotero-collapsing');
 		element.style.height = null;
