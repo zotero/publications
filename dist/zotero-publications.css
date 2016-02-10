@@ -6,37 +6,58 @@
 		* body line-height
 		* link styles
 */
-.zotero-publications {
-  margin: 5em 0 6.2em; }
-  .zotero-publications * {
-    box-sizing: border-box; }
-  .zotero-publications h2, .zotero-publications h4 {
-    font-weight: bold;
-    line-height: 1.3;
-    letter-spacing: -0.025em; }
-  .zotero-publications p {
-    margin: 1em 0; }
-  .zotero-publications a {
-    cursor: pointer; }
-  .zotero-publications ul {
-    list-style-type: none;
-    padding: 0;
-    margin: 0; }
-    .zotero-publications ul.zotero-list-inline li {
-      display: inline;
-      margin-right: 1.14286em; }
-  .zotero-publications [data-trigger] {
-    -webkit-user-select: none;
-       -moz-user-select: none;
-        -ms-user-select: none;
-            user-select: none; }
+.zotero-publications * {
+  box-sizing: border-box; }
+
+.zotero-publications h2, .zotero-publications h4 {
+  font-weight: bold;
+  line-height: 1.3;
+  letter-spacing: -0.025em; }
+
+.zotero-publications p {
+  margin: 1em 0; }
+
+.zotero-publications a {
+  cursor: pointer; }
+
+.zotero-publications ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0; }
+  .zotero-publications ul.zotero-list-inline li {
+    display: inline;
+    margin-right: 1.14286em; }
+
+.zotero-publications [data-trigger] {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none; }
 
 .zotero-group-title {
   font-size: 2em;
   margin: 1.6em 0 0.85714em; }
 
 .zotero-item {
-  margin-bottom: 1em; }
+  margin-bottom: 1em;
+  position: relative; }
+
+.zotero-line {
+  border-left: 3px solid currentcolor;
+  position: absolute;
+  height: 100%;
+  left: -15px;
+  opacity: 0;
+  transition: opacity .35s ease-out, height .35s ease-out;
+  cursor: default !important; }
+  @media (min-width: 767px) {
+    .zotero-line {
+      left: -23px; } }
+  .zotero-details-open .zotero-line {
+    opacity: 1;
+    height: calc(100% - 2.4em); }
+  .zotero-item:last-child .zotero-line {
+    height: 100%; }
 
 .zotero-item-title {
   font-size: 1.14286em;
@@ -55,12 +76,10 @@
 .zotero-collapsed {
   height: 0; }
 
-.zotero-collapsing {
-  transition: height .4s ease-out;
-  will-change: height; }
-
 .zotero-collapsable {
-  overflow: hidden; }
+  overflow: hidden;
+  transition: height .35s ease-out;
+  will-change: height; }
 
 .zotero-form-control {
   background-image: none;
@@ -130,8 +149,7 @@
   color: inherit; }
 
 .zotero-loading {
-  text-align: center;
-  margin: 5.5em 0; }
+  text-align: center; }
 
 @-webkit-keyframes loading {
   0% {
@@ -155,8 +173,11 @@
     width: 24.6px;
     height: 30px;
     background: url("data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB2aWV3Qm94PSIwIDAgMjQuNiAzMCIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBvbHlnb24gZmlsbD0iIzk5MDAwMCIgcG9pbnRzPSIyNC41LDAgMjAuMiwwIDAsMCAwLDUuNSAxNS43LDUuNSAwLDI0LjUgMCwzMCAyNC41LDMwIDI0LjUsMjQuNSA4LjgsMjQuNSAyNC41LDUuNSAiLz48L3N2Zz4=") 0 0 no-repeat;
-    -webkit-animation: loading 1.2s cubic-bezier(0.87, -0.41, 0.19, 1.44) infinite;
-            animation: loading 1.2s cubic-bezier(0.87, -0.41, 0.19, 1.44) infinite; }
+    -webkit-animation: loading 1s cubic-bezier(0.87, -0.41, 0.19, 1.44) infinite;
+            animation: loading 1s cubic-bezier(0.87, -0.41, 0.19, 1.44) infinite;
+    position: relative;
+    left: -62px;
+    top: 0.5em; }
 
 .zotero-loading-inline:after {
   content: 'Loading …';
