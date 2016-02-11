@@ -42,11 +42,19 @@ ZoteroPublications.prototype.defaults = {
 	expand: 'all',
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
+		'asa': 'American Psychological Association 6th edition',
+		'cell': 'Cell',
 		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
+		'chicago-fullnote-bibliography': 'Chicago Manual of Style 16th edition (full note)',
+		'chicago-note-bibliography': 'Chicago Manual of Style 16th edition (note)',
 		'elsevier-harvard': 'Elsevier Harvard (with titles)',
-		'modern-humanities-research-association-author-date': 'Modern Humanities Research Association 3rd edition (author-date)',
-		'modern-language-association': 'Modern Language Association 7th edition'
+		'ieee': 'IEEE',
+		'modern-humanities-research-association': 'Modern Humanities Research Association 3rd edition (note with bibliography)',
+		'modern-language-association': 'Modern Language Association 7th edition',
+		'nature': 'Nature',
+		'vancouver': 'Vancouver'
 	},
+	citeStyleOptionDefault: 'chicago-author-date',
 	exportFormats: {
 		'bibtex': {
 			name: 'BibTeX',
