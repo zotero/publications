@@ -88,20 +88,20 @@ export function fetchUntilExhausted(url, options, jsondata) {
 	let relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
 	jsondata = jsondata || [];
 
-	return new Promise(function(resolve, reject) {
-		fetch(url, options).then(function(response) {
+	return new Promise((resolve, reject) => {
+		fetch(url, options).then(response => {
 			if(response.status >= 200 && response.status < 300) {
 				if(response.headers.has('Link')) {
 					let matches = response.headers.get('Link').match(relRegex);
 					if(matches && matches.length >= 2) {
-						response.json().then(function(jsonDataPart) {
+						response.json().then(jsonDataPart => {
 							if(!(jsonDataPart instanceof Array)) {
 								jsonDataPart = [jsonDataPart];
 							}
 							resolve(fetchUntilExhausted(matches[1], options, _.union(jsondata, jsonDataPart)));
 						});
 					} else {
-						response.json().then(function(jsonDataPart) {
+						response.json().then(jsonDataPart => {
 							if(!(jsonDataPart instanceof Array)) {
 								jsonDataPart = [jsonDataPart];
 							}
@@ -109,7 +109,7 @@ export function fetchUntilExhausted(url, options, jsondata) {
 						});
 					}
 				} else {
-					response.json().then(function(jsonDataPart) {
+					response.json().then(jsonDataPart => {
 						if(!(jsonDataPart instanceof Array)) {
 							jsonDataPart = [jsonDataPart];
 						}
@@ -119,7 +119,7 @@ export function fetchUntilExhausted(url, options, jsondata) {
 			} else {
 				reject(new Error(`Unexpected status code ${response.status} when requesting ${url}`));
 			}
-		}).catch(function() {
+		}).catch(() => {
 			reject(new Error(`Unexpected error when requesting ${url}`));
 		});
 	});

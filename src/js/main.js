@@ -91,17 +91,17 @@ ZoteroPublications.prototype.get = function(url, options, init) {
 
 	options = _.extend({}, this.config, options);
 
-	return new Promise(function(resolve, reject) {
+	return new Promise((resolve, reject) => {
 		let promise = fetchUntilExhausted(url, init);
-		promise.then(function(responseJson) {
+		promise.then(responseJson => {
 			let data = new ZoteroData(responseJson, this.config);
 			if(options.group === 'type') {
 				data.groupByType(options.expand);
 			}
 			resolve(data);
-		}.bind(this));
+		});
 		promise.catch(reject);
-	}.bind(this));
+	});
 };
 
 /**
@@ -179,22 +179,22 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			let userId = userIdOrendpointOrData;
 			let promise = this.getPublications(userId);
 			this.renderer = new ZoteroRenderer(container, this);
-			promise.then(function(data) {
+			promise.then(data => {
 				this.renderer.displayPublications(data);
 				resolve();
-			}.bind(this));
-			promise.catch(function() {
+			});
+			promise.catch(() => {
 				reject(arguments[0]);
 			});
 		} else if(typeof userIdOrendpointOrData === 'string') {
 			let endpoint = userIdOrendpointOrData;
 			let promise = this.getEndpoint(endpoint);
 			this.renderer = new ZoteroRenderer(container, this);
-			promise.then(function(data) {
+			promise.then(data => {
 				this.renderer.displayPublications(data);
 				resolve();
-			}.bind(this));
-			promise.catch(function() {
+			});
+			promise.catch(() => {
 				reject(arguments[0]);
 			});
 		} else {
