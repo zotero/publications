@@ -115,7 +115,7 @@
 					<div class="zotero-container-inner">
 						<select class="zotero-form-control" data-trigger="cite-style-selection">
 							<% for(var citationStyle in obj.renderer.zotero.config.citeStyleOptions) { %>
-								<option value="<%= citationStyle %>">
+								<option value="<%= citationStyle %>" <% if(citationStyle === obj.renderer.config.citeStyleOptionDefault) { %> selected <% } %>>
 									<%= obj.renderer.zotero.config.citeStyleOptions[citationStyle] %>
 								</option>
 							<% } %>
