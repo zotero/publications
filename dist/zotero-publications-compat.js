@@ -3965,11 +3965,19 @@ ZoteroPublications.prototype.defaults = {
 	expand: 'all',
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
+		'asa': 'American Psychological Association 6th edition',
+		'cell': 'Cell',
 		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
+		'chicago-fullnote-bibliography': 'Chicago Manual of Style 16th edition (full note)',
+		'chicago-note-bibliography': 'Chicago Manual of Style 16th edition (note)',
 		'elsevier-harvard': 'Elsevier Harvard (with titles)',
-		'modern-humanities-research-association-author-date': 'Modern Humanities Research Association 3rd edition (author-date)',
-		'modern-language-association': 'Modern Language Association 7th edition'
+		'ieee': 'IEEE',
+		'modern-humanities-research-association': 'Modern Humanities Research Association 3rd edition (note with bibliography)',
+		'modern-language-association': 'Modern Language Association 7th edition',
+		'nature': 'Nature',
+		'vancouver': 'Vancouver'
 	},
+	citeStyleOptionDefault: 'chicago-author-date',
 	exportFormats: {
 		'bibtex': {
 			name: 'BibTeX',
@@ -4587,7 +4595,7 @@ module.exports = function (obj) {
       print = function print() {
     __p += __j.call(arguments, '');
   };
-  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + ' zotero-details-open" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\t<a href="#" class="zotero-line"></a>\n\n\t<!-- Reference -->\n\t';
+  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\t<a href="#" class="zotero-line"></a>\n\n\t<!-- Reference -->\n\t';
   if (obj.renderer.config.alwaysUseCitationStyle) {
     __p += '\n\t\t<h3 class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</h3>\n\n\t<!-- Templated -->\n\t';
   } else {
@@ -4689,7 +4697,11 @@ module.exports = function (obj) {
   if (obj.renderer.zotero.userId) {
     __p += '\n\t\t\t\t<!-- Cite & export -->\n\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t<ul class="zotero-list-inline">\n\t\t\t\t\t\t<li><a href="" data-trigger="cite">Cite</a></li><!--\n\t\t\t\t\t\t--><li><a href="" data-trigger="export">Export</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Cite -->\n\t\t\t\t<div class="zotero-cite-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t';
     for (var citationStyle in obj.renderer.zotero.config.citeStyleOptions) {
-      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.citeStyleOptions[citationStyle]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '" ';
+      if (citationStyle === obj.renderer.config.citeStyleOptionDefault) {
+        __p += ' selected ';
+      }
+      __p += '>\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.citeStyleOptions[citationStyle]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-citation" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation"></p>\n\t\t\t\t\t\t<button class="zotero-citation-copy" data-clipboard-target="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation">Copy</button>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
     for (var exportFormat in obj.renderer.zotero.config.exportFormats) {
