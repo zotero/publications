@@ -25,7 +25,7 @@ export function ZoteroData(data, config) {
 	Object.defineProperty(this, 'length', {
 		enumerable: false,
 		configurable: false,
-		get: function() {
+		get: () => {
 			return this.data.length;
 		}
 	});

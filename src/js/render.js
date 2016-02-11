@@ -231,7 +231,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 				let citeEl = itemEl.querySelector('.zotero-citation');
 				if(citeContainerEl) {
 					citeEl.innerHTML = '';
-					_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
+					_.each(itemEl.querySelectorAll('.zotero-list-inline a'), item => {
 						item.classList.remove('zotero-active');
 					});
 					let expanding = toggleCollapse(citeContainerEl);
@@ -246,7 +246,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
 				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
 				if(exportContainerEl) {
-					_.each(itemEl.querySelectorAll('.zotero-list-inline a'), function(item) {
+					_.each(itemEl.querySelectorAll('.zotero-list-inline a'), item => {
 						item.classList.remove('zotero-active');
 					});
 					let expanding = toggleCollapse(exportContainerEl);
