@@ -47,7 +47,7 @@ ZoteroPublications.prototype.defaults = {
 		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
 		'chicago-fullnote-bibliography': 'Chicago Manual of Style 16th edition (full note)',
 		'chicago-note-bibliography': 'Chicago Manual of Style 16th edition (note)',
-		'elsevier-harvard': 'Elsevier Harvard (with titles)',
+		'harvard-cite-them-right': 'Harvard - Cite Them Right 9th edition',
 		'ieee': 'IEEE',
 		'modern-humanities-research-association': 'Modern Humanities Research Association 3rd edition (note with bibliography)',
 		'modern-language-association': 'Modern Language Association 7th edition',
