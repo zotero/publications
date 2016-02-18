@@ -141,6 +141,7 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
 	this.toggleSpinner(false);
 	this.previous = markup;
 	this.addHandlers();
+	this.updateVisuals();
 };
 
 /**
@@ -271,8 +272,29 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			this.prepareExport(itemEl);
 		}
 	});
+
+	window.addEventListener('resize', _.debounce(this.updateVisuals));
 };
 
+/**
+ * Update .zotero-line to align with left border of the screen on small
+ * devices, provided that the container is no more than 30px from the
+ * border (and no less than 4px required for the actual line and 1px space)
+ */
+ZoteroRenderer.prototype.updateVisuals = function() {
+	if(!this.zoteroLines) {
+		this.zoteroLines = this.container.querySelectorAll('.zotero-line');
+	}
+
+	_.each(this.zoteroLines, zoteroLineEl => {
+		let offset = `${this.container.offsetLeft * -1}px`;
+		if(window.innerWidth < 768 && this.container.offsetLeft <= 30 && this.container.offsetLeft > 3) {
+			zoteroLineEl.style.left = offset;
+		} else {
+			zoteroLineEl.style.left = null;
+		}
+	});
+};
 
 
 /**
