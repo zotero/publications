@@ -1,5 +1,5 @@
 <li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="<%- obj.item.key %>">
-	<a href="#" class="zotero-line"></a>
+	<a href="#" class="zotero-line" aria-hidden="true" role="presentation"></a>
 
 	<!-- Reference -->
 	<% if (obj.renderer.config.alwaysUseCitationStyle) { %>
