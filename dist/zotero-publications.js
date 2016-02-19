@@ -1968,20 +1968,20 @@ function fetchUntilExhausted(url, options, jsondata) {
 	let relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
 	jsondata = jsondata || [];
 
-	return new Promise(function (resolve, reject) {
-		fetch(url, options).then(function (response) {
+	return new Promise((resolve, reject) => {
+		fetch(url, options).then(response => {
 			if (response.status >= 200 && response.status < 300) {
 				if (response.headers.has('Link')) {
 					let matches = response.headers.get('Link').match(relRegex);
 					if (matches && matches.length >= 2) {
-						response.json().then(function (jsonDataPart) {
+						response.json().then(jsonDataPart => {
 							if (!(jsonDataPart instanceof Array)) {
 								jsonDataPart = [jsonDataPart];
 							}
 							resolve(fetchUntilExhausted(matches[1], options, _lodash2.default.union(jsondata, jsonDataPart)));
 						});
 					} else {
-						response.json().then(function (jsonDataPart) {
+						response.json().then(jsonDataPart => {
 							if (!(jsonDataPart instanceof Array)) {
 								jsonDataPart = [jsonDataPart];
 							}
@@ -1989,7 +1989,7 @@ function fetchUntilExhausted(url, options, jsondata) {
 						});
 					}
 				} else {
-					response.json().then(function (jsonDataPart) {
+					response.json().then(jsonDataPart => {
 						if (!(jsonDataPart instanceof Array)) {
 							jsonDataPart = [jsonDataPart];
 						}
@@ -1999,7 +1999,7 @@ function fetchUntilExhausted(url, options, jsondata) {
 			} else {
 				reject(new Error(`Unexpected status code ${ response.status } when requesting ${ url }`));
 			}
-		}).catch(function () {
+		}).catch(() => {
 			reject(new Error(`Unexpected error when requesting ${ url }`));
 		});
 	});
@@ -2046,7 +2046,7 @@ function ZoteroData(data, config) {
 	Object.defineProperty(this, 'length', {
 		enumerable: false,
 		configurable: false,
-		get: function () {
+		get: () => {
 			return this.data.length;
 		}
 	});
@@ -2290,7 +2290,7 @@ ZoteroPublications.prototype.defaults = {
 		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
 		'chicago-fullnote-bibliography': 'Chicago Manual of Style 16th edition (full note)',
 		'chicago-note-bibliography': 'Chicago Manual of Style 16th edition (note)',
-		'elsevier-harvard': 'Elsevier Harvard (with titles)',
+		'harvard-cite-them-right': 'Harvard - Cite Them Right 9th edition',
 		'ieee': 'IEEE',
 		'modern-humanities-research-association': 'Modern Humanities Research Association 3rd edition (note with bibliography)',
 		'modern-language-association': 'Modern Language Association 7th edition',
@@ -2334,17 +2334,17 @@ ZoteroPublications.prototype.get = function (url, options, init) {
 
 	options = _lodash2.default.extend({}, this.config, options);
 
-	return new Promise(function (resolve, reject) {
+	return new Promise((resolve, reject) => {
 		let promise = (0, _api.fetchUntilExhausted)(url, init);
-		promise.then(function (responseJson) {
+		promise.then(responseJson => {
 			let data = new _data.ZoteroData(responseJson, this.config);
 			if (options.group === 'type') {
 				data.groupByType(options.expand);
 			}
 			resolve(data);
-		}.bind(this));
+		});
 		promise.catch(reject);
-	}.bind(this));
+	});
 };
 
 /**
@@ -2422,22 +2422,22 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			let userId = userIdOrendpointOrData;
 			let promise = this.getPublications(userId);
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			promise.then(function (data) {
+			promise.then(data => {
 				this.renderer.displayPublications(data);
 				resolve();
-			}.bind(this));
-			promise.catch(function () {
+			});
+			promise.catch(() => {
 				reject(arguments[0]);
 			});
 		} else if (typeof userIdOrendpointOrData === 'string') {
 			let endpoint = userIdOrendpointOrData;
 			let promise = this.getEndpoint(endpoint);
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			promise.then(function (data) {
+			promise.then(data => {
 				this.renderer.displayPublications(data);
 				resolve();
-			}.bind(this));
-			promise.catch(function () {
+			});
+			promise.catch(() => {
 				reject(arguments[0]);
 			});
 		} else {
@@ -2631,6 +2631,7 @@ ZoteroRenderer.prototype.displayPublications = function (data) {
 	this.toggleSpinner(false);
 	this.previous = markup;
 	this.addHandlers();
+	this.updateVisuals();
 };
 
 /**
@@ -2684,7 +2685,7 @@ ZoteroRenderer.prototype.prepareExport = function (itemEl) {
 		'include': [exportFormat],
 		'group': false
 	}).then(item => {
-		let itemData = _lodash2.default.findWhere(this.data.raw, { 'key': itemId });
+		let itemData = (_lodash2.default.findWhere || _lodash2.default.find)(this.data.raw, { 'key': itemId });
 		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = (0, _export2.default)({
 			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
@@ -2721,7 +2722,7 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				let citeEl = itemEl.querySelector('.zotero-citation');
 				if (citeContainerEl) {
 					citeEl.innerHTML = '';
-					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), function (item) {
+					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), item => {
 						item.classList.remove('zotero-active');
 					});
 					let expanding = (0, _utils.toggleCollapse)(citeContainerEl);
@@ -2736,7 +2737,7 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
 				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
 				if (exportContainerEl) {
-					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), function (item) {
+					_lodash2.default.each(itemEl.querySelectorAll('.zotero-list-inline a'), item => {
 						item.classList.remove('zotero-active');
 					});
 					let expanding = (0, _utils.toggleCollapse)(exportContainerEl);
@@ -2759,6 +2760,28 @@ ZoteroRenderer.prototype.addHandlers = function () {
 		} else if (target.dataset.trigger === 'export-format-selection') {
 			let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
 			this.prepareExport(itemEl);
+		}
+	});
+
+	window.addEventListener('resize', _lodash2.default.debounce(this.updateVisuals));
+};
+
+/**
+ * Update .zotero-line to align with left border of the screen on small
+ * devices, provided that the container is no more than 30px from the
+ * border (and no less than 4px required for the actual line and 1px space)
+ */
+ZoteroRenderer.prototype.updateVisuals = function () {
+	if (!this.zoteroLines) {
+		this.zoteroLines = this.container.querySelectorAll('.zotero-line');
+	}
+
+	_lodash2.default.each(this.zoteroLines, zoteroLineEl => {
+		let offset = `${ this.container.offsetLeft * -1 }px`;
+		if (window.innerWidth < 768 && this.container.offsetLeft <= 30 && this.container.offsetLeft > 3) {
+			zoteroLineEl.style.left = offset;
+		} else {
+			zoteroLineEl.style.left = null;
 		}
 	});
 };
@@ -2897,7 +2920,7 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\t<a href="#" class="zotero-line"></a>\n\n\t<!-- Reference -->\n\t';
+  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '">\n\t<a href="#" class="zotero-line" aria-hidden="true" role="presentation"></a>\n\n\t<!-- Reference -->\n\t';
   if (obj.renderer.config.alwaysUseCitationStyle) {
     __p += '\n\t\t<h3 class="zotero-item-title">\n\t\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t\t</h3>\n\n\t<!-- Templated -->\n\t';
   } else {
@@ -3007,7 +3030,7 @@ module.exports = function (obj) {
     }
     __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-citation" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation"></p>\n\t\t\t\t\t\t<button class="zotero-citation-copy" data-clipboard-target="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation">Copy</button>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
     for (var exportFormat in obj.renderer.zotero.config.exportFormats) {
-      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = exportFormat) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.exportFormats[exportFormat]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = exportFormat) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.exportFormats[exportFormat].name) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t\t\t</select>\n\t\t\t\t\t\t<p class="zotero-export"></p>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t';
   }

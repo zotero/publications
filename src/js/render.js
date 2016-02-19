@@ -195,7 +195,7 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 		'include': [exportFormat],
 		'group': false
 	}).then(item => {
-		let itemData = _.findWhere(this.data.raw, {'key': itemId});
+		let itemData = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
 		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = exportTpl({
 			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
