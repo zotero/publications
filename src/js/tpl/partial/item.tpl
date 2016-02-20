@@ -41,12 +41,14 @@
 				<h4>Attachments</h4>
 				<ul class="zotero-attachments">
 					<% for(var childItem of obj.item[Symbol.for('childAttachments')]) { %>
+						<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
 						<li>
-							<a href="#">
+							<a href="<%- (childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) %>">
 								<span class="zotero-icon zotero-icon-paperclip"></span><!--
 								--><%- childItem.data.title %>
 							</a>
 						</li>
+						<% }%>
 					<% } %>
 				</ul>
 			<% } %>
