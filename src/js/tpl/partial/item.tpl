@@ -1,63 +1,12 @@
 <li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="<%- obj.item.key %>">
 	<a href="#" class="zotero-line" aria-hidden="true" role="presentation"></a>
 
-	<!-- Reference -->
+	<!-- Citation -->
 	<% if (obj.renderer.config.alwaysUseCitationStyle) { %>
-		<h3 class="zotero-item-title">
-			<%= obj.item.citation %>
-		</h3>
-
+		<%= obj.renderer.renderItemCitation(obj.item) %>
 	<!-- Templated -->
 	<% } else { %>
-		<% if (obj.data.itemType == 'book') { %>
-			<h3 class="zotero-item-title">
-				<a href="#"><%- obj.data.title %></a>
-			</h3>
-			<div class="zotero-item-subline">
-				By <%- obj.data[Symbol.for('authors')] %>
-				<% if (obj.data[Symbol.for('formattedDate')]) { %>
-				(<%- obj.data[Symbol.for('formattedDate')] %>)
-				<% } %>
-			</div>
-
-		<% } else if (obj.data.itemType == 'journalArticle') { %>
-			<h3 class="zotero-item-title">
-				<a href="#"><%- obj.data.title %></a>
-			</h3>
-			<div class="zotero-item-subline">
-				<%- obj.data.journalAbbreviation %>
-				<% if (obj.data[Symbol.for('formattedDate')]) { %>
-				(<%- obj.data[Symbol.for('formattedDate')] %>)
-				<% } %>
-			</div>
-
-		<% } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') { %>
-			<h3 class="zotero-item-title">
-				<a href="#"><%- obj.data.title %></a>
-			</h3>
-			<div class="zotero-item-subline">
-				<%- obj.data.publicationTitle %>
-				<% if (obj.data[Symbol.for('formattedDate')]) { %>
-				(<%- obj.data[Symbol.for('formattedDate')] %>)
-				<% } %>
-			</div>
-
-		<% } else if (obj.data.itemType == 'blogPost') { %>
-			<h3 class="zotero-item-title">
-				<a href="#"><%- obj.data.title %></a>
-			</h3>
-			<div class="zotero-item-subline">
-				<%- obj.data.blogTitle %>
-				<% if (obj.data[Symbol.for('formattedDate')]) { %>
-				(<%- obj.data[Symbol.for('formattedDate')] %>)
-				<% } %>
-			</div>
-
-		<% } else { %>
-			<h3 class="zotero-item-title">
-				<a href="#"><%= obj.item.citation %></a>
-			</h3>
-		<% } %>
+		<%= obj.renderer.renderItemTemplated(obj.item) %>
 	<% } %>
 
 	<!-- Details toggle -->

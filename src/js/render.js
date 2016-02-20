@@ -1,6 +1,8 @@
 import _ from 'lodash';
 import Clipboard from 'clipboard';
 import itemTpl from './tpl/partial/item.tpl';
+import itemTemplatedTpl from './tpl/partial/item-templated.tpl';
+import itemCitationTpl from './tpl/partial/item-citation.tpl';
 import itemsTpl from './tpl/partial/items.tpl';
 import groupTpl from './tpl/partial/group.tpl';
 import groupsTpl from './tpl/partial/groups.tpl';
@@ -43,13 +45,36 @@ export function ZoteroRenderer(container, zotero) {
  * @return {String}                  - Rendered markup of a Zotero item
  */
 ZoteroRenderer.prototype.renderItem = function(zoteroItem) {
-	var citationPreference;
-
 	return itemTpl({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'renderer': this,
-		'citationPreference': citationPreference
+		'renderer': this
+	});
+};
+
+/**
+ * Render citation part of a single Zotero using custom template
+ * @param  {Object} zoteroItem       - Single Zotero item data
+ * @return {String}                  - Rendered markup of a Zotero item
+ */
+ZoteroRenderer.prototype.renderItemTemplated = function(zoteroItem) {
+	return itemTemplatedTpl({
+		'item': zoteroItem,
+		'data': zoteroItem.data,
+		'renderer': this
+	});
+};
+
+/**
+ * Render citation part of a single Zotero item using api-provided citation
+ * @param  {Object} zoteroItem       - Single Zotero item data
+ * @return {String}                  - Rendered markup of a Zotero item
+ */
+ZoteroRenderer.prototype.renderItemCitation = function(zoteroItem) {
+	return itemCitationTpl({
+		'item': zoteroItem,
+		'data': zoteroItem.data,
+		'renderer': this
 	});
 };
 
