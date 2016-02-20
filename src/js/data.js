@@ -12,6 +12,7 @@ export const CHILD_ATTACHMENTS = Symbol.for('childAttachments');
 export const CHILD_OTHER = Symbol.for('childOther');
 export const GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
 export const GROUP_TITLE = Symbol.for('groupTitle');
+export const VIEW_ONLINE_URL = Symbol.for('viewOnlineUrl');
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data

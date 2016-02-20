@@ -7,7 +7,8 @@ import {
 import {
 	CHILD_NOTES,
 	CHILD_ATTACHMENTS,
-	CHILD_OTHER
+	CHILD_OTHER,
+	VIEW_ONLINE_URL
 } from './data.js';
 
 export const ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
@@ -47,6 +48,9 @@ export function processResponse(response, config) {
 				response.splice(i, 1);
 				childItems.push(item);
 			}
+			if(item.data.url) {
+				item[VIEW_ONLINE_URL] = item.data.url;
+			}
 			index[item.key] = item;
 		}
 
@@ -65,7 +69,17 @@ export function processResponse(response, config) {
 				if(!index[item.data.parentItem][CHILD_ATTACHMENTS]) {
 					index[item.data.parentItem][CHILD_ATTACHMENTS] = [];
 				}
-				index[item.data.parentItem][CHILD_ATTACHMENTS].push(item);
+				if(!index[item.data.parentItem][VIEW_ONLINE_URL]) {
+					if(item.data.url) {
+						index[item.data.parentItem][VIEW_ONLINE_URL] = item.url;
+					} else if(item.links && item.links.enclosure && item.links.enclosure.href) {
+						index[item.data.parentItem][VIEW_ONLINE_URL] = item.links.enclosure.href;
+					} else {
+						index[item.data.parentItem][CHILD_ATTACHMENTS].push(item);
+					}
+				} else {
+					index[item.data.parentItem][CHILD_ATTACHMENTS].push(item);
+				}
 			} else {
 				if(!index[item.data.parentItem][CHILD_OTHER]) {
 					index[item.data.parentItem][CHILD_OTHER] = [];
