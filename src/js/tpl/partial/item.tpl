@@ -1,4 +1,4 @@
-<li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="<%- obj.item.key %>">
+<li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="<%- obj.item.key %>" role="treeitem">
 	<a href="#" class="zotero-line" aria-hidden="true" role="presentation"></a>
 
 	<!-- Citation -->
