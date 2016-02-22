@@ -68,7 +68,8 @@ ZoteroData.prototype.groupByCollections = function() {
  */
 ZoteroData.prototype[Symbol.iterator] = function*() {
 	if(this.grouped) {
-		let keys = Object.keys(this.data);
+		let keys = Object.keys(this.data).sort();
+		// keys = keys.sort();
 		for(let key of keys) {
 			let group = this.data[key];
 			group[GROUP_TITLE] = key;
