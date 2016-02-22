@@ -1,4 +1,4 @@
-<ul class="zotero-items">
+<ul class="zotero-items" role="group">
 	<% for (var item of obj.items) { %>
 		<%= obj.renderer.renderItem(item) %>
 	<% } %>
