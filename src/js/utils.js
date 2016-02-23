@@ -84,7 +84,7 @@ export function once(target, type, listener) {
  * @return {String} 			- unique identifier
  */
 export function id(target) {
-	target.id = target.id || _.uniqueId(target);
+	target.id = target.id || _.uniqueId('zotero-element-');
 	return target.id;
 }
 
