@@ -123,12 +123,18 @@ $border-radius-base: 4px;
 	// Collapse
 	&-collapsed {
 		height: 0;
+		visibility: hidden;
+
+		&.zotero-collapsing {
+			visibility: visible;
+		}
 	}
 
 	&-collapsing {
 		transition: height .35s ease-out;
 		will-change: height;
 	}
+
 
 	&-collapsable {
 		overflow: hidden;

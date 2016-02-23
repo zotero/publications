@@ -123,6 +123,7 @@ function collapse(element) {
 		element.style.height = null;
 		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
 			element.classList.remove('zotero-collapsing');
+			element.setAttribute('aria-hidden', 'true');
 			delete collapsesInProgress[id(element)];
 		});
 	});
@@ -138,6 +139,7 @@ function uncollapse(element) {
 		element.style.height = targetHeight;
 		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
 			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
+			element.setAttribute('aria-hidden', 'false');
 			element.style.height = null;
 			delete collapsesInProgress[id(element)];
 		});

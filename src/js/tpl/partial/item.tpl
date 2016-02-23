@@ -1,5 +1,5 @@
 <li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="<%- obj.item.key %>" role="treeitem">
-	<a href="#" class="zotero-line" aria-hidden="true" role="presentation"></a>
+	<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>
 
 	<!-- Citation -->
 	<% if (obj.renderer.config.alwaysUseCitationStyle) { %>
@@ -17,7 +17,7 @@
 	</div>
 
 	<!-- Details -->
-	<section class="zotero-details zotero-collapsed zotero-collapsable">
+	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true">
 		<div class="zotero-details-inner">
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
@@ -62,7 +62,7 @@
 				</div>
 
 				<!-- Cite -->
-				<div class="zotero-cite-container zotero-collapsed zotero-collapsable">
+				<div class="zotero-cite-container zotero-collapsed zotero-collapsable" aria-hidden="true">
 					<div class="zotero-container-inner">
 						<select class="zotero-form-control" data-trigger="cite-style-selection">
 							<% for(var citationStyle in obj.renderer.zotero.config.citeStyleOptions) { %>
