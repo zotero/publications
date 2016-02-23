@@ -76,7 +76,9 @@
 							<% } %>
 						</select>
 						<p class="zotero-citation" id="<%- obj.item.key %>-citation"></p>
-						<button class="zotero-citation-copy" data-clipboard-target="#<%- obj.item.key %>-citation">Copy</button>
+						<% if(!/iPhone|iPad/i.test(navigator.userAgent)) { %>
+							<button class="zotero-citation-copy tooltipped tooltipped-e" data-clipboard-target="#<%- obj.item.key %>-citation" aria-label="Copy to clipboard">Copy</button>
+						<% } %>
 					</div>
 				</div>
 

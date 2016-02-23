@@ -17,7 +17,8 @@ import {
 import {
 	formatCategoryName,
 	closest,
-	toggleCollapse
+	toggleCollapse,
+	clipboardFallbackMessage
 } from './utils.js';
 
 _.templateSettings.variable = 'obj';
@@ -234,7 +235,24 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
  * Attach interaction handlers
  */
 ZoteroRenderer.prototype.addHandlers = function() {
-	new Clipboard('.zotero-citation-copy'); //eslint-disable-line no-new
+	let clipboard = new Clipboard('.zotero-citation-copy');
+
+	clipboard.on('success', function(e) {
+		e.clearSelection();
+		e.trigger.setAttribute('aria-label', 'Copied!');
+	});
+
+	clipboard.on('error', function(e) {
+		e.trigger.setAttribute('aria-label', clipboardFallbackMessage(e.action));
+	});
+
+	this.container.addEventListener('mouseout', ev => {
+		if(ev.target.classList.contains('zotero-citation-copy')) {
+			ev.target.blur();
+			ev.target.setAttribute('aria-label', 'Copy to clipboard');
+		}
+	});
+
 	this.container.addEventListener('click', ev => {
 		var target;
 
