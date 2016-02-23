@@ -48,7 +48,7 @@ export function processResponse(response, config) {
 				response.splice(i, 1);
 				childItems.push(item);
 			}
-			if(item.data.url) {
+			if(item.data && item.data.url) {
 				item[VIEW_ONLINE_URL] = item.data.url;
 			}
 			index[item.key] = item;
