@@ -156,13 +156,15 @@ ZoteroRenderer.prototype.renderBranding = function() {
 ZoteroRenderer.prototype.displayPublications = function(data) {
 	var markup;
 
+	this.data = data;
+
 	if(data.grouped > 0) {
 		markup = this.renderGroupView(data);
 	} else {
 		markup = this.renderPlainView(data);
 	}
 
-	this.data = data;
+
 	this.container.innerHTML = markup;
 	this.toggleSpinner(false);
 	this.previous = markup;
