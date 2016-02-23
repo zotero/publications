@@ -173,3 +173,20 @@ export function toggleCollapse(element, override) {
 		return collapsed;
 	}
 }
+
+/**
+ * Returns a fallback message for a clipboard
+ * @return {String} 	- a fallback message
+ */
+export function clipboardFallbackMessage() {
+	let actionMsg = '';
+
+	if (/Mac/i.test(navigator.userAgent)) {
+		actionMsg = 'Press ⌘-C to copy';
+	}
+	else {
+		actionMsg = 'Press Ctrl-C to copy';
+	}
+
+	return actionMsg;
+}

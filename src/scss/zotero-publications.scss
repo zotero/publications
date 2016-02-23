@@ -17,6 +17,10 @@ $gray: #ccc;
 
 $border-radius-base: 4px;
 
+@import "bower_components/primer-css/scss/variables";
+@import "bower_components/primer-css/scss/mixins";
+@import "bower_components/primer-css/scss/tooltips";
+
 
 /* Inherits:
 		* font-family
