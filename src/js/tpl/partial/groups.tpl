@@ -1,4 +1,4 @@
-<ul class="zotero-groups" role="tree">
+<ul class="zotero-groups" role="list">
 	<% for (var group of obj.groups) { %>
 		<%= obj.renderer.renderGroup(group) %>
 	<% } %>
