@@ -11,13 +11,13 @@
 
 	<!-- Details toggle -->
 	<div>
-		<a href="#<%- obj.item.key %>" data-trigger="details">
+		<a href="" data-trigger="details">
 			Details
 		</a>
 	</div>
 
 	<!-- Details -->
-	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true">
+	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false">
 		<div class="zotero-details-inner">
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
@@ -62,7 +62,7 @@
 				</div>
 
 				<!-- Cite -->
-				<div class="zotero-cite-container zotero-collapsed zotero-collapsable" aria-hidden="true">
+				<div class="zotero-cite-container zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false">
 					<div class="zotero-container-inner">
 						<select class="zotero-form-control" data-trigger="cite-style-selection">
 							<% for(var citationStyle in obj.renderer.zotero.config.citeStyleOptions) { %>
