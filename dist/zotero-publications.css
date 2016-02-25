@@ -307,8 +307,13 @@
   .zotero-logo:hover .zotero-z {
     fill: #900; }
 
-.zotero-active {
+.zotero-tab-active a {
   color: inherit; }
+
+.zotero-tabpanel {
+  display: none; }
+  .zotero-tabpanel-open {
+    display: block; }
 
 .zotero-loading {
   text-align: center; }
