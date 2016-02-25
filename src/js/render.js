@@ -18,6 +18,7 @@ import {
 	formatCategoryName,
 	closest,
 	toggleCollapse,
+	showTab,
 	clipboardFallbackMessage
 } from './utils.js';
 
@@ -264,44 +265,16 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			ev.preventDefault();
 			if(target.dataset.trigger === 'details') {
 				let itemEl = closest(target, el => el.dataset && el.dataset.item);
+				this.prepareExport(itemEl);
+				this.updateCitation(itemEl, this.preferredCitationStyle);
 				let detailsEl = itemEl.querySelector('.zotero-details');
 				if(detailsEl) {
 					let expanded = toggleCollapse(detailsEl);
 					expanded ? itemEl.classList.add('zotero-details-open') : itemEl.classList.remove('zotero-details-open'); //eslint-disable-line no-unused-expressions
 				}
 				window.history.pushState(null, null, `#${itemEl.dataset.item}`);
-			} else if(target.dataset.trigger === 'cite') {
-				let itemEl = closest(target, el => el.dataset && el.dataset.item);
-				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
-				let citeEl = itemEl.querySelector('.zotero-citation');
-				if(citeContainerEl) {
-					citeEl.innerHTML = '';
-					_.each(itemEl.querySelectorAll('.zotero-list-inline a'), item => {
-						item.classList.remove('zotero-active');
-					});
-					let expanding = toggleCollapse(citeContainerEl);
-					if(expanding) {
-						this.updateCitation(itemEl, this.preferredCitationStyle);
-						toggleCollapse(exportContainerEl, false);
-						target.classList.add('zotero-active');
-					}
-				}
-			} else if(target.dataset.trigger === 'export') {
-				let itemEl = closest(target, el => el.dataset && el.dataset.item);
-				let citeContainerEl = itemEl.querySelector('.zotero-cite-container');
-				let exportContainerEl = itemEl.querySelector('.zotero-export-container');
-				if(exportContainerEl) {
-					_.each(itemEl.querySelectorAll('.zotero-list-inline a'), item => {
-						item.classList.remove('zotero-active');
-					});
-					let expanding = toggleCollapse(exportContainerEl);
-					if(expanding) {
-						this.prepareExport(itemEl);
-						toggleCollapse(citeContainerEl, false);
-						target.classList.add('zotero-active');
-					}
-				}
+			} else if(target.dataset.trigger === 'cite' || target.dataset.trigger === 'export') {
+				showTab(target);
 			}
 		}
 	});

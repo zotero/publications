@@ -253,8 +253,18 @@ $border-radius-base: 4px;
 		}
 	}
 
-	&-active {
-		color: inherit;
+	&-tab-active {
+		a {
+			color: inherit;
+		}
+	}
+
+	&-tabpanel {
+		display: none;
+
+		&-open {
+			display: block;
+		}
 	}
 
 	// Global loader

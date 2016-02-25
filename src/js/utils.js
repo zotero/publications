@@ -174,6 +174,32 @@ export function toggleCollapse(element, override) {
 	}
 }
 
+export function showTab(targetTabEl) {
+	let tablistEl = closest(targetTabEl, el => el.getAttribute('role') === 'tablist');
+	let targetTabContainer = targetTabEl.parentElement;
+	let tabs = tablistEl.querySelectorAll('li.zotero-tab');
+	let tabpanelId = targetTabEl.getAttribute('aria-controls');
+	let targetTabPanelEl = document.getElementById(tabpanelId);
+	let tabPanelsWrapper = closest(targetTabPanelEl, el => el.classList.contains('zotero-tab-content'));
+	let tabPanels = tabPanelsWrapper.querySelectorAll('.zotero-tabpanel');
+
+	_.each(tabs, tabEl => {
+		tabEl.classList.remove('zotero-tab-active');
+		tabEl.querySelector('a').setAttribute('aria-selected', false);
+	});
+	_.each(tabPanels, tabPanelEl => {
+		tabPanelEl.classList.remove('zotero-tabpanel-open');
+		tabPanelEl.setAttribute('aria-expanded', false);
+		tabPanelEl.setAttribute('aria-hidden', true);
+	});
+
+	targetTabContainer.classList.add('zotero-tab-active');
+	targetTabPanelEl.classList.add('zotero-tabpanel-open');
+	targetTabPanelEl.setAttribute('aria-expanded', true);
+	targetTabPanelEl.setAttribute('aria-hidden', false);
+	targetTabEl.setAttribute('aria-selected', true);
+}
+
 /**
  * Returns a fallback message for a clipboard
  * @return {String} 	- a fallback message
