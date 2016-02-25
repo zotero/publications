@@ -17,8 +17,7 @@
 	</div>
 
 	<!-- Details -->
-	<section class="zotero-details zotero-collapsed zotero-collapsable"
-		aria-hidden="true" aria-expanded="false" id="<%- obj.item.key %>-details">
+	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="<%- obj.item.key %>-details">
 
 		<div class="zotero-details-inner">
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
@@ -57,16 +56,18 @@
 			<% if(obj.renderer.zotero.userId) { %>
 				<!-- Cite & export -->
 				<div class="zotero-toolbar">
-					<ul class="zotero-list-inline">
-						<li><a href="" data-trigger="cite" aria-controls="<%- obj.item.key %>-cite">Cite</a></li><!--
-						--><li><a href="" data-trigger="export" aria-controls="<%- obj.item.key %>-export">Export</a></li>
+					<ul class="zotero-list-inline" role="tablist">
+						<li role="tab">
+							<a href="" data-trigger="cite" aria-controls="<%- obj.item.key %>-cite">Cite</a>
+						</li>
+						<li role="tab">
+							<a href="" data-trigger="export" aria-controls="<%- obj.item.key %>-export">Export</a>
+						</li>
 					</ul>
 				</div>
 
 				<!-- Cite -->
-				<div class="zotero-cite-container zotero-collapsed zotero-collapsable"
-				  aria-hidden="true" aria-expanded="false" id="<%- obj.item.key %>-cite">
-
+				<div role="tabpanel" class="zotero-cite-container zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="<%- obj.item.key %>-cite">
 					<div class="zotero-container-inner">
 						<select class="zotero-form-control" data-trigger="cite-style-selection">
 							<% for(var citationStyle in obj.renderer.zotero.config.citeStyleOptions) { %>
@@ -83,9 +84,7 @@
 				</div>
 
 				<!-- Export -->
-				<div class="zotero-export-container zotero-collapsed zotero-collapsable"
-				  id="<%- obj.item.key %>-export">
-
+				<div role="tabpanel" class="zotero-export-container zotero-collapsed zotero-collapsable" id="<%- obj.item.key %>-export">
 					<div class="zotero-container-inner">
 						<select class="zotero-form-control" data-trigger="export-format-selection">
 							<% for(var exportFormat in obj.renderer.zotero.config.exportFormats) { %>
