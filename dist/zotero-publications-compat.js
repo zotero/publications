@@ -4531,7 +4531,7 @@ ZoteroRenderer.prototype.addHandlers = function () {
 		}
 	});
 
-	window.addEventListener('resize', _lodash2.default.debounce(this.updateVisuals));
+	window.addEventListener('resize', _lodash2.default.debounce(this.updateVisuals).bind(this));
 };
 
 /**
@@ -5097,7 +5097,6 @@ function uncollapse(element) {
 	element.classList.remove('zotero-collapsed');
 	var targetHeight = window.getComputedStyle(element).height;
 	element.classList.add('zotero-collapsed');
-	element.focus();
 
 	_lodash2.default.defer(function () {
 		element.classList.add('zotero-collapsing');
