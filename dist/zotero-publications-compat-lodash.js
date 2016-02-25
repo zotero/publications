@@ -19080,13 +19080,14 @@ ZoteroRenderer.prototype.renderBranding = function () {
 ZoteroRenderer.prototype.displayPublications = function (data) {
 	var markup;
 
+	this.data = data;
+
 	if (data.grouped > 0) {
 		markup = this.renderGroupView(data);
 	} else {
 		markup = this.renderPlainView(data);
 	}
 
-	this.data = data;
 	this.container.innerHTML = markup;
 	this.toggleSpinner(false);
 	this.previous = markup;
@@ -19173,12 +19174,6 @@ ZoteroRenderer.prototype.addHandlers = function () {
 	clipboard.on('error', function (e) {
 		e.trigger.setAttribute('aria-label', (0, _utils.clipboardFallbackMessage)(e.action));
 	});
-
-	// _.each(citationTriggers, citationTriggerEl => {
-	// 	citationTriggerEl.addEventListener('mouseout', ev => {
-
-	// 	});
-	// });
 
 	this.container.addEventListener('mouseout', function (ev) {
 		if (ev.target.classList.contains('zotero-citation-copy')) {
@@ -19355,7 +19350,7 @@ module.exports = function (obj) {
       print = function print() {
     __p += __j.call(arguments, '');
   };
-  __p += '<li class="zotero-group' + ((__t = obj.expand ? ' zotero-group-expanded' : '') == null ? '' : _.escape(__t)) + '" aria-expanded="' + ((__t = obj.expand ? ' true' : 'false') == null ? '' : _.escape(__t)) + '" >\n\t<h2 class="zotero-group-title" data-trigger="expand-group">' + ((__t = obj.title) == null ? '' : _.escape(__t)) + '</h2>\n\t' + ((__t = obj.renderer.renderItems(obj.items)) == null ? '' : __t) + '\n</li>';
+  __p += '<li class="zotero-group' + ((__t = obj.expand ? ' zotero-group-expanded' : '') == null ? '' : _.escape(__t)) + '"\n\taria-expanded="' + ((__t = obj.expand ? ' true' : 'false') == null ? '' : _.escape(__t)) + '" role="listitem">\n\n\t<h2 class="zotero-group-title" data-trigger="expand-group">' + ((__t = obj.title) == null ? '' : _.escape(__t)) + '</h2>\n\t' + ((__t = obj.renderer.renderItems(obj.items)) == null ? '' : __t) + '\n</li>';
   return __p;
 };
 
@@ -19370,7 +19365,7 @@ module.exports = function (obj) {
       print = function print() {
     __p += __j.call(arguments, '');
   };
-  __p += '<ul class="zotero-groups" role="tree">\n\t';
+  __p += '<ul class="zotero-groups" role="list">\n\t';
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
@@ -19499,13 +19494,13 @@ module.exports = function (obj) {
       print = function print() {
     __p += __j.call(arguments, '');
   };
-  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" role="treeitem">\n\t<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>\n\n\t<!-- Citation -->\n\t';
+  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" role="listitem">\n\t<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>\n\n\t<!-- Citation -->\n\t';
   if (obj.renderer.config.alwaysUseCitationStyle) {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemCitation(obj.item)) == null ? '' : __t) + '\n\t<!-- Templated -->\n\t';
   } else {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemTemplated(obj.item)) == null ? '' : __t) + '\n\t';
   }
-  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="" data-trigger="details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false">\n\t\t<div class="zotero-details-inner">\n\t\t\t';
+  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="" data-trigger="details" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable"\n\t\taria-hidden="true" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\n\t\t<div class="zotero-details-inner">\n\t\t\t';
   if (obj.data.abstractNote && obj.data.abstractNote.length) {
     __p += '\n\t\t\t\t<h4>Abstract</h4>\n\t\t\t\t<div class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data[Symbol.for('abstractNoteProcessed')]) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
   }
@@ -19575,7 +19570,7 @@ module.exports = function (obj) {
   }
   __p += '\n\t\t\t';
   if (obj.renderer.zotero.userId) {
-    __p += '\n\t\t\t\t<!-- Cite & export -->\n\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t<ul class="zotero-list-inline">\n\t\t\t\t\t\t<li><a href="" data-trigger="cite">Cite</a></li><!--\n\t\t\t\t\t\t--><li><a href="" data-trigger="export">Export</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Cite -->\n\t\t\t\t<div class="zotero-cite-container zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t';
+    __p += '\n\t\t\t\t<!-- Cite & export -->\n\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t<ul class="zotero-list-inline">\n\t\t\t\t\t\t<li><a href="" data-trigger="cite" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">Cite</a></li><!--\n\t\t\t\t\t\t--><li><a href="" data-trigger="export" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-export">Export</a></li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Cite -->\n\t\t\t\t<div class="zotero-cite-container zotero-collapsed zotero-collapsable"\n\t\t\t\t  aria-hidden="true" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">\n\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t';
     for (var citationStyle in obj.renderer.zotero.config.citeStyleOptions) {
       __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '" ';
       if (citationStyle === obj.renderer.config.citeStyleOptionDefault) {
@@ -19587,7 +19582,7 @@ module.exports = function (obj) {
     if (!/iPhone|iPad/i.test(navigator.userAgent)) {
       __p += '\n\t\t\t\t\t\t\t<button class="zotero-citation-copy tooltipped tooltipped-e" data-clipboard-target="#' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation" aria-label="Copy to clipboard">Copy</button>\n\t\t\t\t\t\t';
     }
-    __p += '\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable">\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
+    __p += '\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\n\t\t\t\t<!-- Export -->\n\t\t\t\t<div class="zotero-export-container zotero-collapsed zotero-collapsable"\n\t\t\t\t  id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-export">\n\n\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t';
     for (var exportFormat in obj.renderer.zotero.config.exportFormats) {
       __p += '\n\t\t\t\t\t\t\t\t<option value="' + ((__t = exportFormat) == null ? '' : __t) + '">\n\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.exportFormats[exportFormat].name) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t';
     }
@@ -19608,7 +19603,7 @@ module.exports = function (obj) {
       print = function print() {
     __p += __j.call(arguments, '');
   };
-  __p += '<ul class="zotero-items" role="group">\n\t';
+  __p += '<ul class="zotero-items" role="' + ((__t = obj.renderer.data.grouped > 0 ? 'group' : 'list') == null ? '' : _.escape(__t)) + '">\n\t';
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
@@ -19808,6 +19803,7 @@ function uncollapse(element) {
 	element.classList.remove('zotero-collapsed');
 	var targetHeight = window.getComputedStyle(element).height;
 	element.classList.add('zotero-collapsed');
+	element.focus();
 
 	_lodash2.default.defer(function () {
 		element.classList.add('zotero-collapsing');
