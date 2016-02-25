@@ -318,7 +318,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 		}
 	});
 
-	window.addEventListener('resize', _.debounce(this.updateVisuals));
+	window.addEventListener('resize', _.debounce(this.updateVisuals).bind(this));
 };
 
 /**
