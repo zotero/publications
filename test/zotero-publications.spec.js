@@ -36,10 +36,13 @@ describe('Zotero Publications', function() {
 		container = document.createElement('div');
 		renderer = new ZoteroRenderer(container, zp);
 		data = _.clone(testData);
+		data.grouped = 0;
 		dataGrouped = _.clone(testDataGrouped);
+		dataGrouped.grouped = 1;
 	});
 
 	it('should render single item', function() {
+		renderer.data = data;
 		let renderedItem = renderer.renderItem(data[0]);
 		expect(renderedItem).toBeDefined();
 		expect(renderedItem).toMatch(/^<li.*zotero-item zotero-book.*>[\s\S]*<\/li>$/);
@@ -47,12 +50,14 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should render a list of items', function() {
+		renderer.data = data;
 		let renderedCollection = renderer.renderItems(data);
 		expect(renderedCollection).toBeDefined();
 		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item .*>[\s\S]*?<\/li>[\s\S]*?){5}[\s\S]*?<\/ul>$/);
 	});
 
 	it('should render group of items', function() {
+		renderer.data = dataGrouped;
 		dataGrouped[0][GROUP_TITLE] = 'Book';
 		dataGrouped[1][GROUP_TITLE] = 'Journal Article';
 		let renderedCollection = renderer.renderGroups(dataGrouped);
@@ -61,14 +66,14 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should render child items', function() {
+		renderer.data = data;
 		processResponse(data, zp.config);
 		let renderedCollection = renderer.renderItems(data);
 		expect(renderedCollection).toBeDefined();
-		expect(renderedCollection).toMatch(/^^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item.*>[\s\S]*?<div.*zotero-details.*>[\s\S]*?<ul.*zotero-(attachments|notes).*>[\s\S]*?<\/div>[\s\S]*?<\/li>){2}[\s\S]*?<\/ul>$/);
+		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item.*>[\s\S]*?<div.*zotero-details.*>[\s\S]*?<ul.*zotero-(attachments|notes).*>[\s\S]*?<\/div>[\s\S]*?<\/li>){2}[\s\S]*?<\/ul>$/);
 	});
 
 	it('should replace contents of a container', function() {
-		dataGrouped.grouped = 1;
 		container.innerHTML = '<span>Hello World</span>';
 		expect(container.innerHTML).toBe('<span>Hello World</span>');
 		renderer.displayPublications(data);
