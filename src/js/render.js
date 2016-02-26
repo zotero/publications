@@ -120,7 +120,7 @@ ZoteroRenderer.prototype.renderGroups = function(groups) {
 
 /**
  * Render a Group View
- * @param {Object[]} 	- List of groups to render
+ * @param {ZoteroData} 	- List of groups to render
  * @return {String} 	- Rendered markup of a complete group view
  */
 ZoteroRenderer.prototype.renderGroupView = function(data) {
@@ -132,7 +132,7 @@ ZoteroRenderer.prototype.renderGroupView = function(data) {
 
 /**
  * Render a Plain View
- * @param  {Object[]} zoteroItems - List of Zotero items
+ * @param  {ZoteroData} zoteroItems - List of Zotero items
  * @return {String} 	- Rendered markup of a complete plain view
  */
 ZoteroRenderer.prototype.renderPlainView = function(data) {

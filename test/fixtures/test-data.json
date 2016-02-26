@@ -37,6 +37,27 @@
     "data": {
       "itemType": "attachment",
       "linkMode": "imported_file",
+      "title": "paper.pdf",
+      "parentItem": "ABCD"
+    },
+    "meta": {
+      "parsedDate": "2014-05-01"
+    },
+    "links": {
+      "enclosure": {
+        "type": "image/jpeg",
+        "href": "http://zotero.org/paper.pdf",
+        "title": "paper.pdf",
+        "length": 123456
+      }
+    },
+    "citation": "<em>paper.pdf</em>. (n.d.)."
+  },
+  {
+    "key": "FGHI",
+    "data": {
+      "itemType": "attachment",
+      "linkMode": "imported_file",
       "title": "lorem-pixel.jpg",
       "parentItem": "ABCD"
     },
