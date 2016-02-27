@@ -101,4 +101,7 @@
 			<% } %>
 		</div>
 	</section>
+	<% if(obj.renderer.config.showRights) { %>
+		<small class="rights"><%- obj.data.rights %></small>
+	<% } %>
 </li>
