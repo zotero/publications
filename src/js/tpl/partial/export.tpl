@@ -1,3 +1,3 @@
-<a href="data:<%- obj.contentType %>,<%- obj.content %>" download="<%- obj.filename %>">
+<a href="data:<%- obj.contentType %>;base64,<%- obj.content %>" download="<%- obj.filename %>">
 	Download
 </a>

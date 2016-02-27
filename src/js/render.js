@@ -225,10 +225,11 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 		'group': false
 	}).then(item => {
 		let itemData = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
+		let encoded = window.btoa(item.raw[0][exportFormat]);
 		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = exportTpl({
 			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
-			'content': item.raw[0][exportFormat],
+			'content': encoded,
 			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
 		});
 	});
