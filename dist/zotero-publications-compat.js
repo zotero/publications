@@ -4222,6 +4222,9 @@ var _utils = require('./utils.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+$ = $ || window.$ || window.jQuery; /*global $:true*/
+
+
 _lodash2.default.templateSettings.variable = 'obj';
 
 /**
@@ -4229,7 +4232,6 @@ _lodash2.default.templateSettings.variable = 'obj';
  * @param {HTMLElement} container	- A container where contents is rendered
  * @param {Object} [config]			- ZoteroPublications config
  */
-/*global $:false*/
 function ZoteroRenderer(container, zotero) {
 	this.container = container;
 	this.zotero = zotero;
