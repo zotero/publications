@@ -1,4 +1,4 @@
-/*global $:false*/
+/*global $:true*/
 import _ from 'lodash';
 import Clipboard from 'clipboard';
 import itemTpl from './tpl/partial/item.tpl';
@@ -24,6 +24,8 @@ import {
 	showTab,
 	clipboardFallbackMessage
 } from './utils.js';
+
+$ = $ || window.$ || window.jQuery;
 
 _.templateSettings.variable = 'obj';
 
