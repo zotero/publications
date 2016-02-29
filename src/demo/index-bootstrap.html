@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Zotero Publications Demo</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="demo.css">
+		<link rel="stylesheet" href="zotero-publications.css">
+
+	</head>
+<body>
+	<div class="demo">
+		<h1>Zotero Publications Demo</h1>
+		<div id="container"></div>
+	</div>
+</body>
+<script src="jquery/jquery.min.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="lodash.js"></script>
+<script src="zotero-publications.js"></script>
+<script>
+	new ZoteroPublications(23862, document.getElementById('container'), { 'group': 'type', 'apiBase': 'apidev.zotero.org'});
+</script>
+</html>

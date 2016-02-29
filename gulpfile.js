@@ -213,8 +213,12 @@ gulp.task('scss', function() {
 
 gulp.task('demo', function() {
 	return merge(
-		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html', 'src/demo/local-templated.html'])
-			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html', 'tmp/local-templated.html'])),
+		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html', 'src/demo/local-templated.html', 'src/demo/index-bootstrap.html'])
+			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html', 'tmp/local-templated.html', 'tmp/index-bootstrap.html'])),
+		gulp.src('bower_components/jquery/dist')
+			.pipe(symlink('tmp/jquery')),
+		gulp.src('bower_components/bootstrap-sass/assets/javascripts/bootstrap.min.js')
+			.pipe(symlink('tmp/bootstrap.min.js')),
 		gulp.src('bower_components/lodash/lodash.js')
 			.pipe(symlink('tmp/lodash.js'))
 		);

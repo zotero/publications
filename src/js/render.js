@@ -1,3 +1,4 @@
+/*global $:false*/
 import _ from 'lodash';
 import Clipboard from 'clipboard';
 import itemTpl from './tpl/partial/item.tpl';
@@ -8,8 +9,10 @@ import groupTpl from './tpl/partial/group.tpl';
 import groupsTpl from './tpl/partial/groups.tpl';
 import brandingTpl from './tpl/partial/branding.tpl';
 import exportTpl from './tpl/partial/export.tpl';
+import detailsModalTpl from './tpl/partial/details-modal.tpl';
 import groupViewTpl from './tpl/group-view.tpl';
 import plainViewTpl from './tpl/plain-view.tpl';
+
 import {
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE
@@ -179,10 +182,10 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
  * @param  {HTMLElement} itemEl 		- dom element containing the item
  * @param  {String} citationStyle 		- optionally set the citation style
  */
-ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
+ZoteroRenderer.prototype.updateCitation = function(itemEl, detailsEl, citationStyle) {
 	let itemId = itemEl.dataset.item;
-	let citationEl = itemEl.querySelector('.zotero-citation');
-	let citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
+	let citationEl = detailsEl.querySelector('.zotero-citation');
+	let citationStyleSelectEl = detailsEl.querySelector('[data-trigger="cite-style-selection"]');
 
 	if(citationStyle) {
 		citationStyleSelectEl.value = citationStyle;
@@ -211,10 +214,10 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 /**
  * Prepare a link for downloading item export
  */
-ZoteroRenderer.prototype.prepareExport = function(itemEl) {
+ZoteroRenderer.prototype.prepareExport = function(itemEl, detailsEl) {
 	let itemId = itemEl.dataset.item;
-	let exportEl = itemEl.querySelector('.zotero-export');
-	let exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
+	let exportEl = detailsEl.querySelector('.zotero-export');
+	let exportFormatSelectEl = detailsEl.querySelector('[data-trigger="export-format-selection"]');
 	let exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
 
 	exportEl.innerHTML = '';
@@ -266,16 +269,36 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			ev.preventDefault();
 			if(target.dataset.trigger === 'details') {
 				let itemEl = closest(target, el => el.dataset && el.dataset.item);
-				this.prepareExport(itemEl);
-				this.updateCitation(itemEl, this.preferredCitationStyle);
-				let detailsEl = itemEl.querySelector('.zotero-details');
-				if(detailsEl) {
-					let expanded = toggleCollapse(detailsEl);
-					expanded ? itemEl.classList.add('zotero-details-open') : itemEl.classList.remove('zotero-details-open'); //eslint-disable-line no-unused-expressions
-				}
+				let itemId = itemEl.dataset.item;
+				let zoteroItem = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
+
+				$(detailsModalTpl({
+					'item': zoteroItem,
+					'data': zoteroItem.data,
+					'renderer': this
+				}))
+				.on('show.bs.modal', modalev => {
+					this.modal = modalev.currentTarget;
+				})
+				.on('hidden.bs.modal', () => {
+					this.modal.remove();
+				})
+				.on('shown.bs.modal', modalev => {
+					modalev.currentTarget.addEventListener('click', modalClickEv => {
+						let modalTarget = closest(modalClickEv.target, el => el.dataset && el.dataset.trigger);
+						if(modalTarget) {
+							if(modalTarget.dataset.trigger === 'cite' || modalTarget.dataset.trigger === 'export') {
+								showTab(modalTarget);
+								if(modalTarget.dataset.trigger === 'cite') {
+									this.updateCitation(itemEl, this.modal, this.preferredCitationStyle);
+								} else if(modalTarget.dataset.trigger === 'export') {
+									this.prepareExport(itemEl, this.modal);
+								}
+							}
+						}
+					});
+				}).modal();
 				window.history.pushState(null, null, `#${itemEl.dataset.item}`);
-			} else if(target.dataset.trigger === 'cite' || target.dataset.trigger === 'export') {
-				showTab(target);
 			}
 		}
 	});
@@ -285,10 +308,10 @@ ZoteroRenderer.prototype.addHandlers = function() {
 
 		if(target.dataset.trigger === 'cite-style-selection') {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			this.updateCitation(itemEl);
+			this.updateCitation(itemEl, this.modal);
 		} else if(target.dataset.trigger === 'export-format-selection') {
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			this.prepareExport(itemEl);
+			this.prepareExport(itemEl, this.modal);
 		}
 	});
 
