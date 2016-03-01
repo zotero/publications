@@ -345,13 +345,21 @@ $border-radius-base: 4px;
 			flex-wrap: wrap;
 
 			.zotero-meta-item {
-				width: 50%;
-				margin-top: 0.75em;
+				width: calc(50% - 20px);
 			}
+		}
 
-			.zotero-meta-label {
-				font-weight: bold;
-			}
+		.zotero-meta-item {
+			margin: 0.75em 10px 0;
+		}
+
+		.zotero-meta-label {
+			font-weight: bold;
+		}
+
+		.zotero-meta-value {
+			text-overflow: ellipsis;
+			overflow: hidden;
 		}
 	}
 }
