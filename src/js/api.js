@@ -39,7 +39,14 @@ export function processResponse(response, config) {
 				item.data[ABSTRACT_NOTE_PROCESSED] = formatAbstract(item.data.abstractNote);
 			}
 			if(item.data && item.data.creators) {
-				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => author.firstName + ' ' + author.lastName).join(' & ');
+					item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => {
+						if(author.firstName && author.lastName) {
+							return author.firstName + ' ' + author.lastName
+						} else if(author.name) {
+							return author.name;
+						}
+					}).join(' & ');
+				}
 			}
 			if(item.data && item.meta.parsedDate) {
 				item.data[FORMATTED_DATE_SYMBOL] = formatDate(item.meta.parsedDate);
