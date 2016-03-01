@@ -1,9 +1,5 @@
 <h3 class="zotero-item-title">
-	<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-	<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank">
+	<a href="" data-trigger="details">
 		<%= obj.item.citation %>
 	</a>
-	<% } else { %>
-		<%= obj.item.citation %>
-	<% } %>
 </h3>

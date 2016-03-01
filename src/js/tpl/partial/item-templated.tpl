@@ -1,10 +1,6 @@
 <% if (obj.data.itemType == 'book') { %>
 	<h3 class="zotero-item-title">
-		<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-			<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
-		<% } else { %>
-			<%- obj.data.title %>
-		<% } %>
+		<a href="" data-trigger="details"><%- obj.data.title %></a>
 	</h3>
 	<div class="zotero-item-subline">
 		By <%- obj.data[Symbol.for('authors')] %>
@@ -14,11 +10,7 @@
 	</div>
 <% } else if (obj.data.itemType == 'journalArticle') { %>
 	<h3 class="zotero-item-title">
-		<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-			<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
-		<% } else { %>
-			<%- obj.data.title %>
-		<% } %>
+		<a href="" data-trigger="details"><%- obj.data.title %></a>
 	</h3>
 	<div class="zotero-item-subline">
 		<%- obj.data.journalAbbreviation %>
@@ -28,11 +20,7 @@
 	</div>
 <% } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') { %>
 	<h3 class="zotero-item-title">
-		<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-			<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
-		<% } else { %>
-			<%- obj.data.title %>
-		<% } %>
+		<a href="" data-trigger="details"><%- obj.data.title %></a>
 	</h3>
 	<div class="zotero-item-subline">
 		<%- obj.data.publicationTitle %>
@@ -42,11 +30,7 @@
 	</div>
 <% } else if (obj.data.itemType == 'blogPost') { %>
 	<h3 class="zotero-item-title">
-		<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-			<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
-		<% } else { %>
-			<%- obj.data.title %>
-		<% } %>
+		<a href="" data-trigger="details"><%- obj.data.title %></a>
 	</h3>
 	<div class="zotero-item-subline">
 		<%- obj.data.blogTitle %>

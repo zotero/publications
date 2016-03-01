@@ -1,5 +1,5 @@
-<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalTitle">
-	<div class="modal-dialog" role="document">
+<div class="modal zotero-modal" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalTitle">
+	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -9,6 +9,134 @@
 			</div>
 			<div class="modal-body zotero-details">
 				<div class="zotero-details-inner">
+					<div class="zotero-meta">
+						<% if(obj.item.data[Symbol.for('authors')]) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Authors</div>
+								<div class="zotero-meta-value"><%- obj.item.data[Symbol.for('authors')] %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.series) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Series</div>
+								<div class="zotero-meta-value"><%- obj.item.data.series %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.seriesNumber) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Series Number</div>
+								<div class="zotero-meta-value"><%- obj.item.data.seriesNumber %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.volume) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Volumne</div>
+								<div class="zotero-meta-value"><%- obj.item.data.volume %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.numberOfVolumes) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Number of Volumnes</div>
+								<div class="zotero-meta-value"><%- obj.item.data.numberOfVolumes %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.edition) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Edition</div>
+								<div class="zotero-meta-value"><%- obj.item.data.edition %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.place) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Place</div>
+								<div class="zotero-meta-value"><%- obj.item.data.place %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.publisher) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Publisher</div>
+								<div class="zotero-meta-value"><%- obj.item.data.publisher %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.date) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Date</div>
+								<div class="zotero-meta-value"><%- obj.item.data.date %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.numPages) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Number of Pages</div>
+								<div class="zotero-meta-value"><%- obj.item.data.numPages %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.language) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Language</div>
+								<div class="zotero-meta-value"><%- obj.item.data.language %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.ISBN) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">ISBN</div>
+								<div class="zotero-meta-value"><%- obj.item.data.ISBN %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.shortTitle) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Short Title</div>
+								<div class="zotero-meta-value"><%- obj.item.data.shortTitle %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.url) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">URL</div>
+								<div class="zotero-meta-value"><%- obj.item.data.url %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.accessDate) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Access Date</div>
+								<div class="zotero-meta-value"><%- obj.item.data.accessDate %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.archive) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Archive</div>
+								<div class="zotero-meta-value"><%- obj.item.data.archive %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.archiveLocation) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Archive Location</div>
+								<div class="zotero-meta-value"><%- obj.item.data.archiveLocation %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.libraryCatalog) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Library Catalog</div>
+								<div class="zotero-meta-value"><%- obj.item.data.libraryCatalog %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.callNumber) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Call Number</div>
+								<div class="zotero-meta-value"><%- obj.item.data.callNumber %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.rights) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Rights</div>
+								<div class="zotero-meta-value"><%- obj.item.data.rights %></div>
+							</div>
+						<% } %>
+						<% if(obj.item.data.extra) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label">Extra</div>
+								<div class="zotero-meta-value"><%- obj.item.data.extra %></div>
+							</div>
+						<% } %>
+					</div>
 					<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 						<h4>Abstract</h4>
 						<div class="zotero-abstract">
@@ -44,7 +172,6 @@
 					<% } %>
 					<% if(obj.renderer.zotero.userId) { %>
 						<div class="zotero-tab-content" aria-expanded="false">
-							hello world
 							<!-- Cite -->
 							<div role="tabpanel" class="zotero-cite-container zotero-tabpanel" id="<%- obj.item.key %>-cite">
 								<div class="zotero-container-inner">
@@ -78,13 +205,6 @@
 						</div>
 					<% } %>
 				</div>
-			</div>
-			<div class="modal-footer">
-				<span role="tablist">
-					<button data-trigger="cite" role="tab" type="button" class="btn btn-default" aria-controls="<%- obj.item.key %>-cite">Cite</button>
-					<button data-trigger="export" role="tab" type="button" class="btn btn-default" aria-controls="<%- obj.item.key %>-export">Export</button>
-				</span>
-				<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
 			</div>
 		</div>
 	</div>

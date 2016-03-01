@@ -8,14 +8,4 @@
 	<% } else { %>
 		<%= obj.renderer.renderItemTemplated(obj.item) %>
 	<% } %>
-
-	<!-- Details toggle -->
-	<div>
-		<a href="" data-trigger="details" aria-controls="<%- obj.item.key %>-details">
-			Details
-		</a>
-	</div>
-	<% if(obj.renderer.config.showRights) { %>
-		<small class="rights"><%- obj.data.rights %></small>
-	<% } %>
 </li>

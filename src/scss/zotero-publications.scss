@@ -307,4 +307,50 @@ $border-radius-base: 4px;
 			opacity: 0.3;
 		}
 	}
+
+	&-modal {
+		height: 100%;
+
+		.modal-dialog {
+			height: calc(100% - 60px);
+			background-color: transprent;
+		}
+
+		.modal-content {
+			height: 100%;
+		    flex-direction: column;
+    		display: flex;
+    		background-color: transprent;
+    		overflow: hidden;
+    		border-radius: 3px;
+
+		}
+
+		.modal-header {
+			background-color: #e7e7e7;
+			border: none;
+		}
+
+		.modal-body {
+			background-color: #fff;
+			flex-grow: 1;
+		}
+	}
+
+	&-meta {
+		@media (min-width: $screen-sm-min) {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+
+			.zotero-meta-item {
+				width: 50%;
+				margin-top: 0.75em;
+			}
+
+			.zotero-meta-label {
+				font-weight: bold;
+			}
+		}
+	}
 }
