@@ -6101,3 +6101,53 @@ button.close {
 .zotero-loading-inline:after {
   content: 'Loading …';
   opacity: 0.3; }
+
+.zotero-modal {
+  height: 100%; }
+  .zotero-modal .modal-dialog {
+    height: calc(100% - 60px);
+    background-color: transprent; }
+  .zotero-modal .modal-content {
+    height: 100%;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    background-color: transprent;
+    overflow: hidden;
+    border-radius: 3px; }
+  .zotero-modal .modal-header {
+    background-color: #e7e7e7;
+    border: none; }
+  .zotero-modal .modal-body {
+    background-color: #fff;
+    overflow: auto;
+    -webkit-flex-grow: 1;
+        -ms-flex-positive: 1;
+            flex-grow: 1; }
+
+@media (min-width: 768px) {
+  .zotero-meta {
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+            flex-wrap: wrap; }
+    .zotero-meta .zotero-meta-item {
+      width: calc(50% - 20px); } }
+
+.zotero-meta .zotero-meta-item {
+  margin: 0.75em 10px 0; }
+
+.zotero-meta .zotero-meta-label {
+  font-weight: bold; }
+
+.zotero-meta .zotero-meta-value {
+  text-overflow: ellipsis;
+  overflow: hidden; }

@@ -16631,7 +16631,13 @@ function processResponse(response, config) {
 				item.data[ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
 			}
 			if (item.data && item.data.creators) {
-				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => author.firstName + ' ' + author.lastName).join(' & ');
+				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => {
+					if (author.firstName && author.lastName) {
+						return author.firstName + ' ' + author.lastName;
+					} else if (author.name) {
+						return author.name;
+					}
+				}).join(' & ');
 			}
 			if (item.data && item.meta.parsedDate) {
 				item.data[FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
@@ -17026,7 +17032,6 @@ ZoteroPublications.prototype.defaults = {
 	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
-	showRights: true,
 	expand: 'all',
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
@@ -17525,6 +17530,7 @@ ZoteroRenderer.prototype.addHandlers = function () {
 						let modalTarget = (0, _utils.closest)(modalClickEv.target, el => el.dataset && el.dataset.trigger);
 						if (modalTarget) {
 							if (modalTarget.dataset.trigger === 'cite' || modalTarget.dataset.trigger === 'export') {
+								modalClickEv.preventDefault();
 								(0, _utils.showTab)(modalTarget);
 								if (modalTarget.dataset.trigger === 'cite') {
 									this.updateCitation(itemEl, this.modal, this.preferredCitationStyle);
@@ -17534,21 +17540,19 @@ ZoteroRenderer.prototype.addHandlers = function () {
 							}
 						}
 					});
+
+					modalev.currentTarget.addEventListener('change', modalChangeEv => {
+						let modalTarget = (0, _utils.closest)(modalChangeEv.target, el => el.dataset && el.dataset.trigger);
+
+						if (modalTarget.dataset.trigger === 'cite-style-selection') {
+							this.updateCitation(itemEl, this.modal);
+						} else if (modalTarget.dataset.trigger === 'export-format-selection') {
+							this.prepareExport(itemEl, this.modal);
+						}
+					});
 				}).modal();
 				window.history.pushState(null, null, `#${ itemEl.dataset.item }`);
 			}
-		}
-	});
-
-	this.container.addEventListener('change', ev => {
-		var target = (0, _utils.closest)(ev.target, el => el.dataset && el.dataset.trigger);
-
-		if (target.dataset.trigger === 'cite-style-selection') {
-			let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
-			this.updateCitation(itemEl, this.modal);
-		} else if (target.dataset.trigger === 'export-format-selection') {
-			let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
-			this.prepareExport(itemEl, this.modal);
 		}
 	});
 
@@ -17626,7 +17630,91 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<div class="modal fade" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalTitle">\n\t<div class="modal-dialog" role="document">\n\t\t<div class="modal-content">\n\t\t\t<div class="modal-header">\n\t\t\t\t<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n\t\t\t\t\t<h4 class="modal-title" id="detailsModalTitle">\n\t\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t</h4>\n\t\t\t</div>\n\t\t\t<div class="modal-body zotero-details">\n\t\t\t\t<div class="zotero-details-inner">\n\t\t\t\t\t';
+  __p += '<div class="modal zotero-publications zotero-modal" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalTitle">\n\t<div class="modal-dialog modal-lg" role="document">\n\t\t<div class="modal-content">\n\t\t\t<div class="modal-header">\n\t\t\t\t<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n\t\t\t\t\t<h4 class="modal-title" id="detailsModalTitle">\n\t\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t</h4>\n\t\t\t</div>\n\t\t\t<div class="modal-body zotero-details">\n\t\t\t\t<div class="zotero-details-inner">\n\t\t\t\t\t<div class="zotero-meta">\n\t\t\t\t\t\t';
+  if (obj.item.data[Symbol.for('authors')]) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Authors</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.series) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Series</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.series) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.seriesNumber) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Series Number</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.seriesNumber) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.volume) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Volumne</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.volume) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.numberOfVolumes) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Number of Volumnes</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.numberOfVolumes) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.edition) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Edition</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.edition) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.place) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Place</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.place) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.publisher) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Publisher</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.publisher) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.date) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Date</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.date) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.numPages) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Number of Pages</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.numPages) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.language) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Language</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.language) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.ISBN) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">ISBN</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.ISBN) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.shortTitle) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Short Title</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.shortTitle) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.url) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">URL</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.url) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.accessDate) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Access Date</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.accessDate) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.archive) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Archive</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.archive) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.archiveLocation) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Archive Location</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.archiveLocation) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.libraryCatalog) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Library Catalog</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.libraryCatalog) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.callNumber) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Call Number</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.callNumber) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.rights) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Rights</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.rights) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t\t';
+  if (obj.item.data.extra) {
+    __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Extra</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data.extra) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t\t</div>\n\t\t\t\t\t';
   if (obj.data.abstractNote && obj.data.abstractNote.length) {
     __p += '\n\t\t\t\t\t\t<h4>Abstract</h4>\n\t\t\t\t\t\t<div class="zotero-abstract">\n\t\t\t\t\t\t\t' + ((__t = obj.data[Symbol.for('abstractNoteProcessed')]) == null ? '' : __t) + '\n\t\t\t\t\t\t</div>\n\t\t\t\t\t';
   }
@@ -17696,7 +17784,7 @@ module.exports = function (obj) {
   }
   __p += '\n\t\t\t\t\t';
   if (obj.renderer.zotero.userId) {
-    __p += '\n\t\t\t\t\t\t<div class="zotero-tab-content" aria-expanded="false">\n\t\t\t\t\t\t\thello world\n\t\t\t\t\t\t\t<!-- Cite -->\n\t\t\t\t\t\t\t<div role="tabpanel" class="zotero-cite-container zotero-tabpanel" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">\n\t\t\t\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t\t\t\t';
+    __p += '\n\t\t\t\t\t\t<!-- Cite & export -->\n\t\t\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t\t\t<ul class="zotero-list-inline" role="tablist">\n\t\t\t\t\t\t\t\t<li class="zotero-tab" >\n\t\t\t\t\t\t\t\t\t<a href="" data-trigger="cite" role="tab" aria-selected="false" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">Cite</a>\n\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t\t<li class="zotero-tab">\n\t\t\t\t\t\t\t\t\t<a href="" data-trigger="export" role="tab" aria-selected="false" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-export">Export</a>\n\t\t\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\t</ul>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t\t<div class="zotero-tab-content" aria-expanded="false">\n\t\t\t\t\t\t\t<!-- Cite -->\n\t\t\t\t\t\t\t<div role="tabpanel" class="zotero-cite-container zotero-tabpanel" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">\n\t\t\t\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t\t\t\t';
     for (var citationStyle in obj.renderer.zotero.config.citeStyleOptions) {
       __p += '\n\t\t\t\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '" ';
       if (citationStyle === obj.renderer.config.citeStyleOptionDefault) {
@@ -17714,7 +17802,7 @@ module.exports = function (obj) {
     }
     __p += '\n\t\t\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t\t\t\t<p class="zotero-export"></p>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t';
   }
-  __p += '\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class="modal-footer">\n\t\t\t\t<span role="tablist">\n\t\t\t\t\t<button data-trigger="cite" role="tab" type="button" class="btn btn-default" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">Cite</button>\n\t\t\t\t\t<button data-trigger="export" role="tab" type="button" class="btn btn-default" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-export">Export</button>\n\t\t\t\t</span>\n\t\t\t\t<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</div>';
+  __p += '\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t</div>\n\t</div>\n</div>';
   return __p;
 };
 
@@ -17800,13 +17888,7 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<h3 class="zotero-item-title">\n\t';
-  if (obj.item[Symbol.for('viewOnlineUrl')]) {
-    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t</a>\n\t';
-  } else {
-    __p += '\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t';
-  }
-  __p += '\n</h3>';
+  __p += '<h3 class="zotero-item-title">\n\t<a href="" data-trigger="details">\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t</a>\n</h3>';
   return __p;
 };
 
@@ -17823,49 +17905,25 @@ module.exports = function (obj) {
   };
   __p += '';
   if (obj.data.itemType == 'book') {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
-    } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
-    }
-    __p += '\n\t</h3>\n\t<div class="zotero-item-subline">\n\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t';
+    __p += '\n\t<h3 class="zotero-item-title">\n\t\t<a href="" data-trigger="details">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t</h3>\n\t<div class="zotero-item-subline">\n\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
       __p += '\n\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t';
     }
     __p += '\n\t</div>\n';
   } else if (obj.data.itemType == 'journalArticle') {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
-    } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
-    }
-    __p += '\n\t</h3>\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t';
+    __p += '\n\t<h3 class="zotero-item-title">\n\t\t<a href="" data-trigger="details">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t</h3>\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
       __p += '\n\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t';
     }
     __p += '\n\t</div>\n';
   } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
-    } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
-    }
-    __p += '\n\t</h3>\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t';
+    __p += '\n\t<h3 class="zotero-item-title">\n\t\t<a href="" data-trigger="details">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t</h3>\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
       __p += '\n\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t';
     }
     __p += '\n\t</div>\n';
   } else if (obj.data.itemType == 'blogPost') {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
-    } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
-    }
-    __p += '\n\t</h3>\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t';
+    __p += '\n\t<h3 class="zotero-item-title">\n\t\t<a href="" data-trigger="details">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t</h3>\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
       __p += '\n\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t';
     }
@@ -17893,10 +17951,6 @@ module.exports = function (obj) {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemCitation(obj.item)) == null ? '' : __t) + '\n\t<!-- Templated -->\n\t';
   } else {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemTemplated(obj.item)) == null ? '' : __t) + '\n\t';
-  }
-  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="" data-trigger="details" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\t';
-  if (obj.renderer.config.showRights) {
-    __p += '\n\t\t<small class="rights">' + ((__t = obj.data.rights) == null ? '' : _.escape(__t)) + '</small>\n\t';
   }
   __p += '\n</li>';
   return __p;
