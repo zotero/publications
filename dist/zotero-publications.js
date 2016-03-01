@@ -2908,7 +2908,11 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<div class="modal zotero-publications zotero-modal" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalTitle">\n\t<div class="modal-dialog modal-lg" role="document">\n\t\t<div class="modal-content">\n\t\t\t<div class="modal-header">\n\t\t\t\t<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n\t\t\t\t\t<h4 class="modal-title" id="detailsModalTitle">\n\t\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t</h4>\n\t\t\t</div>\n\t\t\t<div class="modal-body zotero-details">\n\t\t\t\t<div class="zotero-details-inner">\n\t\t\t\t\t<div class="zotero-meta">\n\t\t\t\t\t\t';
+  __p += '<div class="modal zotero-publications zotero-modal" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalTitle">\n\t<div class="modal-dialog modal-lg" role="document">\n\t\t<div class="modal-content">\n\t\t\t<div class="modal-header">\n\t\t\t\t<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n\t\t\t\t\t<h4 class="modal-title" id="detailsModalTitle">\n\t\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t</h4>\n\t\t\t</div>\n\t\t\t<div class="modal-body zotero-details">\n\t\t\t\t';
+  if (obj.item[Symbol.for('viewOnlineUrl')]) {
+    __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">View Online</a>\n\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t<div class="zotero-details-inner">\n\t\t\t\t\t<div class="zotero-meta">\n\t\t\t\t\t\t';
   if (obj.item.data[Symbol.for('authors')]) {
     __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">Authors</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
   }
