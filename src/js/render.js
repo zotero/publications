@@ -290,6 +290,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 						let modalTarget = closest(modalClickEv.target, el => el.dataset && el.dataset.trigger);
 						if(modalTarget) {
 							if(modalTarget.dataset.trigger === 'cite' || modalTarget.dataset.trigger === 'export') {
+								modalClickEv.preventDefault();
 								showTab(modalTarget);
 								if(modalTarget.dataset.trigger === 'cite') {
 									this.updateCitation(itemEl, this.modal, this.preferredCitationStyle);
@@ -299,21 +300,19 @@ ZoteroRenderer.prototype.addHandlers = function() {
 							}
 						}
 					});
+
+					modalev.currentTarget.addEventListener('change', modalChangeEv => {
+						let modalTarget = closest(modalChangeEv.target, el => el.dataset && el.dataset.trigger);
+
+						if(modalTarget.dataset.trigger === 'cite-style-selection') {
+							this.updateCitation(itemEl, this.modal);
+						} else if(modalTarget.dataset.trigger === 'export-format-selection') {
+							this.prepareExport(itemEl, this.modal);
+						}
+					});
 				}).modal();
 				window.history.pushState(null, null, `#${itemEl.dataset.item}`);
 			}
-		}
-	});
-
-	this.container.addEventListener('change', ev => {
-		var target = closest(ev.target, el => el.dataset && el.dataset.trigger);
-
-		if(target.dataset.trigger === 'cite-style-selection') {
-			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			this.updateCitation(itemEl, this.modal);
-		} else if(target.dataset.trigger === 'export-format-selection') {
-			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			this.prepareExport(itemEl, this.modal);
 		}
 	});
 

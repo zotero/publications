@@ -1,4 +1,4 @@
-<div class="modal zotero-modal" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalTitle">
+<div class="modal zotero-publications zotero-modal" id="detailsModal" tabindex="-1" role="dialog" aria-labelledby="detailsModalTitle">
 	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -171,6 +171,17 @@
 						</ul>
 					<% } %>
 					<% if(obj.renderer.zotero.userId) { %>
+						<!-- Cite & export -->
+						<div class="zotero-toolbar">
+							<ul class="zotero-list-inline" role="tablist">
+								<li class="zotero-tab" >
+									<a href="" data-trigger="cite" role="tab" aria-selected="false" aria-controls="<%- obj.item.key %>-cite">Cite</a>
+								</li>
+								<li class="zotero-tab">
+									<a href="" data-trigger="export" role="tab" aria-selected="false" aria-controls="<%- obj.item.key %>-export">Export</a>
+								</li>
+							</ul>
+						</div>
 						<div class="zotero-tab-content" aria-expanded="false">
 							<!-- Cite -->
 							<div role="tabpanel" class="zotero-cite-container zotero-tabpanel" id="<%- obj.item.key %>-cite">

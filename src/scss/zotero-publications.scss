@@ -333,6 +333,7 @@ $border-radius-base: 4px;
 
 		.modal-body {
 			background-color: #fff;
+			overflow: auto;
 			flex-grow: 1;
 		}
 	}
