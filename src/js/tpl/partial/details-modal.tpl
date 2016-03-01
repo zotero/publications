@@ -8,6 +8,9 @@
 					</h4>
 			</div>
 			<div class="modal-body zotero-details">
+				<% if(obj.item[Symbol.for('viewOnlineUrl')]) { %>
+					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank">View Online</a>
+				<% } %>
 				<div class="zotero-details-inner">
 					<div class="zotero-meta">
 						<% if(obj.item.data[Symbol.for('authors')]) { %>
