@@ -57,8 +57,8 @@
 				<!-- Cite & export -->
 				<div class="zotero-toolbar">
 					<ul class="zotero-list-inline" role="tablist">
-						<li class="zotero-tab zotero-tab-active" >
-							<a href="" data-trigger="cite" role="tab" aria-selected="true" aria-controls="<%- obj.item.key %>-cite">Cite</a>
+						<li class="zotero-tab" >
+							<a href="" data-trigger="cite" role="tab" aria-selected="false" aria-controls="<%- obj.item.key %>-cite">Cite</a>
 						</li>
 						<li class="zotero-tab">
 							<a href="" data-trigger="export" role="tab" aria-selected="false" aria-controls="<%- obj.item.key %>-export">Export</a>
@@ -68,7 +68,7 @@
 
 				<div class="zotero-tab-content">
 					<!-- Cite -->
-					<div role="tabpanel" class="zotero-cite-container zotero-tabpanel zotero-tabpanel-open" aria-expanded="true" id="<%- obj.item.key %>-cite">
+					<div role="tabpanel" class="zotero-cite-container zotero-tabpanel" aria-expanded="false" id="<%- obj.item.key %>-cite">
 						<div class="zotero-container-inner">
 							<select class="zotero-form-control" data-trigger="cite-style-selection">
 								<% for(var citationStyle in obj.renderer.zotero.config.citeStyleOptions) { %>
