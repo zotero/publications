@@ -18,8 +18,25 @@
 
 	<!-- Details -->
 	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="<%- obj.item.key %>-details">
-
 		<div class="zotero-details-inner">
+			<div class="zotero-meta">
+				<% if(obj.item.data[Symbol.for('authors')]) { %>
+					<div class="zotero-meta-item">
+						<div class="zotero-meta-label">Authors</div>
+						<div class="zotero-meta-value"><%- obj.item.data[Symbol.for('authors')] %></div>
+					</div>
+				<% } %>
+				<% for(var i=0, keys=Object.keys(obj.data); i < keys.length; i++) { %>
+					<% if(obj.renderer.hiddenFields.indexOf(keys[i]) === -1) { %>
+						<% if(obj.data[keys[i]]) { %>
+							<div class="zotero-meta-item">
+								<div class="zotero-meta-label"><%- obj.renderer.fieldMap[keys[i]] %></div>
+								<div class="zotero-meta-value"><%- obj.data[keys[i]] %></div>
+							</div>
+						<% } %>
+					<% } %>
+				<% } %>
+			</div>
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
 				<div class="zotero-abstract">
@@ -101,7 +118,4 @@
 			<% } %>
 		</div>
 	</section>
-	<% if(obj.renderer.config.showRights) { %>
-		<small class="rights"><%- obj.data.rights %></small>
-	<% } %>
 </li>
