@@ -305,4 +305,29 @@ $border-radius-base: 4px;
 			opacity: 0.3;
 		}
 	}
+
+	&-meta {
+		@media (min-width: $screen-sm-min) {
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+
+			.zotero-meta-item {
+				width: calc(50% - 20px);
+			}
+		}
+
+		.zotero-meta-item {
+			margin: 0.75em 10px 0;
+		}
+
+		.zotero-meta-label {
+			font-weight: bold;
+		}
+
+		.zotero-meta-value {
+			text-overflow: ellipsis;
+			overflow: hidden;
+		}
+	}
 }
