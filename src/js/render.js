@@ -264,8 +264,8 @@ ZoteroRenderer.prototype.addHandlers = function() {
 
 		if(target) {
 			ev.preventDefault();
+			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			if(target.dataset.trigger === 'details') {
-				let itemEl = closest(target, el => el.dataset && el.dataset.item);
 				this.prepareExport(itemEl);
 				this.updateCitation(itemEl, this.preferredCitationStyle);
 				let detailsEl = itemEl.querySelector('.zotero-details');
@@ -276,6 +276,11 @@ ZoteroRenderer.prototype.addHandlers = function() {
 				window.history.pushState(null, null, `#${itemEl.dataset.item}`);
 			} else if(target.dataset.trigger === 'cite' || target.dataset.trigger === 'export') {
 				showTab(target);
+				if(target.dataset.trigger === 'cite') {
+					this.updateCitation(itemEl, this.modal, this.preferredCitationStyle);
+				} else if(target.dataset.trigger === 'export') {
+					this.prepareExport(itemEl, this.modal);
+				}
 			}
 		}
 	});
