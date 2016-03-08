@@ -151,7 +151,11 @@ ZoteroRenderer.prototype.renderPlainView = function(data) {
  * @return {String}
  */
 ZoteroRenderer.prototype.renderBranding = function() {
-	return brandingTpl();
+	if(this.config.showBranding) {
+		return brandingTpl();
+	} else {
+		return '';
+	}
 };
 
 /**
