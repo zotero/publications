@@ -270,6 +270,7 @@ $border-radius-base: 4px;
 	// Global loader
 	&-loading {
 		text-align: center;
+		min-height: 50px;
 
 		@at-root {
 			@keyframes loading {
