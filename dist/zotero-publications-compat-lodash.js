@@ -19347,21 +19347,20 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				return el.dataset && el.dataset.item;
 			});
 			if (target.dataset.trigger === 'details') {
-				_this2.prepareExport(itemEl);
-				_this2.updateCitation(itemEl, _this2.preferredCitationStyle);
 				var detailsEl = itemEl.querySelector('.zotero-details');
 				if (detailsEl) {
 					var expanded = (0, _utils.toggleCollapse)(detailsEl);
-					expanded ? itemEl.classList.add('zotero-details-open') : itemEl.classList.remove('zotero-details-open'); //eslint-disable-line no-unused-expressions
+					if (expanded) {
+						_this2.prepareExport(itemEl);
+						_this2.updateCitation(itemEl, _this2.preferredCitationStyle);
+						itemEl.classList.add('zotero-details-open');
+					} else {
+						itemEl.classList.remove('zotero-details-open');
+					}
 				}
 				window.history.pushState(null, null, '#' + itemEl.dataset.item);
 			} else if (target.dataset.trigger === 'cite' || target.dataset.trigger === 'export') {
 				(0, _utils.showTab)(target);
-				if (target.dataset.trigger === 'cite') {
-					_this2.updateCitation(itemEl, _this2.modal, _this2.preferredCitationStyle);
-				} else if (target.dataset.trigger === 'export') {
-					_this2.prepareExport(itemEl, _this2.modal);
-				}
 			}
 		}
 	});
