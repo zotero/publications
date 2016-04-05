@@ -27,7 +27,7 @@ export function ZoteroData(data, config) {
 		enumerable: false,
 		configurable: false,
 		get: () => {
-			return this.data.length;
+			return this.raw.length || 0;
 		}
 	});
 }
