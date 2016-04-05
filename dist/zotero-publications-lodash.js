@@ -16799,7 +16799,7 @@ function ZoteroData(data, config) {
 		enumerable: false,
 		configurable: false,
 		get: () => {
-			return this.data.length;
+			return this.raw.length || 0;
 		}
 	});
 }
@@ -16975,7 +16975,130 @@ ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee
 	}, _callee, this, [[5, 18, 22, 30], [23,, 25, 29], [35, 46, 50, 58], [51,, 53, 57]]);
 });
 
-},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/main-modern.js":[function(require,module,exports){
+},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/field-map.js":[function(require,module,exports){
+'use strict';
+
+module.exports = {
+	'itemType': 'Item Type',
+	'title': 'Title',
+	'dateAdded': 'Date Added',
+	'dateModified': 'Date Modified',
+	'source': 'Source',
+	'notes': 'Notes',
+	'tags': 'Tags',
+	'attachments': 'Attachments',
+	'related': 'Related',
+	'url': 'URL',
+	'rights': 'Rights',
+	'series': 'Series',
+	'volume': 'Volume',
+	'issue': 'Issue',
+	'edition': 'Edition',
+	'place': 'Place',
+	'publisher': 'Publisher',
+	'pages': 'Pages',
+	'ISBN': 'ISBN',
+	'publicationTitle': 'Publication',
+	'ISSN': 'ISSN',
+	'date': 'Date',
+	'year': 'Year',
+	'section': 'Section',
+	'callNumber': 'Call Number',
+	'archive': 'Archive',
+	'archiveLocation': 'Loc. in Archive',
+	'libraryCatalog': 'Library Catalog',
+	'distributor': 'Distributor',
+	'extra': 'Extra',
+	'journalAbbreviation': 'Journal Abbr',
+	'DOI': 'DOI',
+	'accessDate': 'Accessed',
+	'seriesTitle': 'Series Title',
+	'seriesText': 'Series Text',
+	'seriesNumber': 'Series Number',
+	'institution': 'Institution',
+	'reportType': 'Report Type',
+	'code': 'Code',
+	'session': 'Session',
+	'legislativeBody': 'Legislative Body',
+	'history': 'History',
+	'reporter': 'Reporter',
+	'court': 'Court',
+	'numberOfVolumes': '# of Volumes',
+	'committee': 'Committee',
+	'assignee': 'Assignee',
+	'patentNumber': 'Patent Number',
+	'priorityNumbers': 'Priority Numbers',
+	'issueDate': 'Issue Date',
+	'references': 'References',
+	'legalStatus': 'Legal Status',
+	'codeNumber': 'Code Number',
+	'artworkMedium': 'Medium',
+	'number': 'Number',
+	'artworkSize': 'Artwork Size',
+	'repository': 'Repository',
+	'videoRecordingType': 'Recording Type',
+	'interviewMedium': 'Medium',
+	'letterType': 'Type',
+	'manuscriptType': 'Type',
+	'mapType': 'Type',
+	'scale': 'Scale',
+	'thesisType': 'Type',
+	'websiteType': 'Website Type',
+	'audioRecordingType': 'Recording Type',
+	'label': 'Label',
+	'presentationType': 'Type',
+	'meetingName': 'Meeting Name',
+	'studio': 'Studio',
+	'runningTime': 'Running Time',
+	'network': 'Network',
+	'postType': 'Post Type',
+	'audioFileType': 'File Type',
+	'versionNumber': 'Version Number',
+	'system': 'System',
+	'company': 'Company',
+	'conferenceName': 'Conference Name',
+	'encyclopediaTitle': 'Encyclopedia Title',
+	'dictionaryTitle': 'Dictionary Title',
+	'language': 'Language',
+	'programmingLanguage': 'Language',
+	'university': 'University',
+	'abstractNote': 'Abstract',
+	'websiteTitle': 'Website Title',
+	'reportNumber': 'Report Number',
+	'billNumber': 'Bill Number',
+	'codeVolume': 'Code Volume',
+	'codePages': 'Code Pages',
+	'dateDecided': 'Date Decided',
+	'reporterVolume': 'Reporter Volume',
+	'firstPage': 'First Page',
+	'documentNumber': 'Document Number',
+	'dateEnacted': 'Date Enacted',
+	'publicLawNumber': 'Public Law Number',
+	'country': 'Country',
+	'applicationNumber': 'Application Number',
+	'forumTitle': 'Forum/Listserv Title',
+	'episodeNumber': 'Episode Number',
+	'blogTitle': 'Blog Title',
+	'caseName': 'Case Name',
+	'nameOfAct': 'Name of Act',
+	'subject': 'Subject',
+	'proceedingsTitle': 'Proceedings Title',
+	'bookTitle': 'Book Title',
+	'shortTitle': 'Short Title',
+	'docketNumber': 'Docket Number',
+	'numPages': '# of Pages',
+	'note': 'Note',
+	'numChildren': '# of Children',
+	'addedBy': 'Added By',
+	'creator': 'Creator'
+};
+
+},{}],"/srv/zotero/my-publications/src/js/hidden-fields.js":[function(require,module,exports){
+'use strict';
+
+module.exports = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags', 'creators'];
+
+},{}],"/srv/zotero/my-publications/src/js/main-modern.js":[function(require,module,exports){
 'use strict';
 
 require('babel-regenerator-runtime');
@@ -17009,13 +17132,22 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {Object} [config] - Configuration object that will selectively override the defaults
  */
 function ZoteroPublications() {
+	if (arguments.length > 3) {
+		return Promise.reject(new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.'));
+	}
+
 	if (arguments.length <= 1) {
 		this.config = _lodash2.default.extend({}, this.defaults, arguments ? arguments[0] : {});
-	} else if (arguments.length <= 3) {
-		this.config = _lodash2.default.extend({}, this.defaults, arguments[2]);
-		return this.render(arguments[0], arguments[1]);
 	} else {
-		return Promise.reject(new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.'));
+		this.config = _lodash2.default.extend({}, this.defaults, arguments[2]);
+	}
+
+	if (this.config.alwaysUseCitationStyle && !_lodash2.default.contains(this.config.include, 'citation')) {
+		this.config.include.push('citation');
+	}
+
+	if (arguments.length > 1) {
+		return this.render(arguments[0], arguments[1]);
 	}
 }
 
@@ -17027,12 +17159,12 @@ ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
 	limit: 100,
 	citationStyle: '',
-	include: ['data', 'citation'],
+	include: ['data'],
 	storeCitationPreference: false,
 	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
-	showRights: true,
+	showBranding: true,
 	expand: 'all',
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
@@ -17263,6 +17395,14 @@ var _data = require('./data.js');
 
 var _utils = require('./utils.js');
 
+var _fieldMap = require('./field-map.js');
+
+var _fieldMap2 = _interopRequireDefault(_fieldMap);
+
+var _hiddenFields = require('./hidden-fields.js');
+
+var _hiddenFields2 = _interopRequireDefault(_hiddenFields);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 _lodash2.default.templateSettings.variable = 'obj';
@@ -17276,6 +17416,8 @@ function ZoteroRenderer(container, zotero) {
 	this.container = container;
 	this.zotero = zotero;
 	this.config = zotero.config;
+	this.fieldMap = _fieldMap2.default;
+	this.hiddenFields = _hiddenFields2.default;
 	if (this.config.storeCitationPreference) {
 		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
 	} else {
@@ -17390,7 +17532,11 @@ ZoteroRenderer.prototype.renderPlainView = function (data) {
  * @return {String}
  */
 ZoteroRenderer.prototype.renderBranding = function () {
-	return (0, _branding2.default)();
+	if (this.config.showBranding) {
+		return (0, _branding2.default)();
+	} else {
+		return '';
+	}
 };
 
 /**
@@ -17506,8 +17652,8 @@ ZoteroRenderer.prototype.addHandlers = function () {
 
 		if (target) {
 			ev.preventDefault();
+			let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
 			if (target.dataset.trigger === 'details') {
-				let itemEl = (0, _utils.closest)(target, el => el.dataset && el.dataset.item);
 				this.prepareExport(itemEl);
 				this.updateCitation(itemEl, this.preferredCitationStyle);
 				let detailsEl = itemEl.querySelector('.zotero-details');
@@ -17518,6 +17664,11 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				window.history.pushState(null, null, `#${ itemEl.dataset.item }`);
 			} else if (target.dataset.trigger === 'cite' || target.dataset.trigger === 'export') {
 				(0, _utils.showTab)(target);
+				if (target.dataset.trigger === 'cite') {
+					this.updateCitation(itemEl, this.modal, this.preferredCitationStyle);
+				} else if (target.dataset.trigger === 'export') {
+					this.prepareExport(itemEl, this.modal);
+				}
 			}
 		}
 	});
@@ -17567,7 +17718,7 @@ ZoteroRenderer.prototype.toggleSpinner = function (activate) {
 	method.call(this.container.classList, 'zotero-loading');
 };
 
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item-citation.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item-citation.tpl","./tpl/partial/item-templated.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item-templated.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","clipboard":"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
+},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./field-map.js":"/srv/zotero/my-publications/src/js/field-map.js","./hidden-fields.js":"/srv/zotero/my-publications/src/js/hidden-fields.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item-citation.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item-citation.tpl","./tpl/partial/item-templated.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item-templated.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","clipboard":"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js","lodash":"/srv/zotero/my-publications/node_modules/lodash/lodash.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -17750,7 +17901,25 @@ module.exports = function (obj) {
     }
     __p += '\n\t</div>\n';
   } else {
-    __p += '\n\t' + ((__t = obj.renderer.renderItemCitation(obj.item)) == null ? '' : __t) + '\n';
+    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
+    if (obj.item[Symbol.for('viewOnlineUrl')]) {
+      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
+    } else {
+      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
+    }
+    __p += '\n\t</h3>\n\n\t';
+    if (obj.item[Symbol.for('authors')] || obj.data[Symbol.for('formattedDate')]) {
+      __p += '\n\t\t<div class="zotero-item-subline">\n\t\t\t';
+      if (obj.item[Symbol.for('authors')]) {
+        __p += '\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t';
+      }
+      __p += '\n\t\t\t\t\n\t\t\t';
+      if (obj.data[Symbol.for('formattedDate')]) {
+        __p += '\n\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t';
+      }
+      __p += '\n\t\t</div>\n\t';
+    }
+    __p += '\n';
   }
   __p += '';
   return __p;
@@ -17773,7 +17942,23 @@ module.exports = function (obj) {
   } else {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemTemplated(obj.item)) == null ? '' : __t) + '\n\t';
   }
-  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="" data-trigger="details" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\n\t\t<div class="zotero-details-inner">\n\t\t\t';
+  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="" data-trigger="details" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t<div class="zotero-meta">\n\t\t\t\t';
+  if (obj.item.data[Symbol.for('authors')]) {
+    __p += '\n\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t<div class="zotero-meta-label">Authors</div>\n\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t</div>\n\t\t\t\t';
+  }
+  __p += '\n\t\t\t\t';
+  for (var i = 0, keys = Object.keys(obj.data); i < keys.length; i++) {
+    __p += '\n\t\t\t\t\t';
+    if (obj.renderer.hiddenFields.indexOf(keys[i]) === -1) {
+      __p += '\n\t\t\t\t\t\t';
+      if (obj.data[keys[i]]) {
+        __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap[keys[i]]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+      }
+      __p += '\n\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t';
+  }
+  __p += '\n\t\t\t</div>\n\t\t\t';
   if (obj.data.abstractNote && obj.data.abstractNote.length) {
     __p += '\n\t\t\t\t<h4>Abstract</h4>\n\t\t\t\t<div class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data[Symbol.for('abstractNoteProcessed')]) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
   }
@@ -17843,7 +18028,7 @@ module.exports = function (obj) {
   }
   __p += '\n\t\t\t';
   if (obj.renderer.zotero.userId) {
-    __p += '\n\t\t\t\t<!-- Cite & export -->\n\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t<ul class="zotero-list-inline" role="tablist">\n\t\t\t\t\t\t<li class="zotero-tab zotero-tab-active" >\n\t\t\t\t\t\t\t<a href="" data-trigger="cite" role="tab" aria-selected="true" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">Cite</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class="zotero-tab">\n\t\t\t\t\t\t\t<a href="" data-trigger="export" role="tab" aria-selected="false" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-export">Export</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\n\t\t\t\t<div class="zotero-tab-content">\n\t\t\t\t\t<!-- Cite -->\n\t\t\t\t\t<div role="tabpanel" class="zotero-cite-container zotero-tabpanel zotero-tabpanel-open" aria-expanded="true" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">\n\t\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t\t';
+    __p += '\n\t\t\t\t<!-- Cite & export -->\n\t\t\t\t<div class="zotero-toolbar">\n\t\t\t\t\t<ul class="zotero-list-inline" role="tablist">\n\t\t\t\t\t\t<li class="zotero-tab" >\n\t\t\t\t\t\t\t<a href="" data-trigger="cite" role="tab" aria-selected="false" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">Cite</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t<li class="zotero-tab">\n\t\t\t\t\t\t\t<a href="" data-trigger="export" role="tab" aria-selected="false" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-export">Export</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t</ul>\n\t\t\t\t</div>\n\n\t\t\t\t<div class="zotero-tab-content">\n\t\t\t\t\t<!-- Cite -->\n\t\t\t\t\t<div role="tabpanel" class="zotero-cite-container zotero-tabpanel" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-cite">\n\t\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="cite-style-selection">\n\t\t\t\t\t\t\t\t';
     for (var citationStyle in obj.renderer.zotero.config.citeStyleOptions) {
       __p += '\n\t\t\t\t\t\t\t\t\t<option value="' + ((__t = citationStyle) == null ? '' : __t) + '" ';
       if (citationStyle === obj.renderer.config.citeStyleOptionDefault) {
@@ -17861,11 +18046,7 @@ module.exports = function (obj) {
     }
     __p += '\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t\t<p class="zotero-export"></p>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\t\t\t\t</div>\n\t\t\t';
   }
-  __p += '\n\t\t</div>\n\t</section>\n\t';
-  if (obj.renderer.config.showRights) {
-    __p += '\n\t\t<small class="rights">' + ((__t = obj.data.rights) == null ? '' : _.escape(__t)) + '</small>\n\t';
-  }
-  __p += '\n</li>';
+  __p += '\n\t\t</div>\n\t</section>\n</li>';
   return __p;
 };
 
