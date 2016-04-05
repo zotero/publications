@@ -274,21 +274,20 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			ev.preventDefault();
 			let itemEl = closest(target, el => el.dataset && el.dataset.item);
 			if(target.dataset.trigger === 'details') {
-				this.prepareExport(itemEl);
-				this.updateCitation(itemEl, this.preferredCitationStyle);
 				let detailsEl = itemEl.querySelector('.zotero-details');
 				if(detailsEl) {
 					let expanded = toggleCollapse(detailsEl);
-					expanded ? itemEl.classList.add('zotero-details-open') : itemEl.classList.remove('zotero-details-open'); //eslint-disable-line no-unused-expressions
+					if(expanded) {
+						this.prepareExport(itemEl);
+						this.updateCitation(itemEl, this.preferredCitationStyle);
+						itemEl.classList.add('zotero-details-open')
+					} else {
+						itemEl.classList.remove('zotero-details-open');
+					}
 				}
 				window.history.pushState(null, null, `#${itemEl.dataset.item}`);
 			} else if(target.dataset.trigger === 'cite' || target.dataset.trigger === 'export') {
 				showTab(target);
-				if(target.dataset.trigger === 'cite') {
-					this.updateCitation(itemEl, this.modal, this.preferredCitationStyle);
-				} else if(target.dataset.trigger === 'export') {
-					this.prepareExport(itemEl, this.modal);
-				}
 			}
 		}
 	});
