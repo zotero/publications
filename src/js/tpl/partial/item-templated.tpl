@@ -55,5 +55,23 @@
 		<% } %>
 	</div>
 <% } else { %>
-	<%= obj.renderer.renderItemCitation(obj.item) %>
+	<h3 class="zotero-item-title">
+		<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
+			<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
+		<% } else { %>
+			<%- obj.data.title %>
+		<% } %>
+	</h3>
+
+	<% if (obj.item[Symbol.for('authors')] || obj.data[Symbol.for('formattedDate')]) { %>
+		<div class="zotero-item-subline">
+			<% if (obj.item[Symbol.for('authors')]) { %>
+				By <%- obj.data[Symbol.for('authors')] %>
+			<% } %>
+				
+			<% if (obj.data[Symbol.for('formattedDate')]) { %>
+			(<%- obj.data[Symbol.for('formattedDate')] %>)
+			<% } %>
+		</div>
+	<% } %>
 <% } %>

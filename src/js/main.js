@@ -14,15 +14,24 @@ import {
  * @param {Object} [config] - Configuration object that will selectively override the defaults
  */
 export function ZoteroPublications() {
-	if(arguments.length <= 1) {
-		this.config = _.extend({}, this.defaults, arguments ? arguments[0] : {});
-	} else if(arguments.length <= 3) {
-		this.config = _.extend({}, this.defaults, arguments[2]);
-		return this.render(arguments[0], arguments[1]);
-	} else {
+	if(arguments.length > 3) {
 		return Promise.reject(
 			new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.')
 		);
+	}
+
+	if(arguments.length <= 1) {
+		this.config = _.extend({}, this.defaults, arguments ? arguments[0] : {});
+	} else {
+		this.config = _.extend({}, this.defaults, arguments[2]);
+	}
+
+	if(this.config.alwaysUseCitationStyle && !_.contains(this.config.include, 'citation')) {
+		this.config.include.push('citation');
+	}
+
+	if(arguments.length > 1) {
+		return this.render(arguments[0], arguments[1]);
 	}
 }
 
@@ -34,7 +43,7 @@ ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
 	limit: 100,
 	citationStyle: '',
-	include: ['data', 'citation'],
+	include: ['data'],
 	storeCitationPreference: false,
 	shortenedAbstractLenght: 250,
 	group: false,
