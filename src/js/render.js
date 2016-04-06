@@ -188,7 +188,7 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
  * @param  {String} citationStyle 		- optionally set the citation style
  */
 ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
-	let itemId = itemEl.dataset.item;
+	let itemId = itemEl.getAttribute('data-item');
 	let citationEl = itemEl.querySelector('.zotero-citation');
 	let citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
 
@@ -220,7 +220,7 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
  * Prepare a link for downloading item export
  */
 ZoteroRenderer.prototype.prepareExport = function(itemEl) {
-	let itemId = itemEl.dataset.item;
+	let itemId = itemEl.getAttribute('data-item');
 	let exportEl = itemEl.querySelector('.zotero-export');
 	let exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
 	let exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
@@ -268,12 +268,12 @@ ZoteroRenderer.prototype.addHandlers = function() {
 	this.container.addEventListener('click', ev => {
 		var target;
 
-		target = closest(ev.target, el => el.dataset && el.dataset.trigger);
+		target = closest(ev.target, el => el.hasAttribute && el.hasAttribute('data-trigger'));
 
 		if(target) {
 			ev.preventDefault();
-			let itemEl = closest(target, el => el.dataset && el.dataset.item);
-			if(target.dataset.trigger === 'details') {
+			let itemEl = closest(target, el => el.hasAttribute && el.hasAttribute('data-item'));
+			if(target.getAttribute('data-trigger') === 'details') {
 				let detailsEl = itemEl.querySelector('.zotero-details');
 				if(detailsEl) {
 					let expanded = toggleCollapse(detailsEl);
@@ -285,21 +285,19 @@ ZoteroRenderer.prototype.addHandlers = function() {
 						itemEl.classList.remove('zotero-details-open');
 					}
 				}
-				window.history.pushState(null, null, `#${itemEl.dataset.item}`);
-			} else if(target.dataset.trigger === 'cite' || target.dataset.trigger === 'export') {
+				window.history.pushState(null, null, `#${itemEl.getAttribute('data-item')}`);
+			} else if(target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				showTab(target);
 			}
 		}
 	});
 
 	this.container.addEventListener('change', ev => {
-		var target = closest(ev.target, el => el.dataset && el.dataset.trigger);
-
-		if(target.dataset.trigger === 'cite-style-selection') {
-			let itemEl = closest(target, el => el.dataset && el.dataset.item);
+		let target = closest(ev.target, el => el.hasAttribute && el.hasAttribute('data-trigger'));
+		let itemEl = closest(target, el => el.hasAttribute && el.hasAttribute('data-item'));
+		if(target.getAttribute('data-trigger') === 'cite-style-selection') {
 			this.updateCitation(itemEl);
-		} else if(target.dataset.trigger === 'export-format-selection') {
-			let itemEl = closest(target, el => el.dataset && el.dataset.item);
+		} else if(target.getAttribute('data-trigger') === 'export-format-selection') {
 			this.prepareExport(itemEl);
 		}
 	});
