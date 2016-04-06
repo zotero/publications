@@ -10,8 +10,16 @@ import {
 } from './data.js';
 
 /**
- * Application entry point
- * @param {Object} [config] - Configuration object that will selectively override the defaults
+ * Application entry point. Alternatively can be used as a convenience function to render publications
+ * into a container
+ * @param {*} [configOruserIdOrendpointOrData] - Configuration object that will selectively override
+ *                                             the defaults. Alternatively if used as a convenience function,
+ *                                             this is first argument (userIdOrendpointOrData) passed over to
+ *                                             ZoteroPublications.render.
+ * @param {*} [container] - Only when used as a convenience function, specifies a DOM element where publications
+ *                        will be rendered
+ * @param {*} [config] - Only when used as a convience function, configuration object that will selectively override
+ *                     the defaults
  */
 export function ZoteroPublications() {
 	if(arguments.length > 3) {
