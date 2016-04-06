@@ -3,7 +3,7 @@ Below you can find overview on how to get up & running with development. We woul
 Requirements
 ------------
 
-* NodeJS >=4.0.0 with npm
+* NodeJS >=5.0.0 with npm
 
 Installation
 ------------
