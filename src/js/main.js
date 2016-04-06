@@ -34,7 +34,7 @@ export function ZoteroPublications() {
 		this.config = _.extend({}, this.defaults, arguments[2]);
 	}
 
-	if(this.config.alwaysUseCitationStyle && !_.includes(this.config.include, 'citation')) {
+	if(this.config.useCitationStyle && !_.includes(this.config.include, 'citation')) {
 		this.config.include.push('citation');
 	}
 
@@ -54,7 +54,7 @@ ZoteroPublications.prototype.defaults = {
 	include: ['data'],
 	storeCitationPreference: false,
 	group: false,
-	alwaysUseCitationStyle: false,
+	useCitationStyle: false,
 	showBranding: true,
 	expand: 'all',
 	citeStyleOptions: {

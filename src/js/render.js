@@ -40,7 +40,7 @@ export function ZoteroRenderer(container, zotero) {
 	if(this.config.storeCitationPreference) {
 		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
 	} else {
-		this.preferredCitationStyle = this.config.citationStyle;
+		this.preferredCitationStyle = '';
 	}
 	this.toggleSpinner(true);
 }
