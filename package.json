@@ -1,10 +1,10 @@
 {
-  "name": "my-publications",
-  "license": "",
-  "version": "0.1.0",
+  "name": "zotero-publications",
+  "license": "AGPL-3.0",
+  "version": "0.3.0",
   "description": "",
   "repository": "",
-  "main": "dist/my-publications.js",
+  "main": "dist/zotero-publications.js",
   "scripts": {
     "start": "./node_modules/gulp/bin/gulp.js",
     "postinstall": "./node_modules/bower/bin/bower install",
