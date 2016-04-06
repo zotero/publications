@@ -3523,7 +3523,7 @@ module.exports = E;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_SHORT_SYMBOL = undefined;
+exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_PROCESSED = undefined;
 exports.processResponse = processResponse;
 exports.fetchUntilExhausted = fetchUntilExhausted;
 
@@ -3538,7 +3538,6 @@ var _data = require('./data.js');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('es6-symbol/implement');
-var ABSTRACT_NOTE_SHORT_SYMBOL = exports.ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
 var ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
 var AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
 var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
@@ -3557,9 +3556,6 @@ function processResponse(response, config) {
 		for (var i = response.length; i--;) {
 			var item = response[i];
 			if (item.data && item.data.abstractNote) {
-				var abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
-				abstractNoteShort = abstractNoteShort.substr(0, Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' ')));
-				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
 				item.data[ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
 			}
 			if (item.data && item.data.creators) {
@@ -3919,6 +3915,10 @@ ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee
 },{"./api.js":"/srv/zotero/my-publications/src/js/api.js","es6-symbol/implement":"/srv/zotero/my-publications/node_modules/es6-symbol/implement.js"}],"/srv/zotero/my-publications/src/js/field-map.js":[function(require,module,exports){
 'use strict';
 
+/**
+ * Map of property identifiers to user friendly names
+ * @type {Object}
+ */
 module.exports = {
 	'itemType': 'Item Type',
 	'title': 'Title',
@@ -4037,7 +4037,12 @@ module.exports = {
 },{}],"/srv/zotero/my-publications/src/js/hidden-fields.js":[function(require,module,exports){
 'use strict';
 
-module.exports = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags', 'creators'];
+/**
+ * List of property fields that should not be displayed in the UI
+ * @type {Array}
+ */
+module.exports = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags', 'creators', 'abstractNote' //displayed separately
+];
 
 },{}],"/srv/zotero/my-publications/src/js/main-compat.js":[function(require,module,exports){
 'use strict';
@@ -4046,10 +4051,6 @@ require('babel-regenerator-runtime');
 
 var _main = require('./main.js');
 
-// require('core-js/es5');
-
-// doesn't seem to work very well in IE
-// require('es6-promise').polyfill();
 require('core-js/es6/promise');
 require('whatwg-fetch');
 
@@ -4078,8 +4079,16 @@ var _data = require('./data.js');
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 /**
- * Application entry point
- * @param {Object} [config] - Configuration object that will selectively override the defaults
+ * Application entry point. Alternatively can be used as a convenience function to render publications
+ * into a container
+ * @param {*} [configOruserIdOrendpointOrData] - Configuration object that will selectively override
+ *                                             the defaults. Alternatively if used as a convenience function,
+ *                                             this is first argument (userIdOrendpointOrData) passed over to
+ *                                             ZoteroPublications.render.
+ * @param {*} [container] - Only when used as a convenience function, specifies a DOM element where publications
+ *                        will be rendered
+ * @param {*} [config] - Only when used as a convience function, configuration object that will selectively override
+ *                     the defaults
  */
 function ZoteroPublications() {
 	if (arguments.length > 3) {
@@ -4092,7 +4101,7 @@ function ZoteroPublications() {
 		this.config = _lodash2.default.extend({}, this.defaults, arguments[2]);
 	}
 
-	if (this.config.alwaysUseCitationStyle && !_lodash2.default.contains(this.config.include, 'citation')) {
+	if (this.config.useCitationStyle && !_lodash2.default.includes(this.config.include, 'citation')) {
 		this.config.include.push('citation');
 	}
 
@@ -4111,9 +4120,8 @@ ZoteroPublications.prototype.defaults = {
 	citationStyle: '',
 	include: ['data'],
 	storeCitationPreference: false,
-	shortenedAbstractLenght: 250,
 	group: false,
-	alwaysUseCitationStyle: false,
+	useCitationStyle: false,
 	showBranding: true,
 	expand: 'all',
 	citeStyleOptions: {
@@ -4290,6 +4298,12 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
  */
 ZoteroPublications.ZoteroData = _data.ZoteroData;
 
+/**
+ * Make ZoteroRenderer publicly accessible underneath ZoteroPublications
+ * @type {ZoteroRenderer}
+ */
+ZoteroPublications.ZoteroRenderer = _render.ZoteroRenderer;
+
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"./api.js":"/srv/zotero/my-publications/src/js/api.js","./data.js":"/srv/zotero/my-publications/src/js/data.js","./render.js":"/srv/zotero/my-publications/src/js/render.js"}],"/srv/zotero/my-publications/src/js/render.js":[function(require,module,exports){
 (function (global){
@@ -4378,7 +4392,7 @@ function ZoteroRenderer(container, zotero) {
 	if (this.config.storeCitationPreference) {
 		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
 	} else {
-		this.preferredCitationStyle = this.config.citationStyle;
+		this.preferredCitationStyle = '';
 	}
 	this.toggleSpinner(true);
 }
@@ -4525,7 +4539,7 @@ ZoteroRenderer.prototype.displayPublications = function (data) {
  * @param  {String} citationStyle 		- optionally set the citation style
  */
 ZoteroRenderer.prototype.updateCitation = function (itemEl, citationStyle) {
-	var itemId = itemEl.dataset.item;
+	var itemId = itemEl.getAttribute('data-item');
 	var citationEl = itemEl.querySelector('.zotero-citation');
 	var citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
 
@@ -4555,11 +4569,12 @@ ZoteroRenderer.prototype.updateCitation = function (itemEl, citationStyle) {
 
 /**
  * Prepare a link for downloading item export
+ * @param {HTMLElement} [itemEl] - dom element containing the item
  */
 ZoteroRenderer.prototype.prepareExport = function (itemEl) {
 	var _this = this;
 
-	var itemId = itemEl.dataset.item;
+	var itemId = itemEl.getAttribute('data-item');
 	var exportEl = itemEl.querySelector('.zotero-export');
 	var exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
 	var exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
@@ -4610,15 +4625,15 @@ ZoteroRenderer.prototype.addHandlers = function () {
 		var target;
 
 		target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger;
+			return el.hasAttribute && el.hasAttribute('data-trigger');
 		});
 
 		if (target) {
 			ev.preventDefault();
 			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
+				return el.hasAttribute && el.hasAttribute('data-item');
 			});
-			if (target.dataset.trigger === 'details') {
+			if (target.getAttribute('data-trigger') === 'details') {
 				var detailsEl = itemEl.querySelector('.zotero-details');
 				if (detailsEl) {
 					var expanded = (0, _utils.toggleCollapse)(detailsEl);
@@ -4630,8 +4645,8 @@ ZoteroRenderer.prototype.addHandlers = function () {
 						itemEl.classList.remove('zotero-details-open');
 					}
 				}
-				window.history.pushState(null, null, '#' + itemEl.dataset.item);
-			} else if (target.dataset.trigger === 'cite' || target.dataset.trigger === 'export') {
+				window.history.pushState(null, null, '#' + itemEl.getAttribute('data-item'));
+			} else if (target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				(0, _utils.showTab)(target);
 			}
 		}
@@ -4639,18 +4654,14 @@ ZoteroRenderer.prototype.addHandlers = function () {
 
 	this.container.addEventListener('change', function (ev) {
 		var target = (0, _utils.closest)(ev.target, function (el) {
-			return el.dataset && el.dataset.trigger;
+			return el.hasAttribute && el.hasAttribute('data-trigger');
 		});
-
-		if (target.dataset.trigger === 'cite-style-selection') {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
+		var itemEl = (0, _utils.closest)(target, function (el) {
+			return el.hasAttribute && el.hasAttribute('data-item');
+		});
+		if (target.getAttribute('data-trigger') === 'cite-style-selection') {
 			_this2.updateCitation(itemEl);
-		} else if (target.dataset.trigger === 'export-format-selection') {
-			var itemEl = (0, _utils.closest)(target, function (el) {
-				return el.dataset && el.dataset.item;
-			});
+		} else if (target.getAttribute('data-trigger') === 'export-format-selection') {
 			_this2.prepareExport(itemEl);
 		}
 	});
@@ -4925,7 +4936,7 @@ module.exports = function (obj) {
     __p += __j.call(arguments, '');
   };
   __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" role="listitem">\n\t<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>\n\n\t<!-- Citation -->\n\t';
-  if (obj.renderer.config.alwaysUseCitationStyle) {
+  if (obj.renderer.config.useCitationStyle) {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemCitation(obj.item)) == null ? '' : __t) + '\n\t<!-- Templated -->\n\t';
   } else {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemTemplated(obj.item)) == null ? '' : __t) + '\n\t';
@@ -5167,8 +5178,8 @@ function formatCategoryName(name) {
 }
 
 /**
- * Finds the first element that pasess function test by
- * testing the element itself and traversing up
+ * Finds the first element that pasess function test by testing the element itself
+ * and traversing up
  * @param  {HTMLElement}   el 	- A DOM element from which tracersing begins
  * @param  {Function} fn 		- Function that tests if element is suitable
  * @return {HTMLElement}		- First element that passes the test
@@ -5201,8 +5212,7 @@ function once(target, type, listener) {
 }
 
 /**
- * Uniquely and pernamently identify a DOM element
- * even if it has no id
+ * Uniquely and pernamently identify a DOM element even if it has no id
  * @param  {HTMLElement} target - DOM element to identify
  * @return {String} 			- unique identifier
  */
