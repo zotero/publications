@@ -16,5 +16,6 @@ module.exports = [
 	'contentType',
 	'filename',
 	'tags',
-	'creators'
+	'creators',
+	'abstractNote' //displayed separately
 ];
