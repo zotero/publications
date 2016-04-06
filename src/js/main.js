@@ -26,7 +26,7 @@ export function ZoteroPublications() {
 		this.config = _.extend({}, this.defaults, arguments[2]);
 	}
 
-	if(this.config.alwaysUseCitationStyle && !_.contains(this.config.include, 'citation')) {
+	if(this.config.alwaysUseCitationStyle && !_.includes(this.config.include, 'citation')) {
 		this.config.include.push('citation');
 	}
 
