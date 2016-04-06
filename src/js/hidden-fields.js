@@ -1,3 +1,7 @@
+/**
+ * List of property fields that should not be displayed in the UI
+ * @type {Array}
+ */
 module.exports = [
 	'mimeType',
 	'linkMode',
