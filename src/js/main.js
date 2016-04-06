@@ -226,3 +226,9 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
  * @type {ZoteroData}
  */
 ZoteroPublications.ZoteroData = ZoteroData;
+
+/**
+ * Make ZoteroRenderer publicly accessible underneath ZoteroPublications
+ * @type {ZoteroRenderer}
+ */
+ZoteroPublications.ZoteroRenderer = ZoteroRenderer;

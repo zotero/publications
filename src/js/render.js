@@ -218,6 +218,7 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 
 /**
  * Prepare a link for downloading item export
+ * @param {HTMLElement} [itemEl] - dom element containing the item
  */
 ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 	let itemId = itemEl.getAttribute('data-item');
