@@ -29,7 +29,7 @@ While the development server is running, changes to any of the file in *src* dir
 Tests
 --------------
 
-The following command will execute all tests in a real browser (Chrome/Chromium by default):
+The following command will execute all tests in a real browser (Chrome/Chromium by default) using [Karma](http://karma-runner.github.io):
 
     npm test
 
