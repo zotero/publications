@@ -31,7 +31,7 @@ describe('Zotero Publications', function() {
 
 	beforeEach(function() {
 		zp = new ZoteroPublications({
-			alwaysUseCitationStyle: true
+			useCitationStyle: true
 		});
 		container = document.createElement('div');
 		renderer = new ZoteroRenderer(container, zp);
