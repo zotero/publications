@@ -1,6 +1,6 @@
 # Zotero Publications
 
-[![Build Status](https://travis-ci.org/tnajdek/publications.svg?branch=master)](https://travis-ci.org/tnajdek/publications)
+[![Build Status](https://travis-ci.org/zotero/publications.svg?branch=master)](https://travis-ci.org/zotero/publications)
 
 Overview
 --------
