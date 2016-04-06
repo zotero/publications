@@ -11,7 +11,6 @@ import {
 	VIEW_ONLINE_URL
 } from './data.js';
 
-export const ABSTRACT_NOTE_SHORT_SYMBOL = Symbol.for('abstractNoteShort');
 export const ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
 export const AUTHORS_SYMBOL = Symbol.for('authors');
 export const FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
@@ -30,12 +29,6 @@ export function processResponse(response, config) {
 		for(var i = response.length; i--; ) {
 			let item = response[i];
 			if(item.data && item.data.abstractNote) {
-				let abstractNoteShort = item.data.abstractNote.substr(0, config.shortenedAbstractLenght);
-				abstractNoteShort = abstractNoteShort.substr(
-					0,
-					Math.min(abstractNoteShort.length, abstractNoteShort.lastIndexOf(' '))
-				);
-				item.data[ABSTRACT_NOTE_SHORT_SYMBOL] = abstractNoteShort;
 				item.data[ABSTRACT_NOTE_PROCESSED] = formatAbstract(item.data.abstractNote);
 			}
 			if(item.data && item.data.creators) {

@@ -53,7 +53,6 @@ ZoteroPublications.prototype.defaults = {
 	citationStyle: '',
 	include: ['data'],
 	storeCitationPreference: false,
-	shortenedAbstractLenght: 250,
 	group: false,
 	alwaysUseCitationStyle: false,
 	showBranding: true,
