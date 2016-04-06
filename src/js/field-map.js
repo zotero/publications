@@ -1,3 +1,7 @@
+/**
+ * Map of property identifiers to user friendly names
+ * @type {Object}
+ */
 module.exports = {
 	'itemType'				: 'Item Type',
 	'title'					: 'Title',
