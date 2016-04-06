@@ -105,15 +105,6 @@ describe('Zotero Publications', function() {
 			});
 	});
 
-	it('should should generate shortened version of the abstract', function() {
-		zp = new ZoteroPublications({
-			shortenedAbstractLenght: 20
-		});
-		processResponse(data, zp.config);
-		expect(data[1].data[ABSTRACT_NOTE_SHORT_SYMBOL].length).not.toBeGreaterThan(20);
-		expect(data[1].data.abstractNote.length).toBeGreaterThan(20);
-	});
-
 	it('should move child items underneath the main item', function() {
 		data = processResponse(data, zp.config);
 
