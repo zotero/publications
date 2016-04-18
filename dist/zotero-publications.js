@@ -660,405 +660,390 @@
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"_process":"/srv/zotero/my-publications/node_modules/process/browser.js"}],"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard-action.js":[function(require,module,exports){
-'use strict';
+(function (global, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(['module', 'select'], factory);
+    } else if (typeof exports !== "undefined") {
+        factory(module, require('select'));
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod, global.select);
+        global.clipboardAction = mod.exports;
+    }
+})(this, function (module, _select) {
+    'use strict';
 
-exports.__esModule = true;
+    var _select2 = _interopRequireDefault(_select);
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-var _select = require('select');
-
-var _select2 = _interopRequireDefault(_select);
-
-/**
- * Inner class which performs selection from either `text` or `target`
- * properties and then executes copy or cut operations.
- */
-
-var ClipboardAction = (function () {
-    /**
-     * @param {Object} options
-     */
-
-    function ClipboardAction(options) {
-        _classCallCheck(this, ClipboardAction);
-
-        this.resolveOptions(options);
-        this.initSelection();
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
     }
 
-    /**
-     * Defines base properties passed from constructor.
-     * @param {Object} options
-     */
-
-    ClipboardAction.prototype.resolveOptions = function resolveOptions() {
-        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-        this.action = options.action;
-        this.emitter = options.emitter;
-        this.target = options.target;
-        this.text = options.text;
-        this.trigger = options.trigger;
-
-        this.selectedText = '';
+    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+    } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
     };
 
-    /**
-     * Decides which selection strategy is going to be applied based
-     * on the existence of `text` and `target` properties.
-     */
-
-    ClipboardAction.prototype.initSelection = function initSelection() {
-        if (this.text && this.target) {
-            throw new Error('Multiple attributes declared, use either "target" or "text"');
-        } else if (this.text) {
-            this.selectFake();
-        } else if (this.target) {
-            this.selectTarget();
-        } else {
-            throw new Error('Missing required attributes, use either "target" or "text"');
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
         }
-    };
+    }
 
-    /**
-     * Creates a fake textarea element, sets its value from `text` property,
-     * and makes a selection on it.
-     */
-
-    ClipboardAction.prototype.selectFake = function selectFake() {
-        var _this = this;
-
-        var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
-
-        this.removeFake();
-
-        this.fakeHandler = document.body.addEventListener('click', function () {
-            return _this.removeFake();
-        });
-
-        this.fakeElem = document.createElement('textarea');
-        // Prevent zooming on iOS
-        this.fakeElem.style.fontSize = '12pt';
-        // Reset box model
-        this.fakeElem.style.border = '0';
-        this.fakeElem.style.padding = '0';
-        this.fakeElem.style.margin = '0';
-        // Move element out of screen horizontally
-        this.fakeElem.style.position = 'absolute';
-        this.fakeElem.style[isRTL ? 'right' : 'left'] = '-9999px';
-        // Move element to the same position vertically
-        this.fakeElem.style.top = (window.pageYOffset || document.documentElement.scrollTop) + 'px';
-        this.fakeElem.setAttribute('readonly', '');
-        this.fakeElem.value = this.text;
-
-        document.body.appendChild(this.fakeElem);
-
-        this.selectedText = _select2['default'](this.fakeElem);
-        this.copyText();
-    };
-
-    /**
-     * Only removes the fake element after another click event, that way
-     * a user can hit `Ctrl+C` to copy because selection still exists.
-     */
-
-    ClipboardAction.prototype.removeFake = function removeFake() {
-        if (this.fakeHandler) {
-            document.body.removeEventListener('click');
-            this.fakeHandler = null;
-        }
-
-        if (this.fakeElem) {
-            document.body.removeChild(this.fakeElem);
-            this.fakeElem = null;
-        }
-    };
-
-    /**
-     * Selects the content from element passed on `target` property.
-     */
-
-    ClipboardAction.prototype.selectTarget = function selectTarget() {
-        this.selectedText = _select2['default'](this.target);
-        this.copyText();
-    };
-
-    /**
-     * Executes the copy operation based on the current selection.
-     */
-
-    ClipboardAction.prototype.copyText = function copyText() {
-        var succeeded = undefined;
-
-        try {
-            succeeded = document.execCommand(this.action);
-        } catch (err) {
-            succeeded = false;
-        }
-
-        this.handleResult(succeeded);
-    };
-
-    /**
-     * Fires an event based on the copy operation result.
-     * @param {Boolean} succeeded
-     */
-
-    ClipboardAction.prototype.handleResult = function handleResult(succeeded) {
-        if (succeeded) {
-            this.emitter.emit('success', {
-                action: this.action,
-                text: this.selectedText,
-                trigger: this.trigger,
-                clearSelection: this.clearSelection.bind(this)
-            });
-        } else {
-            this.emitter.emit('error', {
-                action: this.action,
-                trigger: this.trigger,
-                clearSelection: this.clearSelection.bind(this)
-            });
-        }
-    };
-
-    /**
-     * Removes current selection and focus from `target` element.
-     */
-
-    ClipboardAction.prototype.clearSelection = function clearSelection() {
-        if (this.target) {
-            this.target.blur();
-        }
-
-        window.getSelection().removeAllRanges();
-    };
-
-    /**
-     * Sets the `action` to be performed which can be either 'copy' or 'cut'.
-     * @param {String} action
-     */
-
-    /**
-     * Destroy lifecycle.
-     */
-
-    ClipboardAction.prototype.destroy = function destroy() {
-        this.removeFake();
-    };
-
-    _createClass(ClipboardAction, [{
-        key: 'action',
-        set: function set() {
-            var action = arguments.length <= 0 || arguments[0] === undefined ? 'copy' : arguments[0];
-
-            this._action = action;
-
-            if (this._action !== 'copy' && this._action !== 'cut') {
-                throw new Error('Invalid "action" value, use either "copy" or "cut"');
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
             }
-        },
+        }
 
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var ClipboardAction = function () {
         /**
-         * Gets the `action` property.
-         * @return {String}
+         * @param {Object} options
          */
-        get: function get() {
-            return this._action;
+
+        function ClipboardAction(options) {
+            _classCallCheck(this, ClipboardAction);
+
+            this.resolveOptions(options);
+            this.initSelection();
         }
 
         /**
-         * Sets the `target` property using an element
-         * that will be have its content copied.
-         * @param {Element} target
+         * Defines base properties passed from constructor.
+         * @param {Object} options
          */
-    }, {
-        key: 'target',
-        set: function set(target) {
-            if (target !== undefined) {
-                if (target && typeof target === 'object' && target.nodeType === 1) {
-                    this._target = target;
-                } else {
-                    throw new Error('Invalid "target" value, use a valid Element');
+
+
+        ClipboardAction.prototype.resolveOptions = function resolveOptions() {
+            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+            this.action = options.action;
+            this.emitter = options.emitter;
+            this.target = options.target;
+            this.text = options.text;
+            this.trigger = options.trigger;
+
+            this.selectedText = '';
+        };
+
+        ClipboardAction.prototype.initSelection = function initSelection() {
+            if (this.text) {
+                this.selectFake();
+            } else if (this.target) {
+                this.selectTarget();
+            }
+        };
+
+        ClipboardAction.prototype.selectFake = function selectFake() {
+            var _this = this;
+
+            var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
+
+            this.removeFake();
+
+            this.fakeHandler = document.body.addEventListener('click', function () {
+                return _this.removeFake();
+            });
+
+            this.fakeElem = document.createElement('textarea');
+            // Prevent zooming on iOS
+            this.fakeElem.style.fontSize = '12pt';
+            // Reset box model
+            this.fakeElem.style.border = '0';
+            this.fakeElem.style.padding = '0';
+            this.fakeElem.style.margin = '0';
+            // Move element out of screen horizontally
+            this.fakeElem.style.position = 'fixed';
+            this.fakeElem.style[isRTL ? 'right' : 'left'] = '-9999px';
+            // Move element to the same position vertically
+            this.fakeElem.style.top = (window.pageYOffset || document.documentElement.scrollTop) + 'px';
+            this.fakeElem.setAttribute('readonly', '');
+            this.fakeElem.value = this.text;
+
+            document.body.appendChild(this.fakeElem);
+
+            this.selectedText = (0, _select2.default)(this.fakeElem);
+            this.copyText();
+        };
+
+        ClipboardAction.prototype.removeFake = function removeFake() {
+            if (this.fakeHandler) {
+                document.body.removeEventListener('click');
+                this.fakeHandler = null;
+            }
+
+            if (this.fakeElem) {
+                document.body.removeChild(this.fakeElem);
+                this.fakeElem = null;
+            }
+        };
+
+        ClipboardAction.prototype.selectTarget = function selectTarget() {
+            this.selectedText = (0, _select2.default)(this.target);
+            this.copyText();
+        };
+
+        ClipboardAction.prototype.copyText = function copyText() {
+            var succeeded = undefined;
+
+            try {
+                succeeded = document.execCommand(this.action);
+            } catch (err) {
+                succeeded = false;
+            }
+
+            this.handleResult(succeeded);
+        };
+
+        ClipboardAction.prototype.handleResult = function handleResult(succeeded) {
+            if (succeeded) {
+                this.emitter.emit('success', {
+                    action: this.action,
+                    text: this.selectedText,
+                    trigger: this.trigger,
+                    clearSelection: this.clearSelection.bind(this)
+                });
+            } else {
+                this.emitter.emit('error', {
+                    action: this.action,
+                    trigger: this.trigger,
+                    clearSelection: this.clearSelection.bind(this)
+                });
+            }
+        };
+
+        ClipboardAction.prototype.clearSelection = function clearSelection() {
+            if (this.target) {
+                this.target.blur();
+            }
+
+            window.getSelection().removeAllRanges();
+        };
+
+        ClipboardAction.prototype.destroy = function destroy() {
+            this.removeFake();
+        };
+
+        _createClass(ClipboardAction, [{
+            key: 'action',
+            set: function set() {
+                var action = arguments.length <= 0 || arguments[0] === undefined ? 'copy' : arguments[0];
+
+                this._action = action;
+
+                if (this._action !== 'copy' && this._action !== 'cut') {
+                    throw new Error('Invalid "action" value, use either "copy" or "cut"');
                 }
+            },
+            get: function get() {
+                return this._action;
             }
-        },
+        }, {
+            key: 'target',
+            set: function set(target) {
+                if (target !== undefined) {
+                    if (target && (typeof target === 'undefined' ? 'undefined' : _typeof(target)) === 'object' && target.nodeType === 1) {
+                        if (this.action === 'copy' && target.hasAttribute('disabled')) {
+                            throw new Error('Invalid "target" attribute. Please use "readonly" instead of "disabled" attribute');
+                        }
+
+                        if (this.action === 'cut' && (target.hasAttribute('readonly') || target.hasAttribute('disabled'))) {
+                            throw new Error('Invalid "target" attribute. You can\'t cut text from elements with "readonly" or "disabled" attributes');
+                        }
+
+                        this._target = target;
+                    } else {
+                        throw new Error('Invalid "target" value, use a valid Element');
+                    }
+                }
+            },
+            get: function get() {
+                return this._target;
+            }
+        }]);
+
+        return ClipboardAction;
+    }();
+
+    module.exports = ClipboardAction;
+});
+},{"select":"/srv/zotero/my-publications/node_modules/select/src/select.js"}],"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js":[function(require,module,exports){
+(function (global, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(['module', './clipboard-action', 'tiny-emitter', 'good-listener'], factory);
+    } else if (typeof exports !== "undefined") {
+        factory(module, require('./clipboard-action'), require('tiny-emitter'), require('good-listener'));
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod, global.clipboardAction, global.tinyEmitter, global.goodListener);
+        global.clipboard = mod.exports;
+    }
+})(this, function (module, _clipboardAction, _tinyEmitter, _goodListener) {
+    'use strict';
+
+    var _clipboardAction2 = _interopRequireDefault(_clipboardAction);
+
+    var _tinyEmitter2 = _interopRequireDefault(_tinyEmitter);
+
+    var _goodListener2 = _interopRequireDefault(_goodListener);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _possibleConstructorReturn(self, call) {
+        if (!self) {
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+
+        return call && (typeof call === "object" || typeof call === "function") ? call : self;
+    }
+
+    function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+            throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+        }
+
+        subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+                value: subClass,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+        });
+        if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    }
+
+    var Clipboard = function (_Emitter) {
+        _inherits(Clipboard, _Emitter);
 
         /**
-         * Gets the `target` property.
-         * @return {String|HTMLElement}
+         * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
+         * @param {Object} options
          */
-        get: function get() {
-            return this._target;
+
+        function Clipboard(trigger, options) {
+            _classCallCheck(this, Clipboard);
+
+            var _this = _possibleConstructorReturn(this, _Emitter.call(this));
+
+            _this.resolveOptions(options);
+            _this.listenClick(trigger);
+            return _this;
         }
-    }]);
 
-    return ClipboardAction;
-})();
+        /**
+         * Defines if attributes would be resolved using internal setter functions
+         * or custom functions that were passed in the constructor.
+         * @param {Object} options
+         */
 
-exports['default'] = ClipboardAction;
-module.exports = exports['default'];
-},{"select":"/srv/zotero/my-publications/node_modules/select/src/select.js"}],"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js":[function(require,module,exports){
-'use strict';
 
-exports.__esModule = true;
+        Clipboard.prototype.resolveOptions = function resolveOptions() {
+            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+            this.action = typeof options.action === 'function' ? options.action : this.defaultAction;
+            this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
+            this.text = typeof options.text === 'function' ? options.text : this.defaultText;
+        };
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+        Clipboard.prototype.listenClick = function listenClick(trigger) {
+            var _this2 = this;
 
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+            this.listener = (0, _goodListener2.default)(trigger, 'click', function (e) {
+                return _this2.onClick(e);
+            });
+        };
 
-var _clipboardAction = require('./clipboard-action');
+        Clipboard.prototype.onClick = function onClick(e) {
+            var trigger = e.delegateTarget || e.currentTarget;
 
-var _clipboardAction2 = _interopRequireDefault(_clipboardAction);
+            if (this.clipboardAction) {
+                this.clipboardAction = null;
+            }
 
-var _tinyEmitter = require('tiny-emitter');
+            this.clipboardAction = new _clipboardAction2.default({
+                action: this.action(trigger),
+                target: this.target(trigger),
+                text: this.text(trigger),
+                trigger: trigger,
+                emitter: this
+            });
+        };
 
-var _tinyEmitter2 = _interopRequireDefault(_tinyEmitter);
+        Clipboard.prototype.defaultAction = function defaultAction(trigger) {
+            return getAttributeValue('action', trigger);
+        };
 
-var _goodListener = require('good-listener');
+        Clipboard.prototype.defaultTarget = function defaultTarget(trigger) {
+            var selector = getAttributeValue('target', trigger);
 
-var _goodListener2 = _interopRequireDefault(_goodListener);
+            if (selector) {
+                return document.querySelector(selector);
+            }
+        };
 
-/**
- * Base class which takes one or more elements, adds event listeners to them,
- * and instantiates a new `ClipboardAction` on each click.
- */
+        Clipboard.prototype.defaultText = function defaultText(trigger) {
+            return getAttributeValue('text', trigger);
+        };
 
-var Clipboard = (function (_Emitter) {
-    _inherits(Clipboard, _Emitter);
+        Clipboard.prototype.destroy = function destroy() {
+            this.listener.destroy();
 
-    /**
-     * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
-     * @param {Object} options
-     */
+            if (this.clipboardAction) {
+                this.clipboardAction.destroy();
+                this.clipboardAction = null;
+            }
+        };
 
-    function Clipboard(trigger, options) {
-        _classCallCheck(this, Clipboard);
-
-        _Emitter.call(this);
-
-        this.resolveOptions(options);
-        this.listenClick(trigger);
-    }
+        return Clipboard;
+    }(_tinyEmitter2.default);
 
     /**
      * Helper function to retrieve attribute value.
      * @param {String} suffix
      * @param {Element} element
      */
+    function getAttributeValue(suffix, element) {
+        var attribute = 'data-clipboard-' + suffix;
 
-    /**
-     * Defines if attributes would be resolved using internal setter functions
-     * or custom functions that were passed in the constructor.
-     * @param {Object} options
-     */
-
-    Clipboard.prototype.resolveOptions = function resolveOptions() {
-        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-        this.action = typeof options.action === 'function' ? options.action : this.defaultAction;
-        this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
-        this.text = typeof options.text === 'function' ? options.text : this.defaultText;
-    };
-
-    /**
-     * Adds a click event listener to the passed trigger.
-     * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
-     */
-
-    Clipboard.prototype.listenClick = function listenClick(trigger) {
-        var _this = this;
-
-        this.listener = _goodListener2['default'](trigger, 'click', function (e) {
-            return _this.onClick(e);
-        });
-    };
-
-    /**
-     * Defines a new `ClipboardAction` on each click event.
-     * @param {Event} e
-     */
-
-    Clipboard.prototype.onClick = function onClick(e) {
-        var trigger = e.delegateTarget || e.currentTarget;
-
-        if (this.clipboardAction) {
-            this.clipboardAction = null;
+        if (!element.hasAttribute(attribute)) {
+            return;
         }
 
-        this.clipboardAction = new _clipboardAction2['default']({
-            action: this.action(trigger),
-            target: this.target(trigger),
-            text: this.text(trigger),
-            trigger: trigger,
-            emitter: this
-        });
-    };
-
-    /**
-     * Default `action` lookup function.
-     * @param {Element} trigger
-     */
-
-    Clipboard.prototype.defaultAction = function defaultAction(trigger) {
-        return getAttributeValue('action', trigger);
-    };
-
-    /**
-     * Default `target` lookup function.
-     * @param {Element} trigger
-     */
-
-    Clipboard.prototype.defaultTarget = function defaultTarget(trigger) {
-        var selector = getAttributeValue('target', trigger);
-
-        if (selector) {
-            return document.querySelector(selector);
-        }
-    };
-
-    /**
-     * Default `text` lookup function.
-     * @param {Element} trigger
-     */
-
-    Clipboard.prototype.defaultText = function defaultText(trigger) {
-        return getAttributeValue('text', trigger);
-    };
-
-    /**
-     * Destroy lifecycle.
-     */
-
-    Clipboard.prototype.destroy = function destroy() {
-        this.listener.destroy();
-
-        if (this.clipboardAction) {
-            this.clipboardAction.destroy();
-            this.clipboardAction = null;
-        }
-    };
-
-    return Clipboard;
-})(_tinyEmitter2['default']);
-
-exports['default'] = Clipboard;
-function getAttributeValue(suffix, element) {
-    var attribute = 'data-clipboard-' + suffix;
-
-    if (!element.hasAttribute(attribute)) {
-        return;
+        return element.getAttribute(attribute);
     }
 
-    return element.getAttribute(attribute);
-}
-module.exports = exports['default'];
+    module.exports = Clipboard;
+});
 },{"./clipboard-action":"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard-action.js","good-listener":"/srv/zotero/my-publications/node_modules/good-listener/src/listen.js","tiny-emitter":"/srv/zotero/my-publications/node_modules/tiny-emitter/index.js"}],"/srv/zotero/my-publications/node_modules/closest/index.js":[function(require,module,exports){
 var matches = require('matches-selector')
 
@@ -2447,6 +2432,7 @@ ZoteroPublications.prototype.defaults = {
 	group: false,
 	useCitationStyle: false,
 	showBranding: true,
+	useHistory: true,
 	expand: 'all',
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
@@ -2582,6 +2568,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			let data = userIdOrendpointOrData;
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			this.renderer.displayPublications(data);
+			if (this.config.useHistory && location.hash) {
+				this.renderer.expandDetails(location.hash.substr(1));
+			}
 			resolve();
 		} else if (typeof userIdOrendpointOrData === 'number') {
 			let userId = userIdOrendpointOrData;
@@ -2589,6 +2578,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			promise.then(data => {
 				this.renderer.displayPublications(data);
+				if (this.config.useHistory && location.hash) {
+					this.renderer.expandDetails(location.hash.substr(1));
+				}
 				resolve();
 			});
 			promise.catch(() => {
@@ -2600,6 +2592,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			promise.then(data => {
 				this.renderer.displayPublications(data);
+				if (this.config.useHistory && location.hash) {
+					this.renderer.expandDetails(location.hash.substr(1));
+				}
 				resolve();
 			});
 			promise.catch(() => {
@@ -2945,18 +2940,7 @@ ZoteroRenderer.prototype.addHandlers = function () {
 			ev.preventDefault();
 			let itemEl = (0, _utils.closest)(target, el => el.hasAttribute && el.hasAttribute('data-item'));
 			if (target.getAttribute('data-trigger') === 'details') {
-				let detailsEl = itemEl.querySelector('.zotero-details');
-				if (detailsEl) {
-					let expanded = (0, _utils.toggleCollapse)(detailsEl);
-					if (expanded) {
-						this.prepareExport(itemEl);
-						this.updateCitation(itemEl, this.preferredCitationStyle);
-						itemEl.classList.add('zotero-details-open');
-					} else {
-						itemEl.classList.remove('zotero-details-open');
-					}
-				}
-				window.history.pushState(null, null, `#${ itemEl.getAttribute('data-item') }`);
+				this.toggleDetails(itemEl);
 			} else if (target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				(0, _utils.showTab)(target);
 			}
@@ -3004,6 +2988,41 @@ ZoteroRenderer.prototype.updateVisuals = function () {
 ZoteroRenderer.prototype.toggleSpinner = function (activate) {
 	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
 	method.call(this.container.classList, 'zotero-loading');
+};
+
+/**
+ * Expand (if collapsed) or collapse (if expanded) item details. Optionally override to force
+ * either expand or collapse
+ * @param  {HTMLElement} itemEl 	- DOM element where item is
+ * @param  {boolean} override 		- override whether to expand or collapse details
+ */
+ZoteroRenderer.prototype.toggleDetails = function (itemEl, override) {
+	let detailsEl = itemEl.querySelector('.zotero-details');
+	if (detailsEl) {
+		let expanded = (0, _utils.toggleCollapse)(detailsEl, override);
+		if (expanded) {
+			this.prepareExport(itemEl);
+			this.updateCitation(itemEl, this.preferredCitationStyle);
+			itemEl.classList.add('zotero-details-open');
+		} else {
+			itemEl.classList.remove('zotero-details-open');
+		}
+	}
+	if (this.config.useHistory) {
+		window.history.pushState(null, null, `#${ itemEl.getAttribute('data-item') }`);
+	}
+};
+
+/**
+ * Expand item details based on the item id.
+ * @param  {string} itemId
+ */
+ZoteroRenderer.prototype.expandDetails = function (itemId) {
+	let itemEl = document.getElementById(itemId);
+	this.toggleDetails(itemEl, true);
+	(0, _utils.once)(itemEl, (0, _utils.transitionend)(), () => {
+		itemEl.scrollIntoView();
+	});
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
