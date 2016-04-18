@@ -660,405 +660,390 @@
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"_process":"/srv/zotero/my-publications/node_modules/process/browser.js"}],"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard-action.js":[function(require,module,exports){
-'use strict';
+(function (global, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(['module', 'select'], factory);
+    } else if (typeof exports !== "undefined") {
+        factory(module, require('select'));
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod, global.select);
+        global.clipboardAction = mod.exports;
+    }
+})(this, function (module, _select) {
+    'use strict';
 
-exports.__esModule = true;
+    var _select2 = _interopRequireDefault(_select);
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
-
-var _select = require('select');
-
-var _select2 = _interopRequireDefault(_select);
-
-/**
- * Inner class which performs selection from either `text` or `target`
- * properties and then executes copy or cut operations.
- */
-
-var ClipboardAction = (function () {
-    /**
-     * @param {Object} options
-     */
-
-    function ClipboardAction(options) {
-        _classCallCheck(this, ClipboardAction);
-
-        this.resolveOptions(options);
-        this.initSelection();
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
     }
 
-    /**
-     * Defines base properties passed from constructor.
-     * @param {Object} options
-     */
-
-    ClipboardAction.prototype.resolveOptions = function resolveOptions() {
-        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-        this.action = options.action;
-        this.emitter = options.emitter;
-        this.target = options.target;
-        this.text = options.text;
-        this.trigger = options.trigger;
-
-        this.selectedText = '';
+    var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+        return typeof obj;
+    } : function (obj) {
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
     };
 
-    /**
-     * Decides which selection strategy is going to be applied based
-     * on the existence of `text` and `target` properties.
-     */
-
-    ClipboardAction.prototype.initSelection = function initSelection() {
-        if (this.text && this.target) {
-            throw new Error('Multiple attributes declared, use either "target" or "text"');
-        } else if (this.text) {
-            this.selectFake();
-        } else if (this.target) {
-            this.selectTarget();
-        } else {
-            throw new Error('Missing required attributes, use either "target" or "text"');
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
         }
-    };
+    }
 
-    /**
-     * Creates a fake textarea element, sets its value from `text` property,
-     * and makes a selection on it.
-     */
-
-    ClipboardAction.prototype.selectFake = function selectFake() {
-        var _this = this;
-
-        var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
-
-        this.removeFake();
-
-        this.fakeHandler = document.body.addEventListener('click', function () {
-            return _this.removeFake();
-        });
-
-        this.fakeElem = document.createElement('textarea');
-        // Prevent zooming on iOS
-        this.fakeElem.style.fontSize = '12pt';
-        // Reset box model
-        this.fakeElem.style.border = '0';
-        this.fakeElem.style.padding = '0';
-        this.fakeElem.style.margin = '0';
-        // Move element out of screen horizontally
-        this.fakeElem.style.position = 'absolute';
-        this.fakeElem.style[isRTL ? 'right' : 'left'] = '-9999px';
-        // Move element to the same position vertically
-        this.fakeElem.style.top = (window.pageYOffset || document.documentElement.scrollTop) + 'px';
-        this.fakeElem.setAttribute('readonly', '');
-        this.fakeElem.value = this.text;
-
-        document.body.appendChild(this.fakeElem);
-
-        this.selectedText = _select2['default'](this.fakeElem);
-        this.copyText();
-    };
-
-    /**
-     * Only removes the fake element after another click event, that way
-     * a user can hit `Ctrl+C` to copy because selection still exists.
-     */
-
-    ClipboardAction.prototype.removeFake = function removeFake() {
-        if (this.fakeHandler) {
-            document.body.removeEventListener('click');
-            this.fakeHandler = null;
-        }
-
-        if (this.fakeElem) {
-            document.body.removeChild(this.fakeElem);
-            this.fakeElem = null;
-        }
-    };
-
-    /**
-     * Selects the content from element passed on `target` property.
-     */
-
-    ClipboardAction.prototype.selectTarget = function selectTarget() {
-        this.selectedText = _select2['default'](this.target);
-        this.copyText();
-    };
-
-    /**
-     * Executes the copy operation based on the current selection.
-     */
-
-    ClipboardAction.prototype.copyText = function copyText() {
-        var succeeded = undefined;
-
-        try {
-            succeeded = document.execCommand(this.action);
-        } catch (err) {
-            succeeded = false;
-        }
-
-        this.handleResult(succeeded);
-    };
-
-    /**
-     * Fires an event based on the copy operation result.
-     * @param {Boolean} succeeded
-     */
-
-    ClipboardAction.prototype.handleResult = function handleResult(succeeded) {
-        if (succeeded) {
-            this.emitter.emit('success', {
-                action: this.action,
-                text: this.selectedText,
-                trigger: this.trigger,
-                clearSelection: this.clearSelection.bind(this)
-            });
-        } else {
-            this.emitter.emit('error', {
-                action: this.action,
-                trigger: this.trigger,
-                clearSelection: this.clearSelection.bind(this)
-            });
-        }
-    };
-
-    /**
-     * Removes current selection and focus from `target` element.
-     */
-
-    ClipboardAction.prototype.clearSelection = function clearSelection() {
-        if (this.target) {
-            this.target.blur();
-        }
-
-        window.getSelection().removeAllRanges();
-    };
-
-    /**
-     * Sets the `action` to be performed which can be either 'copy' or 'cut'.
-     * @param {String} action
-     */
-
-    /**
-     * Destroy lifecycle.
-     */
-
-    ClipboardAction.prototype.destroy = function destroy() {
-        this.removeFake();
-    };
-
-    _createClass(ClipboardAction, [{
-        key: 'action',
-        set: function set() {
-            var action = arguments.length <= 0 || arguments[0] === undefined ? 'copy' : arguments[0];
-
-            this._action = action;
-
-            if (this._action !== 'copy' && this._action !== 'cut') {
-                throw new Error('Invalid "action" value, use either "copy" or "cut"');
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
             }
-        },
+        }
 
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
+    var ClipboardAction = function () {
         /**
-         * Gets the `action` property.
-         * @return {String}
+         * @param {Object} options
          */
-        get: function get() {
-            return this._action;
+
+        function ClipboardAction(options) {
+            _classCallCheck(this, ClipboardAction);
+
+            this.resolveOptions(options);
+            this.initSelection();
         }
 
         /**
-         * Sets the `target` property using an element
-         * that will be have its content copied.
-         * @param {Element} target
+         * Defines base properties passed from constructor.
+         * @param {Object} options
          */
-    }, {
-        key: 'target',
-        set: function set(target) {
-            if (target !== undefined) {
-                if (target && typeof target === 'object' && target.nodeType === 1) {
-                    this._target = target;
-                } else {
-                    throw new Error('Invalid "target" value, use a valid Element');
+
+
+        ClipboardAction.prototype.resolveOptions = function resolveOptions() {
+            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+
+            this.action = options.action;
+            this.emitter = options.emitter;
+            this.target = options.target;
+            this.text = options.text;
+            this.trigger = options.trigger;
+
+            this.selectedText = '';
+        };
+
+        ClipboardAction.prototype.initSelection = function initSelection() {
+            if (this.text) {
+                this.selectFake();
+            } else if (this.target) {
+                this.selectTarget();
+            }
+        };
+
+        ClipboardAction.prototype.selectFake = function selectFake() {
+            var _this = this;
+
+            var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
+
+            this.removeFake();
+
+            this.fakeHandler = document.body.addEventListener('click', function () {
+                return _this.removeFake();
+            });
+
+            this.fakeElem = document.createElement('textarea');
+            // Prevent zooming on iOS
+            this.fakeElem.style.fontSize = '12pt';
+            // Reset box model
+            this.fakeElem.style.border = '0';
+            this.fakeElem.style.padding = '0';
+            this.fakeElem.style.margin = '0';
+            // Move element out of screen horizontally
+            this.fakeElem.style.position = 'fixed';
+            this.fakeElem.style[isRTL ? 'right' : 'left'] = '-9999px';
+            // Move element to the same position vertically
+            this.fakeElem.style.top = (window.pageYOffset || document.documentElement.scrollTop) + 'px';
+            this.fakeElem.setAttribute('readonly', '');
+            this.fakeElem.value = this.text;
+
+            document.body.appendChild(this.fakeElem);
+
+            this.selectedText = (0, _select2.default)(this.fakeElem);
+            this.copyText();
+        };
+
+        ClipboardAction.prototype.removeFake = function removeFake() {
+            if (this.fakeHandler) {
+                document.body.removeEventListener('click');
+                this.fakeHandler = null;
+            }
+
+            if (this.fakeElem) {
+                document.body.removeChild(this.fakeElem);
+                this.fakeElem = null;
+            }
+        };
+
+        ClipboardAction.prototype.selectTarget = function selectTarget() {
+            this.selectedText = (0, _select2.default)(this.target);
+            this.copyText();
+        };
+
+        ClipboardAction.prototype.copyText = function copyText() {
+            var succeeded = undefined;
+
+            try {
+                succeeded = document.execCommand(this.action);
+            } catch (err) {
+                succeeded = false;
+            }
+
+            this.handleResult(succeeded);
+        };
+
+        ClipboardAction.prototype.handleResult = function handleResult(succeeded) {
+            if (succeeded) {
+                this.emitter.emit('success', {
+                    action: this.action,
+                    text: this.selectedText,
+                    trigger: this.trigger,
+                    clearSelection: this.clearSelection.bind(this)
+                });
+            } else {
+                this.emitter.emit('error', {
+                    action: this.action,
+                    trigger: this.trigger,
+                    clearSelection: this.clearSelection.bind(this)
+                });
+            }
+        };
+
+        ClipboardAction.prototype.clearSelection = function clearSelection() {
+            if (this.target) {
+                this.target.blur();
+            }
+
+            window.getSelection().removeAllRanges();
+        };
+
+        ClipboardAction.prototype.destroy = function destroy() {
+            this.removeFake();
+        };
+
+        _createClass(ClipboardAction, [{
+            key: 'action',
+            set: function set() {
+                var action = arguments.length <= 0 || arguments[0] === undefined ? 'copy' : arguments[0];
+
+                this._action = action;
+
+                if (this._action !== 'copy' && this._action !== 'cut') {
+                    throw new Error('Invalid "action" value, use either "copy" or "cut"');
                 }
+            },
+            get: function get() {
+                return this._action;
             }
-        },
+        }, {
+            key: 'target',
+            set: function set(target) {
+                if (target !== undefined) {
+                    if (target && (typeof target === 'undefined' ? 'undefined' : _typeof(target)) === 'object' && target.nodeType === 1) {
+                        if (this.action === 'copy' && target.hasAttribute('disabled')) {
+                            throw new Error('Invalid "target" attribute. Please use "readonly" instead of "disabled" attribute');
+                        }
+
+                        if (this.action === 'cut' && (target.hasAttribute('readonly') || target.hasAttribute('disabled'))) {
+                            throw new Error('Invalid "target" attribute. You can\'t cut text from elements with "readonly" or "disabled" attributes');
+                        }
+
+                        this._target = target;
+                    } else {
+                        throw new Error('Invalid "target" value, use a valid Element');
+                    }
+                }
+            },
+            get: function get() {
+                return this._target;
+            }
+        }]);
+
+        return ClipboardAction;
+    }();
+
+    module.exports = ClipboardAction;
+});
+},{"select":"/srv/zotero/my-publications/node_modules/select/src/select.js"}],"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js":[function(require,module,exports){
+(function (global, factory) {
+    if (typeof define === "function" && define.amd) {
+        define(['module', './clipboard-action', 'tiny-emitter', 'good-listener'], factory);
+    } else if (typeof exports !== "undefined") {
+        factory(module, require('./clipboard-action'), require('tiny-emitter'), require('good-listener'));
+    } else {
+        var mod = {
+            exports: {}
+        };
+        factory(mod, global.clipboardAction, global.tinyEmitter, global.goodListener);
+        global.clipboard = mod.exports;
+    }
+})(this, function (module, _clipboardAction, _tinyEmitter, _goodListener) {
+    'use strict';
+
+    var _clipboardAction2 = _interopRequireDefault(_clipboardAction);
+
+    var _tinyEmitter2 = _interopRequireDefault(_tinyEmitter);
+
+    var _goodListener2 = _interopRequireDefault(_goodListener);
+
+    function _interopRequireDefault(obj) {
+        return obj && obj.__esModule ? obj : {
+            default: obj
+        };
+    }
+
+    function _classCallCheck(instance, Constructor) {
+        if (!(instance instanceof Constructor)) {
+            throw new TypeError("Cannot call a class as a function");
+        }
+    }
+
+    function _possibleConstructorReturn(self, call) {
+        if (!self) {
+            throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
+        }
+
+        return call && (typeof call === "object" || typeof call === "function") ? call : self;
+    }
+
+    function _inherits(subClass, superClass) {
+        if (typeof superClass !== "function" && superClass !== null) {
+            throw new TypeError("Super expression must either be null or a function, not " + typeof superClass);
+        }
+
+        subClass.prototype = Object.create(superClass && superClass.prototype, {
+            constructor: {
+                value: subClass,
+                enumerable: false,
+                writable: true,
+                configurable: true
+            }
+        });
+        if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass;
+    }
+
+    var Clipboard = function (_Emitter) {
+        _inherits(Clipboard, _Emitter);
 
         /**
-         * Gets the `target` property.
-         * @return {String|HTMLElement}
+         * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
+         * @param {Object} options
          */
-        get: function get() {
-            return this._target;
+
+        function Clipboard(trigger, options) {
+            _classCallCheck(this, Clipboard);
+
+            var _this = _possibleConstructorReturn(this, _Emitter.call(this));
+
+            _this.resolveOptions(options);
+            _this.listenClick(trigger);
+            return _this;
         }
-    }]);
 
-    return ClipboardAction;
-})();
+        /**
+         * Defines if attributes would be resolved using internal setter functions
+         * or custom functions that were passed in the constructor.
+         * @param {Object} options
+         */
 
-exports['default'] = ClipboardAction;
-module.exports = exports['default'];
-},{"select":"/srv/zotero/my-publications/node_modules/select/src/select.js"}],"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js":[function(require,module,exports){
-'use strict';
 
-exports.__esModule = true;
+        Clipboard.prototype.resolveOptions = function resolveOptions() {
+            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
 
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+            this.action = typeof options.action === 'function' ? options.action : this.defaultAction;
+            this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
+            this.text = typeof options.text === 'function' ? options.text : this.defaultText;
+        };
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+        Clipboard.prototype.listenClick = function listenClick(trigger) {
+            var _this2 = this;
 
-function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+            this.listener = (0, _goodListener2.default)(trigger, 'click', function (e) {
+                return _this2.onClick(e);
+            });
+        };
 
-var _clipboardAction = require('./clipboard-action');
+        Clipboard.prototype.onClick = function onClick(e) {
+            var trigger = e.delegateTarget || e.currentTarget;
 
-var _clipboardAction2 = _interopRequireDefault(_clipboardAction);
+            if (this.clipboardAction) {
+                this.clipboardAction = null;
+            }
 
-var _tinyEmitter = require('tiny-emitter');
+            this.clipboardAction = new _clipboardAction2.default({
+                action: this.action(trigger),
+                target: this.target(trigger),
+                text: this.text(trigger),
+                trigger: trigger,
+                emitter: this
+            });
+        };
 
-var _tinyEmitter2 = _interopRequireDefault(_tinyEmitter);
+        Clipboard.prototype.defaultAction = function defaultAction(trigger) {
+            return getAttributeValue('action', trigger);
+        };
 
-var _goodListener = require('good-listener');
+        Clipboard.prototype.defaultTarget = function defaultTarget(trigger) {
+            var selector = getAttributeValue('target', trigger);
 
-var _goodListener2 = _interopRequireDefault(_goodListener);
+            if (selector) {
+                return document.querySelector(selector);
+            }
+        };
 
-/**
- * Base class which takes one or more elements, adds event listeners to them,
- * and instantiates a new `ClipboardAction` on each click.
- */
+        Clipboard.prototype.defaultText = function defaultText(trigger) {
+            return getAttributeValue('text', trigger);
+        };
 
-var Clipboard = (function (_Emitter) {
-    _inherits(Clipboard, _Emitter);
+        Clipboard.prototype.destroy = function destroy() {
+            this.listener.destroy();
 
-    /**
-     * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
-     * @param {Object} options
-     */
+            if (this.clipboardAction) {
+                this.clipboardAction.destroy();
+                this.clipboardAction = null;
+            }
+        };
 
-    function Clipboard(trigger, options) {
-        _classCallCheck(this, Clipboard);
-
-        _Emitter.call(this);
-
-        this.resolveOptions(options);
-        this.listenClick(trigger);
-    }
+        return Clipboard;
+    }(_tinyEmitter2.default);
 
     /**
      * Helper function to retrieve attribute value.
      * @param {String} suffix
      * @param {Element} element
      */
+    function getAttributeValue(suffix, element) {
+        var attribute = 'data-clipboard-' + suffix;
 
-    /**
-     * Defines if attributes would be resolved using internal setter functions
-     * or custom functions that were passed in the constructor.
-     * @param {Object} options
-     */
-
-    Clipboard.prototype.resolveOptions = function resolveOptions() {
-        var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
-
-        this.action = typeof options.action === 'function' ? options.action : this.defaultAction;
-        this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
-        this.text = typeof options.text === 'function' ? options.text : this.defaultText;
-    };
-
-    /**
-     * Adds a click event listener to the passed trigger.
-     * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
-     */
-
-    Clipboard.prototype.listenClick = function listenClick(trigger) {
-        var _this = this;
-
-        this.listener = _goodListener2['default'](trigger, 'click', function (e) {
-            return _this.onClick(e);
-        });
-    };
-
-    /**
-     * Defines a new `ClipboardAction` on each click event.
-     * @param {Event} e
-     */
-
-    Clipboard.prototype.onClick = function onClick(e) {
-        var trigger = e.delegateTarget || e.currentTarget;
-
-        if (this.clipboardAction) {
-            this.clipboardAction = null;
+        if (!element.hasAttribute(attribute)) {
+            return;
         }
 
-        this.clipboardAction = new _clipboardAction2['default']({
-            action: this.action(trigger),
-            target: this.target(trigger),
-            text: this.text(trigger),
-            trigger: trigger,
-            emitter: this
-        });
-    };
-
-    /**
-     * Default `action` lookup function.
-     * @param {Element} trigger
-     */
-
-    Clipboard.prototype.defaultAction = function defaultAction(trigger) {
-        return getAttributeValue('action', trigger);
-    };
-
-    /**
-     * Default `target` lookup function.
-     * @param {Element} trigger
-     */
-
-    Clipboard.prototype.defaultTarget = function defaultTarget(trigger) {
-        var selector = getAttributeValue('target', trigger);
-
-        if (selector) {
-            return document.querySelector(selector);
-        }
-    };
-
-    /**
-     * Default `text` lookup function.
-     * @param {Element} trigger
-     */
-
-    Clipboard.prototype.defaultText = function defaultText(trigger) {
-        return getAttributeValue('text', trigger);
-    };
-
-    /**
-     * Destroy lifecycle.
-     */
-
-    Clipboard.prototype.destroy = function destroy() {
-        this.listener.destroy();
-
-        if (this.clipboardAction) {
-            this.clipboardAction.destroy();
-            this.clipboardAction = null;
-        }
-    };
-
-    return Clipboard;
-})(_tinyEmitter2['default']);
-
-exports['default'] = Clipboard;
-function getAttributeValue(suffix, element) {
-    var attribute = 'data-clipboard-' + suffix;
-
-    if (!element.hasAttribute(attribute)) {
-        return;
+        return element.getAttribute(attribute);
     }
 
-    return element.getAttribute(attribute);
-}
-module.exports = exports['default'];
+    module.exports = Clipboard;
+});
 },{"./clipboard-action":"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard-action.js","good-listener":"/srv/zotero/my-publications/node_modules/good-listener/src/listen.js","tiny-emitter":"/srv/zotero/my-publications/node_modules/tiny-emitter/index.js"}],"/srv/zotero/my-publications/node_modules/closest/index.js":[function(require,module,exports){
 var matches = require('matches-selector')
 
@@ -1102,16 +1087,7 @@ module.exports = function(it){
   if(!isObject(it))throw TypeError(it + ' is not an object!');
   return it;
 };
-},{"./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_array-from-iterable.js":[function(require,module,exports){
-var forOf = require('./_for-of');
-
-module.exports = function(iter, ITERATOR){
-  var result = [];
-  forOf(iter, false, result.push, result, ITERATOR);
-  return result;
-};
-
-},{"./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_array-includes.js":[function(require,module,exports){
+},{"./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_array-includes.js":[function(require,module,exports){
 // false -> Array#indexOf
 // true  -> Array#includes
 var toIObject = require('./_to-iobject')
@@ -1129,7 +1105,7 @@ module.exports = function(IS_INCLUDES){
       if(value != value)return true;
     // Array#toIndex ignores holes, Array#includes - not
     } else for(;length > index; index++)if(IS_INCLUDES || index in O){
-      if(O[index] === el)return IS_INCLUDES || index;
+      if(O[index] === el)return IS_INCLUDES || index || 0;
     } return !IS_INCLUDES && -1;
   };
 };
@@ -1140,11 +1116,18 @@ var cof = require('./_cof')
   // ES3 wrong here
   , ARG = cof(function(){ return arguments; }()) == 'Arguments';
 
+// fallback for IE11 Script Access Denied error
+var tryGet = function(it, key){
+  try {
+    return it[key];
+  } catch(e){ /* empty */ }
+};
+
 module.exports = function(it){
   var O, T, B;
   return it === undefined ? 'Undefined' : it === null ? 'Null'
     // @@toStringTag case
-    : typeof (T = (O = Object(it))[TAG]) == 'string' ? T
+    : typeof (T = tryGet(O = Object(it), TAG)) == 'string' ? T
     // builtinTag case
     : ARG ? cof(O)
     // ES3 arguments fallback
@@ -1157,7 +1140,7 @@ module.exports = function(it){
   return toString.call(it).slice(8, -1);
 };
 },{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js":[function(require,module,exports){
-var core = module.exports = {version: '2.1.0'};
+var core = module.exports = {version: '2.2.2'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 },{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js":[function(require,module,exports){
 // optional / simple context binding
@@ -1451,7 +1434,7 @@ module.exports = function(exec, skipClosing){
   try {
     var arr  = [7]
       , iter = arr[ITERATOR]();
-    iter.next = function(){ safe = true; };
+    iter.next = function(){ return {done: safe = true}; };
     arr[ITERATOR] = function(){ return iter; };
     exec(arr);
   } catch(e){ /* empty */ }
@@ -1475,17 +1458,11 @@ var global    = require('./_global')
   , head, last, notify;
 
 var flush = function(){
-  var parent, domain, fn;
-  if(isNode && (parent = process.domain)){
-    process.domain = null;
-    parent.exit();
-  }
+  var parent, fn;
+  if(isNode && (parent = process.domain))parent.exit();
   while(head){
-    domain = head.domain;
-    fn     = head.fn;
-    if(domain)domain.enter();
+    fn = head.fn;
     fn(); // <- currently we use it only for Promise - try / catch not required
-    if(domain)domain.exit();
     head = head.next;
   } last = undefined;
   if(parent)parent.enter();
@@ -1498,11 +1475,11 @@ if(isNode){
   };
 // browsers with MutationObserver
 } else if(Observer){
-  var toggle = 1
+  var toggle = true
     , node   = document.createTextNode('');
   new Observer(flush).observe(node, {characterData: true}); // eslint-disable-line no-new
   notify = function(){
-    node.data = toggle = -toggle;
+    node.data = toggle = !toggle;
   };
 // environments with maybe non-completely correct, but existent Promise
 } else if(Promise && Promise.resolve){
@@ -1523,7 +1500,7 @@ if(isNode){
 }
 
 module.exports = function(fn){
-  var task = {fn: fn, next: undefined, domain: isNode && process.domain};
+  var task = {fn: fn, next: undefined};
   if(last)last.next = task;
   if(!head){
     head = task;
@@ -1819,7 +1796,7 @@ var run = function(){
     fn();
   }
 };
-var listner = function(event){
+var listener = function(event){
   run.call(event.data);
 };
 // Node.js 0.9+ & IE10+ has setImmediate, otherwise:
@@ -1845,7 +1822,7 @@ if(!setTask || !clearTask){
   } else if(MessageChannel){
     channel = new MessageChannel;
     port    = channel.port2;
-    channel.port1.onmessage = listner;
+    channel.port1.onmessage = listener;
     defer = ctx(port.postMessage, port, 1);
   // Browsers with postMessage, skip WebWorkers
   // IE8 has postMessage, but it's sync & typeof its postMessage is 'object'
@@ -1853,7 +1830,7 @@ if(!setTask || !clearTask){
     defer = function(id){
       global.postMessage(id + '', '*');
     };
-    global.addEventListener('message', listner, false);
+    global.addEventListener('message', listener, false);
   // IE8-
   } else if(ONREADYSTATECHANGE in cel('script')){
     defer = function(id){
@@ -2003,7 +1980,6 @@ var LIBRARY            = require('./_library')
   , aFunction          = require('./_a-function')
   , anInstance         = require('./_an-instance')
   , forOf              = require('./_for-of')
-  , from               = require('./_array-from-iterable')
   , setProto           = require('./_set-proto').set
   , speciesConstructor = require('./_species-constructor')
   , task               = require('./_task').set
@@ -2012,44 +1988,19 @@ var LIBRARY            = require('./_library')
   , TypeError          = global.TypeError
   , process            = global.process
   , $Promise           = global[PROMISE]
+  , process            = global.process
   , isNode             = classof(process) == 'process'
   , empty              = function(){ /* empty */ }
   , Internal, GenericPromiseCapability, Wrapper;
 
-var testResolve = function(sub){
-  var test = new $Promise(empty), promise;
-  if(sub)test.constructor = function(exec){
-    exec(empty, empty);
-  };
-  (promise = $Promise.resolve(test))['catch'](empty);
-  return promise === test;
-};
-
-var USE_NATIVE = function(){
-  var works = false;
-  var SubPromise = function(x){
-    var self = new $Promise(x);
-    setProto(self, SubPromise.prototype);
-    return self;
-  };
+var USE_NATIVE = !!function(){
   try {
-    works = $Promise && $Promise.resolve && testResolve();
-    setProto(SubPromise, $Promise);
-    SubPromise.prototype = require('./_object-create')($Promise.prototype, {constructor: {value: SubPromise}});
-    // actual Firefox has broken subclass support, test that
-    if(!(SubPromise.resolve(5).then(empty) instanceof SubPromise)){
-      works = false;
-    }
-    // V8 4.8- bug, https://code.google.com/p/v8/issues/detail?id=4162
-    if(works && require('./_descriptors')){
-      var thenableThenGotten = false;
-      $Promise.resolve(require('./_object-dp').f({}, 'then', {
-        get: function(){ thenableThenGotten = true; }
-      }));
-      works = thenableThenGotten;
-    }
-  } catch(e){ works = false; }
-  return !!works;
+    // correct subclassing with @@species support
+    var promise     = $Promise.resolve(1)
+      , FakePromise = (promise.constructor = {})[require('./_wks')('species')] = function(exec){ exec(empty, empty); };
+    // unhandled rejections tracking support, NodeJS Promise without it fails @@species test
+    return (isNode || typeof PromiseRejectionEvent == 'function') && promise.then(empty) instanceof FakePromise;
+  } catch(e){ /* empty */ }
 }();
 
 // helpers
@@ -2095,6 +2046,7 @@ var notify = function(promise, isReject){
       var handler = ok ? reaction.ok : reaction.fail
         , resolve = reaction.resolve
         , reject  = reaction.reject
+        , domain  = reaction.domain
         , result, then;
       try {
         if(handler){
@@ -2102,7 +2054,12 @@ var notify = function(promise, isReject){
             if(promise._h == 2)onHandleUnhandled(promise);
             promise._h = 1;
           }
-          result = handler === true ? value : handler(value);
+          if(handler === true)result = value;
+          else {
+            if(domain)domain.enter();
+            result = handler(value);
+            if(domain)domain.exit();
+          }
           if(result === reaction.promise){
             reject(TypeError('Promise-chain cycle'));
           } else if(then = isThenable(result)){
@@ -2121,24 +2078,29 @@ var notify = function(promise, isReject){
 };
 var onUnhandled = function(promise){
   task.call(global, function(){
+    var value = promise._v
+      , abrupt, handler, console;
     if(isUnhandled(promise)){
-      var value = promise._v
-        , handler, console;
-      if(isNode){
-        process.emit('unhandledRejection', value, promise);
-      } else if(handler = global.onunhandledrejection){
-        handler({promise: promise, reason: value});
-      } else if((console = global.console) && console.error){
-        console.error('Unhandled promise rejection', value);
-      } promise._h = 2;
+      abrupt = perform(function(){
+        if(isNode){
+          process.emit('unhandledRejection', value, promise);
+        } else if(handler = global.onunhandledrejection){
+          handler({promise: promise, reason: value});
+        } else if((console = global.console) && console.error){
+          console.error('Unhandled promise rejection', value);
+        }
+      });
+      // Browsers should not trigger `rejectionHandled` event if it was handled here, NodeJS - should
+      promise._h = isNode || isUnhandled(promise) ? 2 : 1;
     } promise._a = undefined;
+    if(abrupt)throw abrupt.error;
   });
 };
 var isUnhandled = function(promise){
+  if(promise._h == 1)return false;
   var chain = promise._a || promise._c
     , i     = 0
     , reaction;
-  if(promise._h == 1)return false;
   while(chain.length > i){
     reaction = chain[i++];
     if(reaction.fail || !isUnhandled(reaction.promise))return false;
@@ -2216,9 +2178,10 @@ if(!USE_NATIVE){
   Internal.prototype = require('./_redefine-all')($Promise.prototype, {
     // 25.4.5.3 Promise.prototype.then(onFulfilled, onRejected)
     then: function then(onFulfilled, onRejected){
-      var reaction = newPromiseCapability(speciesConstructor(this, $Promise));
-      reaction.ok   = typeof onFulfilled == 'function' ? onFulfilled : true;
-      reaction.fail = typeof onRejected == 'function' && onRejected;
+      var reaction    = newPromiseCapability(speciesConstructor(this, $Promise));
+      reaction.ok     = typeof onFulfilled == 'function' ? onFulfilled : true;
+      reaction.fail   = typeof onRejected == 'function' && onRejected;
+      reaction.domain = isNode ? process.domain : undefined;
       this._c.push(reaction);
       if(this._a)this._a.push(reaction);
       if(this._s)notify(this, false);
@@ -2252,7 +2215,7 @@ $export($export.S + $export.F * !USE_NATIVE, PROMISE, {
     return capability.promise;
   }
 });
-$export($export.S + $export.F * (LIBRARY || !USE_NATIVE || testResolve(true)), PROMISE, {
+$export($export.S + $export.F * (LIBRARY || !USE_NATIVE), PROMISE, {
   // 25.4.4.6 Promise.resolve(x)
   resolve: function resolve(x){
     // instanceof instead of internal slot check because we should fix it without replacement native Promise core
@@ -2273,20 +2236,22 @@ $export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(functi
       , resolve    = capability.resolve
       , reject     = capability.reject;
     var abrupt = perform(function(){
-      var values    = from(iterable)
-        , remaining = values.length
-        , results   = Array(remaining);
-      var f = function(promise, index){
-        var alreadyCalled = false;
+      var values    = []
+        , index     = 0
+        , remaining = 1;
+      forOf(iterable, false, function(promise){
+        var $index        = index++
+          , alreadyCalled = false;
+        values.push(undefined);
+        remaining++;
         C.resolve(promise).then(function(value){
           if(alreadyCalled)return;
-          alreadyCalled = true;
-          results[index] = value;
-          --remaining || resolve(results);
+          alreadyCalled  = true;
+          values[$index] = value;
+          --remaining || resolve(values);
         }, reject);
-      };
-      if(remaining)for(var i = 0, l = values.length; l > i; i++)f(values[i], i);
-      else resolve(results);
+      });
+      --remaining || resolve(values);
     });
     if(abrupt)reject(abrupt.error);
     return capability.promise;
@@ -2305,7 +2270,7 @@ $export($export.S + $export.F * !(USE_NATIVE && require('./_iter-detect')(functi
     return capability.promise;
   }
 });
-},{"./_a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js","./_an-instance":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-instance.js","./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_array-from-iterable":"/srv/zotero/my-publications/node_modules/core-js/modules/_array-from-iterable.js","./_classof":"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js","./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_descriptors":"/srv/zotero/my-publications/node_modules/core-js/modules/_descriptors.js","./_export":"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js","./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js","./_iter-detect":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-detect.js","./_library":"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js","./_microtask":"/srv/zotero/my-publications/node_modules/core-js/modules/_microtask.js","./_object-create":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-create.js","./_object-dp":"/srv/zotero/my-publications/node_modules/core-js/modules/_object-dp.js","./_redefine-all":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine-all.js","./_set-proto":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-proto.js","./_set-species":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-species.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_species-constructor":"/srv/zotero/my-publications/node_modules/core-js/modules/_species-constructor.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js":[function(require,module,exports){
+},{"./_a-function":"/srv/zotero/my-publications/node_modules/core-js/modules/_a-function.js","./_an-instance":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-instance.js","./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_classof":"/srv/zotero/my-publications/node_modules/core-js/modules/_classof.js","./_core":"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_export":"/srv/zotero/my-publications/node_modules/core-js/modules/_export.js","./_for-of":"/srv/zotero/my-publications/node_modules/core-js/modules/_for-of.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_is-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-object.js","./_iter-detect":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-detect.js","./_library":"/srv/zotero/my-publications/node_modules/core-js/modules/_library.js","./_microtask":"/srv/zotero/my-publications/node_modules/core-js/modules/_microtask.js","./_redefine-all":"/srv/zotero/my-publications/node_modules/core-js/modules/_redefine-all.js","./_set-proto":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-proto.js","./_set-species":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-species.js","./_set-to-string-tag":"/srv/zotero/my-publications/node_modules/core-js/modules/_set-to-string-tag.js","./_species-constructor":"/srv/zotero/my-publications/node_modules/core-js/modules/_species-constructor.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js","./_wks":"/srv/zotero/my-publications/node_modules/core-js/modules/_wks.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/es6.string.iterator.js":[function(require,module,exports){
 'use strict';
 var $at  = require('./_string-at')(true);
 
@@ -3586,38 +3551,38 @@ function processResponse(response, config) {
 
 		try {
 			for (var _iterator = childItems[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-				var item = _step.value;
+				var _item = _step.value;
 
-				if (!index[item.data.parentItem]) {
-					console.warn('item ' + item.key + ' has parentItem ' + item.data.parentItem + ' that does not exist in the dataset');
+				if (!index[_item.data.parentItem]) {
+					console.warn('item ' + _item.key + ' has parentItem ' + _item.data.parentItem + ' that does not exist in the dataset');
 					continue;
 				}
 
-				if (item.data.itemType === 'note') {
-					if (!index[item.data.parentItem][_data.CHILD_NOTES]) {
-						index[item.data.parentItem][_data.CHILD_NOTES] = [];
+				if (_item.data.itemType === 'note') {
+					if (!index[_item.data.parentItem][_data.CHILD_NOTES]) {
+						index[_item.data.parentItem][_data.CHILD_NOTES] = [];
 					}
-					index[item.data.parentItem][_data.CHILD_NOTES].push(item);
-				} else if (item.data.itemType === 'attachment') {
-					if (!index[item.data.parentItem][_data.CHILD_ATTACHMENTS]) {
-						index[item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
+					index[_item.data.parentItem][_data.CHILD_NOTES].push(_item);
+				} else if (_item.data.itemType === 'attachment') {
+					if (!index[_item.data.parentItem][_data.CHILD_ATTACHMENTS]) {
+						index[_item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
 					}
-					if (!index[item.data.parentItem][_data.VIEW_ONLINE_URL]) {
-						if (item.data.url) {
-							index[item.data.parentItem][_data.VIEW_ONLINE_URL] = item.url;
-						} else if (item.links && item.links.enclosure && item.links.enclosure.href) {
-							index[item.data.parentItem][_data.VIEW_ONLINE_URL] = item.links.enclosure.href;
+					if (!index[_item.data.parentItem][_data.VIEW_ONLINE_URL]) {
+						if (_item.data.url) {
+							index[_item.data.parentItem][_data.VIEW_ONLINE_URL] = _item.url;
+						} else if (_item.links && _item.links.enclosure && _item.links.enclosure.href) {
+							index[_item.data.parentItem][_data.VIEW_ONLINE_URL] = _item.links.enclosure.href;
 						} else {
-							index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(item);
+							index[_item.data.parentItem][_data.CHILD_ATTACHMENTS].push(_item);
 						}
 					} else {
-						index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(item);
+						index[_item.data.parentItem][_data.CHILD_ATTACHMENTS].push(_item);
 					}
 				} else {
-					if (!index[item.data.parentItem][_data.CHILD_OTHER]) {
-						index[item.data.parentItem][_data.CHILD_OTHER] = [];
+					if (!index[_item.data.parentItem][_data.CHILD_OTHER]) {
+						index[_item.data.parentItem][_data.CHILD_OTHER] = [];
 					}
-					index[item.data.parentItem][_data.CHILD_OTHER].push(item);
+					index[_item.data.parentItem][_data.CHILD_OTHER].push(_item);
 				}
 			}
 		} catch (err) {
@@ -4123,6 +4088,7 @@ ZoteroPublications.prototype.defaults = {
 	group: false,
 	useCitationStyle: false,
 	showBranding: true,
+	useHistory: true,
 	expand: 'all',
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
@@ -4263,6 +4229,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			var data = userIdOrendpointOrData;
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			this.renderer.displayPublications(data);
+			if (this.config.useHistory && location.hash) {
+				this.renderer.expandDetails(location.hash.substr(1));
+			}
 			resolve();
 		} else if (typeof userIdOrendpointOrData === 'number') {
 			var userId = userIdOrendpointOrData;
@@ -4270,6 +4239,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			promise.then(function (data) {
 				_this2.renderer.displayPublications(data);
+				if (_this2.config.useHistory && location.hash) {
+					_this2.renderer.expandDetails(location.hash.substr(1));
+				}
 				resolve();
 			});
 			promise.catch(function () {
@@ -4277,13 +4249,16 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			});
 		} else if (typeof userIdOrendpointOrData === 'string') {
 			var endpoint = userIdOrendpointOrData;
-			var promise = this.getEndpoint(endpoint);
+			var _promise = this.getEndpoint(endpoint);
 			this.renderer = new _render.ZoteroRenderer(container, this);
-			promise.then(function (data) {
+			_promise.then(function (data) {
 				_this2.renderer.displayPublications(data);
+				if (_this2.config.useHistory && location.hash) {
+					_this2.renderer.expandDetails(location.hash.substr(1));
+				}
 				resolve();
 			});
-			promise.catch(function () {
+			_promise.catch(function () {
 				reject(_arguments[0]);
 			});
 		} else {
@@ -4634,18 +4609,7 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				return el.hasAttribute && el.hasAttribute('data-item');
 			});
 			if (target.getAttribute('data-trigger') === 'details') {
-				var detailsEl = itemEl.querySelector('.zotero-details');
-				if (detailsEl) {
-					var expanded = (0, _utils.toggleCollapse)(detailsEl);
-					if (expanded) {
-						_this2.prepareExport(itemEl);
-						_this2.updateCitation(itemEl, _this2.preferredCitationStyle);
-						itemEl.classList.add('zotero-details-open');
-					} else {
-						itemEl.classList.remove('zotero-details-open');
-					}
-				}
-				window.history.pushState(null, null, '#' + itemEl.getAttribute('data-item'));
+				_this2.toggleDetails(itemEl);
 			} else if (target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				(0, _utils.showTab)(target);
 			}
@@ -4699,6 +4663,41 @@ ZoteroRenderer.prototype.updateVisuals = function () {
 ZoteroRenderer.prototype.toggleSpinner = function (activate) {
 	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
 	method.call(this.container.classList, 'zotero-loading');
+};
+
+/**
+ * Expand (if collapsed) or collapse (if expanded) item details. Optionally override to force
+ * either expand or collapse
+ * @param  {HTMLElement} itemEl 	- DOM element where item is
+ * @param  {boolean} override 		- override whether to expand or collapse details
+ */
+ZoteroRenderer.prototype.toggleDetails = function (itemEl, override) {
+	var detailsEl = itemEl.querySelector('.zotero-details');
+	if (detailsEl) {
+		var expanded = (0, _utils.toggleCollapse)(detailsEl, override);
+		if (expanded) {
+			this.prepareExport(itemEl);
+			this.updateCitation(itemEl, this.preferredCitationStyle);
+			itemEl.classList.add('zotero-details-open');
+		} else {
+			itemEl.classList.remove('zotero-details-open');
+		}
+	}
+	if (this.config.useHistory) {
+		window.history.pushState(null, null, '#' + itemEl.getAttribute('data-item'));
+	}
+};
+
+/**
+ * Expand item details based on the item id.
+ * @param  {string} itemId
+ */
+ZoteroRenderer.prototype.expandDetails = function (itemId) {
+	var itemEl = document.getElementById(itemId);
+	this.toggleDetails(itemEl, true);
+	(0, _utils.once)(itemEl, (0, _utils.transitionend)(), function () {
+		itemEl.scrollIntoView();
+	});
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
@@ -5152,9 +5151,9 @@ function formatDate(isoDate) {
 		date = month + ' ' + day + ', ' + year;
 	}
 	if (matches.length >= 3) {
-		var year = matches[1];
-		var month = months[parseInt(matches[2], 10) - 1];
-		date = month + ' ' + year;
+		var _year = matches[1];
+		var _month = months[parseInt(matches[2], 10) - 1];
+		date = _month + ' ' + _year;
 	}
 	if (matches.length >= 2) {
 		date = matches[1];
