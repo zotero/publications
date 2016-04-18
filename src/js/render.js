@@ -19,7 +19,9 @@ import {
 	closest,
 	toggleCollapse,
 	showTab,
-	clipboardFallbackMessage
+	clipboardFallbackMessage,
+	once,
+	transitionend
 } from './utils.js';
 import fieldMap from './field-map.js';
 import hiddenFields from './hidden-fields.js';
@@ -275,18 +277,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 			ev.preventDefault();
 			let itemEl = closest(target, el => el.hasAttribute && el.hasAttribute('data-item'));
 			if(target.getAttribute('data-trigger') === 'details') {
-				let detailsEl = itemEl.querySelector('.zotero-details');
-				if(detailsEl) {
-					let expanded = toggleCollapse(detailsEl);
-					if(expanded) {
-						this.prepareExport(itemEl);
-						this.updateCitation(itemEl, this.preferredCitationStyle);
-						itemEl.classList.add('zotero-details-open')
-					} else {
-						itemEl.classList.remove('zotero-details-open');
-					}
-				}
-				window.history.pushState(null, null, `#${itemEl.getAttribute('data-item')}`);
+				this.toggleDetails(itemEl);
 			} else if(target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				showTab(target);
 			}
@@ -336,3 +327,39 @@ ZoteroRenderer.prototype.toggleSpinner = function (activate) {
 	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
 	method.call(this.container.classList, 'zotero-loading');
 };
+
+
+/**
+ * Expand (if collapsed) or collapse (if expanded) item details. Optionally override to force
+ * either expand or collapse
+ * @param  {HTMLElement} itemEl 	- DOM element where item is
+ * @param  {boolean} override 		- override whether to expand or collapse details
+ */
+ZoteroRenderer.prototype.toggleDetails = function(itemEl, override) {
+	let detailsEl = itemEl.querySelector('.zotero-details');
+		if(detailsEl) {
+			let expanded = toggleCollapse(detailsEl, override);
+			if(expanded) {
+				this.prepareExport(itemEl);
+				this.updateCitation(itemEl, this.preferredCitationStyle);
+				itemEl.classList.add('zotero-details-open')
+			} else {
+				itemEl.classList.remove('zotero-details-open');
+			}
+		}
+	if(this.config.useHistory) {
+		window.history.pushState(null, null, `#${itemEl.getAttribute('data-item')}`);
+	}
+}
+
+/**
+ * Expand item details based on the item id.
+ * @param  {string} itemId
+ */
+ZoteroRenderer.prototype.expandDetails = function(itemId) {
+	let itemEl = document.getElementById(itemId);
+	this.toggleDetails(itemEl, true);
+	once(itemEl, transitionend(), () => {
+		itemEl.scrollIntoView();
+	});
+}
