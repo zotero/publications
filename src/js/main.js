@@ -8,7 +8,6 @@ import {
 import {
 	ZoteroData
 } from './data.js';
-
 /**
  * Application entry point. Alternatively can be used as a convenience function to render publications
  * into a container
@@ -56,6 +55,7 @@ ZoteroPublications.prototype.defaults = {
 	group: false,
 	useCitationStyle: false,
 	showBranding: true,
+	useHistory: true,
 	expand: 'all',
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
@@ -191,6 +191,9 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			let data = userIdOrendpointOrData;
 			this.renderer = new ZoteroRenderer(container, this);
 			this.renderer.displayPublications(data);
+			if(this.config.useHistory && location.hash) {
+				this.renderer.expandDetails(location.hash.substr(1));
+			}
 			resolve();
 		} else if(typeof userIdOrendpointOrData === 'number') {
 			let userId = userIdOrendpointOrData;
@@ -198,6 +201,9 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			this.renderer = new ZoteroRenderer(container, this);
 			promise.then(data => {
 				this.renderer.displayPublications(data);
+				if(this.config.useHistory && location.hash) {
+					this.renderer.expandDetails(location.hash.substr(1));
+				}
 				resolve();
 			});
 			promise.catch(() => {
@@ -209,6 +215,9 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			this.renderer = new ZoteroRenderer(container, this);
 			promise.then(data => {
 				this.renderer.displayPublications(data);
+				if(this.config.useHistory && location.hash) {
+					this.renderer.expandDetails(location.hash.substr(1));
+				}
 				resolve();
 			});
 			promise.catch(() => {
