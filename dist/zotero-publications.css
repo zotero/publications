@@ -368,3 +368,20 @@
 .zotero-meta .zotero-meta-value {
   text-overflow: ellipsis;
   overflow: hidden; }
+
+.zotero-item-actions {
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-justify-content: space-between;
+      -ms-flex-pack: justify;
+          justify-content: space-between; }
+  .zotero-item-actions > * {
+    -webkit-align-self: flex-end;
+        -ms-flex-item-align: end;
+            align-self: flex-end; }
+
+.zotero-add-to-library {
+  background-color: #fff;
+  border: 1px solid #000;
+  float: right; }
