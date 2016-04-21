@@ -9,13 +9,19 @@
 		<%= obj.renderer.renderItemTemplated(obj.item) %>
 	<% } %>
 
-	<!-- Details toggle -->
-	<div>
+	
+	<div class="zotero-item-actions">
+		<!-- Details toggle -->
 		<a href="" data-trigger="details" aria-controls="<%- obj.item.key %>-details">
 			Details
 		</a>
+		<% if(obj.renderer.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) { %>
+			<button class="zotero-add-to-library" data-trigger="add-to-library">
+				Add to Library
+			</button>
+		<% } %>
 	</div>
-
+	
 	<!-- Details -->
 	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="<%- obj.item.key %>-details">
 		<div class="zotero-details-inner">

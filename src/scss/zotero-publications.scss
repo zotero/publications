@@ -14,6 +14,8 @@ $details-indent-xs: 15px;
 $details-indent-sm: 3em;
 
 $gray: #ccc;
+$white: #fff;
+$black: #000;
 
 $border-radius-base: 4px;
 
@@ -326,5 +328,20 @@ $border-radius-base: 4px;
 			text-overflow: ellipsis;
 			overflow: hidden;
 		}
+	}
+
+	&-item-actions {
+		display: flex;
+    	justify-content: space-between;
+
+    	> * {
+    		align-self: flex-end;
+    	}
+	}
+
+	&-add-to-library {
+		background-color: $white;
+		border: 1px solid $black;
+		float: right;
 	}
 }
