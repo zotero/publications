@@ -280,6 +280,31 @@ ZoteroRenderer.prototype.addHandlers = function() {
 				this.toggleDetails(itemEl);
 			} else if(target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				showTab(target);
+			} else if(target.getAttribute('data-trigger') === 'add-to-library') {
+				if(this.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) {
+					target.innerText = 'Saving...';
+					target.removeAttribute('data-trigger');
+					let itemId = itemEl.getAttribute('data-item');
+					let itemData = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
+					let zoteroLib = new Zotero.Library('user', Zotero.config.loggedInUser.userID);
+					let zoteroItem = new Zotero.Item();
+					zoteroItem.initEmpty(itemData.data.itemType).then(function() {
+					_.forEach(itemData.data, (value, key) => {
+						if(key !== 'key' && key !== 'itemType') {
+							zoteroItem.set(key, value);
+						}
+					});
+					zoteroItem.associateWithLibrary(zoteroLib);
+					Zotero.ui.saveItem(zoteroItem)
+						.then(() => {
+							target.innerText = 'Saved!';
+						})
+						.catch(() => {
+							target.innerText = 'Error!';
+							target.setAttribute('data-trigger', 'add-to-library');
+						})
+					});
+				}
 			}
 		}
 	});
