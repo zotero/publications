@@ -4090,6 +4090,7 @@ ZoteroPublications.prototype.defaults = {
 	showBranding: true,
 	useHistory: true,
 	expand: 'all',
+	zorgIntegration: false,
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
 		'asa': 'American Psychological Association 6th edition',
@@ -4612,6 +4613,31 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				_this2.toggleDetails(itemEl);
 			} else if (target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				(0, _utils.showTab)(target);
+			} else if (target.getAttribute('data-trigger') === 'add-to-library') {
+				if (_this2.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) {
+					(function () {
+						target.innerText = 'Saving...';
+						target.removeAttribute('data-trigger');
+						var itemId = itemEl.getAttribute('data-item');
+						var itemData = (_lodash2.default.findWhere || _lodash2.default.find)(_this2.data.raw, { 'key': itemId });
+						var zoteroLib = new Zotero.Library('user', Zotero.config.loggedInUser.userID);
+						var zoteroItem = new Zotero.Item();
+						zoteroItem.initEmpty(itemData.data.itemType).then(function () {
+							_lodash2.default.forEach(itemData.data, function (value, key) {
+								if (key !== 'key' && key !== 'itemType') {
+									zoteroItem.set(key, value);
+								}
+							});
+							zoteroItem.associateWithLibrary(zoteroLib);
+							Zotero.ui.saveItem(zoteroItem).then(function () {
+								target.innerText = 'Saved!';
+							}).catch(function () {
+								target.innerText = 'Error!';
+								target.setAttribute('data-trigger', 'add-to-library');
+							});
+						});
+					})();
+				}
 			}
 		}
 	});
@@ -4940,7 +4966,11 @@ module.exports = function (obj) {
   } else {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemTemplated(obj.item)) == null ? '' : __t) + '\n\t';
   }
-  __p += '\n\n\t<!-- Details toggle -->\n\t<div>\n\t\t<a href="" data-trigger="details" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t\tDetails\n\t\t</a>\n\t</div>\n\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t<div class="zotero-meta">\n\t\t\t\t';
+  __p += '\n\n\t\n\t<div class="zotero-item-actions">\n\t\t<!-- Details toggle -->\n\t\t<a href="" data-trigger="details" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t\tDetails\n\t\t</a>\n\t\t';
+  if (obj.renderer.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) {
+    __p += '\n\t\t\t<button class="zotero-add-to-library" data-trigger="add-to-library">\n\t\t\t\tAdd to Library\n\t\t\t</button>\n\t\t';
+  }
+  __p += '\n\t</div>\n\t\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t<div class="zotero-meta">\n\t\t\t\t';
   if (obj.item.data[Symbol.for('authors')]) {
     __p += '\n\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t<div class="zotero-meta-label">Authors</div>\n\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t</div>\n\t\t\t\t';
   }
