@@ -15,7 +15,7 @@
 		<a href="" data-trigger="details" aria-controls="<%- obj.item.key %>-details">
 			Details
 		</a>
-		<% if(obj.renderer.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) { %>
+		<% if(obj.renderer.zotero.config.zorgIntegration) { %>
 			<button class="zotero-add-to-library" data-trigger="add-to-library">
 				Add to Library
 			</button>

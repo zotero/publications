@@ -37,8 +37,36 @@ export function ZoteroPublications() {
 		this.config.include.push('citation');
 	}
 
+
+	function init() {
+		if(this.config.zorgIntegration) {
+			this.config.zorgIntegration = typeof Zotero !== 'undefined' ?
+				(Zotero.config && Zotero.config.loggedInUser)
+				|| Zotero.currentUser : false;
+		}
+
+		if(arguments.length > 1) {
+			return this.render(arguments[0], arguments[1]);
+		}
+	}
+
+	let promise = new Promise((resolve, reject) => {
+		var possiblePromise;
+		if(typeof document !== 'undefined' && document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', (ev) => {
+				possiblePromise = init.apply(this, arguments);
+			});
+		} else {
+			possiblePromise = init.apply(this, arguments);
+		}
+		if(possiblePromise && possiblePromise.then) {
+			possiblePromise.then((result) => resolve(result));
+			possiblePromise.catch((result) => reject(result));
+		}
+	});
+
 	if(arguments.length > 1) {
-		return this.render(arguments[0], arguments[1]);
+		return promise;
 	}
 }
 
