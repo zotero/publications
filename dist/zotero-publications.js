@@ -2414,8 +2414,33 @@ function ZoteroPublications() {
 		this.config.include.push('citation');
 	}
 
+	function init() {
+		if (this.config.zorgIntegration) {
+			this.config.zorgIntegration = typeof Zotero !== 'undefined' ? Zotero.config && Zotero.config.loggedInUser || Zotero.currentUser : false;
+		}
+
+		if (arguments.length > 1) {
+			return this.render(arguments[0], arguments[1]);
+		}
+	}
+
+	let promise = new Promise((resolve, reject) => {
+		var possiblePromise;
+		if (typeof document !== 'undefined' && document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', ev => {
+				possiblePromise = init.apply(this, arguments);
+			});
+		} else {
+			possiblePromise = init.apply(this, arguments);
+		}
+		if (possiblePromise && possiblePromise.then) {
+			possiblePromise.then(result => resolve(result));
+			possiblePromise.catch(result => reject(result));
+		}
+	});
+
 	if (arguments.length > 1) {
-		return this.render(arguments[0], arguments[1]);
+		return promise;
 	}
 }
 
@@ -2945,25 +2970,31 @@ ZoteroRenderer.prototype.addHandlers = function () {
 			} else if (target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				(0, _utils.showTab)(target);
 			} else if (target.getAttribute('data-trigger') === 'add-to-library') {
-				if (this.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) {
+				if (this.zotero.config.zorgIntegration) {
 					target.innerText = 'Saving...';
 					target.removeAttribute('data-trigger');
 					let itemId = itemEl.getAttribute('data-item');
 					let itemData = (_lodash2.default.findWhere || _lodash2.default.find)(this.data.raw, { 'key': itemId });
-					let zoteroLib = new Zotero.Library('user', Zotero.config.loggedInUser.userID);
+					let zoteroLib = new Zotero.Library('user', this.zotero.config.zorgIntegration.userID);
 					let zoteroItem = new Zotero.Item();
+					let ignoredFields = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags'];
 					zoteroItem.initEmpty(itemData.data.itemType).then(function () {
 						_lodash2.default.forEach(itemData.data, (value, key) => {
-							if (key !== 'key' && key !== 'itemType') {
-								zoteroItem.set(key, value);
+							if (!_lodash2.default.includes(ignoredFields, key)) {
+								zoteroItem.apiObj[key] = value;
 							}
 						});
 						zoteroItem.associateWithLibrary(zoteroLib);
-						Zotero.ui.saveItem(zoteroItem).then(() => {
+						let writePromise = zoteroItem.writeItem(zoteroItem);
+						writePromise.then(() => {
 							target.innerText = 'Saved!';
-						}).catch(() => {
+						});
+						writePromise[writePromise.catch ? 'catch' : 'fail'](() => {
 							target.innerText = 'Error!';
 							target.setAttribute('data-trigger', 'add-to-library');
+							setTimeout(() => {
+								target.innerText = 'Add to Library';
+							}, 2000);
 						});
 					});
 				}
@@ -3290,7 +3321,7 @@ module.exports = function (obj) {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemTemplated(obj.item)) == null ? '' : __t) + '\n\t';
   }
   __p += '\n\n\t\n\t<div class="zotero-item-actions">\n\t\t<!-- Details toggle -->\n\t\t<a href="" data-trigger="details" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t\tDetails\n\t\t</a>\n\t\t';
-  if (obj.renderer.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) {
+  if (obj.renderer.zotero.config.zorgIntegration) {
     __p += '\n\t\t\t<button class="zotero-add-to-library" data-trigger="add-to-library">\n\t\t\t\tAdd to Library\n\t\t\t</button>\n\t\t';
   }
   __p += '\n\t</div>\n\t\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t<div class="zotero-meta">\n\t\t\t\t';
