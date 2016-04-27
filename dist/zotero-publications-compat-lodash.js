@@ -19968,6 +19968,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  *                     the defaults
  */
 function ZoteroPublications() {
+	var _this = this,
+	    _arguments = arguments;
+
 	if (arguments.length > 3) {
 		return Promise.reject(new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.'));
 	}
@@ -19982,8 +19985,37 @@ function ZoteroPublications() {
 		this.config.include.push('citation');
 	}
 
+	function init() {
+		if (this.config.zorgIntegration) {
+			this.config.zorgIntegration = typeof Zotero !== 'undefined' ? Zotero.config && Zotero.config.loggedInUser || Zotero.currentUser : false;
+		}
+
+		if (arguments.length > 1) {
+			return this.render(arguments[0], arguments[1]);
+		}
+	}
+
+	var promise = new Promise(function (resolve, reject) {
+		var possiblePromise;
+		if (typeof document !== 'undefined' && document.readyState === 'loading') {
+			document.addEventListener('DOMContentLoaded', function (ev) {
+				possiblePromise = init.apply(_this, _arguments);
+			});
+		} else {
+			possiblePromise = init.apply(_this, _arguments);
+		}
+		if (possiblePromise && possiblePromise.then) {
+			possiblePromise.then(function (result) {
+				return resolve(result);
+			});
+			possiblePromise.catch(function (result) {
+				return reject(result);
+			});
+		}
+	});
+
 	if (arguments.length > 1) {
-		return this.render(arguments[0], arguments[1]);
+		return promise;
 	}
 }
 
@@ -20046,7 +20078,7 @@ ZoteroPublications.prototype.defaults = {
  *                             in case of any network/response problems
  */
 ZoteroPublications.prototype.get = function (url, options, init) {
-	var _this = this;
+	var _this2 = this;
 
 	init = init || {
 		headers: {
@@ -20059,7 +20091,7 @@ ZoteroPublications.prototype.get = function (url, options, init) {
 	return new Promise(function (resolve, reject) {
 		var promise = (0, _api.fetchUntilExhausted)(url, init);
 		promise.then(function (responseJson) {
-			var data = new _data.ZoteroData(responseJson, _this.config);
+			var data = new _data.ZoteroData(responseJson, _this2.config);
 			if (options.group === 'type') {
 				data.groupByType(options.expand);
 			}
@@ -20132,8 +20164,8 @@ ZoteroPublications.prototype.getItem = function (itemId, userId, options) {
  */
 ZoteroPublications.prototype.render = function (userIdOrendpointOrData, container) {
 	return new Promise(function (resolve, reject) {
-		var _this2 = this,
-		    _arguments = arguments;
+		var _this3 = this,
+		    _arguments2 = arguments;
 
 		if (!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
@@ -20151,28 +20183,28 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			var promise = this.getPublications(userId);
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			promise.then(function (data) {
-				_this2.renderer.displayPublications(data);
-				if (_this2.config.useHistory && location.hash) {
-					_this2.renderer.expandDetails(location.hash.substr(1));
+				_this3.renderer.displayPublications(data);
+				if (_this3.config.useHistory && location.hash) {
+					_this3.renderer.expandDetails(location.hash.substr(1));
 				}
 				resolve();
 			});
 			promise.catch(function () {
-				reject(_arguments[0]);
+				reject(_arguments2[0]);
 			});
 		} else if (typeof userIdOrendpointOrData === 'string') {
 			var endpoint = userIdOrendpointOrData;
 			var _promise = this.getEndpoint(endpoint);
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			_promise.then(function (data) {
-				_this2.renderer.displayPublications(data);
-				if (_this2.config.useHistory && location.hash) {
-					_this2.renderer.expandDetails(location.hash.substr(1));
+				_this3.renderer.displayPublications(data);
+				if (_this3.config.useHistory && location.hash) {
+					_this3.renderer.expandDetails(location.hash.substr(1));
 				}
 				resolve();
 			});
 			_promise.catch(function () {
-				reject(_arguments[0]);
+				reject(_arguments2[0]);
 			});
 		} else {
 			reject(new Error('First argument to render() method must be an endpoint or an instance of ZoteroData'));
@@ -20524,26 +20556,32 @@ ZoteroRenderer.prototype.addHandlers = function () {
 			} else if (target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
 				(0, _utils.showTab)(target);
 			} else if (target.getAttribute('data-trigger') === 'add-to-library') {
-				if (_this2.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) {
+				if (_this2.zotero.config.zorgIntegration) {
 					(function () {
 						target.innerText = 'Saving...';
 						target.removeAttribute('data-trigger');
 						var itemId = itemEl.getAttribute('data-item');
 						var itemData = (_lodash2.default.findWhere || _lodash2.default.find)(_this2.data.raw, { 'key': itemId });
-						var zoteroLib = new Zotero.Library('user', Zotero.config.loggedInUser.userID);
+						var zoteroLib = new Zotero.Library('user', _this2.zotero.config.zorgIntegration.userID);
 						var zoteroItem = new Zotero.Item();
+						var ignoredFields = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags'];
 						zoteroItem.initEmpty(itemData.data.itemType).then(function () {
 							_lodash2.default.forEach(itemData.data, function (value, key) {
-								if (key !== 'key' && key !== 'itemType') {
-									zoteroItem.set(key, value);
+								if (!_lodash2.default.includes(ignoredFields, key)) {
+									zoteroItem.apiObj[key] = value;
 								}
 							});
 							zoteroItem.associateWithLibrary(zoteroLib);
-							Zotero.ui.saveItem(zoteroItem).then(function () {
+							var writePromise = zoteroItem.writeItem(zoteroItem);
+							writePromise.then(function () {
 								target.innerText = 'Saved!';
-							}).catch(function () {
+							});
+							writePromise[writePromise.catch ? 'catch' : 'fail'](function () {
 								target.innerText = 'Error!';
 								target.setAttribute('data-trigger', 'add-to-library');
+								setTimeout(function () {
+									target.innerText = 'Add to Library';
+								}, 2000);
 							});
 						});
 					})();
@@ -20861,7 +20899,7 @@ module.exports = function (obj) {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemTemplated(obj.item)) == null ? '' : __t) + '\n\t';
   }
   __p += '\n\n\t\n\t<div class="zotero-item-actions">\n\t\t<!-- Details toggle -->\n\t\t<a href="" data-trigger="details" aria-controls="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t\tDetails\n\t\t</a>\n\t\t';
-  if (obj.renderer.zotero.config.zorgIntegration && Zotero && Zotero.config && Zotero.config.loggedInUser) {
+  if (obj.renderer.zotero.config.zorgIntegration) {
     __p += '\n\t\t\t<button class="zotero-add-to-library" data-trigger="add-to-library">\n\t\t\t\tAdd to Library\n\t\t\t</button>\n\t\t';
   }
   __p += '\n\t</div>\n\t\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t<div class="zotero-meta">\n\t\t\t\t';
