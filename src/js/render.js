@@ -282,32 +282,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
 				showTab(target);
 			} else if(target.getAttribute('data-trigger') === 'add-to-library') {
 				if(this.zotero.config.zorgIntegration) {
-					target.innerText = 'Saving...';
-					target.removeAttribute('data-trigger');
-					let itemId = itemEl.getAttribute('data-item');
-					let itemData = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
-					let zoteroLib = new Zotero.Library('user', this.zotero.config.zorgIntegration.userID);
-					let zoteroItem = new Zotero.Item();
-					let ignoredFields = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags'];
-					zoteroItem.initEmpty(itemData.data.itemType).then(function() {
-					_.forEach(itemData.data, (value, key) => {
-						if(!_.includes(ignoredFields, key)) {
-							zoteroItem.apiObj[key] = value;
-						}
-					});
-					zoteroItem.associateWithLibrary(zoteroLib);
-					let writePromise = zoteroItem.writeItem(zoteroItem);
-					writePromise.then(() => {
-						target.innerText = 'Saved!';
-					})
-					writePromise[writePromise.catch ? 'catch' : 'fail'](() => {
-							target.innerText = 'Error!';
-							target.setAttribute('data-trigger', 'add-to-library');
-							setTimeout(() => {
-								target.innerText = 'Add to Library';
-							}, 2000);
-						})
-					});
+					this.saveToMyLibrary(target, itemEl);
 				}
 			}
 		}
@@ -390,5 +365,53 @@ ZoteroRenderer.prototype.expandDetails = function(itemId) {
 	this.toggleDetails(itemEl, true);
 	once(itemEl, transitionend(), () => {
 		itemEl.scrollIntoView();
+	});
+}
+
+
+
+ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
+	triggerEl.innerText = 'Saving...';
+	triggerEl.removeAttribute('data-trigger');
+	let itemId = itemEl.getAttribute('data-item');
+	let itemData = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
+	let zoteroLib = new Zotero.Library('user', this.zotero.config.zorgIntegration.userID);
+	let zoteroItem = new Zotero.Item();
+	let ignoredFields = [
+		'mimeType',
+		'linkMode',
+		'charset',
+		'md5',
+		'mtime',
+		'version',
+		'key',
+		'collections',
+		'relations',
+		'parentItem',
+		'contentType',
+		'filename',
+		'tags',
+		'dateAdded',
+		'dateModified'
+	];
+
+	zoteroItem.initEmpty(itemData.data.itemType).then(function() {
+		_.forEach(itemData.data, (value, key) => {
+			if(!_.includes(ignoredFields, key)) {
+				zoteroItem.apiObj[key] = value;
+			}
+		});
+		zoteroItem.associateWithLibrary(zoteroLib);
+		let writePromise = zoteroItem.writeItem(zoteroItem);
+		writePromise.then(() => {
+			triggerEl.innerText = 'Saved!';
+		});
+		writePromise[writePromise.catch ? 'catch' : 'fail'](() => {
+			triggerEl.innerText = 'Error!';
+			triggerEl.setAttribute('data-trigger', 'add-to-library');
+			setTimeout(() => {
+				triggerEl.innerText = 'Add to Library';
+			}, 2000);
+		});
 	});
 }
