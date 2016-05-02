@@ -37,7 +37,9 @@
 						<% if(obj.data[keys[i]]) { %>
 							<div class="zotero-meta-item">
 								<div class="zotero-meta-label"><%- obj.renderer.fieldMap[keys[i]] %></div>
-								<div class="zotero-meta-value"><%- obj.data[keys[i]] %></div>
+								<div class="zotero-meta-value">
+									<%- keys[i] === 'itemType' ? obj.renderer.typeMap[obj.data[keys[i]]] : obj.data[keys[i]] %>
+								</div>
 							</div>
 						<% } %>
 					<% } %>
