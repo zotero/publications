@@ -24,6 +24,7 @@ import {
 	transitionend
 } from './utils.js';
 import fieldMap from './field-map.js';
+import typeMap from './type-map';
 import hiddenFields from './hidden-fields.js';
 
 _.templateSettings.variable = 'obj';
@@ -38,6 +39,7 @@ export function ZoteroRenderer(container, zotero) {
 	this.zotero = zotero;
 	this.config = zotero.config;
 	this.fieldMap = fieldMap;
+	this.typeMap = typeMap;
 	this.hiddenFields = hiddenFields;
 	if(this.config.storeCitationPreference) {
 		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
