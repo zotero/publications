@@ -100,7 +100,7 @@ ZoteroPublications.prototype.defaults = {
 		'nature': 'Nature',
 		'vancouver': 'Vancouver'
 	},
-	citeStyleOptionDefault: 'chicago-author-date',
+	citeStyleOptionDefault: 'chicago-note-bibliography',
 	exportFormats: {
 		'bibtex': {
 			name: 'BibTeX',
