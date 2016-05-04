@@ -34,9 +34,12 @@ export function ZoteroPublications() {
 	}
 
 	if(this.config.useCitationStyle && !_.includes(this.config.include, 'citation')) {
-		this.config.include.push('citation');
+		this.config.getQueryParamsDefault.include.push('citation');
 	}
 
+	_.extend(this.config.getQueryParamsDefault, {
+		style: this.config.citationStyle
+	});
 
 	function init() {
 		if(this.config.zorgIntegration) {
@@ -76,9 +79,7 @@ export function ZoteroPublications() {
  */
 ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
-	limit: 100,
 	citationStyle: '',
-	include: ['data'],
 	storeCitationPreference: false,
 	group: false,
 	useCitationStyle: false,
@@ -117,6 +118,14 @@ ZoteroPublications.prototype.defaults = {
 			contentType: 'application/rdf+xml',
 			extension: 'rdf'
 		}
+	},
+	getQueryParamsDefault: {
+		linkwrap: '1',
+		order: 'dateModified',
+		sort: 'desc',
+		start: '0',
+		include: ['data'],
+		limit: 100,
 	}
 };
 
@@ -128,27 +137,32 @@ ZoteroPublications.prototype.defaults = {
  * @return {Promise}         - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.get = function(url, options, init) {
-	init = init || {
+ZoteroPublications.prototype.get = function(url, params = {}, init = {}) {
+	params = _.extend({}, this.config.getQueryParamsDefault, params);
+	init = _.extend({
 		headers: {
 			'Accept': 'application/json'
 		}
-	};
+	}, init);
 
-	options = _.extend({}, this.config, options);
+	if(params.include instanceof Array) {
+		params.include = params.include.join(',');
+	}
+
+	let queryParams = _.reduce(params, (memo, value, key) => memo + `&${key}=${value}`);
+	url = `${url}?{$queryParams}`;
 
 	return new Promise((resolve, reject) => {
 		let promise = fetchUntilExhausted(url, init);
 		promise.then(responseJson => {
 			let data = new ZoteroData(responseJson, this.config);
-			if(options.group === 'type') {
-				data.groupByType(options.expand);
-			}
 			resolve(data);
 		});
 		promise.catch(reject);
 	});
 };
+
+
 
 /**
  * Build url for an endpoint then fetch entire dataset recursively
@@ -156,15 +170,11 @@ ZoteroPublications.prototype.get = function(url, options, init) {
  * @return {Promise}         - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.getEndpoint = function(endpoint, options) {
-	options = options || {};
+ZoteroPublications.prototype.getEndpoint = function(endpoint, params = {}) {
 	let apiBase = this.config.apiBase,
-		limit = options.limit || this.config.limit,
-		style = options.citationStyle || this.config.citationStyle,
-		include = options.include && options.include.join(',') || this.config.include.join(','),
-		url = `https://${apiBase}/${endpoint}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
+		url = `https://${apiBase}/${endpoint}`;
 
-	return this.get(url, options);
+	return this.get(url, params);
 };
 
 /**
@@ -174,17 +184,8 @@ ZoteroPublications.prototype.getEndpoint = function(endpoint, options) {
  * @return {Promise}         - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.getPublications = function(userId, options) {
-	options = options || {};
-	let apiBase = this.config.apiBase,
-		limit = options.limit || this.config.limit,
-		style = options.citationStyle || this.config.citationStyle,
-		include = options.include && options.include.join(',') || this.config.include.join(','),
-		url = `https://${apiBase}/users/${userId}/publications/items?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
-
-	this.userId = userId;
-
-	return this.get(url, options);
+ZoteroPublications.prototype.getPublications = function(userId, params = {}) {
+	return this.getEndpoint(`users/${userId}/publications/items`, params);
 };
 
 /**
@@ -194,16 +195,10 @@ ZoteroPublications.prototype.getPublications = function(userId, options) {
  * @return {[type]}          - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.getItem = function(itemId, userId, options) {
-	options = options || {};
-	let apiBase = this.config.apiBase,
-		limit = options.limit || this.config.limit,
-		style = options.citationStyle || this.config.citationStyle,
-		include = options.include && options.include.join(',') || this.config.include.join(','),
-		url = `https://${apiBase}/users/${userId}/publications/items/${itemId}?include=${include}&limit=${limit}&linkwrap=1&order=dateModified&sort=desc&start=0&style=${style}`;
-
-	return this.get(url, options);
+ZoteroPublications.prototype.getItem = function(itemId, userId, params = {}) {
+	return this.getEndpoint(`users/${userId}/publications/items/${itemId}`, params);
 };
+
 
 /**
  * Render local or remote items.
@@ -218,6 +213,9 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 		}
 		if(userIdOrendpointOrData instanceof ZoteroData) {
 			let data = userIdOrendpointOrData;
+			if(this.config.group === 'type') {
+				data.groupByType(this.config.expand);
+			}
 			this.renderer = new ZoteroRenderer(container, this);
 			this.renderer.displayPublications(data);
 			if(this.config.useHistory && location.hash) {
@@ -229,6 +227,9 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			let promise = this.getPublications(userId);
 			this.renderer = new ZoteroRenderer(container, this);
 			promise.then(data => {
+				if(this.config.group === 'type') {
+					data.groupByType(this.config.expand);
+				}
 				this.renderer.displayPublications(data);
 				if(this.config.useHistory && location.hash) {
 					this.renderer.expandDetails(location.hash.substr(1));
@@ -243,6 +244,9 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			let promise = this.getEndpoint(endpoint);
 			this.renderer = new ZoteroRenderer(container, this);
 			promise.then(data => {
+				if(this.config.group === 'type') {
+					data.groupByType(this.config.expand);
+				}
 				this.renderer.displayPublications(data);
 				if(this.config.useHistory && location.hash) {
 					this.renderer.expandDetails(location.hash.substr(1));
