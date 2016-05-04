@@ -76,17 +76,9 @@ Config Options
 Host name of the API.
 Default: 'api.zotero.org' 
 
-**limit**
-How many items to fetch from the API per batch. Please note that ZoteroPublications will retriever all items batch by batch. Changing this will only affect performance.
-Default: 100
-
 **citationStyle**
 Which [Citation style](https://www.zotero.org/styles/) if *useCitationStyle* is enabled, defined which citation style will be used for item rendering.
 Default: '' (none, API decides)
-
-**include**
-What formats that API should include. You probably shouldn't change that.
-Default: ['data'] or ['data', 'citation'] if *alwaysUseCitationStyle* is true
 
 **storeCitationPreference**
 Whether to store citation preference in local storage. If enabled returning users that use "Cite" functionality will have the last-selected citation style preselected.
@@ -110,7 +102,11 @@ Default: List similar to citations styles pre-installed in Zotero Client
 
 **exportFormats**
 Definitions for export formats available in "Export" functionality.
-DEfault: Definitions for BibTeX, RIS and Zotero RDF
+Default: Definitions for BibTeX, RIS and Zotero RDF
+
+**getQueryParamsDefault**
+Contains default query params included in all the GET requests made by the library.
+Default: Parameters that trigger sorting by date, batching requests by 100 items etc.
 
 Builds
 ------

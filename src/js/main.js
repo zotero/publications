@@ -163,6 +163,14 @@ ZoteroPublications.prototype.get = function(url, params = {}, init = {}) {
 	});
 };
 
+/**
+ * Lol-level function to post data to given url
+ * @param  {String} url 		- target url for the post request
+ * @param  {[type]} data 		- Raw data posted as part of the request
+ * @param  {?Object} params 	- Optional additional query string params
+ * @param  {?Object} init 		- Options forwarded to the fetch method
+ * @return {Promise} 			- Fetch promise
+ */
 ZoteroPublications.prototype.post = function(url, data, params = {}, init = {}) {
 	let queryParams = _.map(params, (value, key) => `${key}=${value}`).join('&');
 	init = _.extend({
@@ -179,9 +187,10 @@ ZoteroPublications.prototype.post = function(url, data, params = {}, init = {}) 
 
 /**
  * Build url for an endpoint then fetch entire dataset recursively
- * @param  {String} endpoint - An API endpoint from which data should be obtained
- * @return {Promise}         - Resolved with ZoteroData object on success, rejected
- *                             in case of any network/response problems
+ * @param  {String} endpoint 	- An API endpoint from which data should be obtained
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise} 			- Resolved with ZoteroData object on success, rejected
+ *                        		in case of any network/response problems
  */
 ZoteroPublications.prototype.getEndpoint = function(endpoint, params = {}) {
 	let apiBase = this.config.apiBase,
@@ -190,6 +199,13 @@ ZoteroPublications.prototype.getEndpoint = function(endpoint, params = {}) {
 	return this.get(url, params);
 };
 
+/**
+ * Build url for an endpoint and use it to post data
+ * @param  {String} endpoint 	- An API endpoint
+ * @param  {[type]} data 		- Raw data posted as part of the request
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise} 			- Fetch promise
+ */
 ZoteroPublications.prototype.postEndpoint = function(endpoint, data, params = {}) {
 	let apiBase = this.config.apiBase,
 		url = `https://${apiBase}/${endpoint}`;
@@ -199,10 +215,10 @@ ZoteroPublications.prototype.postEndpoint = function(endpoint, data, params = {}
 
 /**
  * Build url for getting user's publications then fetch entire dataset recursively
- * @param  {number} userId   - User id
- * @param  {?Object} options - Settings that can complement or override instance config
- * @return {Promise}         - Resolved with ZoteroData object on success, rejected
- *                             in case of any network/response problems
+ * @param  {Number} userId 		- User id
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise} 			- Resolved with ZoteroData object on success, rejected
+ *                        		in case of any network/response problems
  */
 ZoteroPublications.prototype.getPublications = function(userId, params = {}) {
 	return this.getEndpoint(`users/${userId}/publications/items`, params);
@@ -210,15 +226,23 @@ ZoteroPublications.prototype.getPublications = function(userId, params = {}) {
 
 /**
  * Build url for getting a single item from user's publications then fetch it
- * @param  {[type]} userId   - User id
- * @param  {?Object} options - Settings that can complement or override instance config
- * @return {[type]}          - Resolved with ZoteroData object on success, rejected
- *                             in case of any network/response problems
+ * @param  {String} itemId 		- Item key
+ * @param  {Number} userId 		- User id
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise}			- Resolved with ZoteroData object on success, rejected
+ *                       		in case of any network/response problems
  */
-ZoteroPublications.prototype.getItem = function(itemId, userId, params = {}) {
+ZoteroPublications.prototype.getPublication = function(itemId, userId, params = {}) {
 	return this.getEndpoint(`users/${userId}/publications/items/${itemId}`, params);
 };
 
+/**
+ * Build url for sending one or more items to user's library then post it
+ * @param  {Number} userId 		- User id
+ * @param  {Object} data 		- Raw data posted as part of the request
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise} 			- Fetch promise
+ */
 ZoteroPublications.prototype.postItems = function(userId, data, params = {}) {
 	return this.postEndpoint(`users/${userId}/items`, data, params);
 

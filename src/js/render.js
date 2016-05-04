@@ -213,7 +213,7 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
 	citationEl.innerHTML = '';
 	citationEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {
+	this.zotero.getPublication(itemId, this.zotero.userId, {
 		'citationStyle': citationStyle,
 		'include': ['bib'],
 		'group': false
@@ -374,7 +374,11 @@ ZoteroRenderer.prototype.expandDetails = function(itemId) {
 }
 
 
-
+/**
+ * On Zotero.org adds item to currently logged-in user's library
+ * @param  {HTMLElement} triggerEl 	- DOM Element that triggered saving, usually a button
+ * @param  {HTMLElement} itemEl 	- DOM element where the item is located
+ */
 ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	triggerEl.innerText = 'Saving...';
 	triggerEl.removeAttribute('data-trigger');
