@@ -4070,12 +4070,17 @@ function ZoteroPublications() {
 	}
 
 	if (this.config.useCitationStyle && !_lodash2.default.includes(this.config.include, 'citation')) {
-		this.config.include.push('citation');
+		this.config.getQueryParamsDefault.include.push('citation');
 	}
+
+	_lodash2.default.extend(this.config.getQueryParamsDefault, {
+		style: this.config.citationStyle
+	});
 
 	function init() {
 		if (this.config.zorgIntegration) {
 			this.config.zorgIntegration = typeof Zotero !== 'undefined' ? Zotero.config && Zotero.config.loggedInUser || Zotero.currentUser : false;
+			this.config.zorgIntegration['apiKey'] = Zotero.config.apiKey;
 		}
 
 		if (arguments.length > 1) {
@@ -4113,9 +4118,7 @@ function ZoteroPublications() {
  */
 ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
-	limit: 100,
 	citationStyle: '',
-	include: ['data'],
 	storeCitationPreference: false,
 	group: false,
 	useCitationStyle: false,
@@ -4137,7 +4140,7 @@ ZoteroPublications.prototype.defaults = {
 		'nature': 'Nature',
 		'vancouver': 'Vancouver'
 	},
-	citeStyleOptionDefault: 'chicago-author-date',
+	citeStyleOptionDefault: 'chicago-note-bibliography',
 	exportFormats: {
 		'bibtex': {
 			name: 'BibTeX',
@@ -4154,6 +4157,14 @@ ZoteroPublications.prototype.defaults = {
 			contentType: 'application/rdf+xml',
 			extension: 'rdf'
 		}
+	},
+	getQueryParamsDefault: {
+		linkwrap: '1',
+		order: 'dateModified',
+		sort: 'desc',
+		start: '0',
+		include: ['data'],
+		limit: 100
 	}
 };
 
@@ -4165,24 +4176,32 @@ ZoteroPublications.prototype.defaults = {
  * @return {Promise}         - Resolved with ZoteroData object on success, rejected
  *                             in case of any network/response problems
  */
-ZoteroPublications.prototype.get = function (url, options, init) {
+ZoteroPublications.prototype.get = function (url) {
 	var _this2 = this;
 
-	init = init || {
+	var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+	var init = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	params = _lodash2.default.extend({}, this.config.getQueryParamsDefault, params);
+	init = _lodash2.default.extend({
 		headers: {
 			'Accept': 'application/json'
 		}
-	};
+	}, init);
 
-	options = _lodash2.default.extend({}, this.config, options);
+	if (params.include instanceof Array) {
+		params.include = params.include.join(',');
+	}
+
+	var queryParams = _lodash2.default.map(params, function (value, key) {
+		return key + '=' + value;
+	}).join('&');
+	url = url + '?' + queryParams;
 
 	return new Promise(function (resolve, reject) {
 		var promise = (0, _api.fetchUntilExhausted)(url, init);
 		promise.then(function (responseJson) {
 			var data = new _data.ZoteroData(responseJson, _this2.config);
-			if (options.group === 'type') {
-				data.groupByType(options.expand);
-			}
 			resolve(data);
 		});
 		promise.catch(reject);
@@ -4190,58 +4209,102 @@ ZoteroPublications.prototype.get = function (url, options, init) {
 };
 
 /**
- * Build url for an endpoint then fetch entire dataset recursively
- * @param  {String} endpoint - An API endpoint from which data should be obtained
- * @return {Promise}         - Resolved with ZoteroData object on success, rejected
- *                             in case of any network/response problems
+ * Lol-level function to post data to given url
+ * @param  {String} url 		- target url for the post request
+ * @param  {[type]} data 		- Raw data posted as part of the request
+ * @param  {?Object} params 	- Optional additional query string params
+ * @param  {?Object} init 		- Options forwarded to the fetch method
+ * @return {Promise} 			- Fetch promise
  */
-ZoteroPublications.prototype.getEndpoint = function (endpoint, options) {
-	options = options || {};
-	var apiBase = this.config.apiBase,
-	    limit = options.limit || this.config.limit,
-	    style = options.citationStyle || this.config.citationStyle,
-	    include = options.include && options.include.join(',') || this.config.include.join(','),
-	    url = 'https://' + apiBase + '/' + endpoint + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+ZoteroPublications.prototype.post = function (url, data) {
+	var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+	var init = arguments.length <= 3 || arguments[3] === undefined ? {} : arguments[3];
 
-	return this.get(url, options);
+	var queryParams = _lodash2.default.map(params, function (value, key) {
+		return key + '=' + value;
+	}).join('&');
+	init = _lodash2.default.extend({
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data)
+	}, init);
+	url = url + '?' + queryParams;
+
+	return fetch(url, init);
+};
+
+/**
+ * Build url for an endpoint then fetch entire dataset recursively
+ * @param  {String} endpoint 	- An API endpoint from which data should be obtained
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise} 			- Resolved with ZoteroData object on success, rejected
+ *                        		in case of any network/response problems
+ */
+ZoteroPublications.prototype.getEndpoint = function (endpoint) {
+	var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
+
+	var apiBase = this.config.apiBase,
+	    url = 'https://' + apiBase + '/' + endpoint;
+
+	return this.get(url, params);
+};
+
+/**
+ * Build url for an endpoint and use it to post data
+ * @param  {String} endpoint 	- An API endpoint
+ * @param  {[type]} data 		- Raw data posted as part of the request
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise} 			- Fetch promise
+ */
+ZoteroPublications.prototype.postEndpoint = function (endpoint, data) {
+	var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	var apiBase = this.config.apiBase,
+	    url = 'https://' + apiBase + '/' + endpoint;
+
+	return this.post(url, data, params);
 };
 
 /**
  * Build url for getting user's publications then fetch entire dataset recursively
- * @param  {number} userId   - User id
- * @param  {?Object} options - Settings that can complement or override instance config
- * @return {Promise}         - Resolved with ZoteroData object on success, rejected
- *                             in case of any network/response problems
+ * @param  {Number} userId 		- User id
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise} 			- Resolved with ZoteroData object on success, rejected
+ *                        		in case of any network/response problems
  */
-ZoteroPublications.prototype.getPublications = function (userId, options) {
-	options = options || {};
-	var apiBase = this.config.apiBase,
-	    limit = options.limit || this.config.limit,
-	    style = options.citationStyle || this.config.citationStyle,
-	    include = options.include && options.include.join(',') || this.config.include.join(','),
-	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+ZoteroPublications.prototype.getPublications = function (userId) {
+	var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
-	this.userId = userId;
-
-	return this.get(url, options);
+	return this.getEndpoint('users/' + userId + '/publications/items', params);
 };
 
 /**
  * Build url for getting a single item from user's publications then fetch it
- * @param  {[type]} userId   - User id
- * @param  {?Object} options - Settings that can complement or override instance config
- * @return {[type]}          - Resolved with ZoteroData object on success, rejected
- *                             in case of any network/response problems
+ * @param  {String} itemId 		- Item key
+ * @param  {Number} userId 		- User id
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise}			- Resolved with ZoteroData object on success, rejected
+ *                       		in case of any network/response problems
  */
-ZoteroPublications.prototype.getItem = function (itemId, userId, options) {
-	options = options || {};
-	var apiBase = this.config.apiBase,
-	    limit = options.limit || this.config.limit,
-	    style = options.citationStyle || this.config.citationStyle,
-	    include = options.include && options.include.join(',') || this.config.include.join(','),
-	    url = 'https://' + apiBase + '/users/' + userId + '/publications/items/' + itemId + '?include=' + include + '&limit=' + limit + '&linkwrap=1&order=dateModified&sort=desc&start=0&style=' + style;
+ZoteroPublications.prototype.getPublication = function (itemId, userId) {
+	var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
 
-	return this.get(url, options);
+	return this.getEndpoint('users/' + userId + '/publications/items/' + itemId, params);
+};
+
+/**
+ * Build url for sending one or more items to user's library then post it
+ * @param  {Number} userId 		- User id
+ * @param  {Object} data 		- Raw data posted as part of the request
+ * @param  {?Object} params 	- Optional additional query string params
+ * @return {Promise} 			- Fetch promise
+ */
+ZoteroPublications.prototype.postItems = function (userId, data) {
+	var params = arguments.length <= 2 || arguments[2] === undefined ? {} : arguments[2];
+
+	return this.postEndpoint('users/' + userId + '/items', data, params);
 };
 
 /**
@@ -4260,6 +4323,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 		}
 		if (userIdOrendpointOrData instanceof _data.ZoteroData) {
 			var data = userIdOrendpointOrData;
+			if (this.config.group === 'type') {
+				data.groupByType(this.config.expand);
+			}
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			this.renderer.displayPublications(data);
 			if (this.config.useHistory && location.hash) {
@@ -4271,6 +4337,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			var promise = this.getPublications(userId);
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			promise.then(function (data) {
+				if (_this3.config.group === 'type') {
+					data.groupByType(_this3.config.expand);
+				}
 				_this3.renderer.displayPublications(data);
 				if (_this3.config.useHistory && location.hash) {
 					_this3.renderer.expandDetails(location.hash.substr(1));
@@ -4285,6 +4354,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			var _promise = this.getEndpoint(endpoint);
 			this.renderer = new _render.ZoteroRenderer(container, this);
 			_promise.then(function (data) {
+				if (_this3.config.group === 'type') {
+					data.groupByType(_this3.config.expand);
+				}
 				_this3.renderer.displayPublications(data);
 				if (_this3.config.useHistory && location.hash) {
 					_this3.renderer.expandDetails(location.hash.substr(1));
@@ -4374,9 +4446,15 @@ var _data = require('./data.js');
 
 var _utils = require('./utils.js');
 
+var _api = require('./api.js');
+
 var _fieldMap = require('./field-map.js');
 
 var _fieldMap2 = _interopRequireDefault(_fieldMap);
+
+var _typeMap = require('./type-map');
+
+var _typeMap2 = _interopRequireDefault(_typeMap);
 
 var _hiddenFields = require('./hidden-fields.js');
 
@@ -4396,6 +4474,7 @@ function ZoteroRenderer(container, zotero) {
 	this.zotero = zotero;
 	this.config = zotero.config;
 	this.fieldMap = _fieldMap2.default;
+	this.typeMap = _typeMap2.default;
 	this.hiddenFields = _hiddenFields2.default;
 	if (this.config.storeCitationPreference) {
 		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
@@ -4565,7 +4644,7 @@ ZoteroRenderer.prototype.updateCitation = function (itemEl, citationStyle) {
 	citationEl.innerHTML = '';
 	citationEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {
+	this.zotero.getPublication(itemId, this.zotero.userId, {
 		'citationStyle': citationStyle,
 		'include': ['bib'],
 		'group': false
@@ -4647,34 +4726,7 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				(0, _utils.showTab)(target);
 			} else if (target.getAttribute('data-trigger') === 'add-to-library') {
 				if (_this2.zotero.config.zorgIntegration) {
-					(function () {
-						target.innerText = 'Saving...';
-						target.removeAttribute('data-trigger');
-						var itemId = itemEl.getAttribute('data-item');
-						var itemData = (_lodash2.default.findWhere || _lodash2.default.find)(_this2.data.raw, { 'key': itemId });
-						var zoteroLib = new Zotero.Library('user', _this2.zotero.config.zorgIntegration.userID);
-						var zoteroItem = new Zotero.Item();
-						var ignoredFields = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags'];
-						zoteroItem.initEmpty(itemData.data.itemType).then(function () {
-							_lodash2.default.forEach(itemData.data, function (value, key) {
-								if (!_lodash2.default.includes(ignoredFields, key)) {
-									zoteroItem.apiObj[key] = value;
-								}
-							});
-							zoteroItem.associateWithLibrary(zoteroLib);
-							var writePromise = zoteroItem.writeItem(zoteroItem);
-							writePromise.then(function () {
-								target.innerText = 'Saved!';
-							});
-							writePromise[writePromise.catch ? 'catch' : 'fail'](function () {
-								target.innerText = 'Error!';
-								target.setAttribute('data-trigger', 'add-to-library');
-								setTimeout(function () {
-									target.innerText = 'Add to Library';
-								}, 2000);
-							});
-						});
-					})();
+					_this2.saveToMyLibrary(target, itemEl);
 				}
 			}
 		}
@@ -4764,8 +4816,50 @@ ZoteroRenderer.prototype.expandDetails = function (itemId) {
 	});
 };
 
+/**
+ * On Zotero.org adds item to currently logged-in user's library
+ * @param  {HTMLElement} triggerEl 	- DOM Element that triggered saving, usually a button
+ * @param  {HTMLElement} itemEl 	- DOM element where the item is located
+ */
+ZoteroRenderer.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
+	triggerEl.innerText = 'Saving...';
+	triggerEl.removeAttribute('data-trigger');
+	var itemId = itemEl.getAttribute('data-item');
+	var sourceItem = (_lodash2.default.findWhere || _lodash2.default.find)(this.data.raw, { 'key': itemId });
+	var clonedItem = {};
+	var ignoredFields = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'parentItem', 'contentType', 'filename', 'tags', 'dateAdded', 'dateModified'];
+
+	_lodash2.default.forEach(sourceItem.data, function (value, key) {
+		if (!_lodash2.default.includes(ignoredFields, key)) {
+			clonedItem[key] = value;
+		}
+	});
+
+	if (!clonedItem.relations) {
+		clonedItem.relations = {};
+	}
+	// console.info(clonedItem);
+	// debugger;
+	clonedItem.relations = {
+		'owl:sameAs': 'http://zotero.org/publications/' + sourceItem.library.id + '/items/' + itemId
+	};
+
+	var writePromise = this.zotero.postItems(this.zotero.config.zorgIntegration.userID, [clonedItem], { key: this.zotero.config.zorgIntegration.apiKey });
+
+	writePromise.then(function () {
+		triggerEl.innerText = 'Saved!';
+	});
+	writePromise.catch(function () {
+		triggerEl.innerText = 'Error!';
+		triggerEl.setAttribute('data-trigger', 'add-to-library');
+		setTimeout(function () {
+			triggerEl.innerText = 'Add to Library';
+		}, 2000);
+	});
+};
+
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./data.js":"/srv/zotero/my-publications/src/js/data.js","./field-map.js":"/srv/zotero/my-publications/src/js/field-map.js","./hidden-fields.js":"/srv/zotero/my-publications/src/js/hidden-fields.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item-citation.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item-citation.tpl","./tpl/partial/item-templated.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item-templated.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","clipboard":"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
+},{"./api.js":"/srv/zotero/my-publications/src/js/api.js","./data.js":"/srv/zotero/my-publications/src/js/data.js","./field-map.js":"/srv/zotero/my-publications/src/js/field-map.js","./hidden-fields.js":"/srv/zotero/my-publications/src/js/hidden-fields.js","./tpl/group-view.tpl":"/srv/zotero/my-publications/src/js/tpl/group-view.tpl","./tpl/partial/branding.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/branding.tpl","./tpl/partial/export.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/export.tpl","./tpl/partial/group.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/group.tpl","./tpl/partial/groups.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/groups.tpl","./tpl/partial/item-citation.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item-citation.tpl","./tpl/partial/item-templated.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item-templated.tpl","./tpl/partial/item.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/item.tpl","./tpl/partial/items.tpl":"/srv/zotero/my-publications/src/js/tpl/partial/items.tpl","./tpl/plain-view.tpl":"/srv/zotero/my-publications/src/js/tpl/plain-view.tpl","./type-map":"/srv/zotero/my-publications/src/js/type-map.js","./utils.js":"/srv/zotero/my-publications/src/js/utils.js","clipboard":"/srv/zotero/my-publications/node_modules/clipboard/lib/clipboard.js"}],"/srv/zotero/my-publications/src/js/tpl/group-view.tpl":[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -5018,7 +5112,7 @@ module.exports = function (obj) {
     if (obj.renderer.hiddenFields.indexOf(keys[i]) === -1) {
       __p += '\n\t\t\t\t\t\t';
       if (obj.data[keys[i]]) {
-        __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap[keys[i]]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+        __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap[keys[i]]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">\n\t\t\t\t\t\t\t\t\t' + ((__t = keys[i] === 'itemType' ? obj.renderer.typeMap[obj.data[keys[i]]] : obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t\t';
     }
@@ -5177,6 +5271,52 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],"/srv/zotero/my-publications/src/js/type-map.js":[function(require,module,exports){
+'use strict';
+
+/**
+ * Map of type identifiers to user friendly names
+ * @type {Object}
+ */
+module.exports = {
+	'note': 'Note',
+	'attachment': 'Attachment',
+	'book': 'Book',
+	'bookSection': 'Book Section',
+	'journalArticle': 'Journal Article',
+	'magazineArticle': 'Magazine Article',
+	'newspaperArticle': 'Newspaper Article',
+	'thesis': 'Thesis',
+	'letter': 'Letter',
+	'manuscript': 'Manuscript',
+	'interview': 'Interview',
+	'film': 'Film',
+	'artwork': 'Artwork',
+	'webpage': 'Web Page',
+	'report': 'Report',
+	'bill': 'Bill',
+	'case': 'Case',
+	'hearing': 'Hearing',
+	'patent': 'Patent',
+	'statute': 'Statute',
+	'email': 'E-mail',
+	'map': 'Map',
+	'blogPost': 'Blog Post',
+	'instantMessage': 'Instant Message',
+	'forumPost': 'Forum Post',
+	'audioRecording': 'Audio Recording',
+	'presentation': 'Presentation',
+	'videoRecording': 'Video Recording',
+	'tvBroadcast': 'TV Broadcast',
+	'radioBroadcast': 'Radio Broadcast',
+	'podcast': 'Podcast',
+	'computerProgram': 'Computer Program',
+	'conferencePaper': 'Conference Paper',
+	'document': 'Document',
+	'encyclopediaArticle': 'Encyclopedia Article',
+	'dictionaryEntry': 'Dictionary Entry'
+};
+
 },{}],"/srv/zotero/my-publications/src/js/utils.js":[function(require,module,exports){
 (function (global){
 'use strict';
