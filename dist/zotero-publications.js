@@ -2596,6 +2596,7 @@ ZoteroPublications.prototype.postEndpoint = function (endpoint, data, params = {
  *                        		in case of any network/response problems
  */
 ZoteroPublications.prototype.getPublications = function (userId, params = {}) {
+	this.userId = userId;
 	return this.getEndpoint(`users/${ userId }/publications/items`, params);
 };
 
@@ -2979,7 +2980,7 @@ ZoteroRenderer.prototype.prepareExport = function (itemEl) {
 	exportEl.innerHTML = '';
 	exportEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {
+	this.zotero.getPublication(itemId, this.zotero.userId, {
 		'include': [exportFormat],
 		'group': false
 	}).then(item => {

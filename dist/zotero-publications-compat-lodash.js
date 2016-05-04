@@ -20189,6 +20189,7 @@ ZoteroPublications.prototype.postEndpoint = function (endpoint, data) {
 ZoteroPublications.prototype.getPublications = function (userId) {
 	var params = arguments.length <= 1 || arguments[1] === undefined ? {} : arguments[1];
 
+	this.userId = userId;
 	return this.getEndpoint('users/' + userId + '/publications/items', params);
 };
 
@@ -20579,7 +20580,7 @@ ZoteroRenderer.prototype.prepareExport = function (itemEl) {
 	exportEl.innerHTML = '';
 	exportEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {
+	this.zotero.getPublication(itemId, this.zotero.userId, {
 		'include': [exportFormat],
 		'group': false
 	}).then(function (item) {
