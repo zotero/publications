@@ -92,6 +92,14 @@ Default: false
 Whether to use citation style instead of templated item rendering.
 Default: false
 
+**showBranding**
+Whether to display minimalisic Zotero branding
+Default: true
+
+**useHistory**
+Whether to store currently opened item (details pane) in the url fragment identifier. If used and fragment is present in the url, matching item will be opened scrolled to when page has first loaded.
+Default: true
+
 **expand**
 Only applicable if grouping is enable, pre-expands selected groups. Can be an array of group names (type names if grouping by type and collection names if grouping by top-level collections), e.g. `['book', 'journalArticle']` or a keyword 'all'.
 Default: 'all'
