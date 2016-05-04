@@ -236,7 +236,7 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 	exportEl.innerHTML = '';
 	exportEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getItem(itemId, this.zotero.userId, {
+	this.zotero.getPublication(itemId, this.zotero.userId, {
 		'include': [exportFormat],
 		'group': false
 	}).then(item => {
