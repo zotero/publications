@@ -46,6 +46,7 @@ export function ZoteroPublications() {
 			this.config.zorgIntegration = typeof Zotero !== 'undefined' ?
 				(Zotero.config && Zotero.config.loggedInUser)
 				|| Zotero.currentUser : false;
+			this.config.zorgIntegration['apiKey'] = Zotero.config.apiKey;
 		}
 
 		if(arguments.length > 1) {
@@ -149,8 +150,8 @@ ZoteroPublications.prototype.get = function(url, params = {}, init = {}) {
 		params.include = params.include.join(',');
 	}
 
-	let queryParams = _.reduce(params, (memo, value, key) => memo + `&${key}=${value}`);
-	url = `${url}?{$queryParams}`;
+	let queryParams = _.map(params, (value, key) => `${key}=${value}`).join('&');
+	url = `${url}?${queryParams}`;
 
 	return new Promise((resolve, reject) => {
 		let promise = fetchUntilExhausted(url, init);
@@ -162,7 +163,19 @@ ZoteroPublications.prototype.get = function(url, params = {}, init = {}) {
 	});
 };
 
+ZoteroPublications.prototype.post = function(url, data, params = {}, init = {}) {
+	let queryParams = _.map(params, (value, key) => `${key}=${value}`).join('&');
+	init = _.extend({
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify(data)
+	}, init);
+	url = `${url}?${queryParams}`;
 
+	return fetch(url, init);
+}
 
 /**
  * Build url for an endpoint then fetch entire dataset recursively
@@ -175,6 +188,13 @@ ZoteroPublications.prototype.getEndpoint = function(endpoint, params = {}) {
 		url = `https://${apiBase}/${endpoint}`;
 
 	return this.get(url, params);
+};
+
+ZoteroPublications.prototype.postEndpoint = function(endpoint, data, params = {}) {
+	let apiBase = this.config.apiBase,
+		url = `https://${apiBase}/${endpoint}`;
+
+	return this.post(url, data, params);
 };
 
 /**
@@ -199,6 +219,10 @@ ZoteroPublications.prototype.getItem = function(itemId, userId, params = {}) {
 	return this.getEndpoint(`users/${userId}/publications/items/${itemId}`, params);
 };
 
+ZoteroPublications.prototype.postItems = function(userId, data, params = {}) {
+	return this.postEndpoint(`users/${userId}/items`, data, params);
+
+}
 
 /**
  * Render local or remote items.

@@ -23,6 +23,9 @@ import {
 	once,
 	transitionend
 } from './utils.js';
+import {
+	post
+} from './api.js';
 import fieldMap from './field-map.js';
 import typeMap from './type-map';
 import hiddenFields from './hidden-fields.js';
@@ -376,9 +379,8 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	triggerEl.innerText = 'Saving...';
 	triggerEl.removeAttribute('data-trigger');
 	let itemId = itemEl.getAttribute('data-item');
-	let itemData = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
-	let zoteroLib = new Zotero.Library('user', this.zotero.config.zorgIntegration.userID);
-	let zoteroItem = new Zotero.Item();
+	let sourceItem = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
+	let clonedItem = {};
 	let ignoredFields = [
 		'mimeType',
 		'linkMode',
@@ -388,7 +390,6 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 		'version',
 		'key',
 		'collections',
-		'relations',
 		'parentItem',
 		'contentType',
 		'filename',
@@ -397,23 +398,35 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 		'dateModified'
 	];
 
-	zoteroItem.initEmpty(itemData.data.itemType).then(function() {
-		_.forEach(itemData.data, (value, key) => {
-			if(!_.includes(ignoredFields, key)) {
-				zoteroItem.apiObj[key] = value;
-			}
-		});
-		zoteroItem.associateWithLibrary(zoteroLib);
-		let writePromise = zoteroItem.writeItem(zoteroItem);
-		writePromise.then(() => {
-			triggerEl.innerText = 'Saved!';
-		});
-		writePromise[writePromise.catch ? 'catch' : 'fail'](() => {
-			triggerEl.innerText = 'Error!';
-			triggerEl.setAttribute('data-trigger', 'add-to-library');
-			setTimeout(() => {
-				triggerEl.innerText = 'Add to Library';
-			}, 2000);
-		});
+	_.forEach(sourceItem.data, (value, key) => {
+		if(!_.includes(ignoredFields, key)) {
+			clonedItem[key] = value;
+		}
+	});
+
+	if(!clonedItem.relations) {
+		clonedItem.relations = {};
+	}
+	// console.info(clonedItem);
+	// debugger;
+	clonedItem.relations = {
+		'owl:sameAs': `http://zotero.org/publications/${sourceItem.library.id}/items/${itemId}`
+	};
+
+	let writePromise = this.zotero.postItems(
+		this.zotero.config.zorgIntegration.userID,
+		[clonedItem],
+		{ key: this.zotero.config.zorgIntegration.apiKey }
+	);
+
+	writePromise.then(() => {
+		triggerEl.innerText = 'Saved!';
+	});
+	writePromise.catch(() => {
+		triggerEl.innerText = 'Error!';
+		triggerEl.setAttribute('data-trigger', 'add-to-library');
+		setTimeout(() => {
+			triggerEl.innerText = 'Add to Library';
+		}, 2000);
 	});
 }
