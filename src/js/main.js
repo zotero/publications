@@ -221,6 +221,7 @@ ZoteroPublications.prototype.postEndpoint = function(endpoint, data, params = {}
  *                        		in case of any network/response problems
  */
 ZoteroPublications.prototype.getPublications = function(userId, params = {}) {
+	this.userId = userId;
 	return this.getEndpoint(`users/${userId}/publications/items`, params);
 };
 
