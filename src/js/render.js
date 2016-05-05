@@ -411,8 +411,7 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	if(!clonedItem.relations) {
 		clonedItem.relations = {};
 	}
-	// console.info(clonedItem);
-	// debugger;
+
 	clonedItem.relations = {
 		'owl:sameAs': `http://zotero.org/publications/${sourceItem.library.id}/items/${itemId}`
 	};
