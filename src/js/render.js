@@ -366,7 +366,7 @@ ZoteroRenderer.prototype.toggleDetails = function(itemEl, override) {
  * @param  {string} itemId
  */
 ZoteroRenderer.prototype.expandDetails = function(itemId) {
-	let itemEl = document.getElementById(itemId);
+	let itemEl = document.getElementById(`item-${itemId}`);
 	this.toggleDetails(itemEl, true);
 	once(itemEl, transitionend(), () => {
 		itemEl.scrollIntoView();
