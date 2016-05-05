@@ -40,8 +40,6 @@
 								<div class="zotero-meta-value">
 									<% if(keys[i] === 'itemType') { %>
 										<%- obj.renderer.typeMap[obj.data[keys[i]]] %>
-									<% } else if(keys[i] === 'dateModified' || keys[i] === 'dateAdded') { %>
-										<%- Date.toLocaleString ? new Date(obj.data[keys[i]]).toLocaleString() : new Date(obj.data[keys[i]]) %>
 									<% } else { %>
 										<%- obj.data[keys[i]] %>
 									<% } %>

@@ -17,5 +17,9 @@ module.exports = [
 	'filename',
 	'tags',
 	'creators',
-	'abstractNote' //displayed separately
+	'abstractNote', //displayed separately
+	'dateModified',
+	'dateAdded',
+	'accessDate',
+	'libraryCatalog'
 ];
