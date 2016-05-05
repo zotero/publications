@@ -1,4 +1,4 @@
-<li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="<%- obj.item.key %>" role="listitem">
+<li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="item-<%- obj.item.key %>" role="listitem">
 	<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>
 
 	<!-- Citation -->
@@ -12,7 +12,7 @@
 	
 	<div class="zotero-item-actions">
 		<!-- Details toggle -->
-		<a href="" data-trigger="details" aria-controls="<%- obj.item.key %>-details">
+		<a href="" data-trigger="details" aria-controls="item-<%- obj.item.key %>-details">
 			Details
 		</a>
 		<% if(obj.renderer.zotero.config.zorgIntegration) { %>
@@ -23,7 +23,7 @@
 	</div>
 	
 	<!-- Details -->
-	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="<%- obj.item.key %>-details">
+	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-<%- obj.item.key %>-details">
 		<div class="zotero-details-inner">
 			<div class="zotero-meta">
 				<% if(obj.item.data[Symbol.for('authors')]) { %>
@@ -83,17 +83,17 @@
 				<div class="zotero-toolbar">
 					<ul class="zotero-list-inline" role="tablist">
 						<li class="zotero-tab" >
-							<a href="" data-trigger="cite" role="tab" aria-selected="false" aria-controls="<%- obj.item.key %>-cite">Cite</a>
+							<a href="" data-trigger="cite" role="tab" aria-selected="false" aria-controls="item-<%- obj.item.key %>-cite">Cite</a>
 						</li>
 						<li class="zotero-tab">
-							<a href="" data-trigger="export" role="tab" aria-selected="false" aria-controls="<%- obj.item.key %>-export">Export</a>
+							<a href="" data-trigger="export" role="tab" aria-selected="false" aria-controls="item-<%- obj.item.key %>-export">Export</a>
 						</li>
 					</ul>
 				</div>
 
 				<div class="zotero-tab-content">
 					<!-- Cite -->
-					<div role="tabpanel" class="zotero-cite-container zotero-tabpanel" aria-expanded="false" id="<%- obj.item.key %>-cite">
+					<div role="tabpanel" class="zotero-cite-container zotero-tabpanel" aria-expanded="false" id="item-<%- obj.item.key %>-cite">
 						<div class="zotero-container-inner">
 							<select class="zotero-form-control" data-trigger="cite-style-selection">
 								<% for(var citationStyle in obj.renderer.zotero.config.citeStyleOptions) { %>
@@ -102,15 +102,15 @@
 									</option>
 								<% } %>
 							</select>
-							<p class="zotero-citation" id="<%- obj.item.key %>-citation"></p>
+							<p class="zotero-citation" id="item-<%- obj.item.key %>-citation"></p>
 							<% if(!/iPhone|iPad/i.test(navigator.userAgent)) { %>
-								<button class="zotero-citation-copy tooltipped tooltipped-e" data-clipboard-target="#<%- obj.item.key %>-citation" aria-label="Copy to clipboard">Copy</button>
+								<button class="zotero-citation-copy tooltipped tooltipped-e" data-clipboard-target="#item-<%- obj.item.key %>-citation" aria-label="Copy to clipboard">Copy</button>
 							<% } %>
 						</div>
 					</div>
 
 					<!-- Export -->
-					<div role="tabpanel" class="zotero-export-container zotero-tabpanel" aria-expanded="false" aria-hidden="true" id="<%- obj.item.key %>-export">
+					<div role="tabpanel" class="zotero-export-container zotero-tabpanel" aria-expanded="false" aria-hidden="true" id="item-<%- obj.item.key %>-export">
 						<div class="zotero-container-inner">
 							<select class="zotero-form-control" data-trigger="export-format-selection">
 								<% for(var exportFormat in obj.renderer.zotero.config.exportFormats) { %>
