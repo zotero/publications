@@ -8,7 +8,6 @@
 	<% } else { %>
 		<%= obj.renderer.renderItemTemplated(obj.item) %>
 	<% } %>
-
 	
 	<div class="zotero-item-actions">
 		<!-- Details toggle -->

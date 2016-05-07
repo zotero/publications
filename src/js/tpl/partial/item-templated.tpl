@@ -6,6 +6,7 @@
 			<%- obj.data.title %>
 		<% } %>
 	</h3>
+	<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 	<div class="zotero-item-subline">
 		By <%- obj.data[Symbol.for('authors')] %>
 		<% if (obj.data[Symbol.for('formattedDate')]) { %>
@@ -20,6 +21,7 @@
 			<%- obj.data.title %>
 		<% } %>
 	</h3>
+	<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 	<div class="zotero-item-subline">
 		<%- obj.data.journalAbbreviation %>
 		<% if (obj.data[Symbol.for('formattedDate')]) { %>
@@ -34,6 +36,7 @@
 			<%- obj.data.title %>
 		<% } %>
 	</h3>
+	<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 	<div class="zotero-item-subline">
 		<%- obj.data.publicationTitle %>
 		<% if (obj.data[Symbol.for('formattedDate')]) { %>
@@ -48,6 +51,7 @@
 			<%- obj.data.title %>
 		<% } %>
 	</h3>
+	<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 	<div class="zotero-item-subline">
 		<%- obj.data.blogTitle %>
 		<% if (obj.data[Symbol.for('formattedDate')]) { %>
@@ -62,6 +66,7 @@
 			<%- obj.data.title %>
 		<% } %>
 	</h3>
+	<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 
 	<% if (obj.item[Symbol.for('authors')] || obj.data[Symbol.for('formattedDate')]) { %>
 		<div class="zotero-item-subline">
