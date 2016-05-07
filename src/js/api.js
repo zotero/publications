@@ -73,10 +73,7 @@ export function processResponse(response, config) {
 						index[item.data.parentItem][VIEW_ONLINE_URL] = item.url;
 					} else if(item.links && item.links.enclosure && item.links.enclosure.href) {
 						index[item.data.parentItem][VIEW_ONLINE_URL] = item.links.enclosure.href;
-					} else {
-						index[item.data.parentItem][CHILD_ATTACHMENTS].push(item);
 					}
-				} else {
 					index[item.data.parentItem][CHILD_ATTACHMENTS].push(item);
 				}
 			} else {
