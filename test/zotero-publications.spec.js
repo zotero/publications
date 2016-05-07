@@ -114,7 +114,7 @@ describe('Zotero Publications', function() {
 		expect(data[2][CHILD_NOTES][0]).toBeDefined();
 		expect(data[2][CHILD_NOTES][0].key).toEqual('NOTE');
 		expect(data[0][CHILD_ATTACHMENTS][0]).toBeDefined();
-		expect(data[0][CHILD_ATTACHMENTS][0].key).toEqual('IJKL');
+		expect(data[0][CHILD_ATTACHMENTS][0].key).toEqual('FGHI');
 	});
 
 	it('should group items by type', function() {
