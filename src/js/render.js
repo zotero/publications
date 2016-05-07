@@ -10,6 +10,7 @@ import brandingTpl from './tpl/partial/branding.tpl';
 import exportTpl from './tpl/partial/export.tpl';
 import groupViewTpl from './tpl/group-view.tpl';
 import plainViewTpl from './tpl/plain-view.tpl';
+import attachmentIndicatorTpl from './tpl/partial/item-attachment-indicator.tpl';
 import {
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE
@@ -164,6 +165,18 @@ ZoteroRenderer.prototype.renderBranding = function() {
 		return '';
 	}
 };
+
+/**
+ * Render an icon next to items with attachments available
+ * @param  {Object} zoteroItem       - Single Zotero item data
+ * @return {String}
+ */
+ZoteroRenderer.prototype.renderAttachmentIndicator = function(zoteroItem) {
+	return attachmentIndicatorTpl({
+		'item': zoteroItem,
+		'renderer': this
+	});
+}
 
 /**
  * Render Zotero publications into a DOM element

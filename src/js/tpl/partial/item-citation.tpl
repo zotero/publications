@@ -6,4 +6,5 @@
 	<% } else { %>
 		<%= obj.item.citation %>
 	<% } %>
+	<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 </h3>
