@@ -426,7 +426,7 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	}
 
 	clonedItem.relations = {
-		'owl:sameAs': `http://zotero.org/publications/${sourceItem.library.id}/items/${itemId}`
+		'owl:sameAs': `http://zotero.org/users/${sourceItem.library.id}/publications/items/${itemId}`
 	};
 
 	let writePromise = this.zotero.postItems(
