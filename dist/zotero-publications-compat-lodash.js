@@ -20762,7 +20762,7 @@ ZoteroRenderer.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
 	}
 
 	clonedItem.relations = {
-		'owl:sameAs': 'http://zotero.org/publications/' + sourceItem.library.id + '/items/' + itemId
+		'owl:sameAs': 'http://zotero.org/users/' + sourceItem.library.id + '/publications/items/' + itemId
 	};
 
 	var writePromise = this.zotero.postItems(this.zotero.config.zorgIntegration.userID, [clonedItem], { key: this.zotero.config.zorgIntegration.apiKey });
