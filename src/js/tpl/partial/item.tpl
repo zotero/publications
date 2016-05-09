@@ -27,7 +27,7 @@
 			<div class="zotero-meta">
 				<% if(obj.item.data[Symbol.for('authors')]) { %>
 					<div class="zotero-meta-item">
-						<div class="zotero-meta-label">Authors</div>
+						<div class="zotero-meta-label">Creators</div>
 						<div class="zotero-meta-value"><%- obj.item.data[Symbol.for('authors')] %></div>
 					</div>
 				<% } %>
