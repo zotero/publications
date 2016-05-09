@@ -21,5 +21,7 @@ module.exports = [
 	'dateModified',
 	'dateAdded',
 	'accessDate',
-	'libraryCatalog'
+	'libraryCatalog',
+	'title',
+	'shortTitle'
 ];
