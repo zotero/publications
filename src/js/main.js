@@ -41,36 +41,27 @@ export function ZoteroPublications() {
 		style: this.config.citationStyle
 	});
 
-	function init() {
-		if(this.config.zorgIntegration) {
-			this.config.zorgIntegration = typeof Zotero !== 'undefined' ?
-				(Zotero.config && Zotero.config.loggedInUser)
-				|| Zotero.currentUser : false;
-			this.config.zorgIntegration['apiKey'] = Zotero.config.apiKey;
-		}
-
-		if(arguments.length > 1) {
-			return this.render(arguments[0], arguments[1]);
-		}
-	}
-
-	let promise = new Promise((resolve, reject) => {
-		var possiblePromise;
+	this.ready = new Promise((resolve, reject) => {
 		if(typeof document !== 'undefined' && document.readyState === 'loading') {
 			document.addEventListener('DOMContentLoaded', (ev) => {
-				possiblePromise = init.apply(this, arguments);
+				resolve();
 			});
 		} else {
-			possiblePromise = init.apply(this, arguments);
+			resolve();
 		}
-		if(possiblePromise && possiblePromise.then) {
-			possiblePromise.then((result) => resolve(result));
-			possiblePromise.catch((result) => reject(result));
+	});
+
+	this.ready.then(() => {
+		this.config.zorgIntegration = this.config.zorgIntegration &&
+										typeof Zotero !== 'undefined' ? (Zotero.config && Zotero.config.loggedInUser)
+										|| Zotero.currentUser : false;
+		if(this.config.zorgIntegration) {
+			this.config.zorgIntegration['apiKey'] = Zotero.config.apiKey;
 		}
 	});
 
 	if(arguments.length > 1) {
-		return promise;
+		return this.render(arguments[0], arguments[1]);
 	}
 }
 
@@ -265,45 +256,51 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			if(this.config.group === 'type') {
 				data.groupByType(this.config.expand);
 			}
-			this.renderer = new ZoteroRenderer(container, this);
-			this.renderer.displayPublications(data);
-			if(this.config.useHistory && location.hash) {
-				this.renderer.expandDetails(location.hash.substr(1));
-			}
-			resolve();
-		} else if(typeof userIdOrendpointOrData === 'number') {
-			let userId = userIdOrendpointOrData;
-			let promise = this.getPublications(userId);
-			this.renderer = new ZoteroRenderer(container, this);
-			promise.then(data => {
-				if(this.config.group === 'type') {
-					data.groupByType(this.config.expand);
-				}
+			this.ready.then(() => {
+				this.renderer = new ZoteroRenderer(container, this);
 				this.renderer.displayPublications(data);
 				if(this.config.useHistory && location.hash) {
 					this.renderer.expandDetails(location.hash.substr(1));
 				}
 				resolve();
 			});
-			promise.catch(() => {
-				reject(arguments[0]);
+		} else if(typeof userIdOrendpointOrData === 'number') {
+			let userId = userIdOrendpointOrData;
+			let promise = this.getPublications(userId);
+			this.ready.then(() => {
+				this.renderer = new ZoteroRenderer(container, this);
+				promise.then(data => {
+					if(this.config.group === 'type') {
+						data.groupByType(this.config.expand);
+					}
+					this.renderer.displayPublications(data);
+					if(this.config.useHistory && location.hash) {
+						this.renderer.expandDetails(location.hash.substr(1));
+					}
+					resolve();
+				});
+				promise.catch(() => {
+					reject(arguments[0]);
+				});
 			});
 		} else if(typeof userIdOrendpointOrData === 'string') {
 			let endpoint = userIdOrendpointOrData;
 			let promise = this.getEndpoint(endpoint);
-			this.renderer = new ZoteroRenderer(container, this);
-			promise.then(data => {
-				if(this.config.group === 'type') {
-					data.groupByType(this.config.expand);
-				}
-				this.renderer.displayPublications(data);
-				if(this.config.useHistory && location.hash) {
-					this.renderer.expandDetails(location.hash.substr(1));
-				}
-				resolve();
-			});
-			promise.catch(() => {
-				reject(arguments[0]);
+			this.ready.then(() => {
+				this.renderer = new ZoteroRenderer(container, this);
+				promise.then(data => {
+					if(this.config.group === 'type') {
+						data.groupByType(this.config.expand);
+					}
+					this.renderer.displayPublications(data);
+					if(this.config.useHistory && location.hash) {
+						this.renderer.expandDetails(location.hash.substr(1));
+					}
+					resolve();
+				});
+				promise.catch(() => {
+					reject(arguments[0]);
+				});
 			});
 		} else {
 			reject(new Error('First argument to render() method must be an endpoint or an instance of ZoteroData'));
