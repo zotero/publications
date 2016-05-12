@@ -105,7 +105,7 @@ Only applicable if grouping is enable, pre-expands selected groups. Can be an ar
 Default: 'all'
 
 **citeStyleOptions**
-A map of citation styles (key => user friendly anme) available in the "Cite" functionality select box.
+A map of citation styles (key => user friendly name) available in the "Cite" functionality select box.
 Default: List similar to citations styles pre-installed in Zotero Client
 
 **exportFormats**
