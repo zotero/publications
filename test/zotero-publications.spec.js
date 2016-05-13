@@ -83,11 +83,18 @@ describe('Zotero Publications', function() {
 		expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
 	});
 
-	it('should request items from desired enpoint', function() {
+	it('should request data from an endpoint', function() {
 		spyOn(window, 'fetch');
 		zp.getEndpoint('some/endpoint');
 		expect(window.fetch).toHaveBeenCalled();
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/some\/endpoint\?.*$/);
+	});
+
+	it('should request publications for a user', function() {
+		spyOn(window, 'fetch');
+		zp.getPublications(123);
+		expect(window.fetch).toHaveBeenCalled();
+		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/publications\/items\?.*$/);
 	});
 
 	it('should reject on failed requests', function(done) {
@@ -272,5 +279,13 @@ describe('Zotero Publications', function() {
 			expect(err instanceof Error).toBe(true);
 			done();
 		});
+	});
+
+	it('should post items', function() {
+		spyOn(window, 'fetch');
+		zp.postItems(123, {'a': 'b'});
+		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/items\?.*$/);
+		expect(Object.keys(window.fetch.calls.mostRecent().args[1])).toContain('method');
+		expect(window.fetch.calls.mostRecent().args[1]['method']).toEqual('POST');
 	});
 });
