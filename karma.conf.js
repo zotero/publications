@@ -5,8 +5,8 @@ module.exports = function(config) {
 	// var istanbul = require('browserify-istanbul');
 
 	config.set({
-	basePath: '',
-	plugins: [
+		basePath: '',
+		plugins: [
 		'karma-jasmine',
 		'karma-coverage',
 		'karma-coveralls',
@@ -15,62 +15,62 @@ module.exports = function(config) {
 		'karma-source-map-support',
 		'karma-babel-preprocessor',
 		'karma-browserify'
-	],
-	frameworks: [
+		],
+		frameworks: [
 		'jasmine',
 		'browserify',
 		'source-map-support'
-	],
-	preprocessors: {
-		'src/js/*.js': ['browserify'],
-		'test/*.js': ['browserify'],
-		'test/fixtures/*.html': ['browserify']
-	},
-	browserify: {
-		debug: true,
-		transform: [
-			['node-underscorify', {
-				'extensions': ['tpl'],
-				'requires': [{variable: '_', module: 'lodash'}],
-				'templateSettings': {
-					variable: 'obj'
-				}
-			}],
-			['babelify', {
-				'extensions': ['.js', '.tpl'],
-				'plugins': [
+		],
+		preprocessors: {
+			'src/js/*.js': ['browserify'],
+			'test/*.js': ['browserify'],
+			'test/fixtures/*.html': ['browserify']
+		},
+		browserify: {
+			debug: true,
+			transform: [
+				['node-underscorify', {
+					'extensions': ['tpl'],
+					'requires': [{variable: '_', module: 'lodash'}],
+					'templateSettings': {
+						variable: 'obj'
+					}
+				}],
+				['babelify', {
+					'extensions': ['.js', '.tpl'],
+					'plugins': [
 					'check-es2015-constants',
 					'transform-es2015-modules-commonjs'
-				]
-			}],
-			['stringify', {
-				extensions: ['.html']
-			}],
-			'browserify-istanbul'
-		]
-	},
-	babelPreprocessor: {
-		options: {
-			sourceMap: 'inline'
-		}
-	},
-	files: [
+					]
+				}],
+				['stringify', {
+					extensions: ['.html']
+				}],
+				[ 'browserify-istanbul', { instrumenterConfig: { embedSource: true } } ]
+			]
+		},
+		babelPreprocessor: {
+			options: {
+				sourceMap: 'inline'
+			}
+		},
+		files: [
 		'src/js/*.js',
 		'test/*.js'
-	],
+		],
 
-	reporters: reporters,
-	coverageReporter: {
-		//would be lcov but https://github.com/karma-runner/karma-coverage/issues/157
-		//					https://github.com/karma-runner/karma-coverage/issues/167
-		type: 'text',
-		dir: 'coverage/'
-	},
-	port: 9876,
-	colors: true,
-	logLevel: config.LOG_INFO,
-	autoWatch: true,
-	browsers: ['Chrome'],
-	singleRun: false
+		reporters: reporters,
+		coverageReporter: {
+			reporters: [
+				{ type: 'html' },
+				{ type: 'text' }
+			]
+		},
+		port: 9876,
+		colors: true,
+		logLevel: config.LOG_INFO,
+		autoWatch: true,
+		browsers: ['Chrome'],
+		singleRun: false
 	});
 };
