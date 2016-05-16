@@ -92,27 +92,38 @@ export function id(target) {
  * Finds a correct name of a transitionend event
  * @return {String} 	- transitionend event name
  */
-export function transitionend() {
+export function onTransitionEnd(target, callback, timeout) {
 	var i,
-		el = document.createElement('div'),
-		transitions = {
-			'transition': 'transitionend',
-			'OTransition': 'otransitionend',
-			'MozTransition': 'transitionend',
-			'WebkitTransition': 'webkitTransitionEnd'
-		};
+	el = document.createElement('div'),
+	eventName,
+	possibleEventNames = {
+		'transition': 'transitionend',
+		'OTransition': 'otransitionend',
+		'MozTransition': 'transitionend',
+		'WebkitTransition': 'webkitTransitionEnd'
+	};
 
-	for (i in transitions) {
-		if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
-			return transitions[i];
+	for (i in possibleEventNames) {
+		if (possibleEventNames.hasOwnProperty(i) && el.style[i] !== undefined) {
+			eventName = possibleEventNames[i];
 		}
 	}
+
+	if(timeout) {
+		setTimeout(() => {
+			callback('timeout');
+		}, timeout);
+	}
+
+	return once(target, eventName, () => {
+		callback(eventName);
+	});
 }
 
 var collapsesInProgress = {};
 
 function collapse(element) {
-	let initialHeight = window.getComputedStyle(element).height;
+	let initialHeight = getComputedStyle(element).height;
 	element.style.height = initialHeight;
 	//repaint shenanigans
 	element.offsetHeight; // eslint-disable-line no-unused-expressions
@@ -120,30 +131,30 @@ function collapse(element) {
 	_.defer(() => {
 		element.classList.add('zotero-collapsed', 'zotero-collapsing');
 		element.style.height = null;
-		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
+		collapsesInProgress[id(element)] = onTransitionEnd(element, (eventName) => {
 			element.classList.remove('zotero-collapsing');
 			element.setAttribute('aria-hidden', 'true');
-			element.setAttribute('aria-expanded', 'true');
+			element.setAttribute('aria-expanded', 'false');
 			delete collapsesInProgress[id(element)];
-		});
+		}, 500);
 	});
 }
 
 function uncollapse(element) {
 	element.classList.remove('zotero-collapsed');
-	let targetHeight = window.getComputedStyle(element).height;
+	let targetHeight = getComputedStyle(element).height;
 	element.classList.add('zotero-collapsed');
 
 	_.defer(() => {
 		element.classList.add('zotero-collapsing');
 		element.style.height = targetHeight;
-		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
+		collapsesInProgress[id(element)] = onTransitionEnd(element, (eventName) => {
 			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
 			element.setAttribute('aria-hidden', 'false');
-			element.setAttribute('aria-expanded', 'false');
+			element.setAttribute('aria-expanded', 'true');
 			element.style.height = null;
 			delete collapsesInProgress[id(element)];
-		});
+		}, 500);
 	});
 }
 
@@ -214,4 +225,8 @@ export function clipboardFallbackMessage() {
 	}
 
 	return actionMsg;
+}
+
+export function getIdFromFragmentIdentifier() {
+	return location.hash && location.hash.substr(1);
 }
