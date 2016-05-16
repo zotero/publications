@@ -22,7 +22,7 @@ import {
 	showTab,
 	clipboardFallbackMessage,
 	once,
-	transitionend
+	onTransitionEnd
 } from './utils.js';
 import {
 	post
@@ -379,10 +379,13 @@ ZoteroRenderer.prototype.toggleDetails = function(itemEl, override) {
  * @param  {string} itemId
  */
 ZoteroRenderer.prototype.expandDetails = function(itemId) {
-	let itemEl = document.getElementById(`item-${itemId}`);
-	this.toggleDetails(itemEl, true);
-	once(itemEl, transitionend(), () => {
-		itemEl.scrollIntoView();
+	return new Promise((resolve, reject) => {
+		let itemEl = this.container.querySelector(`[id=item-${itemId}]`);
+		this.toggleDetails(itemEl, true);
+		onTransitionEnd(itemEl, (eventName) => {
+			itemEl.scrollIntoView();
+			resolve();
+		}, 500);
 	});
 }
 

@@ -21,6 +21,9 @@ import {
 import {
 	ZoteroPublications
 } from '../src/js/main.js';
+import {
+	getIdFromFragmentIdentifier
+} from '../src/js/utils.js';
 
 describe('Zotero Publications', function() {
 	var zp,
@@ -95,6 +98,13 @@ describe('Zotero Publications', function() {
 		zp.getPublications(123);
 		expect(window.fetch).toHaveBeenCalled();
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/publications\/items\?.*$/);
+	});
+
+	it('should request a single publication', function() {
+		spyOn(window, 'fetch');
+		zp.getPublication(4567, 123);
+		expect(window.fetch).toHaveBeenCalled();
+		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/publications\/items\/4567\/?.*$/);
 	});
 
 	it('should reject on failed requests', function(done) {
@@ -197,11 +207,15 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should render local items using Zotero object and render() method', function(done) {
+		var zpGroup = new ZoteroPublications({
+			group: 'type'
+		});
+
 		spyOn(window, 'fetch');
-		let zd = new ZoteroPublications.ZoteroData(data, zp.config);
-		zp.render(zd, container).then(function() {
+		let zd = new ZoteroPublications.ZoteroData(data, zpGroup.config);
+		zpGroup.render(zd, container).then(function() {
 			expect(window.fetch).not.toHaveBeenCalled();
-			expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*$/);
+			expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
 			done();
 		});
 	});
@@ -275,7 +289,6 @@ describe('Zotero Publications', function() {
 			fail();
 			done();
 		}).catch(function(err) {
-			console.warn(err);
 			expect(err instanceof Error).toBe(true);
 			done();
 		});
@@ -283,9 +296,83 @@ describe('Zotero Publications', function() {
 
 	it('should post items', function() {
 		spyOn(window, 'fetch');
-		zp.postItems(123, {'a': 'b'});
-		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/items\?.*$/);
+		zp.postItems(123, {a: 'b'}, {query: 'param'});
+		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/items\?.*?query=param.*$/);
 		expect(Object.keys(window.fetch.calls.mostRecent().args[1])).toContain('method');
 		expect(window.fetch.calls.mostRecent().args[1]['method']).toEqual('POST');
+	});
+
+	it('should pick up Zotero API details from global object on the old site', function(done) {
+		window.Zotero = {
+			config: {
+				apiKey: 'lorem ipsum'
+			},
+			currentUser: {
+				slug: 'foobar'
+			}
+		}
+
+		let zpIntegrated = new ZoteroPublications({
+			zorgIntegration: true
+		});
+
+		zpIntegrated.ready.then(function() {
+			expect(zpIntegrated.config.zorgIntegration.slug).toEqual('foobar');
+			expect(zpIntegrated.config.zorgIntegration.apiKey).toEqual('lorem ipsum');
+			done();
+		});
+	});
+
+	it('should pick up Zotero API details from global object on the new site', function(done) {
+		window.Zotero = {
+			config: {
+				apiKey: 'lorem ipsum',
+				loggedInUser: {
+					slug: 'foobar'
+				}
+			}
+		};
+
+		let zpIntegrated = new ZoteroPublications({
+			zorgIntegration: true
+		});
+
+		zpIntegrated.ready.then(function() {
+			expect(zpIntegrated.config.zorgIntegration.slug).toEqual('foobar');
+			expect(zpIntegrated.config.zorgIntegration.apiKey).toEqual('lorem ipsum');
+			done();
+		});
+	});
+
+	it('should expand selected item', function(done) {
+		spyOn(window, 'fetch').and.returnValue(
+			Promise.resolve(
+				new Response(
+					JSON.stringify(data),
+					{ status: 200,
+					'headers': new Headers({
+						'Link': 'blah'
+					})}
+				)
+			)
+		);
+
+		spyOn(window.history, 'pushState').and.returnValue();
+
+		let zp = new ZoteroPublications({
+			useHistory: true
+		});
+
+		zp.render(123, container).then(function() {
+			zp.renderer.expandDetails('EFGH').then(function() {
+				setTimeout(function(argument) {
+					let itemDetailsEl = container.querySelector('[id=item-EFGH-details]');
+					expect(itemDetailsEl.classList.contains('zotero-collapsed')).toEqual(false);
+					expect(itemDetailsEl.getAttribute('aria-hidden')).toEqual('false');
+					expect(itemDetailsEl.getAttribute('aria-expanded')).toEqual('true');
+					done();
+				}, 510); //wait for the fallback transition to fire
+			});
+		});
 	});
 });

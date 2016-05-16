@@ -23,7 +23,7 @@ import {
 export function ZoteroPublications() {
 	if(arguments.length > 3) {
 		return Promise.reject(
-			new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.')
+			new Error(`ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.`)
 		);
 	}
 
