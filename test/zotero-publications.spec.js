@@ -357,8 +357,6 @@ describe('Zotero Publications', function() {
 			)
 		);
 
-		spyOn(window.history, 'pushState').and.returnValue();
-
 		let zp = new ZoteroPublications({
 			useHistory: true
 		});
@@ -367,6 +365,8 @@ describe('Zotero Publications', function() {
 			zp.renderer.expandDetails('EFGH').then(function() {
 				setTimeout(function(argument) {
 					let itemDetailsEl = container.querySelector('[id=item-EFGH-details]');
+					let itemEl = container.querySelector('[id=item-EFGH]');
+					expect(itemEl.classList.contains('zotero-details-open')).toEqual(true);
 					expect(itemDetailsEl.classList.contains('zotero-collapsed')).toEqual(false);
 					expect(itemDetailsEl.getAttribute('aria-hidden')).toEqual('false');
 					expect(itemDetailsEl.getAttribute('aria-expanded')).toEqual('true');
@@ -374,5 +374,31 @@ describe('Zotero Publications', function() {
 				}, 510); //wait for the fallback transition to fire
 			});
 		});
+	});
+
+	it('should pick up fragment identifier from the url', function(done) {
+		location.hash = 'EFGH';
+
+		spyOn(window, 'fetch').and.returnValue(
+			Promise.resolve(
+				new Response(
+					JSON.stringify(data),
+					{ status: 200,
+					'headers': new Headers({
+						'Link': 'blah'
+					})}
+				)
+			)
+		);
+
+		let zp = new ZoteroPublications({
+			useHistory: true
+		});
+
+		zp.render(123, container).then(function() {
+			let itemEl = container.querySelector('[id=item-EFGH]');
+			expect(itemEl.classList.contains('zotero-details-open')).toEqual(true);
+			done();
+		})
 	});
 });
