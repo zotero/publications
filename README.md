@@ -1,6 +1,7 @@
 # Zotero Publications
 
 [![Build Status](https://travis-ci.org/zotero/publications.svg?branch=master)](https://travis-ci.org/zotero/publications)
+[![Coverage Status](https://coveralls.io/repos/github/zotero/publications/badge.svg?branch=master)](https://coveralls.io/github/zotero/publications?branch=master)
 
 Overview
 --------

@@ -1,25 +1,25 @@
 /*eslint-env node */
 module.exports = function(config) {
-	var reporters = process.env.COVERALLS_REPO_TOKEN ? ['dots', 'coverage', 'coveralls'] : ['dots', 'coverage'];
+	var reporters = process.env.TRAVIS ? ['dots', 'coverage', 'coveralls'] : ['dots', 'coverage'];
 	// var stringifyTransform = require('stringify')(['html']);
 	// var istanbul = require('browserify-istanbul');
 
 	config.set({
 		basePath: '',
 		plugins: [
-		'karma-jasmine',
-		'karma-coverage',
-		'karma-coveralls',
-		'karma-chrome-launcher',
-		'karma-firefox-launcher',
-		'karma-source-map-support',
-		'karma-babel-preprocessor',
-		'karma-browserify'
+			'karma-jasmine',
+			'karma-coverage',
+			'karma-coveralls',
+			'karma-chrome-launcher',
+			'karma-firefox-launcher',
+			'karma-source-map-support',
+			'karma-babel-preprocessor',
+			'karma-browserify'
 		],
 		frameworks: [
-		'jasmine',
-		'browserify',
-		'source-map-support'
+			'jasmine',
+			'browserify',
+			'source-map-support'
 		],
 		preprocessors: {
 			'src/js/*.js': ['browserify'],
@@ -55,13 +55,14 @@ module.exports = function(config) {
 			}
 		},
 		files: [
-		'src/js/*.js',
-		'test/*.js'
+			'src/js/*.js',
+			'test/*.js'
 		],
 
 		reporters: reporters,
 		coverageReporter: {
 			reporters: [
+				{ type: 'lcov', dir: 'coverage/' },
 				{ type: 'html' },
 				{ type: 'text' }
 			]
