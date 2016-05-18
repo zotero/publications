@@ -1,3 +1,4 @@
+/*global Zotero: false */
 import _ from 'lodash';
 import {
 	ZoteroRenderer
@@ -41,9 +42,9 @@ export function ZoteroPublications() {
 		style: this.config.citationStyle
 	});
 
-	this.ready = new Promise((resolve, reject) => {
+	this.ready = new Promise((resolve) => {
 		if(typeof document !== 'undefined' && document.readyState === 'loading') {
-			document.addEventListener('DOMContentLoaded', (ev) => {
+			document.addEventListener('DOMContentLoaded', () => {
 				resolve();
 			});
 		} else {
@@ -117,7 +118,7 @@ ZoteroPublications.prototype.defaults = {
 		sort: 'desc',
 		start: '0',
 		include: ['data'],
-		limit: 100,
+		limit: 100
 	}
 };
 
@@ -247,65 +248,35 @@ ZoteroPublications.prototype.postItems = function(userId, data, params = {}) {
  * @return {Promise}                          - Resolved when rendered or rejected on error.
  */
 ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container) {
-	return new Promise(function(resolve, reject) {
+	return new Promise((resolve, reject) => {
+		var promise;
+
 		if(!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
+		this.renderer = new ZoteroRenderer(container, this);
+
 		if(userIdOrendpointOrData instanceof ZoteroData) {
-			let data = userIdOrendpointOrData;
-			if(this.config.group === 'type') {
-				data.groupByType(this.config.expand);
-			}
-			this.ready.then(() => {
-				this.renderer = new ZoteroRenderer(container, this);
-				this.renderer.displayPublications(data);
-				if(this.config.useHistory && location.hash) {
-					this.renderer.expandDetails(location.hash.substr(1));
-				}
-				resolve();
-			});
+			promise = Promise.resolve(userIdOrendpointOrData);
 		} else if(typeof userIdOrendpointOrData === 'number') {
-			let userId = userIdOrendpointOrData;
-			let promise = this.getPublications(userId);
-			this.ready.then(() => {
-				this.renderer = new ZoteroRenderer(container, this);
-				promise.then(data => {
-					if(this.config.group === 'type') {
-						data.groupByType(this.config.expand);
-					}
-					this.renderer.displayPublications(data);
-					if(this.config.useHistory && location.hash) {
-						this.renderer.expandDetails(location.hash.substr(1));
-					}
-					resolve();
-				});
-				promise.catch(() => {
-					reject(arguments[0]);
-				});
-			});
+			promise = this.getPublications(userIdOrendpointOrData);
 		} else if(typeof userIdOrendpointOrData === 'string') {
-			let endpoint = userIdOrendpointOrData;
-			let promise = this.getEndpoint(endpoint);
-			this.ready.then(() => {
-				this.renderer = new ZoteroRenderer(container, this);
-				promise.then(data => {
-					if(this.config.group === 'type') {
-						data.groupByType(this.config.expand);
-					}
-					this.renderer.displayPublications(data);
-					if(this.config.useHistory && location.hash) {
-						this.renderer.expandDetails(location.hash.substr(1));
-					}
-					resolve();
-				});
-				promise.catch(() => {
-					reject(arguments[0]);
-				});
-			});
+			promise = this.getEndpoint(userIdOrendpointOrData);
 		} else {
 			reject(new Error('First argument to render() method must be an endpoint or an instance of ZoteroData'));
 		}
-	}.bind(this));
+
+		Promise.all([promise, this.ready]).then(([data]) => {
+			if(this.config.group === 'type') {
+				data.groupByType(this.config.expand);
+			}
+			this.renderer.displayPublications(data);
+			if(this.config.useHistory && location.hash) {
+					this.renderer.expandDetails(location.hash.substr(1));
+				}
+			resolve();
+		}).catch(reject);
+	});
 };
 
 /**
