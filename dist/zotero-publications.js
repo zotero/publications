@@ -1654,6 +1654,9 @@ var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
     draining = false;
     if (currentQueue.length) {
         queue = currentQueue.concat(queue);
@@ -1922,12 +1925,23 @@ function processResponse(response, config) {
 						index[item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
 					}
 					if (!index[item.data.parentItem][_data.VIEW_ONLINE_URL]) {
+						let parsedAttachment = {};
 						if (item.data.url) {
-							index[item.data.parentItem][_data.VIEW_ONLINE_URL] = item.url;
+							index[item.data.parentItem][_data.VIEW_ONLINE_URL] = item.data.url;
+							parsedAttachment = {
+								url: item.data.url,
+								type: item.data.contentType,
+								title: item.data.title
+							};
 						} else if (item.links && item.links.enclosure && item.links.enclosure.href) {
 							index[item.data.parentItem][_data.VIEW_ONLINE_URL] = item.links.enclosure.href;
+							parsedAttachment = {
+								url: item.links.enclosure.href,
+								type: item.links.enclosure.type,
+								title: item.links.enclosure.title
+							};
 						}
-						index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(item);
+						index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(parsedAttachment);
 					}
 				} else {
 					if (!index[item.data.parentItem][_data.CHILD_OTHER]) {
@@ -2398,7 +2412,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 function ZoteroPublications() {
 	if (arguments.length > 3) {
-		return Promise.reject(new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.'));
+		return Promise.reject(new Error(`ZoteroPublications takes between one and three arguments. ${ arguments.length } is too many.`));
 	}
 
 	if (arguments.length <= 1) {
@@ -3118,10 +3132,13 @@ ZoteroRenderer.prototype.toggleDetails = function (itemEl, override) {
  * @param  {string} itemId
  */
 ZoteroRenderer.prototype.expandDetails = function (itemId) {
-	let itemEl = document.getElementById(`item-${ itemId }`);
-	this.toggleDetails(itemEl, true);
-	(0, _utils.once)(itemEl, (0, _utils.transitionend)(), () => {
-		itemEl.scrollIntoView();
+	return new Promise((resolve, reject) => {
+		let itemEl = this.container.querySelector(`[id=item-${ itemId }]`);
+		this.toggleDetails(itemEl, true);
+		(0, _utils.onTransitionEnd)(itemEl, eventName => {
+			itemEl.scrollIntoView();
+			resolve();
+		}, 500);
 	});
 };
 
@@ -3292,11 +3309,7 @@ module.exports = function (obj) {
   };
   __p += '';
   if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
-    __p += '\n\t';
-    if (obj.item[Symbol.for('childAttachments')][0].url || obj.item[Symbol.for('childAttachments')][0].links && obj.item[Symbol.for('childAttachments')][0].links.enclosure && obj.item[Symbol.for('childAttachments')][0].links.enclosure.href) {
-      __p += '\n\t\t<a href="' + ((__t = obj.item[Symbol.for('childAttachments')][0].url || obj.item[Symbol.for('childAttachments')][0].links && obj.item[Symbol.for('childAttachments')][0].links.enclosure && obj.item[Symbol.for('childAttachments')][0].links.enclosure.href) == null ? '' : _.escape(__t)) + '">\n\t\t\t<span class="zotero-icon zotero-icon-download" role="presentation" aria-hidden="true"></span>\n\t\t</a>\n\t';
-    }
-    __p += '\n';
+    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('childAttachments')][0].url) == null ? '' : _.escape(__t)) + '" class="zotero-attachment-indicator">\n\t\t<span class="zotero-icon zotero-icon-' + ((__t = obj.item[Symbol.for('childAttachments')][0].type === 'application/pdf' ? 'pdf' : 'download') == null ? '' : _.escape(__t)) + '" role="presentation" aria-hidden="true"></span>\n\t</a>\n';
   }
   __p += '';
   return __p;
@@ -3504,7 +3517,7 @@ module.exports = function (obj) {
 
         __p += '\n\t\t\t\t\t\t';
         if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
-          __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) == null ? '' : _.escape(__t)) + '">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
+          __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
         }
         __p += '\n\t\t\t\t\t';
       }
@@ -3669,10 +3682,11 @@ exports.formatCategoryName = formatCategoryName;
 exports.closest = closest;
 exports.once = once;
 exports.id = id;
-exports.transitionend = transitionend;
+exports.onTransitionEnd = onTransitionEnd;
 exports.toggleCollapse = toggleCollapse;
 exports.showTab = showTab;
 exports.clipboardFallbackMessage = clipboardFallbackMessage;
+exports.getIdFromFragmentIdentifier = getIdFromFragmentIdentifier;
 
 var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
 
@@ -3771,27 +3785,38 @@ function id(target) {
  * Finds a correct name of a transitionend event
  * @return {String} 	- transitionend event name
  */
-function transitionend() {
+function onTransitionEnd(target, callback, timeout) {
 	var i,
 	    el = document.createElement('div'),
-	    transitions = {
+	    eventName,
+	    possibleEventNames = {
 		'transition': 'transitionend',
 		'OTransition': 'otransitionend',
 		'MozTransition': 'transitionend',
 		'WebkitTransition': 'webkitTransitionEnd'
 	};
 
-	for (i in transitions) {
-		if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
-			return transitions[i];
+	for (i in possibleEventNames) {
+		if (possibleEventNames.hasOwnProperty(i) && el.style[i] !== undefined) {
+			eventName = possibleEventNames[i];
 		}
 	}
+
+	if (timeout) {
+		setTimeout(() => {
+			callback('timeout');
+		}, timeout);
+	}
+
+	return once(target, eventName, () => {
+		callback(eventName);
+	});
 }
 
 var collapsesInProgress = {};
 
 function collapse(element) {
-	let initialHeight = window.getComputedStyle(element).height;
+	let initialHeight = getComputedStyle(element).height;
 	element.style.height = initialHeight;
 	//repaint shenanigans
 	element.offsetHeight; // eslint-disable-line no-unused-expressions
@@ -3799,30 +3824,30 @@ function collapse(element) {
 	_lodash2.default.defer(() => {
 		element.classList.add('zotero-collapsed', 'zotero-collapsing');
 		element.style.height = null;
-		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
+		collapsesInProgress[id(element)] = onTransitionEnd(element, eventName => {
 			element.classList.remove('zotero-collapsing');
 			element.setAttribute('aria-hidden', 'true');
-			element.setAttribute('aria-expanded', 'true');
+			element.setAttribute('aria-expanded', 'false');
 			delete collapsesInProgress[id(element)];
-		});
+		}, 500);
 	});
 }
 
 function uncollapse(element) {
 	element.classList.remove('zotero-collapsed');
-	let targetHeight = window.getComputedStyle(element).height;
+	let targetHeight = getComputedStyle(element).height;
 	element.classList.add('zotero-collapsed');
 
 	_lodash2.default.defer(() => {
 		element.classList.add('zotero-collapsing');
 		element.style.height = targetHeight;
-		collapsesInProgress[id(element)] = once(element, transitionend(), () => {
+		collapsesInProgress[id(element)] = onTransitionEnd(element, eventName => {
 			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
 			element.setAttribute('aria-hidden', 'false');
-			element.setAttribute('aria-expanded', 'false');
+			element.setAttribute('aria-expanded', 'true');
 			element.style.height = null;
 			delete collapsesInProgress[id(element)];
-		});
+		}, 500);
 	});
 }
 
@@ -3891,6 +3916,10 @@ function clipboardFallbackMessage() {
 	}
 
 	return actionMsg;
+}
+
+function getIdFromFragmentIdentifier() {
+	return location.hash && location.hash.substr(1);
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
