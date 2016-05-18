@@ -69,12 +69,23 @@ export function processResponse(response, config) {
 					index[item.data.parentItem][CHILD_ATTACHMENTS] = [];
 				}
 				if(!index[item.data.parentItem][VIEW_ONLINE_URL]) {
+					let parsedAttachment = {};
 					if(item.data.url) {
-						index[item.data.parentItem][VIEW_ONLINE_URL] = item.url;
+						index[item.data.parentItem][VIEW_ONLINE_URL] = item.data.url;
+						parsedAttachment = {
+							url: item.data.url,
+							type: item.data.contentType,
+							title: item.data.title
+						}
 					} else if(item.links && item.links.enclosure && item.links.enclosure.href) {
 						index[item.data.parentItem][VIEW_ONLINE_URL] = item.links.enclosure.href;
+						parsedAttachment = {
+							url: item.links.enclosure.href,
+							type: item.links.enclosure.type,
+							title: item.links.enclosure.title
+						}
 					}
-					index[item.data.parentItem][CHILD_ATTACHMENTS].push(item);
+					index[item.data.parentItem][CHILD_ATTACHMENTS].push(parsedAttachment);
 				}
 			} else {
 				if(!index[item.data.parentItem][CHILD_OTHER]) {
