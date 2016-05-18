@@ -21,7 +21,7 @@ export const FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
  * @param  {Object} config     - Global ZoteroPublications config
  * @return {Object[]}          - Processed API response
  */
-export function processResponse(response, config) {
+export function processResponse(response) {
 	if(response) {
 		let childItems = [];
 		let index = {};

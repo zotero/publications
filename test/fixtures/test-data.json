@@ -3,7 +3,18 @@
     "key": "ABCD",
     "data": {
       "itemType": "book",
-      "abstractNote": ""
+      "abstractNote": "",
+      "creators": [
+        {
+          "creatorType": "author",
+          "name": "Yoda"
+        },
+        {
+          "creatorType": "editor",
+          "firstName": "Luke",
+          "lastName": "Skywalker"
+        }
+      ]
     },
     "meta": {
       "parsedDate": "2014-02-01"
