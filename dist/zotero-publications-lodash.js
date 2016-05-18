@@ -18176,14 +18176,16 @@ function processResponse(response, config) {
 							parsedAttachment = {
 								url: item.data.url,
 								type: item.data.contentType,
-								title: item.data.title
+								title: item.data.title,
+								key: item.key
 							};
 						} else if (item.links && item.links.enclosure && item.links.enclosure.href) {
 							index[item.data.parentItem][_data.VIEW_ONLINE_URL] = item.links.enclosure.href;
 							parsedAttachment = {
 								url: item.links.enclosure.href,
 								type: item.links.enclosure.type,
-								title: item.links.enclosure.title
+								title: item.links.enclosure.title,
+								key: item.key
 							};
 						}
 						index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(parsedAttachment);
