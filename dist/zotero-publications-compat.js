@@ -1140,7 +1140,7 @@ module.exports = function(it){
   return toString.call(it).slice(8, -1);
 };
 },{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_core.js":[function(require,module,exports){
-var core = module.exports = {version: '2.2.2'};
+var core = module.exports = {version: '2.4.0'};
 if(typeof __e == 'number')__e = core; // eslint-disable-line no-undef
 },{}],"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js":[function(require,module,exports){
 // optional / simple context binding
@@ -1245,20 +1245,26 @@ var ctx         = require('./_ctx')
   , isArrayIter = require('./_is-array-iter')
   , anObject    = require('./_an-object')
   , toLength    = require('./_to-length')
-  , getIterFn   = require('./core.get-iterator-method');
-module.exports = function(iterable, entries, fn, that, ITERATOR){
+  , getIterFn   = require('./core.get-iterator-method')
+  , BREAK       = {}
+  , RETURN      = {};
+var exports = module.exports = function(iterable, entries, fn, that, ITERATOR){
   var iterFn = ITERATOR ? function(){ return iterable; } : getIterFn(iterable)
     , f      = ctx(fn, that, entries ? 2 : 1)
     , index  = 0
-    , length, step, iterator;
+    , length, step, iterator, result;
   if(typeof iterFn != 'function')throw TypeError(iterable + ' is not iterable!');
   // fast case for arrays with default iterator
   if(isArrayIter(iterFn))for(length = toLength(iterable.length); length > index; index++){
-    entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
+    result = entries ? f(anObject(step = iterable[index])[0], step[1]) : f(iterable[index]);
+    if(result === BREAK || result === RETURN)return result;
   } else for(iterator = iterFn.call(iterable); !(step = iterator.next()).done; ){
-    call(iterator, f, step.value, entries);
+    result = call(iterator, f, step.value, entries);
+    if(result === BREAK || result === RETURN)return result;
   }
 };
+exports.BREAK  = BREAK;
+exports.RETURN = RETURN;
 },{"./_an-object":"/srv/zotero/my-publications/node_modules/core-js/modules/_an-object.js","./_ctx":"/srv/zotero/my-publications/node_modules/core-js/modules/_ctx.js","./_is-array-iter":"/srv/zotero/my-publications/node_modules/core-js/modules/_is-array-iter.js","./_iter-call":"/srv/zotero/my-publications/node_modules/core-js/modules/_iter-call.js","./_to-length":"/srv/zotero/my-publications/node_modules/core-js/modules/_to-length.js","./core.get-iterator-method":"/srv/zotero/my-publications/node_modules/core-js/modules/core.get-iterator-method.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js":[function(require,module,exports){
 // https://github.com/zloirock/core-js/issues/86#issuecomment-115759028
 var global = module.exports = typeof window != 'undefined' && window.Math == Math
@@ -1454,58 +1460,68 @@ var global    = require('./_global')
   , Observer  = global.MutationObserver || global.WebKitMutationObserver
   , process   = global.process
   , Promise   = global.Promise
-  , isNode    = require('./_cof')(process) == 'process'
-  , head, last, notify;
+  , isNode    = require('./_cof')(process) == 'process';
 
-var flush = function(){
-  var parent, fn;
-  if(isNode && (parent = process.domain))parent.exit();
-  while(head){
-    fn = head.fn;
-    fn(); // <- currently we use it only for Promise - try / catch not required
-    head = head.next;
-  } last = undefined;
-  if(parent)parent.enter();
-};
+module.exports = function(){
+  var head, last, notify;
 
-// Node.js
-if(isNode){
-  notify = function(){
-    process.nextTick(flush);
+  var flush = function(){
+    var parent, fn;
+    if(isNode && (parent = process.domain))parent.exit();
+    while(head){
+      fn   = head.fn;
+      head = head.next;
+      try {
+        fn();
+      } catch(e){
+        if(head)notify();
+        else last = undefined;
+        throw e;
+      }
+    } last = undefined;
+    if(parent)parent.enter();
   };
-// browsers with MutationObserver
-} else if(Observer){
-  var toggle = true
-    , node   = document.createTextNode('');
-  new Observer(flush).observe(node, {characterData: true}); // eslint-disable-line no-new
-  notify = function(){
-    node.data = toggle = !toggle;
-  };
-// environments with maybe non-completely correct, but existent Promise
-} else if(Promise && Promise.resolve){
-  notify = function(){
-    Promise.resolve().then(flush);
-  };
-// for other environments - macrotask based on:
-// - setImmediate
-// - MessageChannel
-// - window.postMessag
-// - onreadystatechange
-// - setTimeout
-} else {
-  notify = function(){
-    // strange IE + webpack dev server bug - use .call(global)
-    macrotask.call(global, flush);
-  };
-}
 
-module.exports = function(fn){
-  var task = {fn: fn, next: undefined};
-  if(last)last.next = task;
-  if(!head){
-    head = task;
-    notify();
-  } last = task;
+  // Node.js
+  if(isNode){
+    notify = function(){
+      process.nextTick(flush);
+    };
+  // browsers with MutationObserver
+  } else if(Observer){
+    var toggle = true
+      , node   = document.createTextNode('');
+    new Observer(flush).observe(node, {characterData: true}); // eslint-disable-line no-new
+    notify = function(){
+      node.data = toggle = !toggle;
+    };
+  // environments with maybe non-completely correct, but existent Promise
+  } else if(Promise && Promise.resolve){
+    var promise = Promise.resolve();
+    notify = function(){
+      promise.then(flush);
+    };
+  // for other environments - macrotask based on:
+  // - setImmediate
+  // - MessageChannel
+  // - window.postMessag
+  // - onreadystatechange
+  // - setTimeout
+  } else {
+    notify = function(){
+      // strange IE + webpack dev server bug - use .call(global)
+      macrotask.call(global, flush);
+    };
+  }
+
+  return function(fn){
+    var task = {fn: fn, next: undefined};
+    if(last)last.next = task;
+    if(!head){
+      head = task;
+      notify();
+    } last = task;
+  };
 };
 },{"./_cof":"/srv/zotero/my-publications/node_modules/core-js/modules/_cof.js","./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_task":"/srv/zotero/my-publications/node_modules/core-js/modules/_task.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/_object-create.js":[function(require,module,exports){
 // 19.1.2.2 / 15.2.3.5 Object.create(O [, Properties])
@@ -1909,10 +1925,13 @@ var store      = require('./_shared')('wks')
   , uid        = require('./_uid')
   , Symbol     = require('./_global').Symbol
   , USE_SYMBOL = typeof Symbol == 'function';
-module.exports = function(name){
+
+var $exports = module.exports = function(name){
   return store[name] || (store[name] =
     USE_SYMBOL && Symbol[name] || (USE_SYMBOL ? Symbol : uid)('Symbol.' + name));
 };
+
+$exports.store = store;
 },{"./_global":"/srv/zotero/my-publications/node_modules/core-js/modules/_global.js","./_shared":"/srv/zotero/my-publications/node_modules/core-js/modules/_shared.js","./_uid":"/srv/zotero/my-publications/node_modules/core-js/modules/_uid.js"}],"/srv/zotero/my-publications/node_modules/core-js/modules/core.get-iterator-method.js":[function(require,module,exports){
 var classof   = require('./_classof')
   , ITERATOR  = require('./_wks')('iterator')
@@ -1983,7 +2002,7 @@ var LIBRARY            = require('./_library')
   , setProto           = require('./_set-proto').set
   , speciesConstructor = require('./_species-constructor')
   , task               = require('./_task').set
-  , microtask          = require('./_microtask')
+  , microtask          = require('./_microtask')()
   , PROMISE            = 'Promise'
   , TypeError          = global.TypeError
   , process            = global.process
@@ -2909,6 +2928,9 @@ var currentQueue;
 var queueIndex = -1;
 
 function cleanUpNextTick() {
+    if (!draining || !currentQueue) {
+        return;
+    }
     draining = false;
     if (currentQueue.length) {
         queue = currentQueue.concat(queue);
@@ -3098,6 +3120,21 @@ module.exports = E;
     return
   }
 
+  var support = {
+    searchParams: 'URLSearchParams' in self,
+    iterable: 'Symbol' in self && 'iterator' in Symbol,
+    blob: 'FileReader' in self && 'Blob' in self && (function() {
+      try {
+        new Blob()
+        return true
+      } catch(e) {
+        return false
+      }
+    })(),
+    formData: 'FormData' in self,
+    arrayBuffer: 'ArrayBuffer' in self
+  }
+
   function normalizeName(name) {
     if (typeof name !== 'string') {
       name = String(name)
@@ -3113,6 +3150,24 @@ module.exports = E;
       value = String(value)
     }
     return value
+  }
+
+  // Build a destructive iterator for the value list
+  function iteratorFor(items) {
+    var iterator = {
+      next: function() {
+        var value = items.shift()
+        return {done: value === undefined, value: value}
+      }
+    }
+
+    if (support.iterable) {
+      iterator[Symbol.iterator] = function() {
+        return iterator
+      }
+    }
+
+    return iterator
   }
 
   function Headers(headers) {
@@ -3170,6 +3225,28 @@ module.exports = E;
     }, this)
   }
 
+  Headers.prototype.keys = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push(name) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.values = function() {
+    var items = []
+    this.forEach(function(value) { items.push(value) })
+    return iteratorFor(items)
+  }
+
+  Headers.prototype.entries = function() {
+    var items = []
+    this.forEach(function(value, name) { items.push([name, value]) })
+    return iteratorFor(items)
+  }
+
+  if (support.iterable) {
+    Headers.prototype[Symbol.iterator] = Headers.prototype.entries
+  }
+
   function consumed(body) {
     if (body.bodyUsed) {
       return Promise.reject(new TypeError('Already read'))
@@ -3200,22 +3277,8 @@ module.exports = E;
     return fileReaderReady(reader)
   }
 
-  var support = {
-    blob: 'FileReader' in self && 'Blob' in self && (function() {
-      try {
-        new Blob();
-        return true
-      } catch(e) {
-        return false
-      }
-    })(),
-    formData: 'FormData' in self,
-    arrayBuffer: 'ArrayBuffer' in self
-  }
-
   function Body() {
     this.bodyUsed = false
-
 
     this._initBody = function(body) {
       this._bodyInit = body
@@ -3225,6 +3288,8 @@ module.exports = E;
         this._bodyBlob = body
       } else if (support.formData && FormData.prototype.isPrototypeOf(body)) {
         this._bodyFormData = body
+      } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+        this._bodyText = body.toString()
       } else if (!body) {
         this._bodyText = ''
       } else if (support.arrayBuffer && ArrayBuffer.prototype.isPrototypeOf(body)) {
@@ -3239,6 +3304,8 @@ module.exports = E;
           this.headers.set('content-type', 'text/plain;charset=UTF-8')
         } else if (this._bodyBlob && this._bodyBlob.type) {
           this.headers.set('content-type', this._bodyBlob.type)
+        } else if (support.searchParams && URLSearchParams.prototype.isPrototypeOf(body)) {
+          this.headers.set('content-type', 'application/x-www-form-urlencoded;charset=UTF-8')
         }
       }
     }
@@ -3360,7 +3427,7 @@ module.exports = E;
 
   function headers(xhr) {
     var head = new Headers()
-    var pairs = xhr.getAllResponseHeaders().trim().split('\n')
+    var pairs = (xhr.getAllResponseHeaders() || '').trim().split('\n')
     pairs.forEach(function(header) {
       var split = header.trim().split(':')
       var key = split.shift().trim()
@@ -3413,9 +3480,9 @@ module.exports = E;
     return new Response(null, {status: status, headers: {location: url}})
   }
 
-  self.Headers = Headers;
-  self.Request = Request;
-  self.Response = Response;
+  self.Headers = Headers
+  self.Request = Request
+  self.Response = Response
 
   self.fetch = function(input, init) {
     return new Promise(function(resolve, reject) {
@@ -3438,26 +3505,25 @@ module.exports = E;
           return xhr.getResponseHeader('X-Request-URL')
         }
 
-        return;
+        return
       }
 
       xhr.onload = function() {
-        var status = (xhr.status === 1223) ? 204 : xhr.status
-        if (status < 100 || status > 599) {
-          reject(new TypeError('Network request failed'))
-          return
-        }
         var options = {
-          status: status,
+          status: xhr.status,
           statusText: xhr.statusText,
           headers: headers(xhr),
           url: responseURL()
         }
-        var body = 'response' in xhr ? xhr.response : xhr.responseText;
+        var body = 'response' in xhr ? xhr.response : xhr.responseText
         resolve(new Response(body, options))
       }
 
       xhr.onerror = function() {
+        reject(new TypeError('Network request failed'))
+      }
+
+      xhr.ontimeout = function() {
         reject(new TypeError('Network request failed'))
       }
 
@@ -3568,12 +3634,23 @@ function processResponse(response, config) {
 						index[_item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
 					}
 					if (!index[_item.data.parentItem][_data.VIEW_ONLINE_URL]) {
+						var parsedAttachment = {};
 						if (_item.data.url) {
-							index[_item.data.parentItem][_data.VIEW_ONLINE_URL] = _item.url;
+							index[_item.data.parentItem][_data.VIEW_ONLINE_URL] = _item.data.url;
+							parsedAttachment = {
+								url: _item.data.url,
+								type: _item.data.contentType,
+								title: _item.data.title
+							};
 						} else if (_item.links && _item.links.enclosure && _item.links.enclosure.href) {
 							index[_item.data.parentItem][_data.VIEW_ONLINE_URL] = _item.links.enclosure.href;
+							parsedAttachment = {
+								url: _item.links.enclosure.href,
+								type: _item.links.enclosure.type,
+								title: _item.links.enclosure.title
+							};
 						}
-						index[_item.data.parentItem][_data.CHILD_ATTACHMENTS].push(_item);
+						index[_item.data.parentItem][_data.CHILD_ATTACHMENTS].push(parsedAttachment);
 					}
 				} else {
 					if (!index[_item.data.parentItem][_data.CHILD_OTHER]) {
@@ -4056,7 +4133,7 @@ function ZoteroPublications() {
 	var _this = this;
 
 	if (arguments.length > 3) {
-		return Promise.reject(new Error('ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.'));
+		return Promise.reject(new Error('ZoteroPublications takes between one and three arguments. ' + arguments.length + ' is too many.'));
 	}
 
 	if (arguments.length <= 1) {
@@ -4821,10 +4898,15 @@ ZoteroRenderer.prototype.toggleDetails = function (itemEl, override) {
  * @param  {string} itemId
  */
 ZoteroRenderer.prototype.expandDetails = function (itemId) {
-	var itemEl = document.getElementById('item-' + itemId);
-	this.toggleDetails(itemEl, true);
-	(0, _utils.once)(itemEl, (0, _utils.transitionend)(), function () {
-		itemEl.scrollIntoView();
+	var _this4 = this;
+
+	return new Promise(function (resolve, reject) {
+		var itemEl = _this4.container.querySelector('[id=item-' + itemId + ']');
+		_this4.toggleDetails(itemEl, true);
+		(0, _utils.onTransitionEnd)(itemEl, function (eventName) {
+			itemEl.scrollIntoView();
+			resolve();
+		}, 500);
 	});
 };
 
@@ -4995,11 +5077,7 @@ module.exports = function (obj) {
   };
   __p += '';
   if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
-    __p += '\n\t';
-    if (obj.item[Symbol.for('childAttachments')][0].url || obj.item[Symbol.for('childAttachments')][0].links && obj.item[Symbol.for('childAttachments')][0].links.enclosure && obj.item[Symbol.for('childAttachments')][0].links.enclosure.href) {
-      __p += '\n\t\t<a href="' + ((__t = obj.item[Symbol.for('childAttachments')][0].url || obj.item[Symbol.for('childAttachments')][0].links && obj.item[Symbol.for('childAttachments')][0].links.enclosure && obj.item[Symbol.for('childAttachments')][0].links.enclosure.href) == null ? '' : _.escape(__t)) + '">\n\t\t\t<span class="zotero-icon zotero-icon-download" role="presentation" aria-hidden="true"></span>\n\t\t</a>\n\t';
-    }
-    __p += '\n';
+    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('childAttachments')][0].url) == null ? '' : _.escape(__t)) + '" class="zotero-attachment-indicator">\n\t\t<span class="zotero-icon zotero-icon-' + ((__t = obj.item[Symbol.for('childAttachments')][0].type === 'application/pdf' ? 'pdf' : 'download') == null ? '' : _.escape(__t)) + '" role="presentation" aria-hidden="true"></span>\n\t</a>\n';
   }
   __p += '';
   return __p;
@@ -5207,7 +5285,7 @@ module.exports = function (obj) {
 
         __p += '\n\t\t\t\t\t\t';
         if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
-          __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) == null ? '' : _.escape(__t)) + '">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
+          __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
         }
         __p += '\n\t\t\t\t\t';
       }
@@ -5372,10 +5450,11 @@ exports.formatCategoryName = formatCategoryName;
 exports.closest = closest;
 exports.once = once;
 exports.id = id;
-exports.transitionend = transitionend;
+exports.onTransitionEnd = onTransitionEnd;
 exports.toggleCollapse = toggleCollapse;
 exports.showTab = showTab;
 exports.clipboardFallbackMessage = clipboardFallbackMessage;
+exports.getIdFromFragmentIdentifier = getIdFromFragmentIdentifier;
 
 var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
 
@@ -5474,27 +5553,38 @@ function id(target) {
  * Finds a correct name of a transitionend event
  * @return {String} 	- transitionend event name
  */
-function transitionend() {
+function onTransitionEnd(target, callback, timeout) {
 	var i,
 	    el = document.createElement('div'),
-	    transitions = {
+	    eventName,
+	    possibleEventNames = {
 		'transition': 'transitionend',
 		'OTransition': 'otransitionend',
 		'MozTransition': 'transitionend',
 		'WebkitTransition': 'webkitTransitionEnd'
 	};
 
-	for (i in transitions) {
-		if (transitions.hasOwnProperty(i) && el.style[i] !== undefined) {
-			return transitions[i];
+	for (i in possibleEventNames) {
+		if (possibleEventNames.hasOwnProperty(i) && el.style[i] !== undefined) {
+			eventName = possibleEventNames[i];
 		}
 	}
+
+	if (timeout) {
+		setTimeout(function () {
+			callback('timeout');
+		}, timeout);
+	}
+
+	return once(target, eventName, function () {
+		callback(eventName);
+	});
 }
 
 var collapsesInProgress = {};
 
 function collapse(element) {
-	var initialHeight = window.getComputedStyle(element).height;
+	var initialHeight = getComputedStyle(element).height;
 	element.style.height = initialHeight;
 	//repaint shenanigans
 	element.offsetHeight; // eslint-disable-line no-unused-expressions
@@ -5502,30 +5592,30 @@ function collapse(element) {
 	_lodash2.default.defer(function () {
 		element.classList.add('zotero-collapsed', 'zotero-collapsing');
 		element.style.height = null;
-		collapsesInProgress[id(element)] = once(element, transitionend(), function () {
+		collapsesInProgress[id(element)] = onTransitionEnd(element, function (eventName) {
 			element.classList.remove('zotero-collapsing');
 			element.setAttribute('aria-hidden', 'true');
-			element.setAttribute('aria-expanded', 'true');
+			element.setAttribute('aria-expanded', 'false');
 			delete collapsesInProgress[id(element)];
-		});
+		}, 500);
 	});
 }
 
 function uncollapse(element) {
 	element.classList.remove('zotero-collapsed');
-	var targetHeight = window.getComputedStyle(element).height;
+	var targetHeight = getComputedStyle(element).height;
 	element.classList.add('zotero-collapsed');
 
 	_lodash2.default.defer(function () {
 		element.classList.add('zotero-collapsing');
 		element.style.height = targetHeight;
-		collapsesInProgress[id(element)] = once(element, transitionend(), function () {
+		collapsesInProgress[id(element)] = onTransitionEnd(element, function (eventName) {
 			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
 			element.setAttribute('aria-hidden', 'false');
-			element.setAttribute('aria-expanded', 'false');
+			element.setAttribute('aria-expanded', 'true');
 			element.style.height = null;
 			delete collapsesInProgress[id(element)];
-		});
+		}, 500);
 	});
 }
 
@@ -5598,6 +5688,10 @@ function clipboardFallbackMessage() {
 	}
 
 	return actionMsg;
+}
+
+function getIdFromFragmentIdentifier() {
+	return location.hash && location.hash.substr(1);
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
