@@ -3640,14 +3640,16 @@ function processResponse(response, config) {
 							parsedAttachment = {
 								url: _item.data.url,
 								type: _item.data.contentType,
-								title: _item.data.title
+								title: _item.data.title,
+								key: _item.key
 							};
 						} else if (_item.links && _item.links.enclosure && _item.links.enclosure.href) {
 							index[_item.data.parentItem][_data.VIEW_ONLINE_URL] = _item.links.enclosure.href;
 							parsedAttachment = {
 								url: _item.links.enclosure.href,
 								type: _item.links.enclosure.type,
-								title: _item.links.enclosure.title
+								title: _item.links.enclosure.title,
+								key: _item.key
 							};
 						}
 						index[_item.data.parentItem][_data.CHILD_ATTACHMENTS].push(parsedAttachment);
