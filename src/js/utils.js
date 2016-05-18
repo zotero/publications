@@ -131,7 +131,7 @@ function collapse(element) {
 	_.defer(() => {
 		element.classList.add('zotero-collapsed', 'zotero-collapsing');
 		element.style.height = null;
-		collapsesInProgress[id(element)] = onTransitionEnd(element, (eventName) => {
+		collapsesInProgress[id(element)] = onTransitionEnd(element, () => {
 			element.classList.remove('zotero-collapsing');
 			element.setAttribute('aria-hidden', 'true');
 			element.setAttribute('aria-expanded', 'false');
@@ -148,7 +148,7 @@ function uncollapse(element) {
 	_.defer(() => {
 		element.classList.add('zotero-collapsing');
 		element.style.height = targetHeight;
-		collapsesInProgress[id(element)] = onTransitionEnd(element, (eventName) => {
+		collapsesInProgress[id(element)] = onTransitionEnd(element, () => {
 			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
 			element.setAttribute('aria-hidden', 'false');
 			element.setAttribute('aria-expanded', 'true');

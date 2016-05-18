@@ -21,12 +21,8 @@ import {
 	toggleCollapse,
 	showTab,
 	clipboardFallbackMessage,
-	once,
 	onTransitionEnd
 } from './utils.js';
-import {
-	post
-} from './api.js';
 import fieldMap from './field-map.js';
 import typeMap from './type-map';
 import hiddenFields from './hidden-fields.js';
@@ -379,10 +375,10 @@ ZoteroRenderer.prototype.toggleDetails = function(itemEl, override) {
  * @param  {string} itemId
  */
 ZoteroRenderer.prototype.expandDetails = function(itemId) {
-	return new Promise((resolve, reject) => {
+	return new Promise((resolve) => {
 		let itemEl = this.container.querySelector(`[id=item-${itemId}]`);
 		this.toggleDetails(itemEl, true);
-		onTransitionEnd(itemEl, (eventName) => {
+		onTransitionEnd(itemEl, () => {
 			itemEl.scrollIntoView();
 			resolve();
 		}, 500);
