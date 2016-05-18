@@ -72,9 +72,9 @@
 					<% for(var childItem of obj.item[Symbol.for('childAttachments')]) { %>
 						<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
 						<li>
-							<a href="<%- (childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) %>">
+							<a href="<%- childItem.url %>">
 								<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--
-								--><%- childItem.data.title %>
+								--><%- childItem.title %>
 							</a>
 						</li>
 						<% }%>
