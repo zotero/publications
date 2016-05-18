@@ -75,14 +75,16 @@ export function processResponse(response, config) {
 						parsedAttachment = {
 							url: item.data.url,
 							type: item.data.contentType,
-							title: item.data.title
+							title: item.data.title,
+							key: item.key
 						}
 					} else if(item.links && item.links.enclosure && item.links.enclosure.href) {
 						index[item.data.parentItem][VIEW_ONLINE_URL] = item.links.enclosure.href;
 						parsedAttachment = {
 							url: item.links.enclosure.href,
 							type: item.links.enclosure.type,
-							title: item.links.enclosure.title
+							title: item.links.enclosure.title,
+							key: item.key
 						}
 					}
 					index[item.data.parentItem][CHILD_ATTACHMENTS].push(parsedAttachment);
