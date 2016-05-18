@@ -9,7 +9,8 @@ import {
  } from '../src/js/render.js';
 import {
 	processResponse,
-	ABSTRACT_NOTE_SHORT_SYMBOL
+	ABSTRACT_NOTE_SHORT_SYMBOL,
+	AUTHORS_SYMBOL
 } from '../src/js/api.js';
 import {
 	ZoteroData,
@@ -38,7 +39,7 @@ describe('Zotero Publications', function() {
 		});
 		container = document.createElement('div');
 		renderer = new ZoteroRenderer(container, zp);
-		data = _.clone(testData);
+		data = JSON.parse(JSON.stringify(testData));
 		data.grouped = 0;
 		dataGrouped = _.clone(testDataGrouped);
 		dataGrouped.grouped = 1;
@@ -84,6 +85,12 @@ describe('Zotero Publications', function() {
 		expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*$/);
 		renderer.displayPublications(dataGrouped);
 		expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
+	});
+
+	it('should process creators array into a string', function() {
+		let processed = processResponse(data);
+		let book = _.find(processed, {key: 'ABCD'});
+		expect(book.data[AUTHORS_SYMBOL]).toEqual('Yoda & Luke Skywalker');
 	});
 
 	it('should request data from an endpoint', function() {
