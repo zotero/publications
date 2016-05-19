@@ -26,7 +26,7 @@ export function processResponse(response) {
 		let childItems = [];
 		let index = {};
 
-		for(var i = response.length; i--; ) {
+		for(let i = response.length; i--; ) {
 			let item = response[i];
 			if(item.data && item.data.abstractNote) {
 				item.data[ABSTRACT_NOTE_PROCESSED] = formatAbstract(item.data.abstractNote);
@@ -68,32 +68,42 @@ export function processResponse(response) {
 				if(!index[item.data.parentItem][CHILD_ATTACHMENTS]) {
 					index[item.data.parentItem][CHILD_ATTACHMENTS] = [];
 				}
-				if(!index[item.data.parentItem][VIEW_ONLINE_URL]) {
-					let parsedAttachment = {};
-					if(item.data.url) {
-						index[item.data.parentItem][VIEW_ONLINE_URL] = item.data.url;
-						parsedAttachment = {
-							url: item.data.url,
-							type: item.data.contentType,
-							title: item.data.title,
-							key: item.key
-						}
-					} else if(item.links && item.links.enclosure && item.links.enclosure.href) {
-						index[item.data.parentItem][VIEW_ONLINE_URL] = item.links.enclosure.href;
-						parsedAttachment = {
-							url: item.links.enclosure.href,
-							type: item.links.enclosure.type,
-							title: item.links.enclosure.title,
-							key: item.key
-						}
+				let parsedAttachment = {};
+				if(item.data.url) {
+					parsedAttachment = {
+						url: item.data.url,
+						type: item.data.contentType,
+						title: item.data.title,
+						key: item.key,
+						item: item
 					}
-					index[item.data.parentItem][CHILD_ATTACHMENTS].push(parsedAttachment);
+				} else if(item.links && item.links.enclosure && item.links.enclosure.href) {
+					parsedAttachment = {
+						url: item.links.enclosure.href,
+						type: item.links.enclosure.type,
+						title: item.links.enclosure.title,
+						key: item.key,
+						item: item
+					}
 				}
+				index[item.data.parentItem][CHILD_ATTACHMENTS].push(parsedAttachment);
 			} else {
 				if(!index[item.data.parentItem][CHILD_OTHER]) {
 					index[item.data.parentItem][CHILD_OTHER] = [];
 				}
 				index[item.data.parentItem][CHILD_OTHER].push(item);
+			}
+		}
+
+		for(let i = response.length; i--; ) {
+			let item = response[i];
+			if(item[CHILD_ATTACHMENTS]) {
+				item[CHILD_ATTACHMENTS].sort((a, b) => {
+					return new Date(a.item.data.dateAdded).getTime() - new Date(b.item.data.dateAdded).getTime();
+				});
+			}
+			if(!item[VIEW_ONLINE_URL] && item[CHILD_ATTACHMENTS]) {
+				item[VIEW_ONLINE_URL] = item[CHILD_ATTACHMENTS][0].url;
 			}
 		}
 	}
