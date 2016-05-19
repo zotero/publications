@@ -14,7 +14,9 @@
           "firstName": "Luke",
           "lastName": "Skywalker"
         }
-      ]
+      ],
+      "dateAdded": "2016-02-26T04:52:12Z",
+      "dateModified": "2016-02-26T04:52:12Z"
     },
     "meta": {
       "parsedDate": "2014-02-01"
@@ -25,7 +27,10 @@
     "key": "EFGH",
     "data": {
       "itemType": "journalArticle",
-      "abstractNote": "Lorem ipsum Occaecat velit ad aute ut qui do labore laborum proident eu id reprehenderit fugiat ea proident aute ex ea quis velit pariatur ut aliquip proident in dolore commodo sunt consectetur enim anim mollit laboris Ut Excepteur in in est ut irure cupidatat in sint Excepteur culpa ut minim irure deserunt ad mollit occaecat incididunt dolor non sint mollit ullamco cillum voluptate culpa eiusmod veniam adipisicing ea tempor amet incididunt labore magna ut reprehenderit Ut tempor commodo consectetur tempor pariatur nostrud incididunt aliqua labore commodo in in ad tempor fugiat pariatur ad id veniam nisi do culpa sint non esse ullamco voluptate consectetur ea ut Ut et nisi exercitation consequat veniam Ut consequat in labore ea sunt aute laborum commodo officia sunt laborum proident incididunt sunt in nostrud nostrud anim dolore dolore ea magna in dolor nulla cillum exercitation minim labore cupidatat aliqua deserunt cupidatat in irure eiusmod est deserunt veniam amet quis exercitation do Excepteur cupidatat eu id ex consectetur sit veniam aute in in incididunt reprehenderit Excepteur amet velit proident cupidatat ullamco do eiusmod elit commodo deserunt consequat minim in culpa sunt velit sit occaecat aliqua enim cupidatat ex pariatur laborum ad dolore ut velit aliqua exercitation cillum."
+      "abstractNote": "Lorem ipsum Occaecat velit ad aute ut qui do labore laborum proident eu id reprehenderit fugiat ea proident aute ex ea quis velit pariatur ut aliquip proident in dolore commodo sunt consectetur enim anim mollit laboris Ut Excepteur in in est ut irure cupidatat in sint Excepteur culpa ut minim irure deserunt ad mollit occaecat incididunt dolor non sint mollit ullamco cillum voluptate culpa eiusmod veniam adipisicing ea tempor amet incididunt labore magna ut reprehenderit Ut tempor commodo consectetur tempor pariatur nostrud incididunt aliqua labore commodo in in ad tempor fugiat pariatur ad id veniam nisi do culpa sint non esse ullamco voluptate consectetur ea ut Ut et nisi exercitation consequat veniam Ut consequat in labore ea sunt aute laborum commodo officia sunt laborum proident incididunt sunt in nostrud nostrud anim dolore dolore ea magna in dolor nulla cillum exercitation minim labore cupidatat aliqua deserunt cupidatat in irure eiusmod est deserunt veniam amet quis exercitation do Excepteur cupidatat eu id ex consectetur sit veniam aute in in incididunt reprehenderit Excepteur amet velit proident cupidatat ullamco do eiusmod elit commodo deserunt consequat minim in culpa sunt velit sit occaecat aliqua enim cupidatat ex pariatur laborum ad dolore ut velit aliqua exercitation cillum.",
+      "url": "http://lorem-ipsum.com/test",
+      "dateAdded": "2016-03-11T06:54:52Z",
+      "dateModified": "2016-03-11T06:54:52Z"
     },
     "meta": {
       "parsedDate": "2014-03-01"
@@ -33,23 +38,14 @@
     "citation": "<em>J.J. Binks</em>, <strong>Difference between the dark and light side of force</strong>"
   },
   {
-    "key": "MNOP",
-    "data": {
-      "itemType": "book",
-      "abstractNote": ""
-    },
-    "meta": {
-      "parsedDate": "2014-04-01"
-    },
-    "citation": "<em>L. Skywalker</em>, <strong>Who's your daddy?</strong>"
-  },
-  {
     "key": "IJKL",
     "data": {
       "itemType": "attachment",
       "linkMode": "imported_file",
       "title": "paper.pdf",
-      "parentItem": "ABCD"
+      "parentItem": "ABCD",
+      "dateAdded": "2016-02-26T04:52:12Z",
+      "dateModified": "2016-02-26T04:52:12Z"
     },
     "meta": {
       "parsedDate": "2014-05-01"
@@ -70,7 +66,32 @@
       "itemType": "attachment",
       "linkMode": "imported_file",
       "title": "lorem-pixel.jpg",
-      "parentItem": "ABCD"
+      "parentItem": "ABCD",
+      "dateAdded": "2016-02-27T05:44:33Z",
+      "dateModified": "2016-02-27T05:44:33Z"
+    },
+    "meta": {
+      "parsedDate": "2014-05-01"
+    },
+    "links": {
+      "enclosure": {
+        "type": "image/jpeg",
+        "href": "http://lorempixel.com/640/480/city/",
+        "title": "lorem-pixel.jpg",
+        "length": 403890
+      }
+    },
+    "citation": "<em>lorem-pixel.jpg</em>. (n.d.)."
+  },
+  {
+    "key": "MNOP",
+    "data": {
+      "itemType": "attachment",
+      "linkMode": "imported_file",
+      "title": "lorem-pixel.jpg",
+      "parentItem": "ABCD",
+      "dateAdded": "2016-02-27T05:44:33Z",
+      "dateModified": "2016-02-27T05:44:33Z"
     },
     "meta": {
       "parsedDate": "2014-05-01"
@@ -91,12 +112,27 @@
     "citation": "<span>“Hello World.”</span>",
     "data": {
       "version": 2,
-      "parentItem": "MNOP",
+      "parentItem": "ABCD",
       "itemType": "note",
       "note": "<p>Hello <strong>world</strong></p>\n<p></p>"
     },
     "meta": {
       "parsedDate": "2014-06-01"
     }
+  },
+  {
+    "key": "RSTW",
+    "data": {
+      "itemType": "webpage",
+      "url": "https://example.com/book",
+      "title": "This book on example.com",
+      "parentItem": "ABCD",
+      "dateAdded": "2016-03-11T11:22:33Z",
+      "dateModified": "2016-03-11T11:22:33Z"
+    },
+    "meta": {
+      "parsedDate": "2014-04-01"
+    },
+    "citation": "<em>Example</em>, Blah"
   }
 ]

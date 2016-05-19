@@ -17,7 +17,8 @@ import {
 	CHILD_NOTES,
 	CHILD_ATTACHMENTS,
 	GROUP_EXPANDED_SUMBOL,
-	GROUP_TITLE
+	GROUP_TITLE,
+	VIEW_ONLINE_URL
 } from '../src/js/data.js';
 import {
 	ZoteroPublications
@@ -74,7 +75,7 @@ describe('Zotero Publications', function() {
 		processResponse(data, zp.config);
 		let renderedCollection = renderer.renderItems(data);
 		expect(renderedCollection).toBeDefined();
-		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item.*>[\s\S]*?<div.*zotero-details.*>[\s\S]*?<ul.*zotero-(attachments|notes).*>[\s\S]*?<\/div>[\s\S]*?<\/li>){2}[\s\S]*?<\/ul>$/);
+		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item.*>[\s\S]*?<div.*zotero-details.*>[\s\S]*?<ul.*zotero-(attachments|notes).*>[\s\S]*?<\/div>[\s\S]*?<\/li>)[\s\S]*?<\/ul>$/);
 	});
 
 	it('should replace contents of a container', function() {
@@ -91,6 +92,14 @@ describe('Zotero Publications', function() {
 		let processed = processResponse(data);
 		let book = _.find(processed, {key: 'ABCD'});
 		expect(book.data[AUTHORS_SYMBOL]).toEqual('Yoda & Luke Skywalker');
+	});
+
+	it('should extract "view online" url from the response', function() {
+		let processed = processResponse(data);
+		let book = _.find(processed, {key: 'ABCD'});
+		let journalArticle = _.find(processed, {key: 'EFGH'});
+		expect(book[VIEW_ONLINE_URL]).toEqual('http://zotero.org/paper.pdf');
+		expect(journalArticle[VIEW_ONLINE_URL]).toEqual('http://lorem-ipsum.com/test');
 	});
 
 	it('should request data from an endpoint', function() {
@@ -130,21 +139,27 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should move child items underneath the main item', function() {
-		data = processResponse(data, zp.config);
+		data = processResponse(data);
 
 		expect(data instanceof Array).toBe(true);
-		expect(data.length).toBe(3);
+		expect(data.length).toBe(2); // top-level items only
 
-		expect(data[2][CHILD_NOTES][0]).toBeDefined();
-		expect(data[2][CHILD_NOTES][0].key).toEqual('NOTE');
-		expect(data[0][CHILD_ATTACHMENTS][0]).toBeDefined();
-		expect(data[0][CHILD_ATTACHMENTS][0].key).toEqual('FGHI');
+		let abcd = _.find(data, {key: 'ABCD'});
+
+		expect(abcd[CHILD_NOTES].length).toEqual(1);
+		expect(abcd[CHILD_NOTES][0]).toBeDefined();
+		expect(abcd[CHILD_NOTES][0].key).toEqual('NOTE');
+		expect(abcd[CHILD_ATTACHMENTS][0]).toBeDefined();
+		expect(abcd[CHILD_ATTACHMENTS].length).toEqual(3);
+		expect(abcd[CHILD_ATTACHMENTS][0].key).toEqual('IJKL');
 	});
 
 	it('should group items by type', function() {
 		let zd = new ZoteroData(data, zp.config);
 		zd.groupByType();
-		expect(Object.keys(zd.data)).toEqual(['book', 'journalArticle']);
+		let groupNames = Object.keys(zd.data);
+		expect(groupNames.length).toEqual(2);
+		expect(_.includes(groupNames, 'book')).toEqual(true);
 	});
 
 	it('should pre-expand selected groups', function() {
