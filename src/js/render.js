@@ -423,10 +423,10 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	if(!clonedItem.relations) {
 		clonedItem.relations = {};
 	}
-
 	clonedItem.relations = {
 		'owl:sameAs': `http://zotero.org/users/${sourceItem.library.id}/publications/items/${itemId}`
 	};
+
 
 	let writePromise = this.zotero.postItems(
 		this.zotero.config.zorgIntegration.userID,
@@ -434,14 +434,18 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 		{ key: this.zotero.config.zorgIntegration.apiKey }
 	);
 
-	writePromise.then(() => {
-		triggerEl.innerText = 'Saved!';
-	});
-	writePromise.catch(() => {
-		triggerEl.innerText = 'Error!';
-		triggerEl.setAttribute('data-trigger', 'add-to-library');
-		setTimeout(() => {
-			triggerEl.innerText = 'Add to Library';
-		}, 2000);
+	return new Promise((resolve, reject) => {
+		writePromise.then(() => {
+			triggerEl.innerText = 'Saved!';
+			resolve();
+		});
+		writePromise.catch((err) => {
+			triggerEl.innerText = 'Error!';
+			triggerEl.setAttribute('data-trigger', 'add-to-library');
+			setTimeout(() => {
+				triggerEl.innerText = 'Add to Library';
+			}, 2000);
+			reject(err);
+		});
 	});
 }
