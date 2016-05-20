@@ -54,11 +54,6 @@ export function processResponse(response) {
 		}
 
 		for(let item of childItems) {
-			if(!index[item.data.parentItem]) {
-				console.warn(`item ${item.key} has parentItem ${item.data.parentItem} that does not exist in the dataset`);
-				continue;
-			}
-
 			if(item.data.itemType === 'note') {
 				if(!index[item.data.parentItem][CHILD_NOTES]) {
 					index[item.data.parentItem][CHILD_NOTES] = [];
@@ -124,31 +119,21 @@ export function fetchUntilExhausted(url, options, jsondata) {
 	return new Promise((resolve, reject) => {
 		fetch(url, options).then(response => {
 			if(response.status >= 200 && response.status < 300) {
-				if(response.headers.has('Link')) {
-					let matches = response.headers.get('Link').match(relRegex);
-					if(matches && matches.length >= 2) {
-						response.json().then(jsonDataPart => {
-							if(!(jsonDataPart instanceof Array)) {
-								jsonDataPart = [jsonDataPart];
-							}
-							resolve(fetchUntilExhausted(matches[1], options, _.union(jsondata, jsonDataPart)));
-						});
-					} else {
-						response.json().then(jsonDataPart => {
-							if(!(jsonDataPart instanceof Array)) {
-								jsonDataPart = [jsonDataPart];
-							}
-							resolve(_.union(jsondata, jsonDataPart));
-						});
+				response.json().then(jsonDataPart => {
+					if(!(jsonDataPart instanceof Array)) {
+						jsonDataPart = [jsonDataPart];
 					}
-				} else {
-					response.json().then(jsonDataPart => {
-						if(!(jsonDataPart instanceof Array)) {
-							jsonDataPart = [jsonDataPart];
+					if(response.headers.has('Link')) {
+						let matches = response.headers.get('Link').match(relRegex);
+						if(matches && matches.length >= 2) {
+							resolve(fetchUntilExhausted(matches[1], options, _.union(jsondata, jsonDataPart)));
+						} else {
+							resolve(_.union(jsondata, jsonDataPart));
 						}
+					} else {
 						resolve(_.union(jsondata, jsonDataPart));
-					});
-				}
+					}
+				});
 			} else {
 				reject(new Error(`Unexpected status code ${response.status} when requesting ${url}`));
 			}
