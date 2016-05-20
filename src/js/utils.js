@@ -226,7 +226,3 @@ export function clipboardFallbackMessage() {
 
 	return actionMsg;
 }
-
-export function getIdFromFragmentIdentifier() {
-	return location.hash && location.hash.substr(1);
-}

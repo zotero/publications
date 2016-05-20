@@ -123,12 +123,27 @@
   {
     "key": "RSTW",
     "data": {
-      "itemType": "webpage",
+      "itemType": "attachment",
       "url": "https://example.com/book",
       "title": "This book on example.com",
       "parentItem": "ABCD",
       "dateAdded": "2016-03-11T11:22:33Z",
       "dateModified": "2016-03-11T11:22:33Z"
+    },
+    "meta": {
+      "parsedDate": "2014-04-01"
+    },
+    "citation": "<em>Example</em>, Blah"
+  },
+  {
+    "key": "XYZZ",
+    "data": {
+      "itemType": "website",
+      "url": "https://example.com/book",
+      "title": "This book on example.com",
+      "parentItem": "ABCD",
+      "dateAdded": "2016-03-22T02:34:56Z",
+      "dateModified": "2016-03-22T02:34:56Z"
     },
     "meta": {
       "parsedDate": "2014-04-01"

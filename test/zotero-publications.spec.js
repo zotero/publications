@@ -4,18 +4,19 @@
 import _ from 'lodash';
 import testData from './fixtures/test-data.json';
 import testDataGrouped from './fixtures/test-data-grouped.json';
+import testDataSingle from './fixtures/test-data-single.json';
 import {
 	ZoteroRenderer
  } from '../src/js/render.js';
 import {
 	processResponse,
-	ABSTRACT_NOTE_SHORT_SYMBOL,
 	AUTHORS_SYMBOL
 } from '../src/js/api.js';
 import {
 	ZoteroData,
 	CHILD_NOTES,
 	CHILD_ATTACHMENTS,
+	CHILD_OTHER,
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE,
 	VIEW_ONLINE_URL
@@ -23,16 +24,14 @@ import {
 import {
 	ZoteroPublications
 } from '../src/js/main.js';
-import {
-	getIdFromFragmentIdentifier
-} from '../src/js/utils.js';
 
 describe('Zotero Publications', function() {
 	var zp,
 		renderer,
 		container,
 		data,
-		dataGrouped;
+		dataGrouped,
+		dataSingle;
 
 	beforeEach(function() {
 		zp = new ZoteroPublications({
@@ -42,8 +41,11 @@ describe('Zotero Publications', function() {
 		renderer = new ZoteroRenderer(container, zp);
 		data = JSON.parse(JSON.stringify(testData));
 		data.grouped = 0;
-		dataGrouped = _.clone(testDataGrouped);
+		dataGrouped = JSON.parse(JSON.stringify(testDataGrouped));
+		dataGrouped[0][GROUP_TITLE] = 'Book';
+		dataGrouped[1][GROUP_TITLE] = 'Journal Article';
 		dataGrouped.grouped = 1;
+		dataSingle = JSON.parse(JSON.stringify(testDataSingle));
 	});
 
 	it('should render single item', function() {
@@ -63,8 +65,6 @@ describe('Zotero Publications', function() {
 
 	it('should render group of items', function() {
 		renderer.data = dataGrouped;
-		dataGrouped[0][GROUP_TITLE] = 'Book';
-		dataGrouped[1][GROUP_TITLE] = 'Journal Article';
 		let renderedCollection = renderer.renderGroups(dataGrouped);
 		expect(renderedCollection).toBeDefined();
 		expect(renderedCollection).toMatch(/^<ul.*zotero-groups.*>[\s\S]*?(<li.*"zotero-group".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*?(<li.*zotero-item.*>[\s\S]*?<\/li>[\s\S]*?){1,2}<\/ul>[\s\S]*?<\/li>[\s\S]*?){2}[\s\S]*?<\/ul>$/);
@@ -123,6 +123,27 @@ describe('Zotero Publications', function() {
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/publications\/items\/4567\/?.*$/);
 	});
 
+	it('should handle a signle item response', function(done) {
+		spyOn(window, 'fetch').and.returnValue(
+			Promise.resolve(
+				new Response(
+					JSON.stringify(dataSingle),
+					{ status: 200,
+					'headers': new Headers({
+						'Link': 'blah'
+					})}
+				)
+			)
+		);
+
+		zp.getPublication(4567, 123).then(function(data) {
+			expect(data instanceof ZoteroData).toBe(true);
+			let abcd = _.find(data.raw, {key: 'ABCD'});
+			expect(abcd.key).toEqual('ABCD');
+			done();
+		})
+	});
+
 	it('should reject on failed requests', function(done) {
 		spyOn(window, 'fetch').and.returnValue(
 			Promise.reject('some error')
@@ -140,6 +161,7 @@ describe('Zotero Publications', function() {
 
 	it('should move child items underneath the main item', function() {
 		data = processResponse(data);
+		expect(data instanceof Array).toBe(true);
 
 		expect(data instanceof Array).toBe(true);
 		expect(data.length).toBe(2); // top-level items only
@@ -150,8 +172,10 @@ describe('Zotero Publications', function() {
 		expect(abcd[CHILD_NOTES][0]).toBeDefined();
 		expect(abcd[CHILD_NOTES][0].key).toEqual('NOTE');
 		expect(abcd[CHILD_ATTACHMENTS][0]).toBeDefined();
-		expect(abcd[CHILD_ATTACHMENTS].length).toEqual(3);
+		expect(abcd[CHILD_ATTACHMENTS].length).toEqual(4);
 		expect(abcd[CHILD_ATTACHMENTS][0].key).toEqual('IJKL');
+		expect(abcd[CHILD_OTHER].length).toEqual(1);
+		expect(abcd[CHILD_OTHER][0].key).toEqual('XYZZ');
 	});
 
 	it('should group items by type', function() {
