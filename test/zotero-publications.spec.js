@@ -447,4 +447,75 @@ describe('Zotero Publications', function() {
 			done();
 		})
 	});
+
+	it('should respect branding configuration', function(done) {
+		let zd = new ZoteroData(data, zp.config);
+
+		let zp1 = new ZoteroPublications({
+			showBranding: true
+		});
+		let container1 = document.createElement('div');
+		let promise1 = new Promise(function(resolve) {
+			zp1.render(zd, container1).then(function() {
+				let brandingEl = container1.querySelector('.zotero-branding');
+				expect(brandingEl).not.toBe(null);
+				resolve();
+			});
+		});
+
+		let zp2 = new ZoteroPublications({
+			showBranding: false
+		});
+		let container2 = document.createElement('div');
+		let promise2 = new Promise(function(resolve) {
+			zp2.render(zd, container2).then(function() {
+				let brandingEl = container2.querySelector('.zotero-branding');
+				expect(brandingEl).toBe(null);
+				resolve();
+			});
+		});
+
+		Promise.all([promise1, promise2]).then(function() {
+			done();
+		});
+	});
+
+	it('should save to my library', function(done) {
+		spyOn(window, 'fetch').and.returnValue(
+			Promise.resolve(
+				new Response(
+					JSON.stringify({}),
+					{ status: 200 }
+				)
+			)
+		);
+		window.Zotero = {
+			config: {
+				apiKey: 'lorem ipsum'
+			},
+			currentUser: {
+				slug: 'foobar',
+				userID: 123
+			}
+		}
+
+		let zpIntegrated = new ZoteroPublications({
+			zorgIntegration: true
+		});
+		let zd = new ZoteroData(data, zp.config);
+
+		zpIntegrated.render(zd, container).then(function() {
+			let renderer = zpIntegrated.renderer;
+			let itemEl = container.querySelector('[id=item-ABCD');
+			let triggerEl = itemEl.querySelector('[data-trigger=add-to-library]');
+			renderer.saveToMyLibrary(triggerEl, itemEl).then(function() {
+				expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/items\?.*key=lorem(%20|\s)ipsum$/);
+				expect(Object.keys(window.fetch.calls.mostRecent().args[1])).toContain('method');
+				expect(window.fetch.calls.mostRecent().args[1]['method']).toEqual('POST');
+				done();
+			}).catch(function(err) {
+				done();
+			});
+		});
+	});
 });

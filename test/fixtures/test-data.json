@@ -18,6 +18,11 @@
       "dateAdded": "2016-02-26T04:52:12Z",
       "dateModified": "2016-02-26T04:52:12Z"
     },
+    "library": {
+      "type": "publications",
+      "id": 3,
+      "name": "test Publications"
+    },
     "meta": {
       "parsedDate": "2014-02-01"
     },
