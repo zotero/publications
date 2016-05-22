@@ -19,9 +19,9 @@ $black: #000;
 
 $border-radius-base: 4px;
 
-@import 'bower_components/primer-css/scss/variables';
-@import 'bower_components/primer-css/scss/mixins';
-@import 'bower_components/primer-css/scss/tooltips';
+@import 'node_modules/primer-css/scss/variables';
+@import 'node_modules/primer-css/scss/mixins';
+@import 'node_modules/primer-css/scss/tooltips';
 
 
 /* Inherits:
