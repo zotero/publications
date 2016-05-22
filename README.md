@@ -10,9 +10,9 @@ This library will pull items from Zotero API and display them in a user friendly
 Getting The Library
 -------------------
 
-The easiest way to obtain the latest version is to use [bower](http://bower.io/):
+The easiest way to obtain the latest version is to use npm:
 
-    bower install zotero-publications
+    npm i zotero/publications
 
 Alternaitvely you can download the latest release directly from Github:
 
