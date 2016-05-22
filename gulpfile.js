@@ -41,7 +41,7 @@ var buildDir;
 var shimConfigs = {
 	'nodeps': {
 		"browser": {
-			"lodash": "./bower_components/lodash/lodash.js"
+			"lodash": "./node_modules/lodash/lodash.js"
 		},
 		"shim": {
 			"lodash": "global:_"
@@ -49,7 +49,7 @@ var shimConfigs = {
 	},
 	'lodash': {
 		"browser": {
-			"lodash": "./bower_components/lodash/lodash.js"
+			"lodash": "./node_modules/lodash/lodash.js"
 		}
 	}
 }
@@ -215,7 +215,7 @@ gulp.task('demo', function() {
 	return merge(
 		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html', 'src/demo/local-templated.html'])
 			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html', 'tmp/local-templated.html'])),
-		gulp.src('bower_components/lodash/lodash.js')
+		gulp.src('node_modules/lodash/lodash.js')
 			.pipe(symlink('tmp/lodash.js'))
 		);
 });
