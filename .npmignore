@@ -6,5 +6,6 @@
 /tmp
 /coverage
 /demo
+/gulp
 gulpfile.js
 CONTRIBUTING.md

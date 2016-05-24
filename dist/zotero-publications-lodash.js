@@ -1,665 +1,4 @@
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.ZoteroPublications = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-(function (process,global){
-/**
- * Copyright (c) 2014, Facebook, Inc.
- * All rights reserved.
- *
- * This source code is licensed under the BSD-style license found in the
- * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
- * additional grant of patent rights can be found in the PATENTS file in
- * the same directory.
- */
-
-!(function(global) {
-  "use strict";
-
-  var hasOwn = Object.prototype.hasOwnProperty;
-  var undefined; // More compressible than void 0.
-  var iteratorSymbol =
-    typeof Symbol === "function" && Symbol.iterator || "@@iterator";
-
-  var inModule = typeof module === "object";
-  var runtime = global.regeneratorRuntime;
-  if (runtime) {
-    if (inModule) {
-      // If regeneratorRuntime is defined globally and we're in a module,
-      // make the exports object identical to regeneratorRuntime.
-      module.exports = runtime;
-    }
-    // Don't bother evaluating the rest of this file if the runtime was
-    // already defined globally.
-    return;
-  }
-
-  // Define the runtime globally (as expected by generated code) as either
-  // module.exports (if we're in a module) or a new, empty object.
-  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
-
-  function wrap(innerFn, outerFn, self, tryLocsList) {
-    // If outerFn provided, then outerFn.prototype instanceof Generator.
-    var generator = Object.create((outerFn || Generator).prototype);
-    var context = new Context(tryLocsList || []);
-
-    // The ._invoke method unifies the implementations of the .next,
-    // .throw, and .return methods.
-    generator._invoke = makeInvokeMethod(innerFn, self, context);
-
-    return generator;
-  }
-  runtime.wrap = wrap;
-
-  // Try/catch helper to minimize deoptimizations. Returns a completion
-  // record like context.tryEntries[i].completion. This interface could
-  // have been (and was previously) designed to take a closure to be
-  // invoked without arguments, but in all the cases we care about we
-  // already have an existing method we want to call, so there's no need
-  // to create a new function object. We can even get away with assuming
-  // the method takes exactly one argument, since that happens to be true
-  // in every case, so we don't have to touch the arguments object. The
-  // only additional allocation required is the completion record, which
-  // has a stable shape and so hopefully should be cheap to allocate.
-  function tryCatch(fn, obj, arg) {
-    try {
-      return { type: "normal", arg: fn.call(obj, arg) };
-    } catch (err) {
-      return { type: "throw", arg: err };
-    }
-  }
-
-  var GenStateSuspendedStart = "suspendedStart";
-  var GenStateSuspendedYield = "suspendedYield";
-  var GenStateExecuting = "executing";
-  var GenStateCompleted = "completed";
-
-  // Returning this object from the innerFn has the same effect as
-  // breaking out of the dispatch switch statement.
-  var ContinueSentinel = {};
-
-  // Dummy constructor functions that we use as the .constructor and
-  // .constructor.prototype properties for functions that return Generator
-  // objects. For full spec compliance, you may wish to configure your
-  // minifier not to mangle the names of these two functions.
-  function Generator() {}
-  function GeneratorFunction() {}
-  function GeneratorFunctionPrototype() {}
-
-  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
-  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
-  GeneratorFunctionPrototype.constructor = GeneratorFunction;
-  GeneratorFunction.displayName = "GeneratorFunction";
-
-  // Helper for defining the .next, .throw, and .return methods of the
-  // Iterator interface in terms of a single ._invoke method.
-  function defineIteratorMethods(prototype) {
-    ["next", "throw", "return"].forEach(function(method) {
-      prototype[method] = function(arg) {
-        return this._invoke(method, arg);
-      };
-    });
-  }
-
-  runtime.isGeneratorFunction = function(genFun) {
-    var ctor = typeof genFun === "function" && genFun.constructor;
-    return ctor
-      ? ctor === GeneratorFunction ||
-        // For the native GeneratorFunction constructor, the best we can
-        // do is to check its .name property.
-        (ctor.displayName || ctor.name) === "GeneratorFunction"
-      : false;
-  };
-
-  runtime.mark = function(genFun) {
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
-    } else {
-      genFun.__proto__ = GeneratorFunctionPrototype;
-    }
-    genFun.prototype = Object.create(Gp);
-    return genFun;
-  };
-
-  // Within the body of any async function, `await x` is transformed to
-  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
-  // `value instanceof AwaitArgument` to determine if the yielded value is
-  // meant to be awaited. Some may consider the name of this method too
-  // cutesy, but they are curmudgeons.
-  runtime.awrap = function(arg) {
-    return new AwaitArgument(arg);
-  };
-
-  function AwaitArgument(arg) {
-    this.arg = arg;
-  }
-
-  function AsyncIterator(generator) {
-    // This invoke function is written in a style that assumes some
-    // calling function (or Promise) will handle exceptions.
-    function invoke(method, arg) {
-      var result = generator[method](arg);
-      var value = result.value;
-      return value instanceof AwaitArgument
-        ? Promise.resolve(value.arg).then(invokeNext, invokeThrow)
-        : Promise.resolve(value).then(function(unwrapped) {
-            // When a yielded Promise is resolved, its final value becomes
-            // the .value of the Promise<{value,done}> result for the
-            // current iteration. If the Promise is rejected, however, the
-            // result for this iteration will be rejected with the same
-            // reason. Note that rejections of yielded Promises are not
-            // thrown back into the generator function, as is the case
-            // when an awaited Promise is rejected. This difference in
-            // behavior between yield and await is important, because it
-            // allows the consumer to decide what to do with the yielded
-            // rejection (swallow it and continue, manually .throw it back
-            // into the generator, abandon iteration, whatever). With
-            // await, by contrast, there is no opportunity to examine the
-            // rejection reason outside the generator function, so the
-            // only option is to throw it from the await expression, and
-            // let the generator function handle the exception.
-            result.value = unwrapped;
-            return result;
-          });
-    }
-
-    if (typeof process === "object" && process.domain) {
-      invoke = process.domain.bind(invoke);
-    }
-
-    var invokeNext = invoke.bind(generator, "next");
-    var invokeThrow = invoke.bind(generator, "throw");
-    var invokeReturn = invoke.bind(generator, "return");
-    var previousPromise;
-
-    function enqueue(method, arg) {
-      function callInvokeWithMethodAndArg() {
-        return invoke(method, arg);
-      }
-
-      return previousPromise =
-        // If enqueue has been called before, then we want to wait until
-        // all previous Promises have been resolved before calling invoke,
-        // so that results are always delivered in the correct order. If
-        // enqueue has not been called before, then it is important to
-        // call invoke immediately, without waiting on a callback to fire,
-        // so that the async generator function has the opportunity to do
-        // any necessary setup in a predictable way. This predictability
-        // is why the Promise constructor synchronously invokes its
-        // executor callback, and why async functions synchronously
-        // execute code before the first await. Since we implement simple
-        // async functions in terms of async generators, it is especially
-        // important to get this right, even though it requires care.
-        previousPromise ? previousPromise.then(
-          callInvokeWithMethodAndArg,
-          // Avoid propagating failures to Promises returned by later
-          // invocations of the iterator.
-          callInvokeWithMethodAndArg
-        ) : new Promise(function (resolve) {
-          resolve(callInvokeWithMethodAndArg());
-        });
-    }
-
-    // Define the unified helper method that is used to implement .next,
-    // .throw, and .return (see defineIteratorMethods).
-    this._invoke = enqueue;
-  }
-
-  defineIteratorMethods(AsyncIterator.prototype);
-
-  // Note that simple async functions are implemented on top of
-  // AsyncIterator objects; they just return a Promise for the value of
-  // the final result produced by the iterator.
-  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
-    var iter = new AsyncIterator(
-      wrap(innerFn, outerFn, self, tryLocsList)
-    );
-
-    return runtime.isGeneratorFunction(outerFn)
-      ? iter // If outerFn is a generator, return the full iterator.
-      : iter.next().then(function(result) {
-          return result.done ? result.value : iter.next();
-        });
-  };
-
-  function makeInvokeMethod(innerFn, self, context) {
-    var state = GenStateSuspendedStart;
-
-    return function invoke(method, arg) {
-      if (state === GenStateExecuting) {
-        throw new Error("Generator is already running");
-      }
-
-      if (state === GenStateCompleted) {
-        if (method === "throw") {
-          throw arg;
-        }
-
-        // Be forgiving, per 25.3.3.3.3 of the spec:
-        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
-        return doneResult();
-      }
-
-      while (true) {
-        var delegate = context.delegate;
-        if (delegate) {
-          if (method === "return" ||
-              (method === "throw" && delegate.iterator[method] === undefined)) {
-            // A return or throw (when the delegate iterator has no throw
-            // method) always terminates the yield* loop.
-            context.delegate = null;
-
-            // If the delegate iterator has a return method, give it a
-            // chance to clean up.
-            var returnMethod = delegate.iterator["return"];
-            if (returnMethod) {
-              var record = tryCatch(returnMethod, delegate.iterator, arg);
-              if (record.type === "throw") {
-                // If the return method threw an exception, let that
-                // exception prevail over the original return or throw.
-                method = "throw";
-                arg = record.arg;
-                continue;
-              }
-            }
-
-            if (method === "return") {
-              // Continue with the outer return, now that the delegate
-              // iterator has been terminated.
-              continue;
-            }
-          }
-
-          var record = tryCatch(
-            delegate.iterator[method],
-            delegate.iterator,
-            arg
-          );
-
-          if (record.type === "throw") {
-            context.delegate = null;
-
-            // Like returning generator.throw(uncaught), but without the
-            // overhead of an extra function call.
-            method = "throw";
-            arg = record.arg;
-            continue;
-          }
-
-          // Delegate generator ran and handled its own exceptions so
-          // regardless of what the method was, we continue as if it is
-          // "next" with an undefined arg.
-          method = "next";
-          arg = undefined;
-
-          var info = record.arg;
-          if (info.done) {
-            context[delegate.resultName] = info.value;
-            context.next = delegate.nextLoc;
-          } else {
-            state = GenStateSuspendedYield;
-            return info;
-          }
-
-          context.delegate = null;
-        }
-
-        if (method === "next") {
-          context._sent = arg;
-
-          if (state === GenStateSuspendedYield) {
-            context.sent = arg;
-          } else {
-            context.sent = undefined;
-          }
-        } else if (method === "throw") {
-          if (state === GenStateSuspendedStart) {
-            state = GenStateCompleted;
-            throw arg;
-          }
-
-          if (context.dispatchException(arg)) {
-            // If the dispatched exception was caught by a catch block,
-            // then let that catch block handle the exception normally.
-            method = "next";
-            arg = undefined;
-          }
-
-        } else if (method === "return") {
-          context.abrupt("return", arg);
-        }
-
-        state = GenStateExecuting;
-
-        var record = tryCatch(innerFn, self, context);
-        if (record.type === "normal") {
-          // If an exception is thrown from innerFn, we leave state ===
-          // GenStateExecuting and loop back for another invocation.
-          state = context.done
-            ? GenStateCompleted
-            : GenStateSuspendedYield;
-
-          var info = {
-            value: record.arg,
-            done: context.done
-          };
-
-          if (record.arg === ContinueSentinel) {
-            if (context.delegate && method === "next") {
-              // Deliberately forget the last sent value so that we don't
-              // accidentally pass it on to the delegate.
-              arg = undefined;
-            }
-          } else {
-            return info;
-          }
-
-        } else if (record.type === "throw") {
-          state = GenStateCompleted;
-          // Dispatch the exception by looping back around to the
-          // context.dispatchException(arg) call above.
-          method = "throw";
-          arg = record.arg;
-        }
-      }
-    };
-  }
-
-  // Define Generator.prototype.{next,throw,return} in terms of the
-  // unified ._invoke helper method.
-  defineIteratorMethods(Gp);
-
-  Gp[iteratorSymbol] = function() {
-    return this;
-  };
-
-  Gp.toString = function() {
-    return "[object Generator]";
-  };
-
-  function pushTryEntry(locs) {
-    var entry = { tryLoc: locs[0] };
-
-    if (1 in locs) {
-      entry.catchLoc = locs[1];
-    }
-
-    if (2 in locs) {
-      entry.finallyLoc = locs[2];
-      entry.afterLoc = locs[3];
-    }
-
-    this.tryEntries.push(entry);
-  }
-
-  function resetTryEntry(entry) {
-    var record = entry.completion || {};
-    record.type = "normal";
-    delete record.arg;
-    entry.completion = record;
-  }
-
-  function Context(tryLocsList) {
-    // The root entry object (effectively a try statement without a catch
-    // or a finally block) gives us a place to store values thrown from
-    // locations where there is no enclosing try statement.
-    this.tryEntries = [{ tryLoc: "root" }];
-    tryLocsList.forEach(pushTryEntry, this);
-    this.reset(true);
-  }
-
-  runtime.keys = function(object) {
-    var keys = [];
-    for (var key in object) {
-      keys.push(key);
-    }
-    keys.reverse();
-
-    // Rather than returning an object with a next method, we keep
-    // things simple and return the next function itself.
-    return function next() {
-      while (keys.length) {
-        var key = keys.pop();
-        if (key in object) {
-          next.value = key;
-          next.done = false;
-          return next;
-        }
-      }
-
-      // To avoid creating an additional object, we just hang the .value
-      // and .done properties off the next function object itself. This
-      // also ensures that the minifier will not anonymize the function.
-      next.done = true;
-      return next;
-    };
-  };
-
-  function values(iterable) {
-    if (iterable) {
-      var iteratorMethod = iterable[iteratorSymbol];
-      if (iteratorMethod) {
-        return iteratorMethod.call(iterable);
-      }
-
-      if (typeof iterable.next === "function") {
-        return iterable;
-      }
-
-      if (!isNaN(iterable.length)) {
-        var i = -1, next = function next() {
-          while (++i < iterable.length) {
-            if (hasOwn.call(iterable, i)) {
-              next.value = iterable[i];
-              next.done = false;
-              return next;
-            }
-          }
-
-          next.value = undefined;
-          next.done = true;
-
-          return next;
-        };
-
-        return next.next = next;
-      }
-    }
-
-    // Return an iterator with no values.
-    return { next: doneResult };
-  }
-  runtime.values = values;
-
-  function doneResult() {
-    return { value: undefined, done: true };
-  }
-
-  Context.prototype = {
-    constructor: Context,
-
-    reset: function(skipTempReset) {
-      this.prev = 0;
-      this.next = 0;
-      this.sent = undefined;
-      this.done = false;
-      this.delegate = null;
-
-      this.tryEntries.forEach(resetTryEntry);
-
-      if (!skipTempReset) {
-        for (var name in this) {
-          // Not sure about the optimal order of these conditions:
-          if (name.charAt(0) === "t" &&
-              hasOwn.call(this, name) &&
-              !isNaN(+name.slice(1))) {
-            this[name] = undefined;
-          }
-        }
-      }
-    },
-
-    stop: function() {
-      this.done = true;
-
-      var rootEntry = this.tryEntries[0];
-      var rootRecord = rootEntry.completion;
-      if (rootRecord.type === "throw") {
-        throw rootRecord.arg;
-      }
-
-      return this.rval;
-    },
-
-    dispatchException: function(exception) {
-      if (this.done) {
-        throw exception;
-      }
-
-      var context = this;
-      function handle(loc, caught) {
-        record.type = "throw";
-        record.arg = exception;
-        context.next = loc;
-        return !!caught;
-      }
-
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        var record = entry.completion;
-
-        if (entry.tryLoc === "root") {
-          // Exception thrown outside of any try block that could handle
-          // it, so set the completion value of the entire function to
-          // throw the exception.
-          return handle("end");
-        }
-
-        if (entry.tryLoc <= this.prev) {
-          var hasCatch = hasOwn.call(entry, "catchLoc");
-          var hasFinally = hasOwn.call(entry, "finallyLoc");
-
-          if (hasCatch && hasFinally) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            } else if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else if (hasCatch) {
-            if (this.prev < entry.catchLoc) {
-              return handle(entry.catchLoc, true);
-            }
-
-          } else if (hasFinally) {
-            if (this.prev < entry.finallyLoc) {
-              return handle(entry.finallyLoc);
-            }
-
-          } else {
-            throw new Error("try statement without catch or finally");
-          }
-        }
-      }
-    },
-
-    abrupt: function(type, arg) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc <= this.prev &&
-            hasOwn.call(entry, "finallyLoc") &&
-            this.prev < entry.finallyLoc) {
-          var finallyEntry = entry;
-          break;
-        }
-      }
-
-      if (finallyEntry &&
-          (type === "break" ||
-           type === "continue") &&
-          finallyEntry.tryLoc <= arg &&
-          arg <= finallyEntry.finallyLoc) {
-        // Ignore the finally entry if control is not jumping to a
-        // location outside the try/catch block.
-        finallyEntry = null;
-      }
-
-      var record = finallyEntry ? finallyEntry.completion : {};
-      record.type = type;
-      record.arg = arg;
-
-      if (finallyEntry) {
-        this.next = finallyEntry.finallyLoc;
-      } else {
-        this.complete(record);
-      }
-
-      return ContinueSentinel;
-    },
-
-    complete: function(record, afterLoc) {
-      if (record.type === "throw") {
-        throw record.arg;
-      }
-
-      if (record.type === "break" ||
-          record.type === "continue") {
-        this.next = record.arg;
-      } else if (record.type === "return") {
-        this.rval = record.arg;
-        this.next = "end";
-      } else if (record.type === "normal" && afterLoc) {
-        this.next = afterLoc;
-      }
-    },
-
-    finish: function(finallyLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.finallyLoc === finallyLoc) {
-          this.complete(entry.completion, entry.afterLoc);
-          resetTryEntry(entry);
-          return ContinueSentinel;
-        }
-      }
-    },
-
-    "catch": function(tryLoc) {
-      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
-        var entry = this.tryEntries[i];
-        if (entry.tryLoc === tryLoc) {
-          var record = entry.completion;
-          if (record.type === "throw") {
-            var thrown = record.arg;
-            resetTryEntry(entry);
-          }
-          return thrown;
-        }
-      }
-
-      // The context.catch method must only be called with a location
-      // argument that corresponds to a known catch block.
-      throw new Error("illegal catch attempt");
-    },
-
-    delegateYield: function(iterable, resultName, nextLoc) {
-      this.delegate = {
-        iterator: values(iterable),
-        resultName: resultName,
-        nextLoc: nextLoc
-      };
-
-      return ContinueSentinel;
-    }
-  };
-})(
-  // Among the various tricks for obtaining a reference to the global
-  // object, this seems to be the most reliable technique that does not
-  // use indirect eval (which violates Content Security Policy).
-  typeof global === "object" ? global :
-  typeof window === "object" ? window :
-  typeof self === "object" ? self : this
-);
-
-}).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":29}],2:[function(require,module,exports){
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
         define(['module', 'select'], factory);
@@ -884,7 +223,7 @@
 
     module.exports = ClipboardAction;
 });
-},{"select":30}],3:[function(require,module,exports){
+},{"select":28}],2:[function(require,module,exports){
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
         define(['module', './clipboard-action', 'tiny-emitter', 'good-listener'], factory);
@@ -1044,7 +383,7 @@
 
     module.exports = Clipboard;
 });
-},{"./clipboard-action":2,"good-listener":26,"tiny-emitter":31}],4:[function(require,module,exports){
+},{"./clipboard-action":1,"good-listener":25,"tiny-emitter":29}],3:[function(require,module,exports){
 var matches = require('matches-selector')
 
 module.exports = function (element, selector, checkYoSelf) {
@@ -1056,7 +395,7 @@ module.exports = function (element, selector, checkYoSelf) {
   }
 }
 
-},{"matches-selector":28}],5:[function(require,module,exports){
+},{"matches-selector":27}],4:[function(require,module,exports){
 'use strict';
 
 var assign        = require('es5-ext/object/assign')
@@ -1121,7 +460,7 @@ d.gs = function (dscr, get, set/*, options*/) {
 	return !options ? desc : assign(normalizeOpts(options), desc);
 };
 
-},{"es5-ext/object/assign":8,"es5-ext/object/is-callable":11,"es5-ext/object/normalize-options":15,"es5-ext/string/#/contains":17}],6:[function(require,module,exports){
+},{"es5-ext/object/assign":7,"es5-ext/object/is-callable":10,"es5-ext/object/normalize-options":14,"es5-ext/string/#/contains":16}],5:[function(require,module,exports){
 var closest = require('closest');
 
 /**
@@ -1167,19 +506,19 @@ function listener(element, selector, type, callback) {
 
 module.exports = delegate;
 
-},{"closest":4}],7:[function(require,module,exports){
+},{"closest":3}],6:[function(require,module,exports){
 'use strict';
 
 module.exports = new Function("return this")();
 
-},{}],8:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')()
 	? Object.assign
 	: require('./shim');
 
-},{"./is-implemented":9,"./shim":10}],9:[function(require,module,exports){
+},{"./is-implemented":8,"./shim":9}],8:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -1190,7 +529,7 @@ module.exports = function () {
 	return (obj.foo + obj.bar + obj.trzy) === 'razdwatrzy';
 };
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
 var keys  = require('../keys')
@@ -1214,21 +553,21 @@ module.exports = function (dest, src/*, …srcn*/) {
 	return dest;
 };
 
-},{"../keys":12,"../valid-value":16}],11:[function(require,module,exports){
+},{"../keys":11,"../valid-value":15}],10:[function(require,module,exports){
 // Deprecated
 
 'use strict';
 
 module.exports = function (obj) { return typeof obj === 'function'; };
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')()
 	? Object.keys
 	: require('./shim');
 
-},{"./is-implemented":13,"./shim":14}],13:[function(require,module,exports){
+},{"./is-implemented":12,"./shim":13}],12:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -1238,7 +577,7 @@ module.exports = function () {
 	} catch (e) { return false; }
 };
 
-},{}],14:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 var keys = Object.keys;
@@ -1247,7 +586,7 @@ module.exports = function (object) {
 	return keys(object == null ? object : Object(object));
 };
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 'use strict';
 
 var forEach = Array.prototype.forEach, create = Object.create;
@@ -1266,7 +605,7 @@ module.exports = function (options/*, …options*/) {
 	return result;
 };
 
-},{}],16:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 module.exports = function (value) {
@@ -1274,14 +613,14 @@ module.exports = function (value) {
 	return value;
 };
 
-},{}],17:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./is-implemented')()
 	? String.prototype.contains
 	: require('./shim');
 
-},{"./is-implemented":18,"./shim":19}],18:[function(require,module,exports){
+},{"./is-implemented":17,"./shim":18}],17:[function(require,module,exports){
 'use strict';
 
 var str = 'razdwatrzy';
@@ -1291,7 +630,7 @@ module.exports = function () {
 	return ((str.contains('dwa') === true) && (str.contains('foo') === false));
 };
 
-},{}],19:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 'use strict';
 
 var indexOf = String.prototype.indexOf;
@@ -1300,7 +639,7 @@ module.exports = function (searchString/*, position*/) {
 	return indexOf.call(this, searchString, arguments[1]) > -1;
 };
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 'use strict';
 
 if (!require('./is-implemented')()) {
@@ -1309,7 +648,7 @@ if (!require('./is-implemented')()) {
 			writable: true });
 }
 
-},{"./is-implemented":21,"./polyfill":23,"es5-ext/global":7}],21:[function(require,module,exports){
+},{"./is-implemented":20,"./polyfill":22,"es5-ext/global":6}],20:[function(require,module,exports){
 'use strict';
 
 module.exports = function () {
@@ -1329,14 +668,14 @@ module.exports = function () {
 	return true;
 };
 
-},{}],22:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = function (x) {
 	return (x && ((typeof x === 'symbol') || (x['@@toStringTag'] === 'Symbol'))) || false;
 };
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 // ES2015 Symbol polyfill for environments that do not support it (or partially support it_
 
 'use strict';
@@ -1445,7 +784,7 @@ defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
 defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
 	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
 
-},{"./validate-symbol":24,"d":5}],24:[function(require,module,exports){
+},{"./validate-symbol":23,"d":4}],23:[function(require,module,exports){
 'use strict';
 
 var isSymbol = require('./is-symbol');
@@ -1455,7 +794,7 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-symbol":22}],25:[function(require,module,exports){
+},{"./is-symbol":21}],24:[function(require,module,exports){
 /**
  * Check if argument is a HTML element.
  *
@@ -1506,7 +845,7 @@ exports.fn = function(value) {
     return type === '[object Function]';
 };
 
-},{}],26:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 var is = require('./is');
 var delegate = require('delegate');
 
@@ -1603,7 +942,7 @@ function listenSelector(selector, type, callback) {
 
 module.exports = listen;
 
-},{"./is":25,"delegate":6}],27:[function(require,module,exports){
+},{"./is":24,"delegate":5}],26:[function(require,module,exports){
 (function (global){
 /**
  * @license
@@ -1619,7 +958,7 @@ module.exports = listen;
   var undefined;
 
   /** Used as the semantic version number. */
-  var VERSION = '4.12.0';
+  var VERSION = '4.13.1';
 
   /** Used as the size to enable large array optimizations. */
   var LARGE_ARRAY_SIZE = 200;
@@ -1723,7 +1062,7 @@ module.exports = listen;
   /** Used to match property names within property paths. */
   var reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/,
       reIsPlainProp = /^\w*$/,
-      rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]/g;
+      rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(\.|\[\])(?:\4|$))/g;
 
   /**
    * Used to match `RegExp`
@@ -1856,7 +1195,7 @@ module.exports = listen;
     'Function', 'Int8Array', 'Int16Array', 'Int32Array', 'Map', 'Math', 'Object',
     'Promise', 'Reflect', 'RegExp', 'Set', 'String', 'Symbol', 'TypeError',
     'Uint8Array', 'Uint8ClampedArray', 'Uint16Array', 'Uint32Array', 'WeakMap',
-    '_', 'clearTimeout', 'isFinite', 'parseInt', 'setTimeout'
+    '_', 'isFinite', 'parseInt', 'setTimeout'
   ];
 
   /** Used to make template sourceURLs easier to identify. */
@@ -1935,12 +1274,6 @@ module.exports = listen;
     '&#96;': '`'
   };
 
-  /** Used to determine if values are of the language type `Object`. */
-  var objectTypes = {
-    'function': true,
-    'object': true
-  };
-
   /** Used to escape characters for inclusion in compiled string literals. */
   var stringEscapes = {
     '\\': '\\',
@@ -1956,41 +1289,25 @@ module.exports = listen;
       freeParseInt = parseInt;
 
   /** Detect free variable `exports`. */
-  var freeExports = (objectTypes[typeof exports] && exports && !exports.nodeType)
-    ? exports
-    : undefined;
+  var freeExports = typeof exports == 'object' && exports;
 
   /** Detect free variable `module`. */
-  var freeModule = (objectTypes[typeof module] && module && !module.nodeType)
-    ? module
-    : undefined;
+  var freeModule = freeExports && typeof module == 'object' && module;
 
   /** Detect the popular CommonJS extension `module.exports`. */
-  var moduleExports = (freeModule && freeModule.exports === freeExports)
-    ? freeExports
-    : undefined;
+  var moduleExports = freeModule && freeModule.exports === freeExports;
 
   /** Detect free variable `global` from Node.js. */
-  var freeGlobal = checkGlobal(freeExports && freeModule && typeof global == 'object' && global);
+  var freeGlobal = checkGlobal(typeof global == 'object' && global);
 
   /** Detect free variable `self`. */
-  var freeSelf = checkGlobal(objectTypes[typeof self] && self);
-
-  /** Detect free variable `window`. */
-  var freeWindow = checkGlobal(objectTypes[typeof window] && window);
+  var freeSelf = checkGlobal(typeof self == 'object' && self);
 
   /** Detect `this` as the global object. */
-  var thisGlobal = checkGlobal(objectTypes[typeof this] && this);
+  var thisGlobal = checkGlobal(typeof this == 'object' && this);
 
-  /**
-   * Used as a reference to the global object.
-   *
-   * The `this` value is used if it's the global object to avoid Greasemonkey's
-   * restricted `window` object, otherwise the `window` object is used.
-   */
-  var root = freeGlobal ||
-    ((freeWindow !== (thisGlobal && thisGlobal.window)) && freeWindow) ||
-      freeSelf || thisGlobal || Function('return this')();
+  /** Used as a reference to the global object. */
+  var root = freeGlobal || freeSelf || thisGlobal || Function('return this')();
 
   /*--------------------------------------------------------------------------*/
 
@@ -2046,7 +1363,7 @@ module.exports = listen;
    * A specialized version of `baseAggregator` for arrays.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} setter The function to set `accumulator` values.
    * @param {Function} iteratee The iteratee to transform keys.
    * @param {Object} accumulator The initial aggregated object.
@@ -2054,7 +1371,7 @@ module.exports = listen;
    */
   function arrayAggregator(array, setter, iteratee, accumulator) {
     var index = -1,
-        length = array.length;
+        length = array ? array.length : 0;
 
     while (++index < length) {
       var value = array[index];
@@ -2068,13 +1385,13 @@ module.exports = listen;
    * iteratee shorthands.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} iteratee The function invoked per iteration.
    * @returns {Array} Returns `array`.
    */
   function arrayEach(array, iteratee) {
     var index = -1,
-        length = array.length;
+        length = array ? array.length : 0;
 
     while (++index < length) {
       if (iteratee(array[index], index, array) === false) {
@@ -2089,12 +1406,12 @@ module.exports = listen;
    * iteratee shorthands.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} iteratee The function invoked per iteration.
    * @returns {Array} Returns `array`.
    */
   function arrayEachRight(array, iteratee) {
-    var length = array.length;
+    var length = array ? array.length : 0;
 
     while (length--) {
       if (iteratee(array[length], length, array) === false) {
@@ -2109,14 +1426,14 @@ module.exports = listen;
    * iteratee shorthands.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} predicate The function invoked per iteration.
    * @returns {boolean} Returns `true` if all elements pass the predicate check,
    *  else `false`.
    */
   function arrayEvery(array, predicate) {
     var index = -1,
-        length = array.length;
+        length = array ? array.length : 0;
 
     while (++index < length) {
       if (!predicate(array[index], index, array)) {
@@ -2131,13 +1448,13 @@ module.exports = listen;
    * iteratee shorthands.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} predicate The function invoked per iteration.
    * @returns {Array} Returns the new filtered array.
    */
   function arrayFilter(array, predicate) {
     var index = -1,
-        length = array.length,
+        length = array ? array.length : 0,
         resIndex = 0,
         result = [];
 
@@ -2155,26 +1472,27 @@ module.exports = listen;
    * specifying an index to search from.
    *
    * @private
-   * @param {Array} array The array to search.
+   * @param {Array} [array] The array to search.
    * @param {*} target The value to search for.
    * @returns {boolean} Returns `true` if `target` is found, else `false`.
    */
   function arrayIncludes(array, value) {
-    return !!array.length && baseIndexOf(array, value, 0) > -1;
+    var length = array ? array.length : 0;
+    return !!length && baseIndexOf(array, value, 0) > -1;
   }
 
   /**
    * This function is like `arrayIncludes` except that it accepts a comparator.
    *
    * @private
-   * @param {Array} array The array to search.
+   * @param {Array} [array] The array to search.
    * @param {*} target The value to search for.
    * @param {Function} comparator The comparator invoked per element.
    * @returns {boolean} Returns `true` if `target` is found, else `false`.
    */
   function arrayIncludesWith(array, value, comparator) {
     var index = -1,
-        length = array.length;
+        length = array ? array.length : 0;
 
     while (++index < length) {
       if (comparator(value, array[index])) {
@@ -2189,13 +1507,13 @@ module.exports = listen;
    * shorthands.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} iteratee The function invoked per iteration.
    * @returns {Array} Returns the new mapped array.
    */
   function arrayMap(array, iteratee) {
     var index = -1,
-        length = array.length,
+        length = array ? array.length : 0,
         result = Array(length);
 
     while (++index < length) {
@@ -2228,7 +1546,7 @@ module.exports = listen;
    * iteratee shorthands.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} iteratee The function invoked per iteration.
    * @param {*} [accumulator] The initial value.
    * @param {boolean} [initAccum] Specify using the first element of `array` as
@@ -2237,7 +1555,7 @@ module.exports = listen;
    */
   function arrayReduce(array, iteratee, accumulator, initAccum) {
     var index = -1,
-        length = array.length;
+        length = array ? array.length : 0;
 
     if (initAccum && length) {
       accumulator = array[++index];
@@ -2253,7 +1571,7 @@ module.exports = listen;
    * iteratee shorthands.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} iteratee The function invoked per iteration.
    * @param {*} [accumulator] The initial value.
    * @param {boolean} [initAccum] Specify using the last element of `array` as
@@ -2261,7 +1579,7 @@ module.exports = listen;
    * @returns {*} Returns the accumulated value.
    */
   function arrayReduceRight(array, iteratee, accumulator, initAccum) {
-    var length = array.length;
+    var length = array ? array.length : 0;
     if (initAccum && length) {
       accumulator = array[--length];
     }
@@ -2276,14 +1594,14 @@ module.exports = listen;
    * shorthands.
    *
    * @private
-   * @param {Array} array The array to iterate over.
+   * @param {Array} [array] The array to iterate over.
    * @param {Function} predicate The function invoked per iteration.
    * @returns {boolean} Returns `true` if any element passes the predicate check,
    *  else `false`.
    */
   function arraySome(array, predicate) {
     var index = -1,
-        length = array.length;
+        length = array ? array.length : 0;
 
     while (++index < length) {
       if (predicate(array[index], index, array)) {
@@ -2294,23 +1612,21 @@ module.exports = listen;
   }
 
   /**
-   * The base implementation of methods like `_.find` and `_.findKey`, without
-   * support for iteratee shorthands, which iterates over `collection` using
-   * `eachFunc`.
+   * The base implementation of methods like `_.findKey` and `_.findLastKey`,
+   * without support for iteratee shorthands, which iterates over `collection`
+   * using `eachFunc`.
    *
    * @private
    * @param {Array|Object} collection The collection to search.
    * @param {Function} predicate The function invoked per iteration.
    * @param {Function} eachFunc The function to iterate over `collection`.
-   * @param {boolean} [retKey] Specify returning the key of the found element
-   *  instead of the element itself.
    * @returns {*} Returns the found element or its key, else `undefined`.
    */
-  function baseFind(collection, predicate, eachFunc, retKey) {
+  function baseFindKey(collection, predicate, eachFunc) {
     var result;
     eachFunc(collection, function(value, key, collection) {
       if (predicate(value, key, collection)) {
-        result = retKey ? key : value;
+        result = key;
         return false;
       }
     });
@@ -2324,12 +1640,13 @@ module.exports = listen;
    * @private
    * @param {Array} array The array to search.
    * @param {Function} predicate The function invoked per iteration.
+   * @param {number} fromIndex The index to search from.
    * @param {boolean} [fromRight] Specify iterating from right to left.
    * @returns {number} Returns the index of the matched value, else `-1`.
    */
-  function baseFindIndex(array, predicate, fromRight) {
+  function baseFindIndex(array, predicate, fromIndex, fromRight) {
     var length = array.length,
-        index = fromRight ? length : -1;
+        index = fromIndex + (fromRight ? 1 : -1);
 
     while ((fromRight ? index-- : ++index < length)) {
       if (predicate(array[index], index, array)) {
@@ -2637,6 +1954,18 @@ module.exports = listen;
   }
 
   /**
+   * Gets the value at `key` of `object`.
+   *
+   * @private
+   * @param {Object} [object] The object to query.
+   * @param {string} key The key of the property to get.
+   * @returns {*} Returns the property value.
+   */
+  function getValue(object, key) {
+    return object == null ? undefined : object[key];
+  }
+
+  /**
    * Gets the index at which the first occurrence of `NaN` is found in `array`.
    *
    * @private
@@ -2647,7 +1976,7 @@ module.exports = listen;
    */
   function indexOfNaN(array, fromIndex, fromRight) {
     var length = array.length,
-        index = fromIndex + (fromRight ? 0 : -1);
+        index = fromIndex + (fromRight ? 1 : -1);
 
     while ((fromRight ? index-- : ++index < length)) {
       var other = array[index];
@@ -2838,10 +2167,10 @@ module.exports = listen;
    * lodash.isFunction(lodash.bar);
    * // => true
    *
-   * // Use `context` to mock `Date#getTime` use in `_.now`.
-   * var mock = _.runInContext({
+   * // Use `context` to stub `Date#getTime` use in `_.now`.
+   * var stubbed = _.runInContext({
    *   'Date': function() {
-   *     return { 'getTime': getTimeMock };
+   *     return { 'getTime': stubGetTime };
    *   }
    * });
    *
@@ -2862,6 +2191,15 @@ module.exports = listen;
     var arrayProto = context.Array.prototype,
         objectProto = context.Object.prototype,
         stringProto = context.String.prototype;
+
+    /** Used to detect overreaching core-js shims. */
+    var coreJsData = context['__core-js_shared__'];
+
+    /** Used to detect methods masquerading as native. */
+    var maskSrcKey = (function() {
+      var uid = /[^.]+$/.exec(coreJsData && coreJsData.keys && coreJsData.keys.IE_PROTO || '');
+      return uid ? ('Symbol(src)_1.' + uid) : '';
+    }());
 
     /** Used to resolve the decompiled source of functions. */
     var funcToString = context.Function.prototype.toString;
@@ -2896,14 +2234,15 @@ module.exports = listen;
         Reflect = context.Reflect,
         Symbol = context.Symbol,
         Uint8Array = context.Uint8Array,
-        clearTimeout = context.clearTimeout,
         enumerate = Reflect ? Reflect.enumerate : undefined,
         getOwnPropertySymbols = Object.getOwnPropertySymbols,
         iteratorSymbol = typeof (iteratorSymbol = Symbol && Symbol.iterator) == 'symbol' ? iteratorSymbol : undefined,
         objectCreate = Object.create,
         propertyIsEnumerable = objectProto.propertyIsEnumerable,
-        setTimeout = context.setTimeout,
         splice = arrayProto.splice;
+
+    /** Built-in method references that are mockable. */
+    var setTimeout = function(func, wait) { return context.setTimeout.call(root, func, wait); };
 
     /* Built-in method references for those with the same name as other `lodash` methods. */
     var nativeCeil = Math.ceil,
@@ -3026,19 +2365,21 @@ module.exports = listen;
      * `isArrayBuffer`, `isArrayLike`, `isArrayLikeObject`, `isBoolean`,
      * `isBuffer`, `isDate`, `isElement`, `isEmpty`, `isEqual`, `isEqualWith`,
      * `isError`, `isFinite`, `isFunction`, `isInteger`, `isLength`, `isMap`,
-     * `isMatch`, `isMatchWith`, `isNaN`, `isNative`, `isNil`, `isNull`, `isNumber`,
-     * `isObject`, `isObjectLike`, `isPlainObject`, `isRegExp`, `isSafeInteger`,
-     * `isSet`, `isString`, `isUndefined`, `isTypedArray`, `isWeakMap`, `isWeakSet`,
-     * `join`, `kebabCase`, `last`, `lastIndexOf`, `lowerCase`, `lowerFirst`,
-     * `lt`, `lte`, `max`, `maxBy`, `mean`, `meanBy`, `min`, `minBy`, `multiply`,
-     * `noConflict`, `noop`, `now`, `nth`, `pad`, `padEnd`, `padStart`, `parseInt`,
-     * `pop`, `random`, `reduce`, `reduceRight`, `repeat`, `result`, `round`,
-     * `runInContext`, `sample`, `shift`, `size`, `snakeCase`, `some`, `sortedIndex`,
-     * `sortedIndexBy`, `sortedLastIndex`, `sortedLastIndexBy`, `startCase`,
-     * `startsWith`, `subtract`, `sum`, `sumBy`, `template`, `times`, `toFinite`,
-     * `toInteger`, `toJSON`, `toLength`, `toLower`, `toNumber`, `toSafeInteger`,
-     * `toString`, `toUpper`, `trim`, `trimEnd`, `trimStart`, `truncate`, `unescape`,
-     * `uniqueId`, `upperCase`, `upperFirst`, `value`, and `words`
+     * `isMatch`, `isMatchWith`, `isNaN`, `isNative`, `isNil`, `isNull`,
+     * `isNumber`, `isObject`, `isObjectLike`, `isPlainObject`, `isRegExp`,
+     * `isSafeInteger`, `isSet`, `isString`, `isUndefined`, `isTypedArray`,
+     * `isWeakMap`, `isWeakSet`, `join`, `kebabCase`, `last`, `lastIndexOf`,
+     * `lowerCase`, `lowerFirst`, `lt`, `lte`, `max`, `maxBy`, `mean`, `meanBy`,
+     * `min`, `minBy`, `multiply`, `noConflict`, `noop`, `now`, `nth`, `pad`,
+     * `padEnd`, `padStart`, `parseInt`, `pop`, `random`, `reduce`, `reduceRight`,
+     * `repeat`, `result`, `round`, `runInContext`, `sample`, `shift`, `size`,
+     * `snakeCase`, `some`, `sortedIndex`, `sortedIndexBy`, `sortedLastIndex`,
+     * `sortedLastIndexBy`, `startCase`, `startsWith`, `stubArray`, `stubFalse`,
+     * `stubObject`, `stubString`, `stubTrue`, `subtract`, `sum`, `sumBy`,
+     * `template`, `times`, `toFinite`, `toInteger`, `toJSON`, `toLength`,
+     * `toLower`, `toNumber`, `toSafeInteger`, `toString`, `toUpper`, `trim`,
+     * `trimEnd`, `trimStart`, `truncate`, `unescape`, `uniqueId`, `upperCase`,
+     * `upperFirst`, `value`, and `words`
      *
      * @name _
      * @constructor
@@ -4339,7 +3680,7 @@ module.exports = listen;
      * The base implementation of `_.has` without support for deep paths.
      *
      * @private
-     * @param {Object} object The object to query.
+     * @param {Object} [object] The object to query.
      * @param {Array|string} key The key to check.
      * @returns {boolean} Returns `true` if `key` exists, else `false`.
      */
@@ -4347,20 +3688,21 @@ module.exports = listen;
       // Avoid a bug in IE 10-11 where objects with a [[Prototype]] of `null`,
       // that are composed entirely of index properties, return `false` for
       // `hasOwnProperty` checks of them.
-      return hasOwnProperty.call(object, key) ||
-        (typeof object == 'object' && key in object && getPrototype(object) === null);
+      return object != null &&
+        (hasOwnProperty.call(object, key) ||
+          (typeof object == 'object' && key in object && getPrototype(object) === null));
     }
 
     /**
      * The base implementation of `_.hasIn` without support for deep paths.
      *
      * @private
-     * @param {Object} object The object to query.
+     * @param {Object} [object] The object to query.
      * @param {Array|string} key The key to check.
      * @returns {boolean} Returns `true` if `key` exists, else `false`.
      */
     function baseHasIn(object, key) {
-      return key in Object(object);
+      return object != null && key in Object(object);
     }
 
     /**
@@ -4612,6 +3954,22 @@ module.exports = listen;
         }
       }
       return true;
+    }
+
+    /**
+     * The base implementation of `_.isNative` without bad shim checks.
+     *
+     * @private
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `value` is a native function,
+     *  else `false`.
+     */
+    function baseIsNative(value) {
+      if (!isObject(value) || isMasked(value)) {
+        return false;
+      }
+      var pattern = (isFunction(value) || isHostObject(value)) ? reIsNative : reIsHostCtor;
+      return pattern.test(toSource(value));
     }
 
     /**
@@ -4982,6 +4340,9 @@ module.exports = listen;
           length = values.length,
           seen = array;
 
+      if (array === values) {
+        values = copyArray(values);
+      }
       if (iteratee) {
         seen = arrayMap(array, baseUnary(iteratee));
       }
@@ -6135,6 +5496,31 @@ module.exports = listen;
     }
 
     /**
+     * Creates a `_.find` or `_.findLast` function.
+     *
+     * @private
+     * @param {Function} findIndexFunc The function to find the collection index.
+     * @returns {Function} Returns the new find function.
+     */
+    function createFind(findIndexFunc) {
+      return function(collection, predicate, fromIndex) {
+        var iterable = Object(collection);
+        predicate = getIteratee(predicate, 3);
+        if (!isArrayLike(collection)) {
+          var props = keys(collection);
+        }
+        var index = findIndexFunc(props || collection, function(value, key) {
+          if (props) {
+            key = value;
+            value = iterable[key];
+          }
+          return predicate(value, key, iterable);
+        }, fromIndex);
+        return index > -1 ? collection[props ? props[index] : index] : undefined;
+      };
+    }
+
+    /**
      * Creates a `_.flow` or `_.flowRight` function.
      *
      * @private
@@ -6497,7 +5883,7 @@ module.exports = listen;
       var func = Math[methodName];
       return function(number, precision) {
         number = toNumber(number);
-        precision = toInteger(precision);
+        precision = nativeMin(toInteger(precision), 292);
         if (precision) {
           // Shift with exponential notation to avoid floating-point issues.
           // See [MDN](https://mdn.io/round#Examples) for more details.
@@ -6978,11 +6364,14 @@ module.exports = listen;
      * @returns {Array} Returns the match data of `object`.
      */
     function getMatchData(object) {
-      var result = toPairs(object),
+      var result = keys(object),
           length = result.length;
 
       while (length--) {
-        result[length][2] = isStrictComparable(result[length][1]);
+        var key = result[length],
+            value = object[key];
+
+        result[length] = [key, value, isStrictComparable(value)];
       }
       return result;
     }
@@ -6996,8 +6385,8 @@ module.exports = listen;
      * @returns {*} Returns the function if it's native, else `undefined`.
      */
     function getNative(object, key) {
-      var value = object[key];
-      return isNative(value) ? value : undefined;
+      var value = getValue(object, key);
+      return baseIsNative(value) ? value : undefined;
     }
 
     /**
@@ -7026,9 +6415,7 @@ module.exports = listen;
 
     // Fallback for IE < 11.
     if (!getOwnPropertySymbols) {
-      getSymbols = function() {
-        return [];
-      };
+      getSymbols = stubArray;
     }
 
     /**
@@ -7359,6 +6746,26 @@ module.exports = listen;
       var data = getData(other);
       return !!data && func === data[0];
     }
+
+    /**
+     * Checks if `func` has its source masked.
+     *
+     * @private
+     * @param {Function} func The function to check.
+     * @returns {boolean} Returns `true` if `func` is masked, else `false`.
+     */
+    function isMasked(func) {
+      return !!maskSrcKey && (maskSrcKey in func);
+    }
+
+    /**
+     * Checks if `func` is capable of being masked.
+     *
+     * @private
+     * @param {*} value The value to check.
+     * @returns {boolean} Returns `true` if `func` is maskable, else `false`.
+     */
+    var isMaskable = coreJsData ? isFunction : stubFalse;
 
     /**
      * Checks if `value` is likely a prototype object.
@@ -7756,8 +7163,8 @@ module.exports = listen;
      * @see _.without, _.xor
      * @example
      *
-     * _.difference([3, 2, 1], [4, 2]);
-     * // => [3, 1]
+     * _.difference([2, 1], [2, 3]);
+     * // => [1]
      */
     var difference = rest(function(array, values) {
       return isArrayLikeObject(array)
@@ -7782,8 +7189,8 @@ module.exports = listen;
      * @returns {Array} Returns the new array of filtered values.
      * @example
      *
-     * _.differenceBy([3.1, 2.2, 1.3], [4.4, 2.5], Math.floor);
-     * // => [3.1, 1.3]
+     * _.differenceBy([2.1, 1.2], [2.3, 3.4], Math.floor);
+     * // => [1.2]
      *
      * // The `_.property` iteratee shorthand.
      * _.differenceBy([{ 'x': 2 }, { 'x': 1 }], [{ 'x': 1 }], 'x');
@@ -8035,6 +7442,7 @@ module.exports = listen;
      * @param {Array} array The array to search.
      * @param {Array|Function|Object|string} [predicate=_.identity]
      *  The function invoked per iteration.
+     * @param {number} [fromIndex=0] The index to search from.
      * @returns {number} Returns the index of the found element, else `-1`.
      * @example
      *
@@ -8059,10 +7467,16 @@ module.exports = listen;
      * _.findIndex(users, 'active');
      * // => 2
      */
-    function findIndex(array, predicate) {
-      return (array && array.length)
-        ? baseFindIndex(array, getIteratee(predicate, 3))
-        : -1;
+    function findIndex(array, predicate, fromIndex) {
+      var length = array ? array.length : 0;
+      if (!length) {
+        return -1;
+      }
+      var index = fromIndex == null ? 0 : toInteger(fromIndex);
+      if (index < 0) {
+        index = nativeMax(length + index, 0);
+      }
+      return baseFindIndex(array, getIteratee(predicate, 3), index);
     }
 
     /**
@@ -8076,6 +7490,7 @@ module.exports = listen;
      * @param {Array} array The array to search.
      * @param {Array|Function|Object|string} [predicate=_.identity]
      *  The function invoked per iteration.
+     * @param {number} [fromIndex=array.length-1] The index to search from.
      * @returns {number} Returns the index of the found element, else `-1`.
      * @example
      *
@@ -8100,10 +7515,19 @@ module.exports = listen;
      * _.findLastIndex(users, 'active');
      * // => 0
      */
-    function findLastIndex(array, predicate) {
-      return (array && array.length)
-        ? baseFindIndex(array, getIteratee(predicate, 3), true)
-        : -1;
+    function findLastIndex(array, predicate, fromIndex) {
+      var length = array ? array.length : 0;
+      if (!length) {
+        return -1;
+      }
+      var index = length - 1;
+      if (fromIndex !== undefined) {
+        index = toInteger(fromIndex);
+        index = fromIndex < 0
+          ? nativeMax(length + index, 0)
+          : nativeMin(index, length - 1);
+      }
+      return baseFindIndex(array, getIteratee(predicate, 3), index, true);
     }
 
     /**
@@ -8250,11 +7674,11 @@ module.exports = listen;
       if (!length) {
         return -1;
       }
-      fromIndex = toInteger(fromIndex);
-      if (fromIndex < 0) {
-        fromIndex = nativeMax(length + fromIndex, 0);
+      var index = fromIndex == null ? 0 : toInteger(fromIndex);
+      if (index < 0) {
+        index = nativeMax(length + index, 0);
       }
-      return baseIndexOf(array, value, fromIndex);
+      return baseIndexOf(array, value, index);
     }
 
     /**
@@ -8289,7 +7713,7 @@ module.exports = listen;
      * @returns {Array} Returns the new array of intersecting values.
      * @example
      *
-     * _.intersection([2, 1], [4, 2], [1, 2]);
+     * _.intersection([2, 1], [2, 3]);
      * // => [2]
      */
     var intersection = rest(function(arrays) {
@@ -8315,7 +7739,7 @@ module.exports = listen;
      * @returns {Array} Returns the new array of intersecting values.
      * @example
      *
-     * _.intersectionBy([2.1, 1.2], [4.3, 2.4], Math.floor);
+     * _.intersectionBy([2.1, 1.2], [2.3, 3.4], Math.floor);
      * // => [2.1]
      *
      * // The `_.property` iteratee shorthand.
@@ -8445,7 +7869,7 @@ module.exports = listen;
         ) + 1;
       }
       if (value !== value) {
-        return indexOfNaN(array, index, true);
+        return indexOfNaN(array, index - 1, true);
       }
       while (index--) {
         if (array[index] === value) {
@@ -8456,7 +7880,7 @@ module.exports = listen;
     }
 
     /**
-     * Gets the element at `n` index of `array`. If `n` is negative, the nth
+     * Gets the element at index `n` of `array`. If `n` is negative, the nth
      * element from the end is returned.
      *
      * @static
@@ -8497,11 +7921,11 @@ module.exports = listen;
      * @returns {Array} Returns `array`.
      * @example
      *
-     * var array = [1, 2, 3, 1, 2, 3];
+     * var array = ['a', 'b', 'c', 'a', 'b', 'c'];
      *
-     * _.pull(array, 2, 3);
+     * _.pull(array, 'a', 'c');
      * console.log(array);
-     * // => [1, 1]
+     * // => ['b', 'b']
      */
     var pull = rest(pullAll);
 
@@ -8519,11 +7943,11 @@ module.exports = listen;
      * @returns {Array} Returns `array`.
      * @example
      *
-     * var array = [1, 2, 3, 1, 2, 3];
+     * var array = ['a', 'b', 'c', 'a', 'b', 'c'];
      *
-     * _.pullAll(array, [2, 3]);
+     * _.pullAll(array, ['a', 'c']);
      * console.log(array);
-     * // => [1, 1]
+     * // => ['b', 'b']
      */
     function pullAll(array, values) {
       return (array && array.length && values && values.length)
@@ -8605,14 +8029,14 @@ module.exports = listen;
      * @returns {Array} Returns the new array of removed elements.
      * @example
      *
-     * var array = [5, 10, 15, 20];
-     * var evens = _.pullAt(array, 1, 3);
+     * var array = ['a', 'b', 'c', 'd'];
+     * var pulled = _.pullAt(array, [1, 3]);
      *
      * console.log(array);
-     * // => [5, 15]
+     * // => ['a', 'c']
      *
-     * console.log(evens);
-     * // => [10, 20]
+     * console.log(pulled);
+     * // => ['b', 'd']
      */
     var pullAt = rest(function(array, indexes) {
       indexes = baseFlatten(indexes, 1);
@@ -8752,9 +8176,6 @@ module.exports = listen;
      *
      * _.sortedIndex([30, 50], 40);
      * // => 1
-     *
-     * _.sortedIndex([4, 5], 4);
-     * // => 0
      */
     function sortedIndex(array, value) {
       return baseSortedIndex(array, value);
@@ -8777,13 +8198,13 @@ module.exports = listen;
      *  into `array`.
      * @example
      *
-     * var dict = { 'thirty': 30, 'forty': 40, 'fifty': 50 };
+     * var objects = [{ 'x': 4 }, { 'x': 5 }];
      *
-     * _.sortedIndexBy(['thirty', 'fifty'], 'forty', _.propertyOf(dict));
-     * // => 1
+     * _.sortedIndexBy(objects, { 'x': 4 }, function(o) { return o.x; });
+     * // => 0
      *
      * // The `_.property` iteratee shorthand.
-     * _.sortedIndexBy([{ 'x': 4 }, { 'x': 5 }], { 'x': 4 }, 'x');
+     * _.sortedIndexBy(objects, { 'x': 4 }, 'x');
      * // => 0
      */
     function sortedIndexBy(array, value, iteratee) {
@@ -8803,8 +8224,8 @@ module.exports = listen;
      * @returns {number} Returns the index of the matched value, else `-1`.
      * @example
      *
-     * _.sortedIndexOf([1, 1, 2, 2], 2);
-     * // => 2
+     * _.sortedIndexOf([4, 5, 5, 5, 6], 5);
+     * // => 1
      */
     function sortedIndexOf(array, value) {
       var length = array ? array.length : 0;
@@ -8832,8 +8253,8 @@ module.exports = listen;
      *  into `array`.
      * @example
      *
-     * _.sortedLastIndex([4, 5], 4);
-     * // => 1
+     * _.sortedLastIndex([4, 5, 5, 5, 6], 5);
+     * // => 4
      */
     function sortedLastIndex(array, value) {
       return baseSortedIndex(array, value, true);
@@ -8856,8 +8277,13 @@ module.exports = listen;
      *  into `array`.
      * @example
      *
+     * var objects = [{ 'x': 4 }, { 'x': 5 }];
+     *
+     * _.sortedLastIndexBy(objects, { 'x': 4 }, function(o) { return o.x; });
+     * // => 1
+     *
      * // The `_.property` iteratee shorthand.
-     * _.sortedLastIndexBy([{ 'x': 4 }, { 'x': 5 }], { 'x': 4 }, 'x');
+     * _.sortedLastIndexBy(objects, { 'x': 4 }, 'x');
      * // => 1
      */
     function sortedLastIndexBy(array, value, iteratee) {
@@ -8877,7 +8303,7 @@ module.exports = listen;
      * @returns {number} Returns the index of the matched value, else `-1`.
      * @example
      *
-     * _.sortedLastIndexOf([1, 1, 2, 2], 2);
+     * _.sortedLastIndexOf([4, 5, 5, 5, 6], 5);
      * // => 3
      */
     function sortedLastIndexOf(array, value) {
@@ -9117,8 +8543,8 @@ module.exports = listen;
      * @returns {Array} Returns the new array of combined values.
      * @example
      *
-     * _.union([2, 1], [4, 2], [1, 2]);
-     * // => [2, 1, 4]
+     * _.union([2], [1, 2]);
+     * // => [2, 1]
      */
     var union = rest(function(arrays) {
       return baseUniq(baseFlatten(arrays, 1, isArrayLikeObject, true));
@@ -9140,8 +8566,8 @@ module.exports = listen;
      * @returns {Array} Returns the new array of combined values.
      * @example
      *
-     * _.unionBy([2.1, 1.2], [4.3, 2.4], Math.floor);
-     * // => [2.1, 1.2, 4.3]
+     * _.unionBy([2.1], [1.2, 2.3], Math.floor);
+     * // => [2.1, 1.2]
      *
      * // The `_.property` iteratee shorthand.
      * _.unionBy([{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x');
@@ -9248,7 +8674,7 @@ module.exports = listen;
      * @returns {Array} Returns the new duplicate free array.
      * @example
      *
-     * var objects = [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 },  { 'x': 1, 'y': 2 }];
+     * var objects = [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }, { 'x': 1, 'y': 2 }];
      *
      * _.uniqWith(objects, _.isEqual);
      * // => [{ 'x': 1, 'y': 2 }, { 'x': 2, 'y': 1 }]
@@ -9343,7 +8769,7 @@ module.exports = listen;
      * @see _.difference, _.xor
      * @example
      *
-     * _.without([1, 2, 1, 3], 1, 2);
+     * _.without([2, 1, 2, 3], 1, 2);
      * // => [3]
      */
     var without = rest(function(array, values) {
@@ -9367,8 +8793,8 @@ module.exports = listen;
      * @see _.difference, _.without
      * @example
      *
-     * _.xor([2, 1], [4, 2]);
-     * // => [1, 4]
+     * _.xor([2, 1], [2, 3]);
+     * // => [1, 3]
      */
     var xor = rest(function(arrays) {
       return baseXor(arrayFilter(arrays, isArrayLikeObject));
@@ -9390,8 +8816,8 @@ module.exports = listen;
      * @returns {Array} Returns the new array of filtered values.
      * @example
      *
-     * _.xorBy([2.1, 1.2], [4.3, 2.4], Math.floor);
-     * // => [1.2, 4.3]
+     * _.xorBy([2.1, 1.2], [2.3, 3.4], Math.floor);
+     * // => [1.2, 3.4]
      *
      * // The `_.property` iteratee shorthand.
      * _.xorBy([{ 'x': 1 }], [{ 'x': 2 }, { 'x': 1 }], 'x');
@@ -9624,9 +9050,6 @@ module.exports = listen;
      *
      * _(object).at(['a[0].b.c', 'a[1]']).value();
      * // => [3, 4]
-     *
-     * _(['a', 'b', 'c']).at(0, 2).value();
-     * // => ['a', 'c']
      */
     var wrapperAt = rest(function(paths) {
       paths = baseFlatten(paths, 1);
@@ -9889,6 +9312,7 @@ module.exports = listen;
      * _.countBy([6.1, 4.2, 6.3], Math.floor);
      * // => { '4': 1, '6': 2 }
      *
+     * // The `_.property` iteratee shorthand.
      * _.countBy(['one', 'two', 'three'], 'length');
      * // => { '3': 2, '5': 1 }
      */
@@ -9994,6 +9418,7 @@ module.exports = listen;
      * @param {Array|Object} collection The collection to search.
      * @param {Array|Function|Object|string} [predicate=_.identity]
      *  The function invoked per iteration.
+     * @param {number} [fromIndex=0] The index to search from.
      * @returns {*} Returns the matched element, else `undefined`.
      * @example
      *
@@ -10018,14 +9443,7 @@ module.exports = listen;
      * _.find(users, 'active');
      * // => object for 'barney'
      */
-    function find(collection, predicate) {
-      predicate = getIteratee(predicate, 3);
-      if (isArray(collection)) {
-        var index = baseFindIndex(collection, predicate);
-        return index > -1 ? collection[index] : undefined;
-      }
-      return baseFind(collection, predicate, baseEach);
-    }
+    var find = createFind(findIndex);
 
     /**
      * This method is like `_.find` except that it iterates over elements of
@@ -10038,6 +9456,7 @@ module.exports = listen;
      * @param {Array|Object} collection The collection to search.
      * @param {Array|Function|Object|string} [predicate=_.identity]
      *  The function invoked per iteration.
+     * @param {number} [fromIndex=collection.length-1] The index to search from.
      * @returns {*} Returns the matched element, else `undefined`.
      * @example
      *
@@ -10046,14 +9465,7 @@ module.exports = listen;
      * });
      * // => 3
      */
-    function findLast(collection, predicate) {
-      predicate = getIteratee(predicate, 3);
-      if (isArray(collection)) {
-        var index = baseFindIndex(collection, predicate, true);
-        return index > -1 ? collection[index] : undefined;
-      }
-      return baseFind(collection, predicate, baseEachRight);
-    }
+    var findLast = createFind(findLastIndex);
 
     /**
      * Creates a flattened array of values by running each element in `collection`
@@ -10810,7 +10222,6 @@ module.exports = listen;
      * @static
      * @memberOf _
      * @since 2.4.0
-     * @type {Function}
      * @category Date
      * @returns {number} Returns the timestamp.
      * @example
@@ -10818,9 +10229,11 @@ module.exports = listen;
      * _.defer(function(stamp) {
      *   console.log(_.now() - stamp);
      * }, _.now());
-     * // => Logs the number of milliseconds it took for the deferred function to be invoked.
+     * // => Logs the number of milliseconds it took for the deferred invocation.
      */
-    var now = Date.now;
+    function now() {
+      return Date.now();
+    }
 
     /*------------------------------------------------------------------------*/
 
@@ -10924,7 +10337,7 @@ module.exports = listen;
      * The `_.bind.placeholder` value, which defaults to `_` in monolithic builds,
      * may be used as a placeholder for partially applied arguments.
      *
-     * **Note:** Unlike native `Function#bind` this method doesn't set the "length"
+     * **Note:** Unlike native `Function#bind`, this method doesn't set the "length"
      * property of bound functions.
      *
      * @static
@@ -11164,7 +10577,7 @@ module.exports = listen;
           maxWait,
           result,
           timerId,
-          lastCallTime = 0,
+          lastCallTime,
           lastInvokeTime = 0,
           leading = false,
           maxing = false,
@@ -11215,7 +10628,7 @@ module.exports = listen;
         // Either this is the first call, activity has stopped and we're at the
         // trailing edge, the system time has gone backwards and we're treating
         // it as the trailing edge, or we've hit the `maxWait` limit.
-        return (!lastCallTime || (timeSinceLastCall >= wait) ||
+        return (lastCallTime === undefined || (timeSinceLastCall >= wait) ||
           (timeSinceLastCall < 0) || (maxing && timeSinceLastInvoke >= maxWait));
       }
 
@@ -11229,7 +10642,6 @@ module.exports = listen;
       }
 
       function trailingEdge(time) {
-        clearTimeout(timerId);
         timerId = undefined;
 
         // Only invoke if we have `lastArgs` which means `func` has been
@@ -11242,11 +10654,8 @@ module.exports = listen;
       }
 
       function cancel() {
-        if (timerId !== undefined) {
-          clearTimeout(timerId);
-        }
-        lastCallTime = lastInvokeTime = 0;
-        lastArgs = lastThis = timerId = undefined;
+        lastInvokeTime = 0;
+        lastArgs = lastCallTime = lastThis = timerId = undefined;
       }
 
       function flush() {
@@ -11267,7 +10676,6 @@ module.exports = listen;
           }
           if (maxing) {
             // Handle invocations in a tight loop.
-            clearTimeout(timerId);
             timerId = setTimeout(timerExpired, wait);
             return invokeFunc(lastCallTime);
           }
@@ -11491,7 +10899,7 @@ module.exports = listen;
      *
      * var func = _.overArgs(function(x, y) {
      *   return [x, y];
-     * }, square, doubled);
+     * }, [square, doubled]);
      *
      * func(9, 3);
      * // => [81, 6]
@@ -11608,7 +11016,7 @@ module.exports = listen;
      *
      * var rearged = _.rearg(function(a, b, c) {
      *   return [a, b, c];
-     * }, 2, 0, 1);
+     * }, [2, 0, 1]);
      *
      * rearged('b', 'c', 'a')
      * // => ['a', 'b', 'c']
@@ -12247,7 +11655,7 @@ module.exports = listen;
      * _.isBuffer(new Uint8Array(2));
      * // => false
      */
-    var isBuffer = !Buffer ? constant(false) : function(value) {
+    var isBuffer = !Buffer ? stubFalse : function(value) {
       return value instanceof Buffer;
     };
 
@@ -12747,7 +12155,15 @@ module.exports = listen;
     }
 
     /**
-     * Checks if `value` is a native function.
+     * Checks if `value` is a pristine native function.
+     *
+     * **Note:** This method can't reliably detect native functions in the
+     * presence of the `core-js` package because `core-js` circumvents this kind
+     * of detection. Despite multiple requests, the `core-js` maintainer has made
+     * it clear: any attempt to fix the detection will be obstructed. As a result,
+     * we're left with little choice but to throw an error. Unfortunately, this
+     * also affects packages, like [babel-polyfill](https://www.npmjs.com/package/babel-polyfill),
+     * which rely on `core-js`.
      *
      * @static
      * @memberOf _
@@ -12765,11 +12181,10 @@ module.exports = listen;
      * // => false
      */
     function isNative(value) {
-      if (!isObject(value)) {
-        return false;
+      if (isMaskable(value)) {
+        throw new Error('This method is not supported with `core-js`. Try https://github.com/es-shims.');
       }
-      var pattern = (isFunction(value) || isHostObject(value)) ? reIsNative : reIsHostCtor;
-      return pattern.test(toSource(value));
+      return baseIsNative(value);
     }
 
     /**
@@ -13231,7 +12646,7 @@ module.exports = listen;
     /**
      * Converts `value` to an integer.
      *
-     * **Note:** This function is loosely based on
+     * **Note:** This method is loosely based on
      * [`ToInteger`](http://www.ecma-international.org/ecma-262/6.0/#sec-tointeger).
      *
      * @static
@@ -13585,9 +13000,6 @@ module.exports = listen;
      *
      * _.at(object, ['a[0].b.c', 'a[1]']);
      * // => [3, 4]
-     *
-     * _.at(['a', 'b', 'c'], 0, 2);
-     * // => ['a', 'c']
      */
     var at = rest(function(object, paths) {
       return baseAt(object, baseFlatten(paths, 1));
@@ -13720,7 +13132,7 @@ module.exports = listen;
      * // => 'barney'
      */
     function findKey(object, predicate) {
-      return baseFind(object, getIteratee(predicate, 3), baseForOwn, true);
+      return baseFindKey(object, getIteratee(predicate, 3), baseForOwn);
     }
 
     /**
@@ -13760,7 +13172,7 @@ module.exports = listen;
      * // => 'pebbles'
      */
     function findLastKey(object, predicate) {
-      return baseFind(object, getIteratee(predicate, 3), baseForOwnRight, true);
+      return baseFindKey(object, getIteratee(predicate, 3), baseForOwnRight);
     }
 
     /**
@@ -14619,15 +14031,16 @@ module.exports = listen;
      * An alternative to `_.reduce`; this method transforms `object` to a new
      * `accumulator` object which is the result of running each of its own
      * enumerable string keyed properties thru `iteratee`, with each invocation
-     * potentially mutating the `accumulator` object. The iteratee is invoked
-     * with four arguments: (accumulator, value, key, object). Iteratee functions
-     * may exit iteration early by explicitly returning `false`.
+     * potentially mutating the `accumulator` object. If `accumulator` is not
+     * provided, a new object with the same `[[Prototype]]` will be used. The
+     * iteratee is invoked with four arguments: (accumulator, value, key, object).
+     * Iteratee functions may exit iteration early by explicitly returning `false`.
      *
      * @static
      * @memberOf _
      * @since 1.3.0
      * @category Object
-     * @param {Array|Object} object The object to iterate over.
+     * @param {Object} object The object to iterate over.
      * @param {Function} [iteratee=_.identity] The function invoked per iteration.
      * @param {*} [accumulator] The custom accumulator value.
      * @returns {*} Returns the accumulated value.
@@ -15049,7 +14462,7 @@ module.exports = listen;
      * @category String
      * @param {string} [string=''] The string to search.
      * @param {string} [target] The string to search for.
-     * @param {number} [position=string.length] The position to search from.
+     * @param {number} [position=string.length] The position to search up to.
      * @returns {boolean} Returns `true` if `string` ends with `target`,
      *  else `false`.
      * @example
@@ -16134,7 +15547,7 @@ module.exports = listen;
      *   }
      * };
      *
-     * _.bindAll(view, 'onClick');
+     * _.bindAll(view, ['onClick']);
      * jQuery(element).on('click', view.onClick);
      * // => Logs 'clicked docs' when clicked.
      */
@@ -16215,7 +15628,7 @@ module.exports = listen;
      *   { 'user': 'fred',   'age': 40 }
      * ];
      *
-     * _.filter(users, _.conforms({ 'age': _.partial(_.gt, _, 38) }));
+     * _.filter(users, _.conforms({ 'age': function(n) { return n > 38; } }));
      * // => [{ 'user': 'fred', 'age': 40 }]
      */
     function conforms(source) {
@@ -16233,10 +15646,12 @@ module.exports = listen;
      * @returns {Function} Returns the new constant function.
      * @example
      *
-     * var object = { 'user': 'fred' };
-     * var getter = _.constant(object);
+     * var objects = _.times(2, _.constant({ 'a': 1 }));
      *
-     * getter() === object;
+     * console.log(objects);
+     * // => [{ 'a': 1 }, { 'a': 1 }]
+     *
+     * console.log(objects[0] === objects[1]);
      * // => true
      */
     function constant(value) {
@@ -16263,7 +15678,7 @@ module.exports = listen;
      *   return n * n;
      * }
      *
-     * var addSquare = _.flow(_.add, square);
+     * var addSquare = _.flow([_.add, square]);
      * addSquare(1, 2);
      * // => 9
      */
@@ -16286,7 +15701,7 @@ module.exports = listen;
      *   return n * n;
      * }
      *
-     * var addSquare = _.flowRight(square, _.add);
+     * var addSquare = _.flowRight([square, _.add]);
      * addSquare(1, 2);
      * // => 9
      */
@@ -16305,7 +15720,7 @@ module.exports = listen;
      *
      * var object = { 'user': 'fred' };
      *
-     * _.identity(object) === object;
+     * console.log(_.identity(object) === object);
      * // => true
      */
     function identity(value) {
@@ -16566,8 +15981,7 @@ module.exports = listen;
     }
 
     /**
-     * A no-operation function that returns `undefined` regardless of the
-     * arguments it receives.
+     * A method that returns `undefined`.
      *
      * @static
      * @memberOf _
@@ -16575,17 +15989,15 @@ module.exports = listen;
      * @category Util
      * @example
      *
-     * var object = { 'user': 'fred' };
-     *
-     * _.noop(object) === undefined;
-     * // => true
+     * _.times(2, _.noop);
+     * // => [undefined, undefined]
      */
     function noop() {
       // No operation performed.
     }
 
     /**
-     * Creates a function that gets the argument at `n` index. If `n` is negative,
+     * Creates a function that gets the argument at index `n`. If `n` is negative,
      * the nth argument from the end is returned.
      *
      * @static
@@ -16624,7 +16036,7 @@ module.exports = listen;
      * @returns {Function} Returns the new function.
      * @example
      *
-     * var func = _.over(Math.max, Math.min);
+     * var func = _.over([Math.max, Math.min]);
      *
      * func(1, 2, 3, 4);
      * // => [4, 1]
@@ -16644,7 +16056,7 @@ module.exports = listen;
      * @returns {Function} Returns the new function.
      * @example
      *
-     * var func = _.overEvery(Boolean, isFinite);
+     * var func = _.overEvery([Boolean, isFinite]);
      *
      * func('1');
      * // => true
@@ -16670,7 +16082,7 @@ module.exports = listen;
      * @returns {Function} Returns the new function.
      * @example
      *
-     * var func = _.overSome(Boolean, isFinite);
+     * var func = _.overSome([Boolean, isFinite]);
      *
      * func('1');
      * // => true
@@ -16818,6 +16230,101 @@ module.exports = listen;
     var rangeRight = createRange(true);
 
     /**
+     * A method that returns a new empty array.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.13.0
+     * @category Util
+     * @returns {Array} Returns the new empty array.
+     * @example
+     *
+     * var arrays = _.times(2, _.stubArray);
+     *
+     * console.log(arrays);
+     * // => [[], []]
+     *
+     * console.log(arrays[0] === arrays[1]);
+     * // => false
+     */
+    function stubArray() {
+      return [];
+    }
+
+    /**
+     * A method that returns `false`.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.13.0
+     * @category Util
+     * @returns {boolean} Returns `false`.
+     * @example
+     *
+     * _.times(2, _.stubFalse);
+     * // => [false, false]
+     */
+    function stubFalse() {
+      return false;
+    }
+
+    /**
+     * A method that returns a new empty object.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.13.0
+     * @category Util
+     * @returns {Object} Returns the new empty object.
+     * @example
+     *
+     * var objects = _.times(2, _.stubObject);
+     *
+     * console.log(objects);
+     * // => [{}, {}]
+     *
+     * console.log(objects[0] === objects[1]);
+     * // => false
+     */
+    function stubObject() {
+      return {};
+    }
+
+    /**
+     * A method that returns an empty string.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.13.0
+     * @category Util
+     * @returns {string} Returns the empty string.
+     * @example
+     *
+     * _.times(2, _.stubString);
+     * // => ['', '']
+     */
+    function stubString() {
+      return '';
+    }
+
+    /**
+     * A method that returns `true`.
+     *
+     * @static
+     * @memberOf _
+     * @since 4.13.0
+     * @category Util
+     * @returns {boolean} Returns `true`.
+     * @example
+     *
+     * _.times(2, _.stubTrue);
+     * // => [true, true]
+     */
+    function stubTrue() {
+      return true;
+    }
+
+    /**
      * Invokes the iteratee `n` times, returning an array of the results of
      * each invocation. The iteratee is invoked with one argument; (index).
      *
@@ -16833,8 +16340,8 @@ module.exports = listen;
      * _.times(3, String);
      * // => ['0', '1', '2']
      *
-     *  _.times(4, _.constant(true));
-     * // => [true, true, true, true]
+     *  _.times(4, _.constant(0));
+     * // => [0, 0, 0, 0]
      */
     function times(n, iteratee) {
       n = toInteger(n);
@@ -16870,15 +16377,6 @@ module.exports = listen;
      *
      * _.toPath('a[0].b.c');
      * // => ['a', '0', 'b', 'c']
-     *
-     * var path = ['a', 'b', 'c'],
-     *     newPath = _.toPath(path);
-     *
-     * console.log(newPath);
-     * // => ['a', 'b', 'c']
-     *
-     * console.log(path === newPath);
-     * // => false
      */
     function toPath(value) {
       if (isArray(value)) {
@@ -17517,6 +17015,11 @@ module.exports = listen;
     lodash.meanBy = meanBy;
     lodash.min = min;
     lodash.minBy = minBy;
+    lodash.stubArray = stubArray;
+    lodash.stubFalse = stubFalse;
+    lodash.stubObject = stubObject;
+    lodash.stubString = stubString;
+    lodash.stubTrue = stubTrue;
     lodash.multiply = multiply;
     lodash.nth = nth;
     lodash.noConflict = noConflict;
@@ -17823,7 +17326,7 @@ module.exports = listen;
   // also prevents errors in cases where Lodash is loaded by a script tag in the
   // presence of an AMD loader. See http://requirejs.org/docs/errors.html#mismatch
   // for more details. Use `_.noConflict` to remove Lodash from the global object.
-  (freeWindow || freeSelf || {})._ = _;
+  (freeSelf || {})._ = _;
 
   // Some AMD build optimizers like r.js check for condition patterns like the following:
   if (typeof define == 'function' && typeof define.amd == 'object' && define.amd) {
@@ -17834,11 +17337,9 @@ module.exports = listen;
     });
   }
   // Check for `exports` after `define` in case a build optimizer adds an `exports` object.
-  else if (freeExports && freeModule) {
+  else if (freeModule) {
     // Export for Node.js.
-    if (moduleExports) {
-      (freeModule.exports = _)._ = _;
-    }
+    (freeModule.exports = _)._ = _;
     // Export for CommonJS support.
     freeExports._ = _;
   }
@@ -17849,7 +17350,7 @@ module.exports = listen;
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 
 /**
  * Element prototype.
@@ -17890,103 +17391,7 @@ function match(el, selector) {
   }
   return false;
 }
-},{}],29:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-var queue = [];
-var draining = false;
-var currentQueue;
-var queueIndex = -1;
-
-function cleanUpNextTick() {
-    if (!draining || !currentQueue) {
-        return;
-    }
-    draining = false;
-    if (currentQueue.length) {
-        queue = currentQueue.concat(queue);
-    } else {
-        queueIndex = -1;
-    }
-    if (queue.length) {
-        drainQueue();
-    }
-}
-
-function drainQueue() {
-    if (draining) {
-        return;
-    }
-    var timeout = setTimeout(cleanUpNextTick);
-    draining = true;
-
-    var len = queue.length;
-    while(len) {
-        currentQueue = queue;
-        queue = [];
-        while (++queueIndex < len) {
-            if (currentQueue) {
-                currentQueue[queueIndex].run();
-            }
-        }
-        queueIndex = -1;
-        len = queue.length;
-    }
-    currentQueue = null;
-    draining = false;
-    clearTimeout(timeout);
-}
-
-process.nextTick = function (fun) {
-    var args = new Array(arguments.length - 1);
-    if (arguments.length > 1) {
-        for (var i = 1; i < arguments.length; i++) {
-            args[i - 1] = arguments[i];
-        }
-    }
-    queue.push(new Item(fun, args));
-    if (queue.length === 1 && !draining) {
-        setTimeout(drainQueue, 0);
-    }
-};
-
-// v8 likes predictible objects
-function Item(fun, array) {
-    this.fun = fun;
-    this.array = array;
-}
-Item.prototype.run = function () {
-    this.fun.apply(null, this.array);
-};
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-process.version = ''; // empty string to avoid regexp issues
-process.versions = {};
-
-function noop() {}
-
-process.on = noop;
-process.addListener = noop;
-process.once = noop;
-process.off = noop;
-process.removeListener = noop;
-process.removeAllListeners = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-};
-
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-process.umask = function() { return 0; };
-
-},{}],30:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 function select(element) {
     var selectedText;
 
@@ -18016,7 +17421,7 @@ function select(element) {
 
 module.exports = select;
 
-},{}],31:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 function E () {
 	// Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
@@ -18084,7 +17489,7 @@ E.prototype = {
 
 module.exports = E;
 
-},{}],32:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18147,61 +17552,40 @@ function processResponse(response) {
 			index[item.key] = item;
 		}
 
-		var _iteratorNormalCompletion = true;
-		var _didIteratorError = false;
-		var _iteratorError = undefined;
-
-		try {
-			for (var _iterator = childItems[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-				let item = _step.value;
-
-				if (item.data.itemType === 'note') {
-					if (!index[item.data.parentItem][_data.CHILD_NOTES]) {
-						index[item.data.parentItem][_data.CHILD_NOTES] = [];
-					}
-					index[item.data.parentItem][_data.CHILD_NOTES].push(item);
-				} else if (item.data.itemType === 'attachment') {
-					if (!index[item.data.parentItem][_data.CHILD_ATTACHMENTS]) {
-						index[item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
-					}
-					let parsedAttachment = {};
-					if (item.data.url) {
-						parsedAttachment = {
-							url: item.data.url,
-							type: item.data.contentType,
-							title: item.data.title,
-							key: item.key,
-							item: item
-						};
-					} else if (item.links && item.links.enclosure && item.links.enclosure.href) {
-						parsedAttachment = {
-							url: item.links.enclosure.href,
-							type: item.links.enclosure.type,
-							title: item.links.enclosure.title,
-							key: item.key,
-							item: item
-						};
-					}
-					index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(parsedAttachment);
-				} else {
-					if (!index[item.data.parentItem][_data.CHILD_OTHER]) {
-						index[item.data.parentItem][_data.CHILD_OTHER] = [];
-					}
-					index[item.data.parentItem][_data.CHILD_OTHER].push(item);
+		for (let item of childItems) {
+			if (item.data.itemType === 'note') {
+				if (!index[item.data.parentItem][_data.CHILD_NOTES]) {
+					index[item.data.parentItem][_data.CHILD_NOTES] = [];
 				}
-			}
-		} catch (err) {
-			_didIteratorError = true;
-			_iteratorError = err;
-		} finally {
-			try {
-				if (!_iteratorNormalCompletion && _iterator.return) {
-					_iterator.return();
+				index[item.data.parentItem][_data.CHILD_NOTES].push(item);
+			} else if (item.data.itemType === 'attachment') {
+				if (!index[item.data.parentItem][_data.CHILD_ATTACHMENTS]) {
+					index[item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
 				}
-			} finally {
-				if (_didIteratorError) {
-					throw _iteratorError;
+				let parsedAttachment = {};
+				if (item.data.url) {
+					parsedAttachment = {
+						url: item.data.url,
+						type: item.data.contentType,
+						title: item.data.title,
+						key: item.key,
+						item: item
+					};
+				} else if (item.links && item.links.enclosure && item.links.enclosure.href) {
+					parsedAttachment = {
+						url: item.links.enclosure.href,
+						type: item.links.enclosure.type,
+						title: item.links.enclosure.title,
+						key: item.key,
+						item: item
+					};
 				}
+				index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(parsedAttachment);
+			} else {
+				if (!index[item.data.parentItem][_data.CHILD_OTHER]) {
+					index[item.data.parentItem][_data.CHILD_OTHER] = [];
+				}
+				index[item.data.parentItem][_data.CHILD_OTHER].push(item);
 			}
 		}
 
@@ -18258,7 +17642,7 @@ function fetchUntilExhausted(url, options, jsondata) {
 	});
 }
 
-},{"./data.js":33,"./utils.js":51,"es6-symbol/implement":20,"lodash":27}],33:[function(require,module,exports){
+},{"./data.js":31,"./utils.js":49,"es6-symbol/implement":19,"lodash":26}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18338,144 +17722,22 @@ ZoteroData.prototype.groupByCollections = function () {
  * For grouped data each iternation returns a group of Zotero items. Additionaly group name
  * is available under GROUP_TITLE Symbol
  */
-ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee() {
-	var keys, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, key, group, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, value;
-
-	return regeneratorRuntime.wrap(function _callee$(_context) {
-		while (1) switch (_context.prev = _context.next) {
-			case 0:
-				if (!this.grouped) {
-					_context.next = 32;
-					break;
-				}
-
-				keys = Object.keys(this.data).sort();
-				_iteratorNormalCompletion = true;
-				_didIteratorError = false;
-				_iteratorError = undefined;
-				_context.prev = 5;
-				_iterator = keys[Symbol.iterator]();
-
-			case 7:
-				if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
-					_context.next = 16;
-					break;
-				}
-
-				key = _step.value;
-				group = this.data[key];
-
-				group[GROUP_TITLE] = key;
-				_context.next = 13;
-				return group;
-
-			case 13:
-				_iteratorNormalCompletion = true;
-				_context.next = 7;
-				break;
-
-			case 16:
-				_context.next = 22;
-				break;
-
-			case 18:
-				_context.prev = 18;
-				_context.t0 = _context['catch'](5);
-				_didIteratorError = true;
-				_iteratorError = _context.t0;
-
-			case 22:
-				_context.prev = 22;
-				_context.prev = 23;
-
-				if (!_iteratorNormalCompletion && _iterator.return) {
-					_iterator.return();
-				}
-
-			case 25:
-				_context.prev = 25;
-
-				if (!_didIteratorError) {
-					_context.next = 28;
-					break;
-				}
-
-				throw _iteratorError;
-
-			case 28:
-				return _context.finish(25);
-
-			case 29:
-				return _context.finish(22);
-
-			case 30:
-				_context.next = 58;
-				break;
-
-			case 32:
-				_iteratorNormalCompletion2 = true;
-				_didIteratorError2 = false;
-				_iteratorError2 = undefined;
-				_context.prev = 35;
-				_iterator2 = this.data[Symbol.iterator]();
-
-			case 37:
-				if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
-					_context.next = 44;
-					break;
-				}
-
-				value = _step2.value;
-				_context.next = 41;
-				return value;
-
-			case 41:
-				_iteratorNormalCompletion2 = true;
-				_context.next = 37;
-				break;
-
-			case 44:
-				_context.next = 50;
-				break;
-
-			case 46:
-				_context.prev = 46;
-				_context.t1 = _context['catch'](35);
-				_didIteratorError2 = true;
-				_iteratorError2 = _context.t1;
-
-			case 50:
-				_context.prev = 50;
-				_context.prev = 51;
-
-				if (!_iteratorNormalCompletion2 && _iterator2.return) {
-					_iterator2.return();
-				}
-
-			case 53:
-				_context.prev = 53;
-
-				if (!_didIteratorError2) {
-					_context.next = 56;
-					break;
-				}
-
-				throw _iteratorError2;
-
-			case 56:
-				return _context.finish(53);
-
-			case 57:
-				return _context.finish(50);
-
-			case 58:
-			case 'end':
-				return _context.stop();
+ZoteroData.prototype[Symbol.iterator] = function* () {
+	if (this.grouped) {
+		let keys = Object.keys(this.data).sort();
+		for (let key of keys) {
+			let group = this.data[key];
+			group[GROUP_TITLE] = key;
+			yield group;
 		}
-	}, _callee, this, [[5, 18, 22, 30], [23,, 25, 29], [35, 46, 50, 58], [51,, 53, 57]]);
-});
+	} else {
+		for (let value of this.data) {
+			yield value;
+		}
+	}
+};
 
-},{"./api.js":32,"es6-symbol/implement":20,"lodash":27}],34:[function(require,module,exports){
+},{"./api.js":30,"es6-symbol/implement":19,"lodash":26}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -18597,7 +17859,7 @@ module.exports = {
 	'creator': 'Creator'
 };
 
-},{}],35:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -18607,16 +17869,14 @@ module.exports = {
 module.exports = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags', 'creators', 'abstractNote', //displayed separately
 'dateModified', 'dateAdded', 'accessDate', 'libraryCatalog', 'title', 'shortTitle'];
 
-},{}],36:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
-
-require('babel-regenerator-runtime');
 
 var _main = require('./main.js');
 
 module.exports = _main.ZoteroPublications;
 
-},{"./main.js":37,"babel-regenerator-runtime":1}],37:[function(require,module,exports){
+},{"./main.js":35}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -18914,7 +18174,7 @@ ZoteroPublications.ZoteroData = _data.ZoteroData;
  */
 ZoteroPublications.ZoteroRenderer = _render.ZoteroRenderer;
 
-},{"./api.js":32,"./data.js":33,"./render.js":38,"lodash":27}],38:[function(require,module,exports){
+},{"./api.js":30,"./data.js":31,"./render.js":36,"lodash":26}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19391,7 +18651,7 @@ ZoteroRenderer.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
 	});
 };
 
-},{"./data.js":33,"./field-map.js":34,"./hidden-fields.js":35,"./tpl/group-view.tpl":39,"./tpl/partial/branding.tpl":40,"./tpl/partial/export.tpl":41,"./tpl/partial/group.tpl":42,"./tpl/partial/groups.tpl":43,"./tpl/partial/item-attachment-indicator.tpl":44,"./tpl/partial/item-citation.tpl":45,"./tpl/partial/item-templated.tpl":46,"./tpl/partial/item.tpl":47,"./tpl/partial/items.tpl":48,"./tpl/plain-view.tpl":49,"./type-map":50,"./utils.js":51,"clipboard":3,"lodash":27}],39:[function(require,module,exports){
+},{"./data.js":31,"./field-map.js":32,"./hidden-fields.js":33,"./tpl/group-view.tpl":37,"./tpl/partial/branding.tpl":38,"./tpl/partial/export.tpl":39,"./tpl/partial/group.tpl":40,"./tpl/partial/groups.tpl":41,"./tpl/partial/item-attachment-indicator.tpl":42,"./tpl/partial/item-citation.tpl":43,"./tpl/partial/item-templated.tpl":44,"./tpl/partial/item.tpl":45,"./tpl/partial/items.tpl":46,"./tpl/plain-view.tpl":47,"./type-map":48,"./utils.js":49,"clipboard":2,"lodash":26}],37:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19406,7 +18666,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],40:[function(require,module,exports){
+},{"lodash":26}],38:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19421,7 +18681,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],41:[function(require,module,exports){
+},{"lodash":26}],39:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19436,7 +18696,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],42:[function(require,module,exports){
+},{"lodash":26}],40:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19451,7 +18711,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],43:[function(require,module,exports){
+},{"lodash":26}],41:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19463,36 +18723,14 @@ module.exports = function (obj) {
     __p += __j.call(arguments, '');
   };
   __p += '<ul class="zotero-groups" role="list">\n\t';
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = obj.groups[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var group = _step.value;
-
-      __p += '\n\t\t' + ((__t = obj.renderer.renderGroup(group)) == null ? '' : __t) + '\n\t';
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
+  for (var group of obj.groups) {
+    __p += '\n\t\t' + ((__t = obj.renderer.renderGroup(group)) == null ? '' : __t) + '\n\t';
   }
-
   __p += '\n</ul>';
   return __p;
 };
 
-},{"lodash":27}],44:[function(require,module,exports){
+},{"lodash":26}],42:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19511,7 +18749,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],45:[function(require,module,exports){
+},{"lodash":26}],43:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19532,7 +18770,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],46:[function(require,module,exports){
+},{"lodash":26}],44:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19617,7 +18855,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],47:[function(require,module,exports){
+},{"lodash":26}],45:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19667,65 +18905,21 @@ module.exports = function (obj) {
   __p += '\n\n\t\t\t';
   if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) {
     __p += '\n\t\t\t\t<h4>Notes</h4>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
-    var _iteratorNormalCompletion = true;
-    var _didIteratorError = false;
-    var _iteratorError = undefined;
-
-    try {
-      for (var _iterator = obj.item[Symbol.for('childNotes')][Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-        var childItem = _step.value;
-
-        __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t' + ((__t = childItem.data.note) == null ? '' : __t) + '\n\t\t\t\t\t\t</li>\n\t\t\t\t\t';
-      }
-    } catch (err) {
-      _didIteratorError = true;
-      _iteratorError = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion && _iterator.return) {
-          _iterator.return();
-        }
-      } finally {
-        if (_didIteratorError) {
-          throw _iteratorError;
-        }
-      }
+    for (var childItem of obj.item[Symbol.for('childNotes')]) {
+      __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t' + ((__t = childItem.data.note) == null ? '' : __t) + '\n\t\t\t\t\t\t</li>\n\t\t\t\t\t';
     }
-
     __p += '\n\t\t\t\t</ul>\n\t\t\t';
   }
   __p += '\n\n\t\t\t';
   if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
     __p += '\n\t\t\t\t<h4>Attachments</h4>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
-    var _iteratorNormalCompletion2 = true;
-    var _didIteratorError2 = false;
-    var _iteratorError2 = undefined;
-
-    try {
-      for (var _iterator2 = obj.item[Symbol.for('childAttachments')][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-        var childItem = _step2.value;
-
-        __p += '\n\t\t\t\t\t\t';
-        if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
-          __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
-        }
-        __p += '\n\t\t\t\t\t';
+    for (var childItem of obj.item[Symbol.for('childAttachments')]) {
+      __p += '\n\t\t\t\t\t\t';
+      if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
+        __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
       }
-    } catch (err) {
-      _didIteratorError2 = true;
-      _iteratorError2 = err;
-    } finally {
-      try {
-        if (!_iteratorNormalCompletion2 && _iterator2.return) {
-          _iterator2.return();
-        }
-      } finally {
-        if (_didIteratorError2) {
-          throw _iteratorError2;
-        }
-      }
+      __p += '\n\t\t\t\t\t';
     }
-
     __p += '\n\t\t\t\t</ul>\n\t\t\t';
   }
   __p += '\n\t\t\t';
@@ -19752,7 +18946,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],48:[function(require,module,exports){
+},{"lodash":26}],46:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19764,36 +18958,14 @@ module.exports = function (obj) {
     __p += __j.call(arguments, '');
   };
   __p += '<ul class="zotero-items" role="' + ((__t = obj.renderer.data.grouped > 0 ? 'group' : 'list') == null ? '' : _.escape(__t)) + '">\n\t';
-  var _iteratorNormalCompletion = true;
-  var _didIteratorError = false;
-  var _iteratorError = undefined;
-
-  try {
-    for (var _iterator = obj.items[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-      var item = _step.value;
-
-      __p += '\n\t\t' + ((__t = obj.renderer.renderItem(item)) == null ? '' : __t) + '\n\t';
-    }
-  } catch (err) {
-    _didIteratorError = true;
-    _iteratorError = err;
-  } finally {
-    try {
-      if (!_iteratorNormalCompletion && _iterator.return) {
-        _iterator.return();
-      }
-    } finally {
-      if (_didIteratorError) {
-        throw _iteratorError;
-      }
-    }
+  for (var item of obj.items) {
+    __p += '\n\t\t' + ((__t = obj.renderer.renderItem(item)) == null ? '' : __t) + '\n\t';
   }
-
   __p += '\n</ul>';
   return __p;
 };
 
-},{"lodash":27}],49:[function(require,module,exports){
+},{"lodash":26}],47:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19808,7 +18980,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":27}],50:[function(require,module,exports){
+},{"lodash":26}],48:[function(require,module,exports){
 'use strict';
 
 /**
@@ -19854,7 +19026,7 @@ module.exports = {
 	'dictionaryEntry': 'Dictionary Entry'
 };
 
-},{}],51:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20101,5 +19273,5 @@ function clipboardFallbackMessage() {
 	return actionMsg;
 }
 
-},{"lodash":27}]},{},[36])(36)
+},{"lodash":26}]},{},[34])(34)
 });
