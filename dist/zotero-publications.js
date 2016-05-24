@@ -1088,7 +1088,6 @@ module.exports = E;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_PROCESSED = undefined;
 exports.processResponse = processResponse;
 exports.fetchUntilExhausted = fetchUntilExhausted;
 
@@ -1098,14 +1097,12 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _utils = require('./utils.js');
 
-var _data = require('./data.js');
+var _constants = require('./constants.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('es6-symbol/implement');
-const ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
-const AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
-const FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
+
 
 /**
  * Process raw API response
@@ -1121,10 +1118,10 @@ function processResponse(response) {
 		for (let i = response.length; i--;) {
 			let item = response[i];
 			if (item.data && item.data.abstractNote) {
-				item.data[ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
+				item.data[_constants.ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
 			}
 			if (item.data && item.data.creators) {
-				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => {
+				item.data[_constants.AUTHORS_SYMBOL] = item.data.creators.map(author => {
 					if (author.firstName && author.lastName) {
 						return author.firstName + ' ' + author.lastName;
 					} else if (author.name) {
@@ -1133,27 +1130,27 @@ function processResponse(response) {
 				}).join(' & ');
 			}
 			if (item.data && item.meta.parsedDate) {
-				item.data[FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
+				item.data[_constants.FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
 			}
 			if (item.data && item.data.parentItem) {
 				response.splice(i, 1);
 				childItems.push(item);
 			}
 			if (item.data && item.data.url) {
-				item[_data.VIEW_ONLINE_URL] = item.data.url;
+				item[_constants.VIEW_ONLINE_URL] = item.data.url;
 			}
 			index[item.key] = item;
 		}
 
 		for (let item of childItems) {
 			if (item.data.itemType === 'note') {
-				if (!index[item.data.parentItem][_data.CHILD_NOTES]) {
-					index[item.data.parentItem][_data.CHILD_NOTES] = [];
+				if (!index[item.data.parentItem][_constants.CHILD_NOTES]) {
+					index[item.data.parentItem][_constants.CHILD_NOTES] = [];
 				}
-				index[item.data.parentItem][_data.CHILD_NOTES].push(item);
+				index[item.data.parentItem][_constants.CHILD_NOTES].push(item);
 			} else if (item.data.itemType === 'attachment') {
-				if (!index[item.data.parentItem][_data.CHILD_ATTACHMENTS]) {
-					index[item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
+				if (!index[item.data.parentItem][_constants.CHILD_ATTACHMENTS]) {
+					index[item.data.parentItem][_constants.CHILD_ATTACHMENTS] = [];
 				}
 				let parsedAttachment = {};
 				if (item.data.url) {
@@ -1173,24 +1170,24 @@ function processResponse(response) {
 						item: item
 					};
 				}
-				index[item.data.parentItem][_data.CHILD_ATTACHMENTS].push(parsedAttachment);
+				index[item.data.parentItem][_constants.CHILD_ATTACHMENTS].push(parsedAttachment);
 			} else {
-				if (!index[item.data.parentItem][_data.CHILD_OTHER]) {
-					index[item.data.parentItem][_data.CHILD_OTHER] = [];
+				if (!index[item.data.parentItem][_constants.CHILD_OTHER]) {
+					index[item.data.parentItem][_constants.CHILD_OTHER] = [];
 				}
-				index[item.data.parentItem][_data.CHILD_OTHER].push(item);
+				index[item.data.parentItem][_constants.CHILD_OTHER].push(item);
 			}
 		}
 
 		for (let i = response.length; i--;) {
 			let item = response[i];
-			if (item[_data.CHILD_ATTACHMENTS]) {
-				item[_data.CHILD_ATTACHMENTS].sort((a, b) => {
+			if (item[_constants.CHILD_ATTACHMENTS]) {
+				item[_constants.CHILD_ATTACHMENTS].sort((a, b) => {
 					return new Date(a.item.data.dateAdded).getTime() - new Date(b.item.data.dateAdded).getTime();
 				});
 			}
-			if (!item[_data.VIEW_ONLINE_URL] && item[_data.CHILD_ATTACHMENTS]) {
-				item[_data.VIEW_ONLINE_URL] = item[_data.CHILD_ATTACHMENTS][0].url;
+			if (!item[_constants.VIEW_ONLINE_URL] && item[_constants.CHILD_ATTACHMENTS]) {
+				item[_constants.VIEW_ONLINE_URL] = item[_constants.CHILD_ATTACHMENTS][0].url;
 			}
 		}
 	}
@@ -1236,25 +1233,12 @@ function fetchUntilExhausted(url, options, jsondata) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./data.js":30,"./utils.js":48,"es6-symbol/implement":19}],30:[function(require,module,exports){
-(function (global){
+},{"./constants.js":30,"./utils.js":49,"es6-symbol/implement":19}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
-exports.VIEW_ONLINE_URL = exports.GROUP_TITLE = exports.GROUP_EXPANDED_SUMBOL = exports.CHILD_OTHER = exports.CHILD_ATTACHMENTS = exports.CHILD_NOTES = exports.GROUPED_BY_COLLECTION = exports.GROUPED_BY_TYPE = exports.GROUPED_NONE = undefined;
-exports.ZoteroData = ZoteroData;
-
-var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _api = require('./api.js');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-require('es6-symbol/implement');
 const GROUPED_NONE = exports.GROUPED_NONE = 0;
 const GROUPED_BY_TYPE = exports.GROUPED_BY_TYPE = 1;
 const GROUPED_BY_COLLECTION = exports.GROUPED_BY_COLLECTION = 2;
@@ -1264,6 +1248,31 @@ const CHILD_OTHER = exports.CHILD_OTHER = Symbol.for('childOther');
 const GROUP_EXPANDED_SUMBOL = exports.GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
 const GROUP_TITLE = exports.GROUP_TITLE = Symbol.for('groupTitle');
 const VIEW_ONLINE_URL = exports.VIEW_ONLINE_URL = Symbol.for('viewOnlineUrl');
+const ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
+const AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
+const FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
+
+},{}],31:[function(require,module,exports){
+(function (global){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = ZoteroData;
+
+var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _api = require('./api.js');
+
+var _constants = require('./constants.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+require('es6-symbol/implement');
+
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
@@ -1272,7 +1281,7 @@ const VIEW_ONLINE_URL = exports.VIEW_ONLINE_URL = Symbol.for('viewOnlineUrl');
  */
 function ZoteroData(data, config) {
 	this.raw = this.data = (0, _api.processResponse)(data, config);
-	this.grouped = GROUPED_NONE;
+	this.grouped = _constants.GROUPED_NONE;
 
 	Object.defineProperty(this, 'length', {
 		enumerable: false,
@@ -1298,10 +1307,10 @@ ZoteroData.prototype.groupByType = function (expand) {
 			groupedData[item.data.itemType] = [];
 		}
 		groupedData[item.data.itemType].push(item);
-		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.includes(expand, item.data.itemType);
+		groupedData[item.data.itemType][_constants.GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.includes(expand, item.data.itemType);
 	}
 	this.data = groupedData;
-	this.grouped = GROUPED_BY_TYPE;
+	this.grouped = _constants.GROUPED_BY_TYPE;
 };
 
 /**
@@ -1322,7 +1331,7 @@ ZoteroData.prototype[Symbol.iterator] = function* () {
 		let keys = Object.keys(this.data).sort();
 		for (let key of keys) {
 			let group = this.data[key];
-			group[GROUP_TITLE] = key;
+			group[_constants.GROUP_TITLE] = key;
 			yield group;
 		}
 	} else {
@@ -1333,7 +1342,7 @@ ZoteroData.prototype[Symbol.iterator] = function* () {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./api.js":29,"es6-symbol/implement":19}],31:[function(require,module,exports){
+},{"./api.js":29,"./constants.js":30,"es6-symbol/implement":19}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1455,7 +1464,7 @@ module.exports = {
 	'creator': 'Creator'
 };
 
-},{}],32:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1465,21 +1474,25 @@ module.exports = {
 module.exports = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags', 'creators', 'abstractNote', //displayed separately
 'dateModified', 'dateAdded', 'accessDate', 'libraryCatalog', 'title', 'shortTitle'];
 
-},{}],33:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 var _main = require('./main.js');
 
-module.exports = _main.ZoteroPublications;
+var _main2 = _interopRequireDefault(_main);
 
-},{"./main.js":34}],34:[function(require,module,exports){
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+module.exports = _main2.default;
+
+},{"./main.js":35}],35:[function(require,module,exports){
 (function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.ZoteroPublications = ZoteroPublications;
+exports.default = ZoteroPublications;
 
 var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
 
@@ -1487,9 +1500,13 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _render = require('./render.js');
 
+var _render2 = _interopRequireDefault(_render);
+
 var _api = require('./api.js');
 
 var _data = require('./data.js');
+
+var _data2 = _interopRequireDefault(_data);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -1629,7 +1646,7 @@ ZoteroPublications.prototype.get = function (url, params = {}, init = {}) {
 	return new Promise((resolve, reject) => {
 		let promise = (0, _api.fetchUntilExhausted)(url, init);
 		promise.then(responseJson => {
-			let data = new _data.ZoteroData(responseJson, this.config);
+			let data = new _data2.default(responseJson, this.config);
 			resolve(data);
 		});
 		promise.catch(reject);
@@ -1734,9 +1751,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 		if (!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
-		this.renderer = new _render.ZoteroRenderer(container, this);
+		this.renderer = new _render2.default(container, this);
 
-		if (userIdOrendpointOrData instanceof _data.ZoteroData) {
+		if (userIdOrendpointOrData instanceof _data2.default) {
 			promise = Promise.resolve(userIdOrendpointOrData);
 		} else if (typeof userIdOrendpointOrData === 'number') {
 			promise = this.getPublications(userIdOrendpointOrData);
@@ -1763,23 +1780,23 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
  * Make ZoteroData publicly accessible underneath ZoteroPublications
  * @type {ZoteroData}
  */
-ZoteroPublications.ZoteroData = _data.ZoteroData;
+ZoteroPublications.ZoteroData = _data2.default;
 
 /**
  * Make ZoteroRenderer publicly accessible underneath ZoteroPublications
  * @type {ZoteroRenderer}
  */
-ZoteroPublications.ZoteroRenderer = _render.ZoteroRenderer;
+ZoteroPublications.ZoteroRenderer = _render2.default;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./api.js":29,"./data.js":30,"./render.js":35}],35:[function(require,module,exports){
+},{"./api.js":29,"./data.js":31,"./render.js":36}],36:[function(require,module,exports){
 (function (global){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.ZoteroRenderer = ZoteroRenderer;
+exports.default = ZoteroRenderer;
 
 var _lodash = (typeof window !== "undefined" ? window['_'] : typeof global !== "undefined" ? global['_'] : null);
 
@@ -1833,7 +1850,7 @@ var _itemAttachmentIndicator = require('./tpl/partial/item-attachment-indicator.
 
 var _itemAttachmentIndicator2 = _interopRequireDefault(_itemAttachmentIndicator);
 
-var _data = require('./data.js');
+var _constants = require('./constants.js');
 
 var _utils = require('./utils.js');
 
@@ -1931,9 +1948,9 @@ ZoteroRenderer.prototype.renderItems = function (zoteroItems) {
  */
 ZoteroRenderer.prototype.renderGroup = function (items) {
 	return (0, _group2.default)({
-		'title': (0, _utils.formatCategoryName)(items[_data.GROUP_TITLE]),
+		'title': (0, _utils.formatCategoryName)(items[_constants.GROUP_TITLE]),
 		'items': items,
-		'expand': items[_data.GROUP_EXPANDED_SUMBOL],
+		'expand': items[_constants.GROUP_EXPANDED_SUMBOL],
 		'renderer': this
 	});
 };
@@ -2251,7 +2268,7 @@ ZoteroRenderer.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./data.js":30,"./field-map.js":31,"./hidden-fields.js":32,"./tpl/group-view.tpl":36,"./tpl/partial/branding.tpl":37,"./tpl/partial/export.tpl":38,"./tpl/partial/group.tpl":39,"./tpl/partial/groups.tpl":40,"./tpl/partial/item-attachment-indicator.tpl":41,"./tpl/partial/item-citation.tpl":42,"./tpl/partial/item-templated.tpl":43,"./tpl/partial/item.tpl":44,"./tpl/partial/items.tpl":45,"./tpl/plain-view.tpl":46,"./type-map":47,"./utils.js":48,"clipboard":2}],36:[function(require,module,exports){
+},{"./constants.js":30,"./field-map.js":32,"./hidden-fields.js":33,"./tpl/group-view.tpl":37,"./tpl/partial/branding.tpl":38,"./tpl/partial/export.tpl":39,"./tpl/partial/group.tpl":40,"./tpl/partial/groups.tpl":41,"./tpl/partial/item-attachment-indicator.tpl":42,"./tpl/partial/item-citation.tpl":43,"./tpl/partial/item-templated.tpl":44,"./tpl/partial/item.tpl":45,"./tpl/partial/items.tpl":46,"./tpl/plain-view.tpl":47,"./type-map":48,"./utils.js":49,"clipboard":2}],37:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2268,7 +2285,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2285,7 +2302,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2302,7 +2319,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],39:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2319,7 +2336,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],40:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2340,7 +2357,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],41:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2361,7 +2378,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],42:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2384,7 +2401,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],43:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2471,7 +2488,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],44:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2564,7 +2581,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],45:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2585,7 +2602,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],46:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2602,7 +2619,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],47:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2648,7 +2665,7 @@ module.exports = {
 	'dictionaryEntry': 'Dictionary Entry'
 };
 
-},{}],48:[function(require,module,exports){
+},{}],49:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2897,5 +2914,5 @@ function clipboardFallbackMessage() {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[33])(33)
+},{}]},{},[34])(34)
 });
