@@ -1,0 +1,8 @@
+/demo/
+/test/
+/.*
+/karma.conf.js
+/src
+/tmp
+/coverage
+/demo

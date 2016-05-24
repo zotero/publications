@@ -13,12 +13,7 @@ var lodash = require('lodash');
 var uglify = lodash.partial(require('gulp-uglify/minifier'), lodash, uglifyHarmony);
 var rename = require('gulp-rename');
 var babelify = require('babelify');
-var stringify = require('stringify')(['html']);
 var symlink = require('gulp-symlink');
-//var tplTransform = require('node-underscorify').transform({
-//	extensions: ['tpl'],
-//	requires: [{variable: '_', module: 'lodash'}]
-//	});
 var jstify = require('jstify');
 var shim = require('browserify-shim');
 var sourcemaps = require('gulp-sourcemaps');
@@ -27,13 +22,13 @@ var autoprefixer = require('gulp-autoprefixer');
 var cssminify = require('gulp-minify-css');
 var connect = require('gulp-connect');
 var gulpif = require('gulp-if');
+var babel = require('gulp-babel');
+var tplCompiler = require('gulp-underscore-template');
+var extReplace = require('gulp-ext-replace');
 var watchify = require('watchify');
 var runSequence = require('run-sequence');
 var merge = require('merge-stream');
-//var insert = require('gulp-insert');
 var fs = require('fs');
-//var promisePF = fs.readFileSync('./bower_components/es6-promise/promise.js', "utf8");
-//var fetchPF = fs.readFileSync('./bower_components/fetch/fetch.js', "utf8");
 var watch;
 var buildDir;
 
@@ -113,12 +108,10 @@ function getBrowserify(debug, version, variant) {
 	var b = browserify({
 			cache: {},
 			packageCache: {},
-			fullPaths: true,
 			entries: `src/js/main-${version}.js`,
 			debug: debug,
 			standalone: 'ZoteroPublications',
 			transform: [
-
 			['node-underscorify', {
                 'extensions': ['tpl'],
                 'requires': [{variable: '_', module: 'lodash'}],
@@ -130,7 +123,6 @@ function getBrowserify(debug, version, variant) {
             	'extensions': ['.js', '.tpl'],
             	'plugins': babelPlugins
         	}],
-			['stringify', {extensions: ['.html']}],
 			['browserify-shim', shimConfigs[variant]],
 
 		]
@@ -249,4 +241,23 @@ gulp.task('dev', function(done) {
 
 gulp.task('default', ['setup-dev'], function() {
 	return gulp.start('dev');
+});
+
+gulp.task('clean:prepublish', function(done) {
+	rimraf('./lib/', done);
+});
+
+
+gulp.task('prepublish', ['clean:prepublish'], function() {
+	return merge(
+		gulp.src('./src/js/**/*.js')
+			.pipe(babel({
+				plugins: presets['modern']
+			}))
+			.pipe(gulp.dest('./lib/')),
+		gulp.src('./src/js/tpl/**/*.tpl')
+			.pipe(tplCompiler())
+			.pipe(extReplace('.tpl'))
+			.pipe(gulp.dest('./lib/tpl/'))
+	);
 });
