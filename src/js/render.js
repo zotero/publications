@@ -14,7 +14,7 @@ import attachmentIndicatorTpl from './tpl/partial/item-attachment-indicator.tpl'
 import {
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE
-} from './data.js';
+} from './constants.js';
 import {
 	formatCategoryName,
 	closest,
@@ -34,7 +34,7 @@ _.templateSettings.variable = 'obj';
  * @param {HTMLElement} container	- A container where contents is rendered
  * @param {Object} [config]			- ZoteroPublications config
  */
-export function ZoteroRenderer(container, zotero) {
+export default function ZoteroRenderer(container, zotero) {
 	this.container = container;
 	this.zotero = zotero;
 	this.config = zotero.config;

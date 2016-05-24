@@ -4,22 +4,19 @@ import {
 	processResponse
 } from './api.js';
 
-export const GROUPED_NONE = 0;
-export const GROUPED_BY_TYPE = 1;
-export const GROUPED_BY_COLLECTION = 2;
-export const CHILD_NOTES = Symbol.for('childNotes');
-export const CHILD_ATTACHMENTS = Symbol.for('childAttachments');
-export const CHILD_OTHER = Symbol.for('childOther');
-export const GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
-export const GROUP_TITLE = Symbol.for('groupTitle');
-export const VIEW_ONLINE_URL = Symbol.for('viewOnlineUrl');
+import {
+	GROUPED_NONE,
+	GROUPED_BY_TYPE,
+	GROUP_EXPANDED_SUMBOL,
+	GROUP_TITLE
+} from './constants.js';
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
  * @param {Object[]} data   - Zotero API data to encapsulate
  * @param {Object} [config] - ZoteroPublications config
  */
-export function ZoteroData(data, config) {
+export default function ZoteroData(data, config) {
 	this.raw = this.data = processResponse(data, config);
 	this.grouped = GROUPED_NONE;
 
