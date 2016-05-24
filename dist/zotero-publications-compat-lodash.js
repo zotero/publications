@@ -19961,7 +19961,6 @@ module.exports = E;
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.FORMATTED_DATE_SYMBOL = exports.AUTHORS_SYMBOL = exports.ABSTRACT_NOTE_PROCESSED = undefined;
 exports.processResponse = processResponse;
 exports.fetchUntilExhausted = fetchUntilExhausted;
 
@@ -19971,14 +19970,12 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _utils = require('./utils.js');
 
-var _data = require('./data.js');
+var _constants = require('./constants.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 require('es6-symbol/implement');
-var ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
-var AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
-var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
+
 
 /**
  * Process raw API response
@@ -19994,10 +19991,10 @@ function processResponse(response) {
 		for (var i = response.length; i--;) {
 			var item = response[i];
 			if (item.data && item.data.abstractNote) {
-				item.data[ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
+				item.data[_constants.ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
 			}
 			if (item.data && item.data.creators) {
-				item.data[AUTHORS_SYMBOL] = item.data.creators.map(function (author) {
+				item.data[_constants.AUTHORS_SYMBOL] = item.data.creators.map(function (author) {
 					if (author.firstName && author.lastName) {
 						return author.firstName + ' ' + author.lastName;
 					} else if (author.name) {
@@ -20006,14 +20003,14 @@ function processResponse(response) {
 				}).join(' & ');
 			}
 			if (item.data && item.meta.parsedDate) {
-				item.data[FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
+				item.data[_constants.FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
 			}
 			if (item.data && item.data.parentItem) {
 				response.splice(i, 1);
 				childItems.push(item);
 			}
 			if (item.data && item.data.url) {
-				item[_data.VIEW_ONLINE_URL] = item.data.url;
+				item[_constants.VIEW_ONLINE_URL] = item.data.url;
 			}
 			index[item.key] = item;
 		}
@@ -20027,13 +20024,13 @@ function processResponse(response) {
 				var _item = _step.value;
 
 				if (_item.data.itemType === 'note') {
-					if (!index[_item.data.parentItem][_data.CHILD_NOTES]) {
-						index[_item.data.parentItem][_data.CHILD_NOTES] = [];
+					if (!index[_item.data.parentItem][_constants.CHILD_NOTES]) {
+						index[_item.data.parentItem][_constants.CHILD_NOTES] = [];
 					}
-					index[_item.data.parentItem][_data.CHILD_NOTES].push(_item);
+					index[_item.data.parentItem][_constants.CHILD_NOTES].push(_item);
 				} else if (_item.data.itemType === 'attachment') {
-					if (!index[_item.data.parentItem][_data.CHILD_ATTACHMENTS]) {
-						index[_item.data.parentItem][_data.CHILD_ATTACHMENTS] = [];
+					if (!index[_item.data.parentItem][_constants.CHILD_ATTACHMENTS]) {
+						index[_item.data.parentItem][_constants.CHILD_ATTACHMENTS] = [];
 					}
 					var parsedAttachment = {};
 					if (_item.data.url) {
@@ -20053,12 +20050,12 @@ function processResponse(response) {
 							item: _item
 						};
 					}
-					index[_item.data.parentItem][_data.CHILD_ATTACHMENTS].push(parsedAttachment);
+					index[_item.data.parentItem][_constants.CHILD_ATTACHMENTS].push(parsedAttachment);
 				} else {
-					if (!index[_item.data.parentItem][_data.CHILD_OTHER]) {
-						index[_item.data.parentItem][_data.CHILD_OTHER] = [];
+					if (!index[_item.data.parentItem][_constants.CHILD_OTHER]) {
+						index[_item.data.parentItem][_constants.CHILD_OTHER] = [];
 					}
-					index[_item.data.parentItem][_data.CHILD_OTHER].push(_item);
+					index[_item.data.parentItem][_constants.CHILD_OTHER].push(_item);
 				}
 			}
 		} catch (err) {
@@ -20078,13 +20075,13 @@ function processResponse(response) {
 
 		for (var _i = response.length; _i--;) {
 			var _item2 = response[_i];
-			if (_item2[_data.CHILD_ATTACHMENTS]) {
-				_item2[_data.CHILD_ATTACHMENTS].sort(function (a, b) {
+			if (_item2[_constants.CHILD_ATTACHMENTS]) {
+				_item2[_constants.CHILD_ATTACHMENTS].sort(function (a, b) {
 					return new Date(a.item.data.dateAdded).getTime() - new Date(b.item.data.dateAdded).getTime();
 				});
 			}
-			if (!_item2[_data.VIEW_ONLINE_URL] && _item2[_data.CHILD_ATTACHMENTS]) {
-				_item2[_data.VIEW_ONLINE_URL] = _item2[_data.CHILD_ATTACHMENTS][0].url;
+			if (!_item2[_constants.VIEW_ONLINE_URL] && _item2[_constants.CHILD_ATTACHMENTS]) {
+				_item2[_constants.VIEW_ONLINE_URL] = _item2[_constants.CHILD_ATTACHMENTS][0].url;
 			}
 		}
 	}
@@ -20129,24 +20126,12 @@ function fetchUntilExhausted(url, options, jsondata) {
 	});
 }
 
-},{"./data.js":101,"./utils.js":119,"es6-symbol/implement":87,"lodash":94}],101:[function(require,module,exports){
+},{"./constants.js":101,"./utils.js":120,"es6-symbol/implement":87,"lodash":94}],101:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
-	value: true
+  value: true
 });
-exports.VIEW_ONLINE_URL = exports.GROUP_TITLE = exports.GROUP_EXPANDED_SUMBOL = exports.CHILD_OTHER = exports.CHILD_ATTACHMENTS = exports.CHILD_NOTES = exports.GROUPED_BY_COLLECTION = exports.GROUPED_BY_TYPE = exports.GROUPED_NONE = undefined;
-exports.ZoteroData = ZoteroData;
-
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
-var _api = require('./api.js');
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-require('es6-symbol/implement');
 var GROUPED_NONE = exports.GROUPED_NONE = 0;
 var GROUPED_BY_TYPE = exports.GROUPED_BY_TYPE = 1;
 var GROUPED_BY_COLLECTION = exports.GROUPED_BY_COLLECTION = 2;
@@ -20156,6 +20141,30 @@ var CHILD_OTHER = exports.CHILD_OTHER = Symbol.for('childOther');
 var GROUP_EXPANDED_SUMBOL = exports.GROUP_EXPANDED_SUMBOL = Symbol.for('groupExpanded');
 var GROUP_TITLE = exports.GROUP_TITLE = Symbol.for('groupTitle');
 var VIEW_ONLINE_URL = exports.VIEW_ONLINE_URL = Symbol.for('viewOnlineUrl');
+var ABSTRACT_NOTE_PROCESSED = exports.ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
+var AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
+var FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
+
+},{}],102:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = ZoteroData;
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _api = require('./api.js');
+
+var _constants = require('./constants.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+require('es6-symbol/implement');
+
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
@@ -20166,7 +20175,7 @@ function ZoteroData(data, config) {
 	var _this = this;
 
 	this.raw = this.data = (0, _api.processResponse)(data, config);
-	this.grouped = GROUPED_NONE;
+	this.grouped = _constants.GROUPED_NONE;
 
 	Object.defineProperty(this, 'length', {
 		enumerable: false,
@@ -20192,10 +20201,10 @@ ZoteroData.prototype.groupByType = function (expand) {
 			groupedData[item.data.itemType] = [];
 		}
 		groupedData[item.data.itemType].push(item);
-		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.includes(expand, item.data.itemType);
+		groupedData[item.data.itemType][_constants.GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.includes(expand, item.data.itemType);
 	}
 	this.data = groupedData;
-	this.grouped = GROUPED_BY_TYPE;
+	this.grouped = _constants.GROUPED_BY_TYPE;
 };
 
 /**
@@ -20239,7 +20248,7 @@ ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee
 					key = _step.value;
 					group = this.data[key];
 
-					group[GROUP_TITLE] = key;
+					group[_constants.GROUP_TITLE] = key;
 					_context.next = 13;
 					return group;
 
@@ -20350,7 +20359,7 @@ ZoteroData.prototype[Symbol.iterator] = regeneratorRuntime.mark(function _callee
 	}, _callee, this, [[5, 18, 22, 30], [23,, 25, 29], [35, 46, 50, 58], [51,, 53, 57]]);
 });
 
-},{"./api.js":100,"es6-symbol/implement":87,"lodash":94}],102:[function(require,module,exports){
+},{"./api.js":100,"./constants.js":101,"es6-symbol/implement":87,"lodash":94}],103:[function(require,module,exports){
 'use strict';
 
 /**
@@ -20472,7 +20481,7 @@ module.exports = {
 	'creator': 'Creator'
 };
 
-},{}],103:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 'use strict';
 
 /**
@@ -20482,20 +20491,24 @@ module.exports = {
 module.exports = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags', 'creators', 'abstractNote', //displayed separately
 'dateModified', 'dateAdded', 'accessDate', 'libraryCatalog', 'title', 'shortTitle'];
 
-},{}],104:[function(require,module,exports){
+},{}],105:[function(require,module,exports){
 'use strict';
 
 require('babel-regenerator-runtime');
 
 var _main = require('./main.js');
 
+var _main2 = _interopRequireDefault(_main);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 require('core-js/es6/promise');
 require('whatwg-fetch');
 
 
-module.exports = _main.ZoteroPublications;
+module.exports = _main2.default;
 
-},{"./main.js":105,"babel-regenerator-runtime":1,"core-js/es6/promise":5,"whatwg-fetch":99}],105:[function(require,module,exports){
+},{"./main.js":106,"babel-regenerator-runtime":1,"core-js/es6/promise":5,"whatwg-fetch":99}],106:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -20505,7 +20518,7 @@ Object.defineProperty(exports, "__esModule", {
 var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }(); /*global Zotero: false */
 
 
-exports.ZoteroPublications = ZoteroPublications;
+exports.default = ZoteroPublications;
 
 var _lodash = require('lodash');
 
@@ -20513,9 +20526,13 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 var _render = require('./render.js');
 
+var _render2 = _interopRequireDefault(_render);
+
 var _api = require('./api.js');
 
 var _data = require('./data.js');
+
+var _data2 = _interopRequireDefault(_data);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -20663,7 +20680,7 @@ ZoteroPublications.prototype.get = function (url) {
 	return new Promise(function (resolve, reject) {
 		var promise = (0, _api.fetchUntilExhausted)(url, init);
 		promise.then(function (responseJson) {
-			var data = new _data.ZoteroData(responseJson, _this2.config);
+			var data = new _data2.default(responseJson, _this2.config);
 			resolve(data);
 		});
 		promise.catch(reject);
@@ -20785,9 +20802,9 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 		if (!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
-		_this3.renderer = new _render.ZoteroRenderer(container, _this3);
+		_this3.renderer = new _render2.default(container, _this3);
 
-		if (userIdOrendpointOrData instanceof _data.ZoteroData) {
+		if (userIdOrendpointOrData instanceof _data2.default) {
 			promise = Promise.resolve(userIdOrendpointOrData);
 		} else if (typeof userIdOrendpointOrData === 'number') {
 			promise = _this3.getPublications(userIdOrendpointOrData);
@@ -20818,21 +20835,21 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
  * Make ZoteroData publicly accessible underneath ZoteroPublications
  * @type {ZoteroData}
  */
-ZoteroPublications.ZoteroData = _data.ZoteroData;
+ZoteroPublications.ZoteroData = _data2.default;
 
 /**
  * Make ZoteroRenderer publicly accessible underneath ZoteroPublications
  * @type {ZoteroRenderer}
  */
-ZoteroPublications.ZoteroRenderer = _render.ZoteroRenderer;
+ZoteroPublications.ZoteroRenderer = _render2.default;
 
-},{"./api.js":100,"./data.js":101,"./render.js":106,"lodash":94}],106:[function(require,module,exports){
+},{"./api.js":100,"./data.js":102,"./render.js":107,"lodash":94}],107:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.ZoteroRenderer = ZoteroRenderer;
+exports.default = ZoteroRenderer;
 
 var _lodash = require('lodash');
 
@@ -20886,7 +20903,7 @@ var _itemAttachmentIndicator = require('./tpl/partial/item-attachment-indicator.
 
 var _itemAttachmentIndicator2 = _interopRequireDefault(_itemAttachmentIndicator);
 
-var _data = require('./data.js');
+var _constants = require('./constants.js');
 
 var _utils = require('./utils.js');
 
@@ -20984,9 +21001,9 @@ ZoteroRenderer.prototype.renderItems = function (zoteroItems) {
  */
 ZoteroRenderer.prototype.renderGroup = function (items) {
 	return (0, _group2.default)({
-		'title': (0, _utils.formatCategoryName)(items[_data.GROUP_TITLE]),
+		'title': (0, _utils.formatCategoryName)(items[_constants.GROUP_TITLE]),
 		'items': items,
-		'expand': items[_data.GROUP_EXPANDED_SUMBOL],
+		'expand': items[_constants.GROUP_EXPANDED_SUMBOL],
 		'renderer': this
 	});
 };
@@ -21319,7 +21336,7 @@ ZoteroRenderer.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
 	});
 };
 
-},{"./data.js":101,"./field-map.js":102,"./hidden-fields.js":103,"./tpl/group-view.tpl":107,"./tpl/partial/branding.tpl":108,"./tpl/partial/export.tpl":109,"./tpl/partial/group.tpl":110,"./tpl/partial/groups.tpl":111,"./tpl/partial/item-attachment-indicator.tpl":112,"./tpl/partial/item-citation.tpl":113,"./tpl/partial/item-templated.tpl":114,"./tpl/partial/item.tpl":115,"./tpl/partial/items.tpl":116,"./tpl/plain-view.tpl":117,"./type-map":118,"./utils.js":119,"clipboard":3,"lodash":94}],107:[function(require,module,exports){
+},{"./constants.js":101,"./field-map.js":103,"./hidden-fields.js":104,"./tpl/group-view.tpl":108,"./tpl/partial/branding.tpl":109,"./tpl/partial/export.tpl":110,"./tpl/partial/group.tpl":111,"./tpl/partial/groups.tpl":112,"./tpl/partial/item-attachment-indicator.tpl":113,"./tpl/partial/item-citation.tpl":114,"./tpl/partial/item-templated.tpl":115,"./tpl/partial/item.tpl":116,"./tpl/partial/items.tpl":117,"./tpl/plain-view.tpl":118,"./type-map":119,"./utils.js":120,"clipboard":3,"lodash":94}],108:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21334,7 +21351,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],108:[function(require,module,exports){
+},{"lodash":94}],109:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21349,7 +21366,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],109:[function(require,module,exports){
+},{"lodash":94}],110:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21364,7 +21381,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],110:[function(require,module,exports){
+},{"lodash":94}],111:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21379,7 +21396,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],111:[function(require,module,exports){
+},{"lodash":94}],112:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21420,7 +21437,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],112:[function(require,module,exports){
+},{"lodash":94}],113:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21439,7 +21456,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],113:[function(require,module,exports){
+},{"lodash":94}],114:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21460,7 +21477,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],114:[function(require,module,exports){
+},{"lodash":94}],115:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21545,7 +21562,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],115:[function(require,module,exports){
+},{"lodash":94}],116:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21680,7 +21697,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],116:[function(require,module,exports){
+},{"lodash":94}],117:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21721,7 +21738,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],117:[function(require,module,exports){
+},{"lodash":94}],118:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -21736,7 +21753,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":94}],118:[function(require,module,exports){
+},{"lodash":94}],119:[function(require,module,exports){
 'use strict';
 
 /**
@@ -21782,7 +21799,7 @@ module.exports = {
 	'dictionaryEntry': 'Dictionary Entry'
 };
 
-},{}],119:[function(require,module,exports){
+},{}],120:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -22033,5 +22050,5 @@ function clipboardFallbackMessage() {
 	return actionMsg;
 }
 
-},{"lodash":94}]},{},[104])(104)
+},{"lodash":94}]},{},[105])(105)
 });
