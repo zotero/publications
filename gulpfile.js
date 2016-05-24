@@ -23,8 +23,7 @@ var cssminify = require('gulp-minify-css');
 var connect = require('gulp-connect');
 var gulpif = require('gulp-if');
 var babel = require('gulp-babel');
-var tplCompiler = require('gulp-underscore-template');
-var extReplace = require('gulp-ext-replace');
+var tplCompiler = require('./gulp/tpl-compiler');
 var watchify = require('watchify');
 var runSequence = require('run-sequence');
 var merge = require('merge-stream');
@@ -52,9 +51,7 @@ var shimConfigs = {
 var presets = {
 	'modern': [
 		'check-es2015-constants',
-		'transform-es2015-modules-commonjs',
-		'babel-plugin-transform-es2015-for-of',
-		'transform-regenerator'
+		'transform-es2015-modules-commonjs'
 	],
 	'compat': [
 		'check-es2015-constants',
@@ -247,17 +244,21 @@ gulp.task('clean:prepublish', function(done) {
 	rimraf('./lib/', done);
 });
 
+gulp.task('prepublish:tpl', function() {
+	return gulp.src('./src/js/tpl/**/*.tpl')
+			.pipe(tplCompiler())
+			.pipe(gulp.dest('./lib/tpl/'));
+});
 
-gulp.task('prepublish', ['clean:prepublish'], function() {
-	return merge(
-		gulp.src('./src/js/**/*.js')
+gulp.task('prepublish:js', function() {
+	return gulp.src('./src/js/**/*.js')
 			.pipe(babel({
 				plugins: presets['modern']
 			}))
-			.pipe(gulp.dest('./lib/')),
-		gulp.src('./src/js/tpl/**/*.tpl')
-			.pipe(tplCompiler())
-			.pipe(extReplace('.tpl'))
-			.pipe(gulp.dest('./lib/tpl/'))
-	);
+			.pipe(gulp.dest('./lib/'));
+});
+
+
+gulp.task('prepublish', ['clean:prepublish'], function(done) {
+	runSequence('prepublish:tpl', 'prepublish:js', done);
 });
