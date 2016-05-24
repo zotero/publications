@@ -1,8 +1,6 @@
 /*eslint-env node */
 module.exports = function(config) {
 	var reporters = process.env.TRAVIS ? ['dots', 'coverage', 'coveralls'] : ['dots', 'coverage'];
-	// var stringifyTransform = require('stringify')(['html']);
-	// var istanbul = require('browserify-istanbul');
 
 	config.set({
 		basePath: '',
@@ -42,9 +40,6 @@ module.exports = function(config) {
 					'check-es2015-constants',
 					'transform-es2015-modules-commonjs'
 					]
-				}],
-				['stringify', {
-					extensions: ['.html']
 				}],
 				[ 'browserify-istanbul', { instrumenterConfig: { embedSource: true } } ]
 			]
