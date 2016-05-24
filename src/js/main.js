@@ -1,14 +1,10 @@
 /*global Zotero: false */
 import _ from 'lodash';
-import {
-	ZoteroRenderer
-} from './render.js';
+import ZoteroRenderer from './render.js';
 import {
 	fetchUntilExhausted
 } from './api.js';
-import {
-	ZoteroData
-} from './data.js';
+import ZoteroData from './data.js';
 /**
  * Application entry point. Alternatively can be used as a convenience function to render publications
  * into a container
@@ -21,7 +17,7 @@ import {
  * @param {*} [config] - Only when used as a convience function, configuration object that will selectively override
  *                     the defaults
  */
-export function ZoteroPublications() {
+export default function ZoteroPublications() {
 	if(arguments.length > 3) {
 		return Promise.reject(
 			new Error(`ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.`)

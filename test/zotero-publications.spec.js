@@ -5,25 +5,21 @@ import _ from 'lodash';
 import testData from './fixtures/test-data.json';
 import testDataGrouped from './fixtures/test-data-grouped.json';
 import testDataSingle from './fixtures/test-data-single.json';
+import ZoteroRenderer from '../src/js/render.js';
+import ZoteroData from '../src/js/data.js';
+import ZoteroPublications from '../src/js/main.js';
 import {
-	ZoteroRenderer
- } from '../src/js/render.js';
-import {
-	processResponse,
-	AUTHORS_SYMBOL
-} from '../src/js/api.js';
-import {
-	ZoteroData,
 	CHILD_NOTES,
 	CHILD_ATTACHMENTS,
 	CHILD_OTHER,
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE,
-	VIEW_ONLINE_URL
-} from '../src/js/data.js';
+	VIEW_ONLINE_URL,
+	AUTHORS_SYMBOL
+} from '../src/js/constants.js';
 import {
-	ZoteroPublications
-} from '../src/js/main.js';
+	processResponse
+} from '../src/js/api.js';
 
 describe('Zotero Publications', function() {
 	var zp,

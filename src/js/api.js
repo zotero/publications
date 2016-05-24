@@ -8,12 +8,11 @@ import {
 	CHILD_NOTES,
 	CHILD_ATTACHMENTS,
 	CHILD_OTHER,
-	VIEW_ONLINE_URL
-} from './data.js';
-
-export const ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
-export const AUTHORS_SYMBOL = Symbol.for('authors');
-export const FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
+	VIEW_ONLINE_URL,
+	ABSTRACT_NOTE_PROCESSED,
+	FORMATTED_DATE_SYMBOL,
+	AUTHORS_SYMBOL
+} from './constants.js';
 
 /**
  * Process raw API response
