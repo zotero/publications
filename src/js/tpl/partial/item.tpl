@@ -39,6 +39,14 @@
 								<div class="zotero-meta-value">
 									<% if(keys[i] === 'itemType') { %>
 										<%- obj.renderer.typeMap[obj.data[keys[i]]] %>
+									<% } else if(keys[i] === 'DOI') { %>
+										<a href="https://doi.org/<%- obj.data[keys[i]] %>" target="_blank">
+											<%- obj.data[keys[i]] %>
+										</a>
+									<% } else if(keys[i] === 'url') { %>
+										<a href="<%- obj.data[keys[i]] %>" target="_blank">
+											<%- obj.data[keys[i]] %>
+										</a>
 									<% } else { %>
 										<%- obj.data[keys[i]] %>
 									<% } %>
