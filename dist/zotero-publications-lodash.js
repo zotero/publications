@@ -18798,77 +18798,77 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '';
+  __p += '<div class="zotero-item-header-container">\n\t';
   if (obj.data.itemType == 'book') {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
+    __p += '\n\t\t\t<div class="zotero-item-header">\n\t\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
+      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t\t';
     } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
+      __p += '\n\t\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
     }
-    __p += '\n\t</h3>\n\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t<div class="zotero-item-subline">\n\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t';
+    __p += '\n\t\t\t\t</h3>\n\t\t\t\t<div class="zotero-item-subline">\n\t\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t';
+      __p += '\n\t\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
     }
-    __p += '\n\t</div>\n';
+    __p += '\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class="zotero-item-indicator-container">\n\t\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t\t</div>\n\t\t';
   } else if (obj.data.itemType == 'journalArticle') {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
+    __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
-    __p += '\n\t</h3>\n\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t';
+    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t';
+      __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
     }
-    __p += '\n\t</div>\n';
+    __p += '\n\t\t\t</div>\n\t\t</div>\n\t\t<div class="zotero-item-indicator-container">\n\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t</div>\n\t';
   } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
+    __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
-    __p += '\n\t</h3>\n\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t';
+    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t';
+      __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
     }
-    __p += '\n\t</div>\n';
+    __p += '\n\t\t\t</div>\n\t\t</div>\n\t\t<div class="zotero-item-indicator-container">\n\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t</div>\n\t';
   } else if (obj.data.itemType == 'blogPost') {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
+    __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
-    __p += '\n\t</h3>\n\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t<div class="zotero-item-subline">\n\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t';
+    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t';
+      __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
     }
-    __p += '\n\t</div>\n';
+    __p += '\n\t\t\t</div>\n\t\t</div>\n\t\t<div class="zotero-item-indicator-container">\n\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t</div>\n\t';
   } else {
-    __p += '\n\t<h3 class="zotero-item-title">\n\t\t';
+    __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
-      __p += '\n\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t';
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
-    __p += '\n\t</h3>\n\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\n\t';
+    __p += '\n\t\t\t</h3>\n\n\t\t\t';
     if (obj.item[Symbol.for('authors')] || obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t<div class="zotero-item-subline">\n\t\t\t';
+      __p += '\n\t\t\t\t<div class="zotero-item-subline">\n\t\t\t\t\t';
       if (obj.item[Symbol.for('authors')]) {
-        __p += '\n\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t';
+        __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
       }
-      __p += '\n\t\t\t\t\n\t\t\t';
+      __p += '\n\t\t\t\t\t\t\n\t\t\t\t\t';
       if (obj.data[Symbol.for('formattedDate')]) {
-        __p += '\n\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t';
+        __p += '\n\t\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
       }
-      __p += '\n\t\t</div>\n\t';
+      __p += '\n\t\t\t\t</div>\n\t\t\t';
     }
-    __p += '\n';
+    __p += '\n\t\t</div>\n\t\t<div class="zotero-item-indicator-container">\n\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t</div>\n\t';
   }
-  __p += '';
+  __p += '\n</div>';
   return __p;
 };
 
@@ -18906,6 +18906,10 @@ module.exports = function (obj) {
         __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap[keys[i]]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">\n\t\t\t\t\t\t\t\t\t';
         if (keys[i] === 'itemType') {
           __p += '\n\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.typeMap[obj.data[keys[i]]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t';
+        } else if (keys[i] === 'DOI') {
+          __p += '\n\t\t\t\t\t\t\t\t\t\t<a href="https://doi.org/' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '" target="_blank">\n\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t';
+        } else if (keys[i] === 'url') {
+          __p += '\n\t\t\t\t\t\t\t\t\t\t<a href="' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '" target="_blank">\n\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t';
         } else {
           __p += '\n\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t';
         }
