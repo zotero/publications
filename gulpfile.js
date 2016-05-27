@@ -1,36 +1,34 @@
 /*eslint-env node */
-
 'use strict';
 
-var rimraf = require('rimraf');
-var browserify = require('browserify');
-var gulp = require('gulp');
-var source = require('vinyl-source-stream');
-var buffer = require('vinyl-buffer');
-var gutil = require('gulp-util');
-var uglifyHarmony = require('uglify-js');
-var lodash = require('lodash');
-var uglify = lodash.partial(require('gulp-uglify/minifier'), lodash, uglifyHarmony);
-var rename = require('gulp-rename');
-var babelify = require('babelify');
-var symlink = require('gulp-symlink');
-var jstify = require('jstify');
-var shim = require('browserify-shim');
-var sourcemaps = require('gulp-sourcemaps');
-var sass = require('gulp-sass');
-var autoprefixer = require('gulp-autoprefixer');
-var cssminify = require('gulp-minify-css');
-var connect = require('gulp-connect');
-var gulpif = require('gulp-if');
-var babel = require('gulp-babel');
-var tplCompiler = require('./gulp/tpl-compiler');
-var watchify = require('watchify');
-var runSequence = require('run-sequence');
-var merge = require('merge-stream');
-var fs = require('fs');
-var watch;
-var buildDir;
+const rimraf = require('rimraf');
+const browserify = require('browserify');
+const gulp = require('gulp');
+const source = require('vinyl-source-stream');
+const buffer = require('vinyl-buffer');
+const gutil = require('gulp-util');
+const uglifyHarmony = require('uglify-js');
+const lodash = require('lodash');
+const uglify = lodash.partial(require('gulp-uglify/minifier'), lodash, uglifyHarmony);
+const rename = require('gulp-rename');
+const babelify = require('babelify');
+const symlink = require('gulp-symlink');
+const jstify = require('jstify');
+const shim = require('browserify-shim');
+const sourcemaps = require('gulp-sourcemaps');
+const sass = require('gulp-sass');
+const autoprefixer = require('gulp-autoprefixer');
+const cssminify = require('gulp-minify-css');
+const connect = require('gulp-connect');
+const gulpif = require('gulp-if');
+const babel = require('gulp-babel');
+const tplCompiler = require('./gulp/tpl-compiler');
+const watchify = require('watchify');
+const runSequence = require('run-sequence');
+const merge = require('merge-stream');
+const fs = require('fs');
 
+var buildDir;
 
 var shimConfigs = {
 	'nodeps': {
@@ -77,127 +75,107 @@ var presets = {
 	]
 }
 
-function bundleShare(b, filename) {
-	filename = filename || 'zotero-publications.js';
-//	if(variant) {
-//		filename = `zotero-publications.${variant}.js`;
-//	} else {
-//		filename = 'zotero-publications.js';
-//	}
-	return b.bundle()
-		.on('error', gutil.log)
-		.pipe(source(filename))
-		.pipe(buffer())
-		.pipe(gulp.dest(buildDir))
-		.pipe(gulpif(watch, connect.reload()));
+function onError(err) {
+	gutil.log(gutil.colors.red('Error:'), err);
 }
 
-/**
- * Returns pre-configured browserify
- * @param  {Boolean} debug  Whether to enable debug mode in Browserify
- * @param  {String} version Build version, i.e. modern or compat
- * @param  {String} variant Build variant, i.e. lodash or nodeps
- * @return {Object}         Browserify object
- */
-function getBrowserify(debug, version, variant) {
-	var babelPlugins = presets[version] || [];
+function onSuccess(msg) {
+	gutil.log(gutil.colors.green('Build:'), msg);
+}
 
-	var b = browserify({
+function getBrowserify(dev, version, variant) {
+	return browserify({
 			cache: {},
 			packageCache: {},
 			entries: `src/js/main-${version}.js`,
-			debug: debug,
+			debug: dev,
 			standalone: 'ZoteroPublications',
 			transform: [
 			['node-underscorify', {
-                'extensions': ['tpl'],
-                'requires': [{variable: '_', module: 'lodash'}],
-                'templateSettings': {
-                	variable: 'obj'
-                }
-            }],
-            ['babelify', {
-            	'extensions': ['.js', '.tpl'],
-            	'plugins': babelPlugins
-        	}],
+				'extensions': ['tpl'],
+				'requires': [{variable: '_', module: 'lodash'}],
+				'templateSettings': {
+					variable: 'obj'
+				}
+			}],
+			['babelify', {
+				'extensions': ['.js', '.tpl'],
+				'plugins':  presets[version] || []
+			}],
 			['browserify-shim', shimConfigs[variant]],
-
 		]
 	});
+}
 
-	return b;
+function getJS(dev, filename, bundle) {
+	filename = filename || 'zotero-publications.js';
+
+	return bundle.bundle()
+		.on('error', onError)
+		.pipe(source(filename))
+		.pipe(buffer())
+		.pipe(gulp.dest(buildDir))
+		.pipe(gulpif(dev, connect.reload()));
+}
+
+function getSass(dev) {
+	return merge(
+		gulp.src('./src/scss/zotero-publications.scss')
+			.pipe(gulpif(dev, sourcemaps.init()))
+			.pipe(sass().on('error', onError))
+			.pipe(autoprefixer({
+				browsers: ['last 2 versions', 'IE 10']
+			}))
+			.pipe(gulpif(dev, sourcemaps.write()))
+			.pipe(gulp.dest(buildDir))
+			.pipe(gulpif(!dev, rename({ extname: '.min.css' })))
+			.pipe(gulpif(!dev, cssminify()))
+			.pipe(gulpif(!dev, gulp.dest(buildDir))),
+		gulp.src('./src/scss/demo.scss')
+			.pipe(gulpif(dev, sourcemaps.init()))
+			.pipe(sass().on('error', onError))
+			.pipe(autoprefixer({
+				browsers: ['last 2 versions', 'IE 10']
+			}))
+			.pipe(gulpif(dev, sourcemaps.write()))
+			.pipe(gulp.dest('./tmp/'))
+	);
 }
 
 gulp.task('js', function() {
-	let b = getBrowserify(watch, 'modern', 'nodeps');
-
-	if(watch) {
-    	b = watchify(b);
-    	b.on('update', function() {
-    		bundleShare(b);
-    	});
-	}
-	return bundleShare(b);
+	let bundle = getBrowserify(true, 'modern', 'nodeps');
+	bundle.plugin(watchify);
+	bundle.on('update', function() {
+		return getJS(true, 'zotero-publications.js', bundle);
+	});
+	bundle.on('log', onSuccess);
+	return getJS(true, 'zotero-publications.js', bundle);
 });
 
 gulp.task('multi-js', function() {
-	let bnodeps = getBrowserify(false, 'modern', 'nodeps'),
-		bnodepsCompat = getBrowserify(false, 'compat', 'nodeps'),
-		blodash = getBrowserify(false, 'modern', 'lodash'),
-		blodashComapt = getBrowserify(false, 'compat', 'lodash');
+	let variants = [],
+		streams = [];
 
-	return merge(
-		bundleShare(bnodeps, 'zotero-publications.js')
+	variants.push([false, 'modern', 'nodeps']);
+	variants.push([false, 'compat', 'nodeps']);
+	variants.push([false, 'modern', 'lodash']);;
+	variants.push([false, 'compat', 'lodash']);
+
+	variants.forEach(variant => {
+		let bundle = getBrowserify.apply(null, variant);
+		let stream = getJS(variant[0], `zotero-publications${variant[1] === 'compat' ? '-compat' : ''}${variant[2] === 'lodash' ? '-lodash' : ''}.js`, bundle)
 			.pipe(uglify())
 			.pipe(rename({ extname: '.min.js' }))
-			.pipe(gulp.dest(buildDir)),
-		bundleShare(bnodepsCompat, 'zotero-publications-compat.js')
-//			.pipe(rename({ suffix: '-compat' }))
-			//.pipe(gulp.dest(buildDir))
-			.pipe(uglify())
-			.pipe(rename({ extname: '.min.js' }))
-			.pipe(gulp.dest(buildDir)),
-		bundleShare(blodash, 'zotero-publications-lodash.js')
-//			.pipe(rename({ suffix: '-compat-lodash' }))
-			//.pipe(gulp.dest(buildDir))
-			.pipe(uglify())
-			.pipe(rename({ extname: '.min.js' }))
-			.pipe(gulp.dest(buildDir)),
-		bundleShare(blodashComapt, 'zotero-publications-compat-lodash.js')
-//			.pipe(rename({ suffix: '-compat' }))
-//			.pipe(gulp.dest(buildDir))
-			.pipe(uglify())
-			.pipe(rename({ extname: '.min.js' }))
-			.pipe(gulp.dest(buildDir))
-	);
+			.pipe(gulp.dest(buildDir));
+
+		streams.push(stream);
+	});
+
+	return merge.apply(null, streams);
 });
 
 gulp.task('scss', function() {
-	return merge(
-		gulp.src('./src/scss/zotero-publications.scss')
-			.pipe(gulpif(watch, sourcemaps.init()))
-			.pipe(sass().on('error', function(msg) {
-				gutil.log(gutil.colors.red(msg));
-			}))
-			.pipe(autoprefixer({
-				browsers: ['last 2 versions']
-			}))
-			.pipe(gulpif(watch, sourcemaps.write()))
-			.pipe(gulp.dest(buildDir))
-			.pipe(gulpif(!watch, rename({ extname: '.min.css' })))
-			.pipe(gulpif(!watch, cssminify()))
-			.pipe(gulpif(!watch, gulp.dest(buildDir))),
-		gulp.src('./src/scss/demo.scss')
-			.pipe(gulpif(watch, sourcemaps.init()))
-			.pipe(sass().on('error', function(msg) {
-				gutil.log(gutil.colors.red(msg));
-			}))
-			.pipe(autoprefixer({
-				browsers: ['last 2 versions']
-			}))
-			.pipe(gulpif(watch, sourcemaps.write()))
-			.pipe(gulp.dest('./tmp/'))
-	);
+	return getSass(true);
 });
 
 gulp.task('demo', function() {
@@ -210,13 +188,11 @@ gulp.task('demo', function() {
 });
 
 gulp.task('setup-dist', function(done) {
-	watch = false;
 	buildDir = './dist/';
-	done();
+	rimraf(buildDir, done);
 });
 
 gulp.task('setup-dev', function(done) {
-	watch = true;
 	buildDir = './tmp/';
 	rimraf(buildDir, done);
 });
