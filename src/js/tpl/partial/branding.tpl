@@ -1,5 +1,5 @@
 <div class="zotero-branding">
-	<a href="http://www.zotero.org" class="zotero-logo-link" aria-label="Zotero">
+	<a href="http://www.zotero.org" class="zotero-logo-link" aria-label="Zotero" rel="nofollow">
 		<svg class="zotero-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="90" height="20">
 			<g>
 				<path class="zotero-z" fill="#990000" d="M12.2,6.1L2.8,17.8h9.4v1.9H0v-2.2L9.4,5.8H0.8V3.9h11.4V6.1z"/>

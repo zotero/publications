@@ -40,11 +40,11 @@
 									<% if(keys[i] === 'itemType') { %>
 										<%- obj.renderer.typeMap[obj.data[keys[i]]] %>
 									<% } else if(keys[i] === 'DOI') { %>
-										<a href="https://doi.org/<%- obj.data[keys[i]] %>" target="_blank">
+										<a href="https://doi.org/<%- obj.data[keys[i]] %>" rel="nofollow">
 											<%- obj.data[keys[i]] %>
 										</a>
 									<% } else if(keys[i] === 'url') { %>
-										<a href="<%- obj.data[keys[i]] %>" target="_blank">
+										<a href="<%- obj.data[keys[i]] %>" rel="nofollow">
 											<%- obj.data[keys[i]] %>
 										</a>
 									<% } else { %>
@@ -80,7 +80,7 @@
 					<% for(var childItem of obj.item[Symbol.for('childAttachments')]) { %>
 						<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
 						<li>
-							<a href="<%- childItem.url %>">
+							<a href="<%- childItem.url %>" rel="nofollow">
 								<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--
 								--><%- childItem.title %>
 							</a>
