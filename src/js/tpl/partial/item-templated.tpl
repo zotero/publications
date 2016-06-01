@@ -3,7 +3,7 @@
 			<div class="zotero-item-header">
 				<h3 class="zotero-item-title">
 					<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-						<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
+						<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" rel="nofollow"><%- obj.data.title %></a>
 					<% } else { %>
 						<%- obj.data.title %>
 					<% } %>
@@ -22,7 +22,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
+					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" rel="nofollow"><%- obj.data.title %></a>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -41,7 +41,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
+					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" rel="nofollow"><%- obj.data.title %></a>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -60,7 +60,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
+					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" rel="nofollow"><%- obj.data.title %></a>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -79,7 +79,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[Symbol.for('viewOnlineUrl')]) { %>
-					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" target="_blank"><%- obj.data.title %></a>
+					<a href="<%- obj.item[Symbol.for('viewOnlineUrl')] %>" rel="nofollow"><%- obj.data.title %></a>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
