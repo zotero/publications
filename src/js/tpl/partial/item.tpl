@@ -25,33 +25,42 @@
 	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-<%- obj.item.key %>-details">
 		<div class="zotero-details-inner">
 			<div class="zotero-meta">
-				<% if(obj.item.data[Symbol.for('authors')]) { %>
+				<% if(obj.item.data['itemType']) { %>
 					<div class="zotero-meta-item">
-						<div class="zotero-meta-label">Creators</div>
-						<div class="zotero-meta-value"><%- obj.item.data[Symbol.for('authors')] %></div>
+						<div class="zotero-meta-label"><%- obj.renderer.fieldMap['itemType'] %></div>
+						<div class="zotero-meta-value"><%- obj.renderer.typeMap[obj.item.data['itemType']] %></div>
 					</div>
+				<% } %>
+
+				<% if(obj.item.data[Symbol.for('authors')]) { %>
+					<% for(var i=0, keys=Object.keys(obj.item.data[Symbol.for('authors')]); i < keys.length; i++) { %>
+						<div class="zotero-meta-item">
+							<div class="zotero-meta-label"><%- keys[i] %></div>
+							<div class="zotero-meta-value"><%- obj.item.data[Symbol.for('authors')][keys[i]].join(' & ') %></div>
+						</div>
+					<% } %>
 				<% } %>
 				<% for(var i=0, keys=Object.keys(obj.data); i < keys.length; i++) { %>
 					<% if(obj.renderer.hiddenFields.indexOf(keys[i]) === -1) { %>
 						<% if(obj.data[keys[i]]) { %>
-							<div class="zotero-meta-item">
-								<div class="zotero-meta-label"><%- obj.renderer.fieldMap[keys[i]] %></div>
-								<div class="zotero-meta-value">
-									<% if(keys[i] === 'itemType') { %>
-										<%- obj.renderer.typeMap[obj.data[keys[i]]] %>
-									<% } else if(keys[i] === 'DOI') { %>
-										<a href="https://doi.org/<%- obj.data[keys[i]] %>" rel="nofollow">
+							<% if(keys[i] !== 'itemType') { %>
+								<div class="zotero-meta-item">
+									<div class="zotero-meta-label"><%- obj.renderer.fieldMap[keys[i]] %></div>
+									<div class="zotero-meta-value">
+										<% if(keys[i] === 'DOI') { %>
+											<a href="https://doi.org/<%- obj.data[keys[i]] %>" rel="nofollow">
+												<%- obj.data[keys[i]] %>
+											</a>
+										<% } else if(keys[i] === 'url') { %>
+											<a href="<%- obj.data[keys[i]] %>" rel="nofollow">
+												<%- obj.data[keys[i]] %>
+											</a>
+										<% } else { %>
 											<%- obj.data[keys[i]] %>
-										</a>
-									<% } else if(keys[i] === 'url') { %>
-										<a href="<%- obj.data[keys[i]] %>" rel="nofollow">
-											<%- obj.data[keys[i]] %>
-										</a>
-									<% } else { %>
-										<%- obj.data[keys[i]] %>
-									<% } %>
+										<% } %>
+									</div>
 								</div>
-							</div>
+							<% } %>
 						<% } %>
 					<% } %>
 				<% } %>
