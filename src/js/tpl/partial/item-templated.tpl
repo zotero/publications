@@ -9,9 +9,11 @@
 					<% } %>
 				</h3>
 				<div class="zotero-item-subline">
-					By <%- obj.data[Symbol.for('authors')] %>
+					<% if (obj.data[Symbol.for('authors')]['Author']) { %>
+						By <%- obj.data[Symbol.for('authors')]['Author'].join(' & ') %>
+					<% } %>
 					<% if (obj.data[Symbol.for('formattedDate')]) { %>
-					(<%- obj.data[Symbol.for('formattedDate')] %>)
+						(<%- obj.data[Symbol.for('formattedDate')] %>)
 					<% } %>
 				</div>
 			</div>

@@ -87,7 +87,10 @@ describe('Zotero Publications', function() {
 	it('should process creators array into a string', function() {
 		let processed = processResponse(data);
 		let book = _.find(processed, {key: 'ABCD'});
-		expect(book.data[AUTHORS_SYMBOL]).toEqual('Yoda & Luke Skywalker');
+		expect(book.data[AUTHORS_SYMBOL]).toEqual({
+			Author: [ 'Yoda' ],
+			Editor: [ 'Luke Skywalker' ]
+		});
 	});
 
 	it('should extract "view online" url from the response', function() {

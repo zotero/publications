@@ -31,13 +31,18 @@ export function processResponse(response) {
 				item.data[ABSTRACT_NOTE_PROCESSED] = formatAbstract(item.data.abstractNote);
 			}
 			if(item.data && item.data.creators) {
-				item.data[AUTHORS_SYMBOL] = item.data.creators.map(author => {
-					if(author.firstName && author.lastName) {
-						return author.firstName + ' ' + author.lastName
-					} else if(author.name) {
-						return author.name;
+				item.data[AUTHORS_SYMBOL] = {};
+
+				item.data.creators.forEach(author => {
+					let name = author.firstName && author.lastName ? author.firstName + ' ' + author.lastName : author.name;
+					let type = author.creatorType.charAt(0).toUpperCase() + author.creatorType.slice(1);
+
+					if(!item.data[AUTHORS_SYMBOL][type]) {
+						item.data[AUTHORS_SYMBOL][type] = [];
 					}
-				}).join(' & ');
+
+					item.data[AUTHORS_SYMBOL][type].push(name);
+				});
 			}
 			if(item.data && item.meta.parsedDate) {
 				item.data[FORMATTED_DATE_SYMBOL] = formatDate(item.meta.parsedDate);
