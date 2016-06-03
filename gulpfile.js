@@ -142,7 +142,7 @@ function getSass(dev) {
 	);
 }
 
-gulp.task('js', function() {
+function getSingleJS() {
 	let bundle = getBrowserify(true, 'modern', 'nodeps');
 	bundle.plugin(watchify);
 	bundle.on('update', function() {
@@ -150,9 +150,9 @@ gulp.task('js', function() {
 	});
 	bundle.on('log', onSuccess);
 	return getJS(true, 'zotero-publications.js', bundle);
-});
+}
 
-gulp.task('multi-js', function() {
+function getMultiJS() {
 	let variants = [],
 		streams = [];
 
@@ -172,36 +172,30 @@ gulp.task('multi-js', function() {
 	});
 
 	return merge.apply(null, streams);
-});
+}
 
-gulp.task('scss', function() {
-	return getSass(true);
-});
-
-gulp.task('demo', function() {
+function getDemo() {
 	return merge(
 		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html', 'src/demo/local-templated.html'])
 			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html', 'tmp/local-templated.html'])),
 		gulp.src('node_modules/lodash/lodash.js')
 			.pipe(symlink('tmp/lodash.js'))
 		);
+}
+
+gulp.task('scss', function() {
+	return getSass(true);
 });
 
-gulp.task('setup-dist', function(done) {
+
+gulp.task('build', ['clean:build'], function() {
 	buildDir = './dist/';
-	rimraf(buildDir, done);
+	return merge(getMultiJS(), getSass());
 });
 
-gulp.task('setup-dev', function(done) {
+gulp.task('dev', ['clean:dev'], function(done) {
 	buildDir = './tmp/';
-	rimraf(buildDir, done);
-});
 
-gulp.task('build', function(done) {
-	runSequence('setup-dist', ['multi-js', 'scss'], done);
-});
-
-gulp.task('dev', function(done) {
 	connect.server({
 		root: 'tmp',
 		port: 8001,
@@ -209,12 +203,19 @@ gulp.task('dev', function(done) {
 	});
 
 	gulp.watch('./src/scss/*.scss', ['scss']);
-	runSequence('setup-dev', ['demo', 'js', 'scss'], done);
+	return merge(getDemo(), getSingleJS(), getSass());
 });
 
-gulp.task('default', ['setup-dev'], function() {
-	return gulp.start('dev');
+gulp.task('default', ['dev']);
+
+gulp.task('clean:dev', function(done) {
+	rimraf('./tmp/', done);
 });
+
+gulp.task('clean:build', function(done) {
+	rimraf('./dist/', done);
+});
+
 
 gulp.task('clean:prepublish', function(done) {
 	rimraf('./lib/', done);
