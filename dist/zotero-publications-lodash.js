@@ -17528,13 +17528,18 @@ function processResponse(response) {
 				item.data[_constants.ABSTRACT_NOTE_PROCESSED] = (0, _utils.formatAbstract)(item.data.abstractNote);
 			}
 			if (item.data && item.data.creators) {
-				item.data[_constants.AUTHORS_SYMBOL] = item.data.creators.map(author => {
-					if (author.firstName && author.lastName) {
-						return author.firstName + ' ' + author.lastName;
-					} else if (author.name) {
-						return author.name;
+				item.data[_constants.AUTHORS_SYMBOL] = {};
+
+				item.data.creators.forEach(author => {
+					let name = author.firstName && author.lastName ? author.firstName + ' ' + author.lastName : author.name;
+					let type = author.creatorType.charAt(0).toUpperCase() + author.creatorType.slice(1);
+
+					if (!item.data[_constants.AUTHORS_SYMBOL][type]) {
+						item.data[_constants.AUTHORS_SYMBOL][type] = [];
 					}
-				}).join(' & ');
+
+					item.data[_constants.AUTHORS_SYMBOL][type].push(name);
+				});
 			}
 			if (item.data && item.meta.parsedDate) {
 				item.data[_constants.FORMATTED_DATE_SYMBOL] = (0, _utils.formatDate)(item.meta.parsedDate);
@@ -18694,7 +18699,7 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<div class="zotero-branding">\n\t<a href="http://www.zotero.org" class="zotero-logo-link" aria-label="Zotero">\n\t\t<svg class="zotero-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="90" height="20">\n\t\t\t<g>\n\t\t\t\t<path class="zotero-z" fill="#990000" d="M12.2,6.1L2.8,17.8h9.4v1.9H0v-2.2L9.4,5.8H0.8V3.9h11.4V6.1z"/>\n\t\t\t\t<path fill="#222222" d="M22.1,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C15.1,5.2,16.2,3.7,22.1,3.7z M22.1,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C17.5,17.3,17.8,18,22.1,18z"/>\n\t\t\t\t<path fill="#222222" d="M41.7,5.8h-6.1v10c0,1.7,0.5,2.1,2.2,2.1c2.2,0,2.2-1.2,2.2-2.7v-1.2h2.3v1.2c0,3.1-1.3,4.6-4.5,4.6\n\t\t\t\t\tc-3.7,0-4.5-1.1-4.5-4.8V5.8h-2.1V3.9h2.1V0.1h2.4v3.8h6.1V5.8z"/>\n\t\t\t\t<path fill="#222222" d="M58.3,14.9v0.6c0,4.2-3.2,4.4-6.7,4.4c-6.2,0-7.1-2-7.1-8.1c0-6.6,1.4-8.1,7.1-8.1c5.1,0,6.7,1.2,6.7,7v1.6\n\t\t\t\t\tH46.9c0,5,0.4,5.6,4.6,5.6c3.3,0,4.3-0.2,4.3-2.4v-0.6H58.3z M55.8,10.4c-0.1-4.5-0.7-4.8-4.3-4.8c-4.3,0-4.5,1.1-4.6,4.8H55.8z"/>\n\t\t\t\t<path fill="#222222" d="M64.6,3.9l-0.1,2l0.1,0.1c0.8-1.7,2.7-2.2,4.5-2.2c3,0,4.4,1.5,4.4,4.5v1.1h-2.3V8.3c0-2-0.7-2.6-2.6-2.6\n\t\t\t\t\tc-3,0-3.9,1.4-3.9,4.2v9.8h-2.4V3.9H64.6z"/>\n\t\t\t\t<path fill="#222222" d="M83,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C76,5.2,77.1,3.7,83,3.7z M83,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C78.4,17.3,78.7,18,83,18z"/>\n\t\t\t</g>\n\t\t</svg>\n\t</a>\n</div>';
+  __p += '<div class="zotero-branding">\n\t<a href="http://www.zotero.org" class="zotero-logo-link" aria-label="Zotero" rel="nofollow">\n\t\t<svg class="zotero-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="90" height="20">\n\t\t\t<g>\n\t\t\t\t<path class="zotero-z" fill="#990000" d="M12.2,6.1L2.8,17.8h9.4v1.9H0v-2.2L9.4,5.8H0.8V3.9h11.4V6.1z"/>\n\t\t\t\t<path fill="#222222" d="M22.1,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C15.1,5.2,16.2,3.7,22.1,3.7z M22.1,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C17.5,17.3,17.8,18,22.1,18z"/>\n\t\t\t\t<path fill="#222222" d="M41.7,5.8h-6.1v10c0,1.7,0.5,2.1,2.2,2.1c2.2,0,2.2-1.2,2.2-2.7v-1.2h2.3v1.2c0,3.1-1.3,4.6-4.5,4.6\n\t\t\t\t\tc-3.7,0-4.5-1.1-4.5-4.8V5.8h-2.1V3.9h2.1V0.1h2.4v3.8h6.1V5.8z"/>\n\t\t\t\t<path fill="#222222" d="M58.3,14.9v0.6c0,4.2-3.2,4.4-6.7,4.4c-6.2,0-7.1-2-7.1-8.1c0-6.6,1.4-8.1,7.1-8.1c5.1,0,6.7,1.2,6.7,7v1.6\n\t\t\t\t\tH46.9c0,5,0.4,5.6,4.6,5.6c3.3,0,4.3-0.2,4.3-2.4v-0.6H58.3z M55.8,10.4c-0.1-4.5-0.7-4.8-4.3-4.8c-4.3,0-4.5,1.1-4.6,4.8H55.8z"/>\n\t\t\t\t<path fill="#222222" d="M64.6,3.9l-0.1,2l0.1,0.1c0.8-1.7,2.7-2.2,4.5-2.2c3,0,4.4,1.5,4.4,4.5v1.1h-2.3V8.3c0-2-0.7-2.6-2.6-2.6\n\t\t\t\t\tc-3,0-3.9,1.4-3.9,4.2v9.8h-2.4V3.9H64.6z"/>\n\t\t\t\t<path fill="#222222" d="M83,3.7c5.9,0,7,1.4,7,8.1c0,6.7-1.1,8.1-7,8.1c-5.9,0-7-1.4-7-8.1C76,5.2,77.1,3.7,83,3.7z M83,18\n\t\t\t\t\tc4.2,0,4.5-0.7,4.5-6.1c0-5.5-0.3-6.2-4.5-6.2c-4.2,0-4.5,0.7-4.5,6.2C78.4,17.3,78.7,18,83,18z"/>\n\t\t\t</g>\n\t\t</svg>\n\t</a>\n</div>';
   return __p;
 };
 
@@ -18760,7 +18765,7 @@ module.exports = function (obj) {
   };
   __p += '';
   if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
-    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('childAttachments')][0].url) == null ? '' : _.escape(__t)) + '" class="zotero-attachment-indicator">\n\t\t<span class="zotero-icon zotero-icon-' + ((__t = obj.item[Symbol.for('childAttachments')][0].type === 'application/pdf' ? 'pdf' : 'download') == null ? '' : _.escape(__t)) + '" role="presentation" aria-hidden="true"></span>\n\t</a>\n';
+    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('childAttachments')][0].url) == null ? '' : _.escape(__t)) + '" class="zotero-attachment-indicator" rel="nofollow">\n\t\t<span class="zotero-icon zotero-icon-' + ((__t = obj.item[Symbol.for('childAttachments')][0].type === 'application/pdf' ? 'pdf' : 'download') == null ? '' : _.escape(__t)) + '" role="presentation" aria-hidden="true"></span>\n\t</a>\n';
   }
   __p += '';
   return __p;
@@ -18779,7 +18784,7 @@ module.exports = function (obj) {
   };
   __p += '<h3 class="zotero-item-title">\n\t';
   if (obj.item[Symbol.for('viewOnlineUrl')]) {
-    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t</a>\n\t';
+    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t</a>\n\t';
   } else {
     __p += '\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t';
   }
@@ -18802,19 +18807,23 @@ module.exports = function (obj) {
   if (obj.data.itemType == 'book') {
     __p += '\n\t\t\t<div class="zotero-item-header">\n\t\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
     }
-    __p += '\n\t\t\t\t</h3>\n\t\t\t\t<div class="zotero-item-subline">\n\t\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
+    __p += '\n\t\t\t\t</h3>\n\t\t\t\t<div class="zotero-item-subline">\n\t\t\t\t\t';
+    if (obj.data[Symbol.for('authors')]['Author']) {
+      __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]['Author'].join(' & ')) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t\t';
     if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class="zotero-item-indicator-container">\n\t\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t\t</div>\n\t\t';
   } else if (obj.data.itemType == 'journalArticle') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
@@ -18826,7 +18835,7 @@ module.exports = function (obj) {
   } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
@@ -18838,7 +18847,7 @@ module.exports = function (obj) {
   } else if (obj.data.itemType == 'blogPost') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
@@ -18850,7 +18859,7 @@ module.exports = function (obj) {
   } else {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" target="_blank">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
@@ -18894,8 +18903,16 @@ module.exports = function (obj) {
     __p += '\n\t\t\t<button class="zotero-add-to-library" data-trigger="add-to-library">\n\t\t\t\tAdd to Library\n\t\t\t</button>\n\t\t';
   }
   __p += '\n\t</div>\n\t\n\t<!-- Details -->\n\t<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-details">\n\t\t<div class="zotero-details-inner">\n\t\t\t<div class="zotero-meta">\n\t\t\t\t';
+  if (obj.item.data['itemType']) {
+    __p += '\n\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap['itemType']) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.renderer.typeMap[obj.item.data['itemType']]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t</div>\n\t\t\t\t';
+  }
+  __p += '\n\n\t\t\t\t';
   if (obj.item.data[Symbol.for('authors')]) {
-    __p += '\n\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t<div class="zotero-meta-label">Creators</div>\n\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t</div>\n\t\t\t\t';
+    __p += '\n\t\t\t\t\t';
+    for (var i = 0, keys = Object.keys(obj.item.data[Symbol.for('authors')]); i < keys.length; i++) {
+      __p += '\n\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = keys[i]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data[Symbol.for('authors')][keys[i]].join(' & ')) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t';
   }
   __p += '\n\t\t\t\t';
   for (var i = 0, keys = Object.keys(obj.data); i < keys.length; i++) {
@@ -18903,17 +18920,19 @@ module.exports = function (obj) {
     if (obj.renderer.hiddenFields.indexOf(keys[i]) === -1) {
       __p += '\n\t\t\t\t\t\t';
       if (obj.data[keys[i]]) {
-        __p += '\n\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap[keys[i]]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t\t<div class="zotero-meta-value">\n\t\t\t\t\t\t\t\t\t';
-        if (keys[i] === 'itemType') {
-          __p += '\n\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.typeMap[obj.data[keys[i]]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t';
-        } else if (keys[i] === 'DOI') {
-          __p += '\n\t\t\t\t\t\t\t\t\t\t<a href="https://doi.org/' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '" target="_blank">\n\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t';
-        } else if (keys[i] === 'url') {
-          __p += '\n\t\t\t\t\t\t\t\t\t\t<a href="' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '" target="_blank">\n\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t';
-        } else {
-          __p += '\n\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t';
+        __p += '\n\t\t\t\t\t\t\t';
+        if (keys[i] !== 'itemType') {
+          __p += '\n\t\t\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap[keys[i]]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t\t\t<div class="zotero-meta-value">\n\t\t\t\t\t\t\t\t\t\t';
+          if (keys[i] === 'DOI') {
+            __p += '\n\t\t\t\t\t\t\t\t\t\t\t<a href="https://doi.org/' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t';
+          } else if (keys[i] === 'url') {
+            __p += '\n\t\t\t\t\t\t\t\t\t\t\t<a href="' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t';
+          } else {
+            __p += '\n\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t';
+          }
+          __p += '\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t';
         }
-        __p += '\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t';
+        __p += '\n\t\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t\t';
     }
@@ -18937,7 +18956,7 @@ module.exports = function (obj) {
     for (var childItem of obj.item[Symbol.for('childAttachments')]) {
       __p += '\n\t\t\t\t\t\t';
       if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
-        __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
+        __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t\t';
     }
