@@ -18,9 +18,6 @@
 					<% } %>
 				</div>
 			</div>
-			<div class="zotero-item-indicator-container">
-				<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
-			</div>
 		<% } else if (obj.data.itemType == 'journalArticle') { %>
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
@@ -36,9 +33,6 @@
 				(<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>)
 				<% } %>
 			</div>
-		</div>
-		<div class="zotero-item-indicator-container">
-			<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 		</div>
 	<% } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') { %>
 		<div class="zotero-item-header">
@@ -56,9 +50,6 @@
 				<% } %>
 			</div>
 		</div>
-		<div class="zotero-item-indicator-container">
-			<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
-		</div>
 	<% } else if (obj.data.itemType == 'blogPost') { %>
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
@@ -74,9 +65,6 @@
 				(<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>)
 				<% } %>
 			</div>
-		</div>
-		<div class="zotero-item-indicator-container">
-			<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 		</div>
 	<% } else { %>
 		<div class="zotero-item-header">
@@ -99,9 +87,6 @@
 					<% } %>
 				</div>
 			<% } %>
-		</div>
-		<div class="zotero-item-indicator-container">
-			<%= obj.renderer.renderAttachmentIndicator(obj.item) %>
 		</div>
 	<% } %>
 </div>
