@@ -21509,13 +21509,13 @@ module.exports = function (obj) {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
     __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t';
-    if (obj.data.publication) {
-      __p += '\n\t\t\t\t\t' + ((__t = obj.data.publication) == null ? '' : _.escape(__t)) + '';
+    if (obj.data.publicationTitle) {
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '';
       if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
         __p += ', ';
       }
       __p += '\n\t\t\t\t';
-    } else {
+    } else if (obj.data.journalAbbreviation) {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '';
       if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
         __p += ', ';
