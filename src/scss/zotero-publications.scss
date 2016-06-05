@@ -366,11 +366,8 @@ $border-radius-base: 4px;
 	}
 
 	&-item-actions {
-		display: flex;
-		justify-content: space-between;
-
-		> * {
-			align-self: flex-end;
+		a + a {
+			margin-left: 16px;
 		}
 	}
 
