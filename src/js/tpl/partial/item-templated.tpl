@@ -28,9 +28,9 @@
 				<% } %>
 			</h3>
 			<div class="zotero-item-subline">
-				<% if (obj.data.publication) { %>
-					<%- obj.data.publication %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
-				<% } else { %>
+				<% if (obj.data.publicationTitle) { %>
+					<%- obj.data.publicationTitle %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
+				<% } else if (obj.data.journalAbbreviation) { %>
 					<%- obj.data.journalAbbreviation %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
 				<% } %>
 				<% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
