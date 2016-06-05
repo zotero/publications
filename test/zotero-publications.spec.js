@@ -48,7 +48,7 @@ describe('Zotero Publications', function() {
 		renderer.data = data;
 		let renderedItem = renderer.renderItem(data[0]);
 		expect(renderedItem).toBeDefined();
-		expect(renderedItem).toMatch(/^<li.*zotero-item zotero-book.*>[\s\S]*<\/li>$/);
+		expect(renderedItem).toMatch(/^[\n\r\s]*<li.*zotero-item zotero-book.*>[\s\S]*<\/li>$/);
 		expect(renderedItem).toContain(data[0].citation);
 	});
 
@@ -56,14 +56,14 @@ describe('Zotero Publications', function() {
 		renderer.data = data;
 		let renderedCollection = renderer.renderItems(data);
 		expect(renderedCollection).toBeDefined();
-		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item .*>[\s\S]*?<\/li>[\s\S]*?){5}[\s\S]*?<\/ul>$/);
+		expect(renderedCollection).toMatch(/^[\n\r\s]*<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item .*>[\s\S]*?<\/li>[\s\S]*?){5}[\s\S]*?<\/ul>$/);
 	});
 
 	it('should render group of items', function() {
 		renderer.data = dataGrouped;
 		let renderedCollection = renderer.renderGroups(dataGrouped);
 		expect(renderedCollection).toBeDefined();
-		expect(renderedCollection).toMatch(/^<ul.*zotero-groups.*>[\s\S]*?(<li.*"zotero-group".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*?(<li.*zotero-item.*>[\s\S]*?<\/li>[\s\S]*?){1,2}<\/ul>[\s\S]*?<\/li>[\s\S]*?){2}[\s\S]*?<\/ul>$/);
+		expect(renderedCollection).toMatch(/^[\n\r\s]*<ul.*zotero-groups.*>[\s\S]*?(<li.*"zotero-group".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*?(<li.*zotero-item.*>[\s\S]*?<\/li>[\s\S]*?){1,2}<\/ul>[\s\S]*?<\/li>[\s\S]*?){2}[\s\S]*?<\/ul>$/);
 	});
 
 	it('should render child items', function() {
@@ -71,7 +71,7 @@ describe('Zotero Publications', function() {
 		processResponse(data, zp.config);
 		let renderedCollection = renderer.renderItems(data);
 		expect(renderedCollection).toBeDefined();
-		expect(renderedCollection).toMatch(/^<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item.*>[\s\S]*?<div.*zotero-details.*>[\s\S]*?<ul.*zotero-(attachments|notes).*>[\s\S]*?<\/div>[\s\S]*?<\/li>)[\s\S]*?<\/ul>$/);
+		expect(renderedCollection).toMatch(/^[\n\r\s]*<ul.*zotero-items.*>([\s\S]*?<li.*zotero-item.*>[\s\S]*?<div.*zotero-details.*>[\s\S]*?<ul.*zotero-(attachments|notes).*>[\s\S]*?<\/div>[\s\S]*?<\/li>)[\s\S]*?<\/ul>$/);
 	});
 
 	it('should replace contents of a container', function() {
@@ -79,9 +79,9 @@ describe('Zotero Publications', function() {
 		expect(container.innerHTML).toBe('<span>Hello World</span>');
 		renderer.displayPublications(data);
 		expect(container.innerHTML).not.toBe('<span>Hello World</span>');
-		expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*$/);
+		expect(container.innerHTML).toMatch(/^[\n\r\s]*<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*$/);
 		renderer.displayPublications(dataGrouped);
-		expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
+		expect(container.innerHTML).toMatch(/^[\n\r\s]*<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
 	});
 
 	it('should process creators array into a string', function() {
@@ -246,7 +246,7 @@ describe('Zotero Publications', function() {
 		promise.then(function() {
 			expect(window.fetch).toHaveBeenCalled();
 			expect(container.classList.contains('zotero-loading')).toBe(false);
-			expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
+			expect(container.innerHTML).toMatch(/^[\n\r\s]*<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
 			done();
 		});
 	});
@@ -260,7 +260,7 @@ describe('Zotero Publications', function() {
 		let zd = new ZoteroPublications.ZoteroData(data, zpGroup.config);
 		zpGroup.render(zd, container).then(function() {
 			expect(window.fetch).not.toHaveBeenCalled();
-			expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
+			expect(container.innerHTML).toMatch(/^[\n\r\s]*<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
 			done();
 		});
 	});
@@ -304,7 +304,7 @@ describe('Zotero Publications', function() {
 		promise.then(function() {
 			expect(window.fetch).toHaveBeenCalled();
 			expect(container.classList.contains('zotero-loading')).toBe(false);
-			expect(container.innerHTML).toMatch(/^<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*$/);
+			expect(container.innerHTML).toMatch(/^[\n\r\s]*<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*$/);
 			done();
 		});
 	});
