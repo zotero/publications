@@ -21490,11 +21490,15 @@ module.exports = function (obj) {
     }
     __p += '\n\t\t\t\t</h3>\n\t\t\t\t<div class="zotero-item-subline">\n\t\t\t\t\t';
     if (obj.data[constants.AUTHORS_SYMBOL] && obj.data[constants.AUTHORS_SYMBOL]['Author']) {
-      __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ')) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ')) == null ? '' : _.escape(__t)) + '';
+      if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+        __p += ', ';
+      }
+      __p += '\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t\t';
     if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
-      __p += '\n\t\t\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t';
   } else if (obj.data.itemType == 'journalArticle') {
@@ -21504,9 +21508,23 @@ module.exports = function (obj) {
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
-    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t';
+    if (obj.data.publication) {
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.publication) == null ? '' : _.escape(__t)) + '';
+      if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+        __p += ', ';
+      }
+      __p += '\n\t\t\t\t';
+    } else {
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '';
+      if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+        __p += ', ';
+      }
+      __p += '\n\t\t\t\t';
+    }
+    __p += '\n\t\t\t\t';
     if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
-      __p += '\n\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
     __p += '\n\t\t\t</div>\n\t\t</div>\n\t';
   } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
@@ -21516,9 +21534,17 @@ module.exports = function (obj) {
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
-    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t';
+    if (obj.data.publicationTitle) {
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '';
+      if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+        __p += ', ';
+      }
+      __p += '\n\t\t\t\t';
+    }
+    __p += '\t\n\t\t\t\t';
     if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
-      __p += '\n\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
     __p += '\n\t\t\t</div>\n\t\t</div>\n\t';
   } else if (obj.data.itemType == 'blogPost') {
@@ -21528,9 +21554,17 @@ module.exports = function (obj) {
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
-    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
+    __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t';
+    if (obj.data.blogTitle) {
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '';
+      if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+        __p += ', ';
+      }
+      __p += '\n\t\t\t\t';
+    }
+    __p += '\t\n\t\t\t\t';
     if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
-      __p += '\n\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
+      __p += '\n\t\t\t\t\t' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
     __p += '\n\t\t\t</div>\n\t\t</div>\n\t';
   } else {
@@ -21544,11 +21578,15 @@ module.exports = function (obj) {
     if (obj.data[constants.AUTHORS_SYMBOL] || obj.data[constants.FORMATTED_DATE_SYMBOL]) {
       __p += '\n\t\t\t\t<div class="zotero-item-subline">\n\t\t\t\t\t';
       if (obj.data[constants.AUTHORS_SYMBOL] && obj.data[constants.AUTHORS_SYMBOL]['Author']) {
-        __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ')) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
+        __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ')) == null ? '' : _.escape(__t)) + '';
+        if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+          __p += ', ';
+        }
+        __p += '\n\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t\t\t\n\t\t\t\t\t';
       if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
-        __p += '\n\t\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
+        __p += '\n\t\t\t\t\t\t' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t</div>\n\t\t\t';
     }
