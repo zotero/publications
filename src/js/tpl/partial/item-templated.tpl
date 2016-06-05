@@ -11,10 +11,10 @@
 				</h3>
 				<div class="zotero-item-subline">
 					<% if (obj.data[constants.AUTHORS_SYMBOL] && obj.data[constants.AUTHORS_SYMBOL]['Author']) { %>
-						By <%- obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ') %>
+						By <%- obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ') %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
 					<% } %>
 					<% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
-						(<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>)
+						<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>
 					<% } %>
 				</div>
 			</div>
@@ -28,9 +28,13 @@
 				<% } %>
 			</h3>
 			<div class="zotero-item-subline">
-				<%- obj.data.journalAbbreviation %>
+				<% if (obj.data.publication) { %>
+					<%- obj.data.publication %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
+				<% } else { %>
+					<%- obj.data.journalAbbreviation %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
+				<% } %>
 				<% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
-				(<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>)
+					<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>
 				<% } %>
 			</div>
 		</div>
@@ -44,9 +48,11 @@
 				<% } %>
 			</h3>
 			<div class="zotero-item-subline">
-				<%- obj.data.publicationTitle %>
+				<% if (obj.data.publicationTitle) { %>
+					<%- obj.data.publicationTitle %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
+				<% } %>	
 				<% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
-				(<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>)
+					<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>
 				<% } %>
 			</div>
 		</div>
@@ -60,9 +66,11 @@
 				<% } %>
 			</h3>
 			<div class="zotero-item-subline">
-				<%- obj.data.blogTitle %>
+				<% if (obj.data.blogTitle) { %>
+					<%- obj.data.blogTitle %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
+				<% } %>	
 				<% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
-				(<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>)
+					<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>
 				<% } %>
 			</div>
 		</div>
@@ -79,11 +87,11 @@
 			<% if (obj.data[constants.AUTHORS_SYMBOL] || obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
 				<div class="zotero-item-subline">
 					<% if (obj.data[constants.AUTHORS_SYMBOL] && obj.data[constants.AUTHORS_SYMBOL]['Author']) { %>
-						By <%- obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ') %>
+						By <%- obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ') %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
 					<% } %>
 						
 					<% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
-					(<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>)
+						<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>
 					<% } %>
 				</div>
 			<% } %>
