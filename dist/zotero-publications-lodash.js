@@ -651,19 +651,18 @@ if (!require('./is-implemented')()) {
 },{"./is-implemented":20,"./polyfill":22,"es5-ext/global":6}],20:[function(require,module,exports){
 'use strict';
 
+var validTypes = { object: true, symbol: true };
+
 module.exports = function () {
 	var symbol;
 	if (typeof Symbol !== 'function') return false;
 	symbol = Symbol('test symbol');
 	try { String(symbol); } catch (e) { return false; }
-	if (typeof Symbol.iterator === 'symbol') return true;
 
-	// Return 'true' for polyfills
-	if (typeof Symbol.isConcatSpreadable !== 'object') return false;
-	if (typeof Symbol.iterator !== 'object') return false;
-	if (typeof Symbol.toPrimitive !== 'object') return false;
-	if (typeof Symbol.toStringTag !== 'object') return false;
-	if (typeof Symbol.unscopables !== 'object') return false;
+	// Return 'true' also for polyfills
+	if (!validTypes[typeof Symbol.iterator]) return false;
+	if (!validTypes[typeof Symbol.toPrimitive]) return false;
+	if (!validTypes[typeof Symbol.toStringTag]) return false;
 
 	return true;
 };
@@ -672,11 +671,15 @@ module.exports = function () {
 'use strict';
 
 module.exports = function (x) {
-	return (x && ((typeof x === 'symbol') || (x['@@toStringTag'] === 'Symbol'))) || false;
+	if (!x) return false;
+	if (typeof x === 'symbol') return true;
+	if (!x.constructor) return false;
+	if (x.constructor.name !== 'Symbol') return false;
+	return (x[x.constructor.toStringTag] === 'Symbol');
 };
 
 },{}],22:[function(require,module,exports){
-// ES2015 Symbol polyfill for environments that do not support it (or partially support it_
+// ES2015 Symbol polyfill for environments that do not support it (or partially support it)
 
 'use strict';
 
@@ -685,9 +688,16 @@ var d              = require('d')
 
   , create = Object.create, defineProperties = Object.defineProperties
   , defineProperty = Object.defineProperty, objPrototype = Object.prototype
-  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null);
+  , NativeSymbol, SymbolPolyfill, HiddenSymbol, globalSymbols = create(null)
+  , isNativeSafe;
 
-if (typeof Symbol === 'function') NativeSymbol = Symbol;
+if (typeof Symbol === 'function') {
+	NativeSymbol = Symbol;
+	try {
+		String(NativeSymbol());
+		isNativeSafe = true;
+	} catch (ignore) {}
+}
 
 var generateName = (function () {
 	var created = create(null);
@@ -723,6 +733,7 @@ HiddenSymbol = function Symbol(description) {
 module.exports = SymbolPolyfill = function Symbol(description) {
 	var symbol;
 	if (this instanceof Symbol) throw new TypeError('TypeError: Symbol is not a constructor');
+	if (isNativeSafe) return NativeSymbol(description);
 	symbol = create(HiddenSymbol.prototype);
 	description = (description === undefined ? '' : String(description));
 	return defineProperties(symbol, {
@@ -769,8 +780,11 @@ defineProperties(SymbolPolyfill.prototype, {
 	toString: d(function () { return 'Symbol (' + validateSymbol(this).__description__ + ')'; }),
 	valueOf: d(function () { return validateSymbol(this); })
 });
-defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('',
-	function () { return validateSymbol(this); }));
+defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toPrimitive, d('', function () {
+	var symbol = validateSymbol(this);
+	if (typeof symbol === 'symbol') return symbol;
+	return symbol.toString();
+}));
 defineProperty(SymbolPolyfill.prototype, SymbolPolyfill.toStringTag, d('c', 'Symbol'));
 
 // Proper implementaton of toPrimitive and toStringTag for returned symbol instances
@@ -18764,14 +18778,16 @@ module.exports = function (obj) {
     __p += __j.call(arguments, '');
   };
   __p += '';
-  if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
-    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('childAttachments')][0].url) == null ? '' : _.escape(__t)) + '" class="zotero-attachment-indicator" rel="nofollow">\n\t\t<span class="zotero-icon zotero-icon-' + ((__t = obj.item[Symbol.for('childAttachments')][0].type === 'application/pdf' ? 'pdf' : 'download') == null ? '' : _.escape(__t)) + '" role="presentation" aria-hidden="true"></span>\n\t</a>\n';
+  const constants = require('../../constants.js');
+  __p += '\n';
+  if (obj.item[constants.CHILD_ATTACHMENTS] && obj.item[constants.CHILD_ATTACHMENTS].length) {
+    __p += '\n\t<a href="' + ((__t = obj.item[constants.CHILD_ATTACHMENTS][0].url) == null ? '' : _.escape(__t)) + '" class="zotero-attachment-indicator" rel="nofollow">\n\t\t<span class="zotero-icon zotero-icon-' + ((__t = obj.item[constants.CHILD_ATTACHMENTS][0].type === 'application/pdf' ? 'pdf' : 'download') == null ? '' : _.escape(__t)) + '" role="presentation" aria-hidden="true"></span>\n\t</a>\n';
   }
   __p += '';
   return __p;
 };
 
-},{"lodash":26}],44:[function(require,module,exports){
+},{"../../constants.js":31,"lodash":26}],44:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18782,9 +18798,11 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<h3 class="zotero-item-title">\n\t';
-  if (obj.item[Symbol.for('viewOnlineUrl')]) {
-    __p += '\n\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t</a>\n\t';
+  __p += '';
+  const constants = require('../../constants.js');
+  __p += '\n<h3 class="zotero-item-title">\n\t';
+  if (obj.item[constants.VIEW_ONLINE_URL]) {
+    __p += '\n\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t</a>\n\t';
   } else {
     __p += '\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t';
   }
@@ -18792,7 +18810,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],45:[function(require,module,exports){
+},{"../../constants.js":31,"lodash":26}],45:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18803,75 +18821,77 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<div class="zotero-item-header-container">\n\t';
+  __p += '';
+  const constants = require('../../constants.js');
+  __p += '\n<div class="zotero-item-header-container">\n\t';
   if (obj.data.itemType == 'book') {
     __p += '\n\t\t\t<div class="zotero-item-header">\n\t\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t\t';
+    if (obj.item[constants.VIEW_ONLINE_URL]) {
+      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t</h3>\n\t\t\t\t<div class="zotero-item-subline">\n\t\t\t\t\t';
-    if (obj.data[Symbol.for('authors')]['Author']) {
-      __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]['Author'].join(' & ')) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
+    if (obj.data[constants.AUTHORS_SYMBOL] && obj.data[constants.AUTHORS_SYMBOL]['Author']) {
+      __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ')) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t\t';
-    if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
+    if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+      __p += '\n\t\t\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t</div>\n\t\t\t</div>\n\t\t\t<div class="zotero-item-indicator-container">\n\t\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t\t</div>\n\t\t';
   } else if (obj.data.itemType == 'journalArticle') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
+    if (obj.item[constants.VIEW_ONLINE_URL]) {
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
     __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.journalAbbreviation) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
-    if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
+    if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+      __p += '\n\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
     }
     __p += '\n\t\t\t</div>\n\t\t</div>\n\t\t<div class="zotero-item-indicator-container">\n\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t</div>\n\t';
   } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
+    if (obj.item[constants.VIEW_ONLINE_URL]) {
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
     __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.publicationTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
-    if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
+    if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+      __p += '\n\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
     }
     __p += '\n\t\t\t</div>\n\t\t</div>\n\t\t<div class="zotero-item-indicator-container">\n\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t</div>\n\t';
   } else if (obj.data.itemType == 'blogPost') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
+    if (obj.item[constants.VIEW_ONLINE_URL]) {
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
     __p += '\n\t\t\t</h3>\n\t\t\t<div class="zotero-item-subline">\n\t\t\t\t' + ((__t = obj.data.blogTitle) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
-    if (obj.data[Symbol.for('formattedDate')]) {
-      __p += '\n\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
+    if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+      __p += '\n\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t';
     }
     __p += '\n\t\t\t</div>\n\t\t</div>\n\t\t<div class="zotero-item-indicator-container">\n\t\t\t' + ((__t = obj.renderer.renderAttachmentIndicator(obj.item)) == null ? '' : __t) + '\n\t\t</div>\n\t';
   } else {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
-    if (obj.item[Symbol.for('viewOnlineUrl')]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[Symbol.for('viewOnlineUrl')]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
+    if (obj.item[constants.VIEW_ONLINE_URL]) {
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a>\n\t\t\t\t';
     } else {
       __p += '\n\t\t\t\t\t' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t';
     }
     __p += '\n\t\t\t</h3>\n\n\t\t\t';
-    if (obj.item[Symbol.for('authors')] || obj.data[Symbol.for('formattedDate')]) {
+    if (obj.data[constants.AUTHORS_SYMBOL] || obj.data[constants.FORMATTED_DATE_SYMBOL]) {
       __p += '\n\t\t\t\t<div class="zotero-item-subline">\n\t\t\t\t\t';
-      if (obj.item[Symbol.for('authors')]) {
-        __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[Symbol.for('authors')]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
+      if (obj.data[constants.AUTHORS_SYMBOL] && obj.data[constants.AUTHORS_SYMBOL]['Author']) {
+        __p += '\n\t\t\t\t\t\tBy ' + ((__t = obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ')) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t\t\t\n\t\t\t\t\t';
-      if (obj.data[Symbol.for('formattedDate')]) {
-        __p += '\n\t\t\t\t\t(' + ((__t = obj.data[Symbol.for('formattedDate')]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
+      if (obj.data[constants.FORMATTED_DATE_SYMBOL]) {
+        __p += '\n\t\t\t\t\t(' + ((__t = obj.data[constants.FORMATTED_DATE_SYMBOL]) == null ? '' : _.escape(__t)) + ')\n\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t</div>\n\t\t\t';
     }
@@ -18881,7 +18901,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],46:[function(require,module,exports){
+},{"../../constants.js":31,"lodash":26}],46:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18892,7 +18912,9 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="item-' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" role="listitem">\n\t<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>\n\n\t<!-- Citation -->\n\t';
+  __p += '';
+  const constants = require('../../constants.js');
+  __p += '\n<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="item-' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" role="listitem">\n\t<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>\n\n\t<!-- Citation -->\n\t';
   if (obj.renderer.config.useCitationStyle) {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemCitation(obj.item)) == null ? '' : __t) + '\n\t<!-- Templated -->\n\t';
   } else {
@@ -18907,10 +18929,10 @@ module.exports = function (obj) {
     __p += '\n\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap['itemType']) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.renderer.typeMap[obj.item.data['itemType']]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t</div>\n\t\t\t\t';
   }
   __p += '\n\n\t\t\t\t';
-  if (obj.item.data[Symbol.for('authors')]) {
+  if (obj.item.data[constants.AUTHORS_SYMBOL]) {
     __p += '\n\t\t\t\t\t';
-    for (var i = 0, keys = Object.keys(obj.item.data[Symbol.for('authors')]); i < keys.length; i++) {
-      __p += '\n\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = keys[i]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data[Symbol.for('authors')][keys[i]].join(' & ')) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t';
+    for (var i = 0, keys = Object.keys(obj.item.data[constants.AUTHORS_SYMBOL]); i < keys.length; i++) {
+      __p += '\n\t\t\t\t\t\t<div class="zotero-meta-item">\n\t\t\t\t\t\t\t<div class="zotero-meta-label">' + ((__t = keys[i]) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t\t<div class="zotero-meta-value">' + ((__t = obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].join(' & ')) == null ? '' : _.escape(__t)) + '</div>\n\t\t\t\t\t\t</div>\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t';
   }
@@ -18940,20 +18962,20 @@ module.exports = function (obj) {
   }
   __p += '\n\t\t\t</div>\n\t\t\t';
   if (obj.data.abstractNote && obj.data.abstractNote.length) {
-    __p += '\n\t\t\t\t<h4>Abstract</h4>\n\t\t\t\t<div class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data[Symbol.for('abstractNoteProcessed')]) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
+    __p += '\n\t\t\t\t<h4>Abstract</h4>\n\t\t\t\t<div class="zotero-abstract">\n\t\t\t\t\t' + ((__t = obj.data[constants.ABSTRACT_NOTE_PROCESSED]) == null ? '' : __t) + '\n\t\t\t\t</div>\n\t\t\t';
   }
   __p += '\n\n\t\t\t';
-  if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) {
+  if (obj.item[constants.CHILD_NOTES] && obj.item[constants.CHILD_NOTES].length) {
     __p += '\n\t\t\t\t<h4>Notes</h4>\n\t\t\t\t<ul class="zotero-notes">\n\t\t\t\t\t';
-    for (var childItem of obj.item[Symbol.for('childNotes')]) {
+    for (var childItem of obj.item[constants.CHILD_NOTES]) {
       __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t' + ((__t = childItem.data.note) == null ? '' : __t) + '\n\t\t\t\t\t\t</li>\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t</ul>\n\t\t\t';
   }
   __p += '\n\n\t\t\t';
-  if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) {
+  if (obj.item[constants.CHILD_ATTACHMENTS] && obj.item[constants.CHILD_ATTACHMENTS].length) {
     __p += '\n\t\t\t\t<h4>Attachments</h4>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
-    for (var childItem of obj.item[Symbol.for('childAttachments')]) {
+    for (var childItem of obj.item[constants.CHILD_ATTACHMENTS]) {
       __p += '\n\t\t\t\t\t\t';
       if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
         __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
@@ -18986,7 +19008,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],47:[function(require,module,exports){
+},{"../../constants.js":31,"lodash":26}],47:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
