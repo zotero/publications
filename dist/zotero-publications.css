@@ -411,14 +411,8 @@
   overflow: hidden;
   text-overflow: ellipsis; }
 
-.zotero-item-actions {
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-pack: justify;
-      justify-content: space-between; }
-  .zotero-item-actions > * {
-    -ms-flex-item-align: end;
-        align-self: flex-end; }
+.zotero-item-actions a + a {
+  margin-left: 16px; }
 
 .zotero-add-to-library {
   float: right; }
