@@ -1,3 +1,4 @@
+<% const constants = require('../../constants.js'); %>
 <li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="item-<%- obj.item.key %>" role="listitem">
 	<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>
 
@@ -32,11 +33,11 @@
 					</div>
 				<% } %>
 
-				<% if(obj.item.data[Symbol.for('authors')]) { %>
-					<% for(var i=0, keys=Object.keys(obj.item.data[Symbol.for('authors')]); i < keys.length; i++) { %>
+				<% if(obj.item.data[constants.AUTHORS_SYMBOL]) { %>
+					<% for(var i=0, keys=Object.keys(obj.item.data[constants.AUTHORS_SYMBOL]); i < keys.length; i++) { %>
 						<div class="zotero-meta-item">
 							<div class="zotero-meta-label"><%- keys[i] %></div>
-							<div class="zotero-meta-value"><%- obj.item.data[Symbol.for('authors')][keys[i]].join(' & ') %></div>
+							<div class="zotero-meta-value"><%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].join(' & ') %></div>
 						</div>
 					<% } %>
 				<% } %>
@@ -68,14 +69,14 @@
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
 				<div class="zotero-abstract">
-					<%= obj.data[Symbol.for('abstractNoteProcessed')] %>
+					<%= obj.data[constants.ABSTRACT_NOTE_PROCESSED] %>
 				</div>
 			<% } %>
 
-			<% if (obj.item[Symbol.for('childNotes')] && obj.item[Symbol.for('childNotes')].length) { %>
+			<% if (obj.item[constants.CHILD_NOTES] && obj.item[constants.CHILD_NOTES].length) { %>
 				<h4>Notes</h4>
 				<ul class="zotero-notes">
-					<% for(var childItem of obj.item[Symbol.for('childNotes')]) { %>
+					<% for(var childItem of obj.item[constants.CHILD_NOTES]) { %>
 						<li>
 							<%= childItem.data.note %>
 						</li>
@@ -83,10 +84,10 @@
 				</ul>
 			<% } %>
 
-			<% if (obj.item[Symbol.for('childAttachments')] && obj.item[Symbol.for('childAttachments')].length) { %>
+			<% if (obj.item[constants.CHILD_ATTACHMENTS] && obj.item[constants.CHILD_ATTACHMENTS].length) { %>
 				<h4>Attachments</h4>
 				<ul class="zotero-attachments">
-					<% for(var childItem of obj.item[Symbol.for('childAttachments')]) { %>
+					<% for(var childItem of obj.item[constants.CHILD_ATTACHMENTS]) { %>
 						<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
 						<li>
 							<a href="<%- childItem.url %>" rel="nofollow">
