@@ -379,13 +379,35 @@ $border-radius-base: 4px;
 			flex-wrap: wrap;
 
 			.zotero-meta-item {
-				width: calc(50% - 20px);
+				//width: calc(50% - 20px);
+				flex: 0 0 50%;
+			}
+
+			.zotero-meta-item {
+				&:nth-child(odd) {
+					padding-right: 10px;
+				}
+
+				&:nth-child(even) {
+					padding-left: 10px;
+				}
 			}
 		}
 
 		.zotero-meta-item {
-			margin: .75em 10px 0;
+			margin-top: .75em;
+
+			&:first-child {
+				margin-top: 0;
+			}
+
+			@media (min-width: $screen-sm-min) {
+				&:nth-child(2) {
+					margin-top: 0;
+				}
+			}
 		}
+
 
 		.zotero-meta-label {
 			font-weight: bold;
