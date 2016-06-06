@@ -4,7 +4,7 @@
 			<div class="zotero-item-header">
 				<h3 class="zotero-item-title">
 					<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-						<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a>
+						<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %> <% if(obj.item[constants.HAS_PDF]) { %> (PDF)<% } %></a>
 					<% } else { %>
 						<%- obj.data.title %>
 					<% } %>
@@ -22,7 +22,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a>
+					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %> <% if(obj.item[constants.HAS_PDF]) { %> (PDF)<% } %></a>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -42,7 +42,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a>
+					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %> <% if(obj.item[constants.HAS_PDF]) { %> (PDF)<% } %></a>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -60,7 +60,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a>
+					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %> <% if(obj.item[constants.HAS_PDF]) { %> (PDF)<% } %></a>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -78,7 +78,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a>
+					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %> <% if(obj.item[constants.HAS_PDF]) { %> (PDF)<% } %></a>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>

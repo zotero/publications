@@ -10,3 +10,4 @@ export const VIEW_ONLINE_URL = Symbol.for('viewOnlineUrl');
 export const ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
 export const AUTHORS_SYMBOL = Symbol.for('authors');
 export const FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
+export const HAS_PDF = Symbol.for('hasPdf');

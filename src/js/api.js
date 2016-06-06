@@ -11,7 +11,8 @@ import {
 	VIEW_ONLINE_URL,
 	ABSTRACT_NOTE_PROCESSED,
 	FORMATTED_DATE_SYMBOL,
-	AUTHORS_SYMBOL
+	AUTHORS_SYMBOL,
+	HAS_PDF
 } from './constants.js';
 
 /**
@@ -50,9 +51,6 @@ export function processResponse(response) {
 			if(item.data && item.data.parentItem) {
 				response.splice(i, 1);
 				childItems.push(item);
-			}
-			if(item.data && item.data.url) {
-				item[VIEW_ONLINE_URL] = item.data.url;
 			}
 			index[item.key] = item;
 		}
@@ -101,8 +99,13 @@ export function processResponse(response) {
 					return new Date(a.item.data.dateAdded).getTime() - new Date(b.item.data.dateAdded).getTime();
 				});
 			}
-			if(!item[VIEW_ONLINE_URL] && item[CHILD_ATTACHMENTS]) {
+			if(item[CHILD_ATTACHMENTS]) {
 				item[VIEW_ONLINE_URL] = item[CHILD_ATTACHMENTS][0].url;
+				if(item[CHILD_ATTACHMENTS][0].type === 'application/pdf') {
+					item[HAS_PDF] = true;
+				}
+			} else if(item.data && item.data.url) {
+				item[VIEW_ONLINE_URL] = item.data.url;
 			}
 		}
 	}

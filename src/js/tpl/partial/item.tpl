@@ -11,23 +11,14 @@
 	<% } %>
 	
 	<div class="zotero-item-actions">
-		<% if (obj.item[constants.CHILD_ATTACHMENTS] && obj.item[constants.CHILD_ATTACHMENTS].length) { %>
-			<a href="<%- obj.item[constants.CHILD_ATTACHMENTS][0].url %>" rel="nofollow">
-				<% if (obj.item[constants.CHILD_ATTACHMENTS][0].type === 'application/pdf') { %>
-					View PDF
-				<% } else { %>
-					View
-				<% } %>
-			</a>
-		<% } %>
+		<a href="" data-trigger="details" aria-controls="item-<%- obj.item.key %>-details">
+			Details
+		</a>
 		<% if(obj.renderer.zotero.config.zorgIntegration) { %>
 			<a href="" data-trigger="add-to-library" aria-controls="item-<%- obj.item.key %>-details">
 				Add to Library
 			</a>
 		<% } %>
-		<a href="" data-trigger="details" aria-controls="item-<%- obj.item.key %>-details">
-			Details
-		</a>
 	</div>
 	
 	<!-- Details -->
