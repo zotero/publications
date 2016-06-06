@@ -411,8 +411,8 @@
   overflow: hidden;
   text-overflow: ellipsis; }
 
-.zotero-item-actions a + a {
-  margin-left: 16px; }
+.zotero-item-actions > * {
+  margin-right: 1.14286em; }
 
 .zotero-add-to-library {
   float: right; }
