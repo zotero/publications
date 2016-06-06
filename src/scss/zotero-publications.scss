@@ -379,8 +379,8 @@ $border-radius-base: 4px;
 			flex-wrap: wrap;
 
 			.zotero-meta-item {
-				//width: calc(50% - 20px);
 				flex: 0 0 50%;
+				overflow: hidden;
 			}
 
 			.zotero-meta-item {
@@ -414,8 +414,7 @@ $border-radius-base: 4px;
 		}
 
 		.zotero-meta-value {
-			overflow: hidden;
-			text-overflow: ellipsis;
+			word-wrap: break-word;
 		}
 	}
 
