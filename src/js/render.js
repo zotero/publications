@@ -379,8 +379,9 @@ ZoteroRenderer.prototype.expandDetails = function(itemId) {
  * @param  {HTMLElement} itemEl 	- DOM element where the item is located
  */
 ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
-	triggerEl.innerText = 'Saving...';
-	triggerEl.removeAttribute('data-trigger');
+	let replacementEl = document.createElement('span');
+	replacementEl.innerText = 'Saving...';
+	triggerEl.parentNode.replaceChild(replacementEl, triggerEl);
 	let itemId = itemEl.getAttribute('data-item');
 	let sourceItem = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
 	let clonedItem = {};
@@ -423,14 +424,13 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 
 	return new Promise((resolve, reject) => {
 		writePromise.then(() => {
-			triggerEl.innerText = 'Saved!';
+			replacementEl.innerText = 'Saved!';
 			resolve();
 		});
 		writePromise.catch((err) => {
-			triggerEl.innerText = 'Error!';
-			triggerEl.setAttribute('data-trigger', 'add-to-library');
+			replacementEl.innerText = 'Error!';
 			setTimeout(() => {
-				triggerEl.innerText = 'Add to Library';
+				replacementEl.parentNode.replaceChild(triggerEl, replacementEl);
 			}, 2000);
 			reject(err);
 		});

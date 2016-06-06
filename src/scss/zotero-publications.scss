@@ -366,8 +366,8 @@ $border-radius-base: 4px;
 	}
 
 	&-item-actions {
-		a + a {
-			margin-left: 16px;
+		> * {
+			margin-right: 1em * 8 / 7;
 		}
 	}
 
