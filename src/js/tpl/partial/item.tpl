@@ -9,7 +9,7 @@
 	<% } else { %>
 		<%= obj.renderer.renderItemTemplated(obj.item) %>
 	<% } %>
-	
+
 	<div class="zotero-item-actions">
 		<a href="" data-trigger="details" aria-controls="item-<%- obj.item.key %>-details">
 			Details
@@ -20,7 +20,7 @@
 			</a>
 		<% } %>
 	</div>
-	
+
 	<!-- Details -->
 	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-<%- obj.item.key %>-details">
 		<div class="zotero-details-inner">
@@ -124,7 +124,7 @@
 							</select>
 							<p class="zotero-citation" id="item-<%- obj.item.key %>-citation"></p>
 							<% if(!/iPhone|iPad/i.test(navigator.userAgent)) { %>
-								<button class="zotero-citation-copy tooltipped tooltipped-e" data-clipboard-target="#item-<%- obj.item.key %>-citation" aria-label="Copy to clipboard">Copy</button>
+								<button class="zotero-btn zotero-citation-copy tooltipped tooltipped-e" data-clipboard-target="#item-<%- obj.item.key %>-citation" aria-label="Copy to clipboard">Copy</button>
 							<% } %>
 						</div>
 					</div>
