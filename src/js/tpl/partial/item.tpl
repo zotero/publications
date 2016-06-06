@@ -24,6 +24,7 @@
 	<!-- Details -->
 	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-<%- obj.item.key %>-details">
 		<div class="zotero-details-inner">
+			<h4>Details</h4>
 			<div class="zotero-meta">
 				<% if(obj.item.data['itemType']) { %>
 					<div class="zotero-meta-item">
