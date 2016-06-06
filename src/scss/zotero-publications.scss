@@ -13,6 +13,8 @@ $screen-sm-min: 768px;
 $details-indent-xs: 15px;
 $details-indent-sm: 3em;
 
+$input-height-base: 2.4em;
+
 $gray: #ccc;
 $white: #fff;
 $black: #000;
@@ -193,12 +195,38 @@ $border-radius-base: 4px;
 		color: inherit;
 		display: block;
 		font-size: inherit;
-		height: 2.4em;
+		height: $input-height-base;
 		line-height: inherit;
 		width: 100%;
+	}
+
+	// Buttons
+	&-btn {
+		background-color: $white;
+		border: 1px solid $gray;
+		border-radius: $border-radius-base;
+		padding: 6px 12px;
+		font: {
+			size: inherit;
+		  family: inherit;
+		}
+		height: $input-height-base;
+		cursor: pointer;
+		color: inherit;
+
+		&:hover,
+		&:focus {
+			background-color: darken($white, 5%);
+			border-color: darken($gray, 5%);
+		}
+
+		&:active {
+			background-color: darken($white, 10%);
+			border-color: darken($gray, 10%);
+		}
 
 		&:focus {
-			outline: 0;
+			outline: none;
 		}
 	}
 
@@ -255,6 +283,10 @@ $border-radius-base: 4px;
 
 		p {
 			margin-bottom: 0;
+		}
+
+		.zotero-btn {
+			margin-top: 1em;
 		}
 	}
 
