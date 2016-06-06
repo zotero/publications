@@ -372,49 +372,79 @@ $border-radius-base: 4px;
 		}
 	}
 
+	//&-meta {
+	// @media (min-width: $screen-sm-min) {
+	// 	display: flex;
+	// 	flex-direction: row;
+	// 	flex-wrap: wrap;
+	//
+	// 	.zotero-meta-item {
+	// 		flex: 0 0 50%;
+	// 		overflow: hidden;
+	// 	}
+	//
+	// 	.zotero-meta-item {
+	// 		&:nth-child(odd) {
+	// 			padding-right: 10px;
+	// 		}
+	//
+	// 		&:nth-child(even) {
+	// 			padding-left: 10px;
+	// 		}
+	// 	}
+	// }
+	//
+	// .zotero-meta-item {
+	// 	margin-top: .75em;
+	//
+	// 	&:first-child {
+	// 		margin-top: 0;
+	// 	}
+	//
+	// 	@media (min-width: $screen-sm-min) {
+	// 		&:nth-child(2) {
+	// 			margin-top: 0;
+	// 		}
+	// 	}
+	// }
+	//
+	//
+	// .zotero-meta-label {
+	// 	font-weight: bold;
+	// }
+	//
+	// .zotero-meta-value {
+	// 	word-wrap: break-word;
+	// }
+	//}
+
 	&-meta {
+		overflow: hidden;
+
+		.zotero-meta-label {
+			opacity: .6;
+		}
+
 		@media (min-width: $screen-sm-min) {
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
-
-			.zotero-meta-item {
-				flex: 0 0 50%;
-				overflow: hidden;
+			.zotero-meta-label {
+				width: 160px;
+				text-align: right;
+				clear: left;
+				float: left;
 			}
 
-			.zotero-meta-item {
-				&:nth-child(odd) {
-					padding-right: 10px;
-				}
-
-				&:nth-child(even) {
-					padding-left: 10px;
-				}
+			.zotero-meta-value {
+				margin-left: 180px;
 			}
+
 		}
 
 		.zotero-meta-item {
-			margin-top: .75em;
+			//margin-top: .75em;
 
 			&:first-child {
-				margin-top: 0;
+			 margin-top: 0;
 			}
-
-			@media (min-width: $screen-sm-min) {
-				&:nth-child(2) {
-					margin-top: 0;
-				}
-			}
-		}
-
-
-		.zotero-meta-label {
-			font-weight: bold;
-		}
-
-		.zotero-meta-value {
-			word-wrap: break-word;
 		}
 	}
 
