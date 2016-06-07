@@ -10,8 +10,26 @@
 					<% } %>
 				</h3>
 				<div class="zotero-item-subline">
-					<% if (obj.data[constants.AUTHORS_SYMBOL] && obj.data[constants.AUTHORS_SYMBOL]['Author']) { %>
-						By <%- obj.data[constants.AUTHORS_SYMBOL]['Author'].join(' & ') %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
+					<% if (obj.data.publisher) { %>
+						<%- obj.data.publisher %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
+					<% } %>
+					<% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
+						<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>
+					<% } %>
+				</div>
+			</div>
+		<% } else if (obj.data.itemType == 'thesis') { %>
+			<div class="zotero-item-header">
+				<h3 class="zotero-item-title">
+					<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
+						<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %> <% if(obj.item[constants.HAS_PDF]) { %> (PDF)<% } %></a>
+					<% } else { %>
+						<%- obj.data.title %>
+					<% } %>
+				</h3>
+				<div class="zotero-item-subline">
+					<% if (obj.data.university) { %>
+						<%- obj.data.university %><% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>, <% } %>
 					<% } %>
 					<% if (obj.data[constants.FORMATTED_DATE_SYMBOL]) { %>
 						<%- obj.data[constants.FORMATTED_DATE_SYMBOL] %>
