@@ -380,7 +380,7 @@ ZoteroRenderer.prototype.expandDetails = function(itemId) {
  */
 ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	let replacementEl = document.createElement('span');
-	replacementEl.innerText = 'Saving...';
+	replacementEl.innerText = 'Adding...';
 	triggerEl.parentNode.replaceChild(replacementEl, triggerEl);
 	let itemId = itemEl.getAttribute('data-item');
 	let sourceItem = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
@@ -424,7 +424,7 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 
 	return new Promise((resolve, reject) => {
 		writePromise.then(() => {
-			replacementEl.innerText = 'Saved!';
+			replacementEl.innerText = 'Added.';
 			resolve();
 		});
 		writePromise.catch((err) => {
