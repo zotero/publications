@@ -205,14 +205,16 @@ $border-radius-base: 4px;
 		background-color: $white;
 		border: 1px solid $gray;
 		border-radius: $border-radius-base;
-		padding: 6px 12px;
+		padding: (1em * 6 / 14) (1em * 12 / 14);
 		font: {
 			size: inherit;
 		  family: inherit;
+		  weight: normal;
 		}
 		height: $input-height-base;
 		cursor: pointer;
 		color: inherit;
+		text-shadow: none;
 
 		&:hover,
 		&:focus {
