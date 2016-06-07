@@ -450,6 +450,7 @@ $border-radius-base: 4px;
 
 	&-item-actions {
 		> * {
+			display: inline-block;
 			margin-right: 1em * 8 / 7;
 		}
 	}
