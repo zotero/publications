@@ -375,6 +375,8 @@ $border-radius-base: 4px;
 	}
 
 	&-meta {
+		width: auto;
+
 		.zotero-meta-item {
 			background: none transparent;
 		}
