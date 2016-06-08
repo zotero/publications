@@ -398,10 +398,14 @@ $border-radius-base: 4px;
 				line-height: 20px;
 			}
 
-			.zotero-meta-item:nth-child(n+2) {
+			.zotero-meta-item:first-child {
 				.zotero-meta-label {
-					margin-top: .5em;
+					margin-top: 0;
 				}
+			}
+
+			.zotero-meta-label {
+				margin-top: .5em;
 			}
 		}
 
