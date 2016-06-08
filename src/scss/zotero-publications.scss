@@ -241,7 +241,7 @@ $border-radius-base: 4px;
 		}
 
 		&-inner {
-			margin: 1em 0 2.4em;
+			margin: 1.8em 0 2.4em;
 
 			.zotero-item:last-child & {
 				margin-bottom: 0;
@@ -396,8 +396,10 @@ $border-radius-base: 4px;
 				line-height: 20px;
 			}
 
-			.zotero-meta-label {
-				margin-top: .5em;
+			.zotero-meta-item:nth-child(n+2) {
+				.zotero-meta-label {
+					margin-top: .5em;
+				}
 			}
 		}
 
