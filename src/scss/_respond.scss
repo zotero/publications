@@ -1,0 +1,29 @@
+$breakpoints: (
+	'minimal': 320,
+	'small': 480,
+	'vga': 640,
+	'tablet': 768,
+	'medium': 800,
+	'large': 1000,
+	'sxga': 1280,
+	'wsxga': 1680,
+	'hd': 1920
+);
+
+@mixin upto($media) {
+	@media only screen and (max-width: #{map-get($breakpoints, $media)}px) {
+		@content;
+	}
+}
+
+@mixin from($media) {
+	@media only screen and (min-width: #{map-get($breakpoints, $media) + 1}px) {
+		@content;
+	}
+}
+
+@mixin between($media1, $media2) {
+	@media only screen and (min-width: #{map-get($breakpoints, $media1) + 1}px) and (max-width: #{map-get($breakpoints, $media2)}px) {
+		@content;
+	}
+}

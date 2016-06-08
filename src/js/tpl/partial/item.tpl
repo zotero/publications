@@ -24,30 +24,29 @@
 	<!-- Details -->
 	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-<%- obj.item.key %>-details">
 		<div class="zotero-details-inner">
-			<h4>Details</h4>
-			<div class="zotero-meta">
+			<table class="zotero-meta">
 				<% if(obj.item.data['itemType']) { %>
-					<div class="zotero-meta-item">
-						<div class="zotero-meta-label"><%- obj.renderer.fieldMap['itemType'] %></div>
-						<div class="zotero-meta-value"><%- obj.renderer.typeMap[obj.item.data['itemType']] %></div>
-					</div>
+					<tr class="zotero-meta-item">
+						<td class="zotero-meta-label"><%- obj.renderer.fieldMap['itemType'] %></td>
+						<td class="zotero-meta-value"><%- obj.renderer.typeMap[obj.item.data['itemType']] %></td>
+					</tr>
 				<% } %>
 
 				<% if(obj.item.data[constants.AUTHORS_SYMBOL]) { %>
 					<% for(var i=0, keys=Object.keys(obj.item.data[constants.AUTHORS_SYMBOL]); i < keys.length; i++) { %>
-						<div class="zotero-meta-item">
-							<div class="zotero-meta-label"><%- keys[i] %></div>
-							<div class="zotero-meta-value"><%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].join(' & ') %></div>
-						</div>
+						<tr class="zotero-meta-item">
+							<td class="zotero-meta-label"><%- keys[i] %></td>
+							<td class="zotero-meta-value"><%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].join(' & ') %></td>
+						</tr>
 					<% } %>
 				<% } %>
 				<% for(var i=0, keys=Object.keys(obj.data); i < keys.length; i++) { %>
 					<% if(obj.renderer.hiddenFields.indexOf(keys[i]) === -1) { %>
 						<% if(obj.data[keys[i]]) { %>
 							<% if(keys[i] !== 'itemType') { %>
-								<div class="zotero-meta-item">
-									<div class="zotero-meta-label"><%- obj.renderer.fieldMap[keys[i]] %></div>
-									<div class="zotero-meta-value">
+								<tr class="zotero-meta-item">
+									<td class="zotero-meta-label"><%- obj.renderer.fieldMap[keys[i]] %></td>
+									<td class="zotero-meta-value">
 										<% if(keys[i] === 'DOI') { %>
 											<a href="https://doi.org/<%- obj.data[keys[i]] %>" rel="nofollow">
 												<%- obj.data[keys[i]] %>
@@ -59,13 +58,13 @@
 										<% } else { %>
 											<%- obj.data[keys[i]] %>
 										<% } %>
-									</div>
-								</div>
+									</td>
+								</tr>
 							<% } %>
 						<% } %>
 					<% } %>
 				<% } %>
-			</div>
+			</table>
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
 				<div class="zotero-abstract">
