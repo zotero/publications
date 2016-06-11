@@ -66,19 +66,19 @@ export function processResponse(response) {
 					index[item.data.parentItem][CHILD_ATTACHMENTS] = [];
 				}
 				let parsedAttachment = {};
-				if(item.data.url) {
-					parsedAttachment = {
-						url: item.data.url,
-						type: item.data.contentType,
-						title: item.data.title,
-						key: item.key,
-						item: item
-					}
-				} else if(item.links && item.links.enclosure && item.links.enclosure.href) {
+				if(item.links && item.links.enclosure && item.links.enclosure.href) {
 					parsedAttachment = {
 						url: item.links.enclosure.href,
 						type: item.links.enclosure.type,
 						title: item.links.enclosure.title,
+						key: item.key,
+						item: item
+					}
+				} else if(item.data.url) {
+					parsedAttachment = {
+						url: item.data.url,
+						type: item.data.contentType,
+						title: item.data.title,
 						key: item.key,
 						item: item
 					}
