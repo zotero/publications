@@ -345,9 +345,11 @@ ZoteroRenderer.prototype.toggleDetails = function(itemEl, override) {
 		if(detailsEl) {
 			let expanded = toggleCollapse(detailsEl, override);
 			if(expanded) {
-				this.prepareExport(itemEl);
-				this.updateCitation(itemEl, this.preferredCitationStyle);
 				itemEl.classList.add('zotero-details-open')
+				if(this.zotero.userId) {
+					this.prepareExport(itemEl);
+					this.updateCitation(itemEl, this.preferredCitationStyle);
+				}
 			} else {
 				itemEl.classList.remove('zotero-details-open');
 			}
