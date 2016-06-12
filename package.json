@@ -1,7 +1,7 @@
 {
   "name": "zotero-publications",
   "license": "AGPL-3.0",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "description": "Library to display \"My Publications\" from Zotero in a user friendly way.",
   "repository": "https://github.com/zotero/publications.git",
   "main": "lib/main.js",
