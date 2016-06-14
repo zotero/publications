@@ -14,13 +14,13 @@ Getting The Library
 
 The easiest way to obtain the latest version is to use npm:
 
-    npm i zotero/publications
+    npm i zotero-publications
 
-Alternaitvely you can download the latest release directly from Github:
+Alternatively you can download the latest release directly from Github:
 
     https://github.com/zotero/publications
 
-Whichever option you choose, the `dist` folder contains variety of builds as described in a section "Builds" below. Whichever build you choose, you will need to include one *css* and one *js* file on your page.
+In most cases you will want to look into the `dist` folder, which contains variety of builds as described in a section "Builds" below. Whichever build you choose, you will need to include one *css* and one *js* file on your page.
 
 The easiest way to do that is to add css file somewhere within `<head>` on your page:
 
@@ -30,8 +30,9 @@ And add js file somewhere at the end of the file but before final `</html>`:
 
     <script src="zotero-publications-compat-lodash.min.js"></script>
 
-All builds are following the [Universal Module Definition](https://github.com/umdjs/umd) pattern which means you can also use this library in systems that use AMD (e.g. [RequireJS](http://requirejs.org/)) or CommonJS module loader mechanism.
+Alternatively, if you're compiling your JS using Browserify/Babelify or similar, you can just include/require "zotero-publications" in your app.
 
+Finally, all the builds in `dist` folder are following the [Universal Module Definition](https://github.com/umdjs/umd) pattern which means you can also use this library in systems that use AMD (e.g. [RequireJS](http://requirejs.org/)) or CommonJS module loader mechanism.
 
 Usage
 -----
