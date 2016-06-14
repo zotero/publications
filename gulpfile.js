@@ -223,14 +223,20 @@ gulp.task('clean:prepublish', function(done) {
 
 gulp.task('prepublish:tpl', function() {
 	return gulp.src('./src/js/tpl/**/*.tpl')
-			.pipe(tplCompiler())
+			.pipe(tplCompiler({
+				variable: 'obj'
+			}))
+			.pipe(babel({
+				plugins: presets['compat']
+			}))
+			.pipe(rename({ extname: '.tpl' }))
 			.pipe(gulp.dest('./lib/tpl/'));
 });
 
 gulp.task('prepublish:js', function() {
 	return gulp.src('./src/js/**/*.js')
 			.pipe(babel({
-				plugins: presets['modern']
+				plugins: presets['compat']
 			}))
 			.pipe(gulp.dest('./lib/'));
 });

@@ -10,9 +10,9 @@ var PLUGIN_NAME = 'gulp-underscore-compile';
 module.exports = function (options) {
 	options = options || {};
 
-	function compiler (file) {
+	function compiler(file) {
 		var html = file.contents.toString();
-		var template = _.template(html).source;
+		var template = _.template(html, options).source;
 
 		return 'module.exports = ' + template + ';';
 	}
