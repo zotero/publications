@@ -131,7 +131,7 @@ This is the smallest build containing only Zotero Publication code for very mode
 This build contains only Zotero Publications and few polyfills to make it work in all common browers. To use this build **you need to include [underscore.js](http://underscorejs.org/) or [lodash.js](https://lodash.com/) manually**.
 
 **zotero-publications-lodash.min.js** (~38KB zipped)
-This build contains only Zotero Publications and lodash. Because it lacks polyfills it **will only work in very recent browsers**, see see compatiblity table below.
+This build contains only Zotero Publications and lodash. Because it lacks polyfills it **will only work in very recent browsers**, see compatiblity table below.
 
 **dist/zotero-publications-compat-lodash.min.js** (~47KB zipped)
 This build contains Zotero Publications, lodash and polyfills. **This is the safest build to use**.
