@@ -10,7 +10,7 @@ Installation
 
 Clone the repo (you might want to fork at this point):
 
-	git clone git@github.com:tnajdek/zotero-publications.git
+	git clone https://github.com/zotero/publications.git
 
 Fetch the dependencies:
 
