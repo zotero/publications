@@ -413,6 +413,7 @@ $border-radius-base: 4px;
 			.zotero-meta-label {
 				min-width: 80px;
 				text-align: right;
+				vertical-align: top;
 				white-space: nowrap;
 			}
 
@@ -435,5 +436,16 @@ $border-radius-base: 4px;
 
 	&-add-to-library {
 		float: right;
+	}
+
+	&-creator {
+		display: block;
+	}
+	&-creator-hidden {
+		display: none;
+
+		.zotero-creators-expanded & {
+			display: block;
+		}
 	}
 }

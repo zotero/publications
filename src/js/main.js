@@ -76,6 +76,7 @@ ZoteroPublications.prototype.defaults = {
 	useHistory: true,
 	expand: 'all',
 	zorgIntegration: false,
+	authorsListed: 10,
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
 		'asa': 'American Psychological Association 6th edition',
