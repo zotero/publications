@@ -413,7 +413,13 @@
   .zotero-meta .zotero-meta-label,
   .zotero-meta .zotero-meta-value {
     border: 0;
-    padding: 0; }
+    padding: 0;
+    margin: 0; }
+    .zotero-meta .zotero-meta-label > *,
+    .zotero-meta .zotero-meta-value > * {
+      border: 0;
+      padding: 0;
+      margin: 0; }
   @media only screen and (max-width: 768px) {
     .zotero-meta .zotero-meta-label,
     .zotero-meta .zotero-meta-value {
@@ -427,6 +433,7 @@
     .zotero-meta .zotero-meta-label {
       min-width: 80px;
       text-align: right;
+      vertical-align: top;
       white-space: nowrap; }
     .zotero-meta .zotero-meta-value {
       padding-left: 20px; }
@@ -439,3 +446,11 @@
 
 .zotero-add-to-library {
   float: right; }
+
+.zotero-creator {
+  display: block; }
+
+.zotero-creator-hidden {
+  display: none; }
+  .zotero-creators-expanded .zotero-creator-hidden {
+    display: block; }

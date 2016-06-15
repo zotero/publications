@@ -17576,15 +17576,15 @@ function processResponse(response) {
 					index[item.data.parentItem][_constants.CHILD_ATTACHMENTS] = [];
 				}
 				let parsedAttachment = {};
-				if (item.links && item.links.enclosure && item.links.enclosure.href) {
+				if (item.links && item.links.enclosure) {
 					parsedAttachment = {
-						url: item.links.enclosure.href,
-						type: item.links.enclosure.type,
-						title: item.links.enclosure.title,
+						url: item.links.enclosure.href || item.data.url,
+						type: item.links.enclosure.type || item.data.contentType,
+						title: item.links.enclosure.title || item.data.title,
 						key: item.key,
 						item: item
 					};
-				} else if (item.data.url) {
+				} else {
 					parsedAttachment = {
 						url: item.data.url,
 						type: item.data.contentType,
@@ -17593,7 +17593,10 @@ function processResponse(response) {
 						item: item
 					};
 				}
-				index[item.data.parentItem][_constants.CHILD_ATTACHMENTS].push(parsedAttachment);
+
+				if (parsedAttachment.title || parsedAttachment.url) {
+					index[item.data.parentItem][_constants.CHILD_ATTACHMENTS].push(parsedAttachment);
+				}
 			} else {
 				if (!index[item.data.parentItem][_constants.CHILD_OTHER]) {
 					index[item.data.parentItem][_constants.CHILD_OTHER] = [];
@@ -17610,6 +17613,7 @@ function processResponse(response) {
 				});
 			}
 			if (item[_constants.CHILD_ATTACHMENTS]) {
+				console.info(item[_constants.CHILD_ATTACHMENTS]);
 				item[_constants.VIEW_ONLINE_URL] = item[_constants.CHILD_ATTACHMENTS][0].url;
 				if (item[_constants.CHILD_ATTACHMENTS][0].type === 'application/pdf') {
 					item[_constants.HAS_PDF] = true;
@@ -18003,6 +18007,7 @@ ZoteroPublications.prototype.defaults = {
 	useHistory: true,
 	expand: 'all',
 	zorgIntegration: false,
+	authorsListed: 10,
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
 		'asa': 'American Psychological Association 6th edition',
@@ -18497,7 +18502,7 @@ ZoteroRenderer.prototype.prepareExport = function (itemEl) {
 		'group': false
 	}).then(item => {
 		let itemData = (_lodash2.default.findWhere || _lodash2.default.find)(this.data.raw, { 'key': itemId });
-		let encoded = window.btoa(item.raw[0][exportFormat]);
+		let encoded = window.btoa(unescape(encodeURIComponent(item.raw[0][exportFormat])));
 		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = (0, _export2.default)({
 			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
@@ -18545,6 +18550,10 @@ ZoteroRenderer.prototype.addHandlers = function () {
 				if (this.zotero.config.zorgIntegration) {
 					this.saveToMyLibrary(target, itemEl);
 				}
+			} else if (target.getAttribute('data-trigger') === 'expand-authors') {
+				let creatorsEl = (0, _utils.closest)(target, el => el.classList.contains('zotero-creators'));
+				creatorsEl.classList.add('zotero-creators-expanded');
+				target.parentNode.removeChild(target);
 			}
 		}
 	});
@@ -18982,7 +18991,19 @@ module.exports = function (obj) {
   if (obj.item.data[constants.AUTHORS_SYMBOL]) {
     __p += '\n\t\t\t\t\t';
     for (var i = 0, keys = Object.keys(obj.item.data[constants.AUTHORS_SYMBOL]); i < keys.length; i++) {
-      __p += '\n\t\t\t\t\t\t<tr class="zotero-meta-item">\n\t\t\t\t\t\t\t<td class="zotero-meta-label">' + ((__t = keys[i]) == null ? '' : _.escape(__t)) + '</td>\n\t\t\t\t\t\t\t<td class="zotero-meta-value">' + ((__t = obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].join(' & ')) == null ? '' : _.escape(__t)) + '</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t<tr class="zotero-meta-item">\n\t\t\t\t\t\t\t<td class="zotero-meta-label">' + ((__t = keys[i]) == null ? '' : _.escape(__t)) + '</td>\n\t\t\t\t\t\t\t<td class="zotero-meta-value zotero-creators">\n\t\t\t\t\t\t\t\t';
+      for (var j = 0; j < obj.renderer.zotero.config.authorsListed; j++) {
+        __p += '\n\t\t\t\t\t\t\t\t\t<span class="zotero-creator">\n\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.item.data[constants.AUTHORS_SYMBOL][keys[i]][j]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t';
+      }
+      __p += '\n\t\t\t\t\t\t\t\t';
+      if (obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length > obj.renderer.zotero.config.authorsListed) {
+        __p += '\n\t\t\t\t\t\t\t\t\t<a href="" class="zotero-creator" data-trigger="expand-authors">\n\t\t\t\t\t\t\t\t\t\tMore...\n\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t';
+      }
+      __p += '\n\t\t\t\t\t\t\t\t';
+      for (var j = obj.renderer.zotero.config.authorsListed; j < obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length; j++) {
+        __p += '\n\t\t\t\t\t\t\t\t\t<span class="zotero-creator zotero-creator-hidden">\n\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.item.data[constants.AUTHORS_SYMBOL][keys[i]][j]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t';
+      }
+      __p += '\n\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t';
   }
@@ -19026,11 +19047,15 @@ module.exports = function (obj) {
   if (obj.item[constants.CHILD_ATTACHMENTS] && obj.item[constants.CHILD_ATTACHMENTS].length) {
     __p += '\n\t\t\t\t<h4>Attachments</h4>\n\t\t\t\t<ul class="zotero-attachments">\n\t\t\t\t\t';
     for (var childItem of obj.item[constants.CHILD_ATTACHMENTS]) {
-      __p += '\n\t\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t';
       if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
-        __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t';
+        __p += '\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t';
       }
-      __p += '\n\t\t\t\t\t';
+      __p += '\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t';
+      if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
+        __p += '\t\n\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t';
+      }
+      __p += '\n\t\t\t\t\t\t</li>\n\t\t\t\t\t\t\n\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t</ul>\n\t\t\t';
   }
