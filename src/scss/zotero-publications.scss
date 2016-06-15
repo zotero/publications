@@ -389,6 +389,13 @@ $border-radius-base: 4px;
 		.zotero-meta-value {
 			border: 0;
 			padding: 0;
+			margin: 0;
+
+			> * {
+				border: 0;
+				padding: 0;
+				margin: 0;
+			}
 		}
 
 		@include upto(tablet) {
