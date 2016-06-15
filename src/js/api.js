@@ -66,11 +66,11 @@ export function processResponse(response) {
 					index[item.data.parentItem][CHILD_ATTACHMENTS] = [];
 				}
 				let parsedAttachment = {};
-				if(item.links && item.links.enclosure && item.links.enclosure.href) {
+				if(item.links && item.links.enclosure) {
 					parsedAttachment = {
-						url: item.links.enclosure.href,
-						type: item.links.enclosure.type,
-						title: item.links.enclosure.title,
+						url: item.links.enclosure.href || item.data.url,
+						type: item.links.enclosure.type || item.data.contentType,
+						title: item.links.enclosure.title || item.data.title,
 						key: item.key,
 						item: item
 					}
@@ -100,6 +100,7 @@ export function processResponse(response) {
 				});
 			}
 			if(item[CHILD_ATTACHMENTS]) {
+				console.info(item[CHILD_ATTACHMENTS]);
 				item[VIEW_ONLINE_URL] = item[CHILD_ATTACHMENTS][0].url;
 				if(item[CHILD_ATTACHMENTS][0].type === 'application/pdf') {
 					item[HAS_PDF] = true;
