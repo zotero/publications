@@ -245,3 +245,5 @@ gulp.task('prepublish:js', function() {
 gulp.task('prepublish', ['clean:prepublish'], function(done) {
 	runSequence('prepublish:tpl', 'prepublish:js', done);
 });
+
+gulp.task('postpublish', ['clean:prepublish']);
