@@ -87,14 +87,17 @@
 				<h4>Attachments</h4>
 				<ul class="zotero-attachments">
 					<% for(var childItem of obj.item[constants.CHILD_ATTACHMENTS]) { %>
-						<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
 						<li>
+							<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
 							<a href="<%- childItem.url %>" rel="nofollow">
+							<% }%>
 								<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--
 								--><%- childItem.title %>
+							<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>	
 							</a>
+							<% }%>
 						</li>
-						<% }%>
+						
 					<% } %>
 				</ul>
 			<% } %>

@@ -74,7 +74,7 @@ export function processResponse(response) {
 						key: item.key,
 						item: item
 					}
-				} else if(item.data.url) {
+				} else {
 					parsedAttachment = {
 						url: item.data.url,
 						type: item.data.contentType,
@@ -83,7 +83,10 @@ export function processResponse(response) {
 						item: item
 					}
 				}
-				index[item.data.parentItem][CHILD_ATTACHMENTS].push(parsedAttachment);
+
+				if(parsedAttachment.title || parsedAttachment.url) {
+					index[item.data.parentItem][CHILD_ATTACHMENTS].push(parsedAttachment);
+				}
 			} else {
 				if(!index[item.data.parentItem][CHILD_OTHER]) {
 					index[item.data.parentItem][CHILD_OTHER] = [];
