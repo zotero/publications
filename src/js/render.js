@@ -285,6 +285,10 @@ ZoteroRenderer.prototype.addHandlers = function() {
 				if(this.zotero.config.zorgIntegration) {
 					this.saveToMyLibrary(target, itemEl);
 				}
+			} else if(target.getAttribute('data-trigger') === 'expand-authors') {
+				let creatorsEl = closest(target, el => el.classList.contains('zotero-creators'));
+				creatorsEl.classList.add('zotero-creators-expanded');
+				target.parentNode.removeChild(target);
 			}
 		}
 	});

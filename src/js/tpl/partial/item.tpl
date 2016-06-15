@@ -36,7 +36,23 @@
 					<% for(var i=0, keys=Object.keys(obj.item.data[constants.AUTHORS_SYMBOL]); i < keys.length; i++) { %>
 						<tr class="zotero-meta-item">
 							<td class="zotero-meta-label"><%- keys[i] %></td>
-							<td class="zotero-meta-value"><%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].join(' & ') %></td>
+							<td class="zotero-meta-value zotero-creators">
+								<% for(var j=0; j < obj.renderer.zotero.config.authorsListed; j++) { %>
+									<span class="zotero-creator">
+										<%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]][j] %>
+									</span>
+								<% } %>
+								<% if(obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length >obj.renderer.zotero.config.authorsListed) { %>
+									<a href="" class="zotero-creator" data-trigger="expand-authors">
+										More...
+									</a>
+								<% } %>
+								<% for(var j=obj.renderer.zotero.config.authorsListed; j < obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length; j++) { %>
+									<span class="zotero-creator zotero-creator-hidden">
+										<%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]][j] %>
+									</span>
+								<% } %>
+							</td>
 						</tr>
 					<% } %>
 				<% } %>
