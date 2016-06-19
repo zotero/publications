@@ -103,7 +103,6 @@ export function processResponse(response) {
 				});
 			}
 			if(item[CHILD_ATTACHMENTS]) {
-				console.info(item[CHILD_ATTACHMENTS]);
 				item[VIEW_ONLINE_URL] = item[CHILD_ATTACHMENTS][0].url;
 				if(item[CHILD_ATTACHMENTS][0].type === 'application/pdf') {
 					item[HAS_PDF] = true;
