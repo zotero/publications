@@ -1,4 +1,4 @@
-<ul class="zotero-items" role="<%- obj.renderer.data.grouped > 0 ? 'group': 'list' %>">
+<ul class="zotero-items" role="<%- obj.renderer.data && obj.renderer.data.grouped > 0 ? 'group': 'list' %>">
 	<% for (var item of obj.items) { %>
 		<%= obj.renderer.renderItem(item) %>
 	<% } %>

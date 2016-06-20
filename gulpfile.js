@@ -216,7 +216,6 @@ gulp.task('clean:build', function(done) {
 	rimraf('./dist/', done);
 });
 
-
 gulp.task('clean:prepublish', function(done) {
 	rimraf('./lib/', done);
 });

@@ -3,7 +3,7 @@
 	<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>
 
 	<!-- Citation -->
-	<% if (obj.renderer.config.useCitationStyle) { %>
+	<% if(obj.renderer.config.useCitationStyle) { %>
 		<%= obj.renderer.renderItemCitation(obj.item) %>
 	<!-- Templated -->
 	<% } else { %>

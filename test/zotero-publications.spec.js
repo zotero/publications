@@ -5,7 +5,8 @@ import _ from 'lodash';
 import testData from './fixtures/test-data.json';
 import testDataGrouped from './fixtures/test-data-grouped.json';
 import testDataSingle from './fixtures/test-data-single.json';
-import ZoteroRenderer from '../src/js/render.js';
+import Renderer from '../src/js/renderer.js';
+import DomWrapper from '../src/js/dom-wrapper.js';
 import ZoteroData from '../src/js/data.js';
 import ZoteroPublications from '../src/js/main.js';
 import {
@@ -24,6 +25,7 @@ import {
 describe('Zotero Publications', function() {
 	var zp,
 		renderer,
+		domwrapper,
 		container,
 		data,
 		dataGrouped,
@@ -34,7 +36,8 @@ describe('Zotero Publications', function() {
 			useCitationStyle: true
 		});
 		container = document.createElement('div');
-		renderer = new ZoteroRenderer(container, zp);
+		domwrapper = new DomWrapper(container, zp);
+		renderer = new Renderer(zp);
 		data = JSON.parse(JSON.stringify(testData));
 		data.grouped = 0;
 		dataGrouped = JSON.parse(JSON.stringify(testDataGrouped));
@@ -77,10 +80,10 @@ describe('Zotero Publications', function() {
 	it('should replace contents of a container', function() {
 		container.innerHTML = '<span>Hello World</span>';
 		expect(container.innerHTML).toBe('<span>Hello World</span>');
-		renderer.displayPublications(data);
+		domwrapper.displayPublications(data);
 		expect(container.innerHTML).not.toBe('<span>Hello World</span>');
 		expect(container.innerHTML).toMatch(/^[\n\r\s]*<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-items.*>[\s\S]*$/);
-		renderer.displayPublications(dataGrouped);
+		domwrapper.displayPublications(dataGrouped);
 		expect(container.innerHTML).toMatch(/^[\n\r\s]*<div.*"zotero-publications".*>[\s\S]*?<ul.*zotero-groups.*>[\s\S]*$/);
 	});
 
@@ -407,8 +410,9 @@ describe('Zotero Publications', function() {
 		});
 
 		zp.render(123, container).then(function() {
-			zp.renderer.expandDetails('EFGH').then(function() {
-				setTimeout(function(argument) {
+			let domwrapper = new DomWrapper(container, zp);
+			domwrapper.expandDetails('EFGH').then(function() {
+				setTimeout(function() {
 					let itemDetailsEl = container.querySelector('[id=item-EFGH-details]');
 					let itemEl = container.querySelector('[id=item-EFGH]');
 					expect(itemEl.classList.contains('zotero-details-open')).toEqual(true);
@@ -503,16 +507,15 @@ describe('Zotero Publications', function() {
 		});
 		let zd = new ZoteroData(data, zp.config);
 
-		zpIntegrated.render(zd, container).then(function() {
-			let renderer = zpIntegrated.renderer;
+		zpIntegrated.render(zd, container).then(function(domwrapper) {
 			let itemEl = container.querySelector('[id=item-ABCD');
 			let triggerEl = itemEl.querySelector('[data-trigger=add-to-library]');
-			renderer.saveToMyLibrary(triggerEl, itemEl).then(function() {
+			domwrapper.saveToMyLibrary(triggerEl, itemEl).then(function() {
 				expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/items\?.*key=lorem(%20|\s)ipsum$/);
 				expect(Object.keys(window.fetch.calls.mostRecent().args[1])).toContain('method');
 				expect(window.fetch.calls.mostRecent().args[1]['method']).toEqual('POST');
 				done();
-			}).catch(function(err) {
+			}).catch(function() {
 				done();
 			});
 		});

@@ -1,45 +1,27 @@
 import _ from 'lodash';
 import Clipboard from 'clipboard';
-import itemTpl from './tpl/partial/item.tpl';
-import itemTemplatedTpl from './tpl/partial/item-templated.tpl';
-import itemCitationTpl from './tpl/partial/item-citation.tpl';
-import itemsTpl from './tpl/partial/items.tpl';
-import groupTpl from './tpl/partial/group.tpl';
-import groupsTpl from './tpl/partial/groups.tpl';
-import brandingTpl from './tpl/partial/branding.tpl';
+import ZoteroRenderer from './renderer.js';
 import exportTpl from './tpl/partial/export.tpl';
-import groupViewTpl from './tpl/group-view.tpl';
-import plainViewTpl from './tpl/plain-view.tpl';
 import {
-	GROUP_EXPANDED_SUMBOL,
-	GROUP_TITLE
-} from './constants.js';
-import {
-	formatCategoryName,
 	closest,
 	toggleCollapse,
 	showTab,
 	clipboardFallbackMessage,
 	onTransitionEnd
 } from './utils.js';
-import fieldMap from './field-map.js';
-import typeMap from './type-map';
-import hiddenFields from './hidden-fields.js';
-
-_.templateSettings.variable = 'obj';
 
 /**
- * Zotero Renderer constructor
- * @param {HTMLElement} container	- A container where contents is rendered
- * @param {Object} [config]			- ZoteroPublications config
+ * Constructor for the Dom Wrapper
+ * Dom Wrapper's function is to place rendered Zotero Publications
+ * into a DOM container and handle events
+ * @param {HTMLElement} container				- A container where contents is rendered
+ * @param {ZoteroPublications} [zotero]			- ZoteroPublications object
  */
-export default function ZoteroRenderer(container, zotero) {
+function DomWrapper(container, zotero) {
 	this.container = container;
 	this.zotero = zotero;
 	this.config = zotero.config;
-	this.fieldMap = fieldMap;
-	this.typeMap = typeMap;
-	this.hiddenFields = hiddenFields;
+	this.renderer = new ZoteroRenderer(zotero);
 	if(this.config.storeCitationPreference) {
 		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
 	} else {
@@ -49,133 +31,19 @@ export default function ZoteroRenderer(container, zotero) {
 }
 
 /**
- * Render single Zotero item
- * @param  {Object} zoteroItem       - Single Zotero item data
- * @return {String}                  - Rendered markup of a Zotero item
- */
-ZoteroRenderer.prototype.renderItem = function(zoteroItem) {
-	return itemTpl({
-		'item': zoteroItem,
-		'data': zoteroItem.data,
-		'renderer': this
-	});
-};
-
-/**
- * Render citation part of a single Zotero using custom template
- * @param  {Object} zoteroItem       - Single Zotero item data
- * @return {String}                  - Rendered markup of a Zotero item
- */
-ZoteroRenderer.prototype.renderItemTemplated = function(zoteroItem) {
-	return itemTemplatedTpl({
-		'item': zoteroItem,
-		'data': zoteroItem.data,
-		'renderer': this
-	});
-};
-
-/**
- * Render citation part of a single Zotero item using api-provided citation
- * @param  {Object} zoteroItem       - Single Zotero item data
- * @return {String}                  - Rendered markup of a Zotero item
- */
-ZoteroRenderer.prototype.renderItemCitation = function(zoteroItem) {
-	return itemCitationTpl({
-		'item': zoteroItem,
-		'data': zoteroItem.data,
-		'renderer': this
-	});
-};
-
-/**
- * Render a list of Zotero items
- * @param  {Object[]} zoteroItems - List of Zotero items
- * @return {String}                          - Rendered markup of a list of Zotero items
- */
-ZoteroRenderer.prototype.renderItems = function(zoteroItems) {
-	return itemsTpl({
-		'items': zoteroItems,
-		'renderer': this
-	});
-};
-
-/**
- * Render a group of Zotero items
- * @param  {Object[]} items 	- List of items for this group
- * @return {String}             - Rendered markup of a group
- */
-ZoteroRenderer.prototype.renderGroup = function(items) {
-	return groupTpl({
-		'title': formatCategoryName(items[GROUP_TITLE]),
-		'items': items,
-		'expand': items[GROUP_EXPANDED_SUMBOL],
-		'renderer': this
-	});
-};
-
-/**
- * Renders a list of groups of Zotero items
- * @param {Object[]} 	- List of groups to render
- * @return {String} 	- Rendered markup of groups
- */
-ZoteroRenderer.prototype.renderGroups = function(groups) {
-	return groupsTpl({
-		'groups': groups,
-		'renderer': this
-	});
-};
-
-/**
- * Render a Group View
- * @param {ZoteroData} 	- List of groups to render
- * @return {String} 	- Rendered markup of a complete group view
- */
-ZoteroRenderer.prototype.renderGroupView = function(data) {
-	return groupViewTpl({
-		'groups': data,
-		'renderer': this
-	});
-};
-
-/**
- * Render a Plain View
- * @param  {ZoteroData} zoteroItems - List of Zotero items
- * @return {String} 	- Rendered markup of a complete plain view
- */
-ZoteroRenderer.prototype.renderPlainView = function(data) {
-	return plainViewTpl({
-		'items': data,
-		'renderer': this
-	});
-};
-
-/**
- * Render Zotero branding
- * @return {String}
- */
-ZoteroRenderer.prototype.renderBranding = function() {
-	if(this.config.showBranding) {
-		return brandingTpl();
-	} else {
-		return '';
-	}
-};
-
-/**
  * Render Zotero publications into a DOM element
  * @param  {ZoteroData} data       - Source of publications to be rendered
  */
-ZoteroRenderer.prototype.displayPublications = function(data) {
+DomWrapper.prototype.displayPublications = function(data) {
 	var markup;
 
-	this.data = data;
+	this.renderer.data = this.data = data;
 
 	if(data.grouped > 0) {
-		markup = this.renderGroupView(data);
+		markup = this.renderer.renderGroupView(data);
 	} else {
-		markup = this.renderPlainView(data);
+		markup = this.renderer.renderPlainView(data);
 	}
-
 
 	this.container.innerHTML = markup;
 	this.toggleSpinner(false);
@@ -190,7 +58,7 @@ ZoteroRenderer.prototype.displayPublications = function(data) {
  * @param  {HTMLElement} itemEl 		- dom element containing the item
  * @param  {String} citationStyle 		- optionally set the citation style
  */
-ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
+DomWrapper.prototype.updateCitation = function(itemEl, citationStyle) {
 	let itemId = itemEl.getAttribute('data-item');
 	let citationEl = itemEl.querySelector('.zotero-citation');
 	let citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
@@ -223,7 +91,7 @@ ZoteroRenderer.prototype.updateCitation = function(itemEl, citationStyle) {
  * Prepare a link for downloading item export
  * @param {HTMLElement} [itemEl] - dom element containing the item
  */
-ZoteroRenderer.prototype.prepareExport = function(itemEl) {
+DomWrapper.prototype.prepareExport = function(itemEl) {
 	let itemId = itemEl.getAttribute('data-item');
 	let exportEl = itemEl.querySelector('.zotero-export');
 	let exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
@@ -250,7 +118,7 @@ ZoteroRenderer.prototype.prepareExport = function(itemEl) {
 /**
  * Attach interaction handlers
  */
-ZoteroRenderer.prototype.addHandlers = function() {
+DomWrapper.prototype.addHandlers = function() {
 	let clipboard = new Clipboard('.zotero-citation-copy');
 
 	clipboard.on('success', function(e) {
@@ -311,7 +179,7 @@ ZoteroRenderer.prototype.addHandlers = function() {
  * devices, provided that the container is no more than 30px from the
  * border (and no less than 4px required for the actual line and 1px space)
  */
-ZoteroRenderer.prototype.updateVisuals = function() {
+DomWrapper.prototype.updateVisuals = function() {
 	if(!this.zoteroLines) {
 		this.zoteroLines = this.container.querySelectorAll('.zotero-line');
 	}
@@ -332,7 +200,7 @@ ZoteroRenderer.prototype.updateVisuals = function() {
  * whether to display or hide visual feedback.
  * @param  {boolean} [activate]    - Explicitely indicate whether to add or remove visual feedback
  */
-ZoteroRenderer.prototype.toggleSpinner = function (activate) {
+DomWrapper.prototype.toggleSpinner = function (activate) {
 	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
 	method.call(this.container.classList, 'zotero-loading');
 };
@@ -344,7 +212,7 @@ ZoteroRenderer.prototype.toggleSpinner = function (activate) {
  * @param  {HTMLElement} itemEl 	- DOM element where item is
  * @param  {boolean} override 		- override whether to expand or collapse details
  */
-ZoteroRenderer.prototype.toggleDetails = function(itemEl, override) {
+DomWrapper.prototype.toggleDetails = function(itemEl, override) {
 	let detailsEl = itemEl.querySelector('.zotero-details');
 		if(detailsEl) {
 			let expanded = toggleCollapse(detailsEl, override);
@@ -367,7 +235,7 @@ ZoteroRenderer.prototype.toggleDetails = function(itemEl, override) {
  * Expand item details based on the item id.
  * @param  {string} itemId
  */
-ZoteroRenderer.prototype.expandDetails = function(itemId) {
+DomWrapper.prototype.expandDetails = function(itemId) {
 	return new Promise((resolve) => {
 		let itemEl = this.container.querySelector(`[id=item-${itemId}]`);
 		this.toggleDetails(itemEl, true);
@@ -384,7 +252,7 @@ ZoteroRenderer.prototype.expandDetails = function(itemId) {
  * @param  {HTMLElement} triggerEl 	- DOM Element that triggered saving, usually a button
  * @param  {HTMLElement} itemEl 	- DOM element where the item is located
  */
-ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
+DomWrapper.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	let replacementEl = document.createElement('span');
 	replacementEl.innerText = 'Adding...';
 	triggerEl.parentNode.replaceChild(replacementEl, triggerEl);
@@ -442,3 +310,5 @@ ZoteroRenderer.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 		});
 	});
 }
+
+module.exports = DomWrapper;

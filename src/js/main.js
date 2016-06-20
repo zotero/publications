@@ -1,6 +1,5 @@
 /*global Zotero: false */
 import _ from 'lodash';
-import ZoteroRenderer from './render.js';
 import {
 	fetchUntilExhausted
 } from './api.js';
@@ -251,7 +250,6 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 		if(!(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
-		this.renderer = new ZoteroRenderer(container, this);
 
 		if(userIdOrendpointOrData instanceof ZoteroData) {
 			promise = Promise.resolve(userIdOrendpointOrData);
@@ -267,11 +265,25 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			if(this.config.group === 'type') {
 				data.groupByType(this.config.expand);
 			}
-			this.renderer.displayPublications(data);
-			if(this.config.useHistory && location.hash) {
-					this.renderer.expandDetails(location.hash.substr(1));
+
+			if(typeof(window) !== 'undefined') {
+				const DomWrapper = require('./dom-wrapper.js');
+				let domwrapper = new DomWrapper(container, this)
+				domwrapper.displayPublications(data);
+				if(this.config.useHistory && location.hash) {
+					domwrapper.expandDetails(location.hash.substr(1));
 				}
-			resolve();
+				resolve(domwrapper);
+			} else {
+				const Renderer = require('./renderer.js');
+				let renderer = new Renderer(this);
+				if(data.grouped > 0) {
+					resolve(renderer.renderGroupView(data));
+				} else {
+					resolve(renderer.renderPlainView(data));
+				}
+			}
+
 		}).catch(reject);
 	});
 };
@@ -286,4 +298,11 @@ ZoteroPublications.ZoteroData = ZoteroData;
  * Make ZoteroRenderer publicly accessible underneath ZoteroPublications
  * @type {ZoteroRenderer}
  */
-ZoteroPublications.ZoteroRenderer = ZoteroRenderer;
+ZoteroPublications.Renderer = require('./renderer.js');
+
+/**
+ * Make DomWrapper publicly accessible underneath ZoteroPublications
+ * but only if in browser environment
+ * @type {DomWrapper}
+ */
+ZoteroPublications.DomWrapper = typeof(window) !== 'undefined' ? require('./dom-wrapper.js') : null;
