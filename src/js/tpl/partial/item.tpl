@@ -142,7 +142,7 @@
 								<% } %>
 							</select>
 							<p class="zotero-citation" id="item-<%- obj.item.key %>-citation"></p>
-							<% if(!/iPhone|iPad/i.test(navigator.userAgent)) { %>
+							<% if(typeof(navigator) !== 'undefined' && !/iPhone|iPad/i.test(navigator.userAgent)) { %>
 								<button class="zotero-btn zotero-citation-copy tooltipped tooltipped-e" data-clipboard-target="#item-<%- obj.item.key %>-citation" aria-label="Copy to clipboard">Copy</button>
 							<% } %>
 						</div>

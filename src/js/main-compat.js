@@ -1,5 +1,5 @@
 require('core-js/es6/promise');
-require('whatwg-fetch');
+require('isomorphic-fetch');
 import 'babel-regenerator-runtime';
 import ZoteroPublications from './main.js';
 

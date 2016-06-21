@@ -14,12 +14,12 @@
     "test-once": "./node_modules/.bin/karma start --single-run || exit 0"
   },
   "dependencies": {
-    "whatwg-fetch": "^1.0.0",
+    "babel-regenerator-runtime": "^6.5.0",
     "clipboard": "^1.5.10",
     "core-js": "^2.4.0",
     "es6-symbol": "^3.0.2",
-    "lodash": "^4.13.1",
-    "babel-regenerator-runtime": "^6.5.0"
+    "isomorphic-fetch": "^2.2.1",
+    "lodash": "^4.13.1"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.9.0",

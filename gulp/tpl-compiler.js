@@ -13,8 +13,10 @@ module.exports = function (options) {
 	function compiler(file) {
 		var html = file.contents.toString();
 		var template = _.template(html, options).source;
+		var retval = 'var _ = require(\'lodash\');';
+		retval += 'module.exports = ' + template + ';';
 
-		return 'module.exports = ' + template + ';';
+		return retval;
 	}
 
 	return through.obj(function (file, enc, callback) {

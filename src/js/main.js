@@ -247,7 +247,7 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 	return new Promise((resolve, reject) => {
 		var promise;
 
-		if(!(container instanceof HTMLElement)) {
+		if(typeof(window) !== 'undefined' && !(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
 
