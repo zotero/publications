@@ -12,7 +12,7 @@ This library will pull items from Zotero API and display them in a user friendly
 Getting The Library
 -------------------
 
-The easiest way to obtain the latest version is to use npm:
+The easiest way to obtain the latest version is to use npm, this version will work in node, browserify and also contains `dist` folder with all the builds:
 
     npm i zotero-publications
 
@@ -71,6 +71,30 @@ Finally if you need more control over what happens while data is being retrieved
 
 
 See [src/demo/index.html](src/demo/index.html) for a complete example.
+
+Usage in Node
+-------------
+
+As of version 0.4.0 Zotero Publications offers node compatibility for server-side rendering etc.. Please note the following limitations when using zotero-publications in node:
+
+* Since there's no DOM available, the library will return HTML as a string rather than attach it to the container provided in DOM as it happens in the browser
+* HTML provided is the same that would be rendered in the browser, including all the interactive elements (e.g. 'details link'). However these will not work out-of-the box because event hanlders are not installed when workin in Node
+* Shortcut syntax (first couple of examples above) cannot be used in Node.
+
+Here's an example usage in Node:
+
+    var ZoteroPublications = require('zotero-publications');
+    var zp = new ZoteroPublications({group: 'type'});
+    var promise = zp.render(1); // fetch "my publications" for user id 1
+
+    promise.then(function(html) {
+        console.log(html);
+    });
+    
+    promise.catch(function(err) {
+        console.error(err);
+    });
+
 
 Config Options
 --------------

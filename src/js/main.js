@@ -242,6 +242,8 @@ ZoteroPublications.prototype.postItems = function(userId, data, params = {}) {
  * @param  {String|ZoteroData} endpointOrData - Data containung publications to be rendered
  * @param  {HTMLElement} container            - A DOM element where publications will be rendered
  * @return {Promise}                          - Resolved when rendered or rejected on error.
+ *                                              In browser, resolved with reference to the domwrapper instance
+ *                                              In node, resolved with produced html {String}
  */
 ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container) {
 	return new Promise((resolve, reject) => {
