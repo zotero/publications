@@ -37,7 +37,7 @@
 						<tr class="zotero-meta-item">
 							<td class="zotero-meta-label"><%- keys[i] %></td>
 							<td class="zotero-meta-value zotero-creators">
-								<% for(var j=0; j < obj.renderer.zotero.config.authorsListed; j++) { %>
+								<% for(var j=0; j < Math.min(obj.renderer.zotero.config.authorsListed, obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length); j++) { %>
 									<span class="zotero-creator">
 										<%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]][j] %>
 									</span>
