@@ -1,4 +1,4 @@
-require('es6-symbol/implement');
+import 'es6-symbol/implement';
 import _ from 'lodash';
 import {
 	formatDate,

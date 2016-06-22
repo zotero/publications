@@ -1,5 +1,5 @@
-require('core-js/es6/promise');
-require('isomorphic-fetch');
+import 'core-js/es6/promise';
+import 'isomorphic-fetch';
 import 'babel-regenerator-runtime';
 import ZoteroPublications from './main.js';
 
