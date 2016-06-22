@@ -17512,6 +17512,8 @@ Object.defineProperty(exports, "__esModule", {
 exports.processResponse = processResponse;
 exports.fetchUntilExhausted = fetchUntilExhausted;
 
+require('es6-symbol/implement');
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -17521,9 +17523,6 @@ var _utils = require('./utils.js');
 var _constants = require('./constants.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-require('es6-symbol/implement');
-
 
 /**
  * Process raw API response
@@ -17613,7 +17612,6 @@ function processResponse(response) {
 				});
 			}
 			if (item[_constants.CHILD_ATTACHMENTS]) {
-				console.info(item[_constants.CHILD_ATTACHMENTS]);
 				item[_constants.VIEW_ONLINE_URL] = item[_constants.CHILD_ATTACHMENTS][0].url;
 				if (item[_constants.CHILD_ATTACHMENTS][0].type === 'application/pdf') {
 					item[_constants.HAS_PDF] = true;
@@ -17664,7 +17662,7 @@ function fetchUntilExhausted(url, options, jsondata) {
 	});
 }
 
-},{"./constants.js":31,"./utils.js":49,"es6-symbol/implement":19,"lodash":26}],31:[function(require,module,exports){
+},{"./constants.js":31,"./utils.js":50,"es6-symbol/implement":19,"lodash":26}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -17692,6 +17690,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = ZoteroData;
 
+require('es6-symbol/implement');
+
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
@@ -17701,9 +17701,6 @@ var _api = require('./api.js');
 var _constants = require('./constants.js');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-require('es6-symbol/implement');
-
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
@@ -17773,6 +17770,309 @@ ZoteroData.prototype[Symbol.iterator] = function* () {
 };
 
 },{"./api.js":30,"./constants.js":31,"es6-symbol/implement":19,"lodash":26}],33:[function(require,module,exports){
+'use strict';
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _clipboard = require('clipboard');
+
+var _clipboard2 = _interopRequireDefault(_clipboard);
+
+var _renderer = require('./renderer.js');
+
+var _renderer2 = _interopRequireDefault(_renderer);
+
+var _export = require('./tpl/partial/export.tpl');
+
+var _export2 = _interopRequireDefault(_export);
+
+var _utils = require('./utils.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+/**
+ * Constructor for the Dom Wrapper
+ * Dom Wrapper's function is to place rendered Zotero Publications
+ * into a DOM container and handle events
+ * @param {HTMLElement} container				- A container where contents is rendered
+ * @param {ZoteroPublications} [zotero]			- ZoteroPublications object
+ */
+function DomWrapper(container, zotero) {
+	this.container = container;
+	this.zotero = zotero;
+	this.config = zotero.config;
+	this.renderer = new _renderer2.default(zotero);
+	if (this.config.storeCitationPreference) {
+		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
+	} else {
+		this.preferredCitationStyle = '';
+	}
+	this.toggleSpinner(true);
+}
+
+/**
+ * Render Zotero publications into a DOM element
+ * @param  {ZoteroData} data       - Source of publications to be rendered
+ */
+DomWrapper.prototype.displayPublications = function (data) {
+	var markup;
+
+	this.renderer.data = this.data = data;
+
+	if (data.grouped > 0) {
+		markup = this.renderer.renderGroupView(data);
+	} else {
+		markup = this.renderer.renderPlainView(data);
+	}
+
+	this.container.innerHTML = markup;
+	this.toggleSpinner(false);
+	this.previous = markup;
+	this.addHandlers();
+	this.updateVisuals();
+};
+
+/**
+ * Update citation and store preference in memory/local storage
+ * depending on configuration
+ * @param  {HTMLElement} itemEl 		- dom element containing the item
+ * @param  {String} citationStyle 		- optionally set the citation style
+ */
+DomWrapper.prototype.updateCitation = function (itemEl, citationStyle) {
+	let itemId = itemEl.getAttribute('data-item');
+	let citationEl = itemEl.querySelector('.zotero-citation');
+	let citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
+
+	if (citationStyle) {
+		citationStyleSelectEl.value = citationStyle;
+	} else {
+		citationStyle = citationStyleSelectEl.options[citationStyleSelectEl.selectedIndex].value;
+	}
+
+	this.preferredCitationStyle = citationStyle;
+	if (this.config.storeCitationPreference) {
+		localStorage.setItem('zotero-citation-preference', citationStyle);
+	}
+
+	citationEl.innerHTML = '';
+	citationEl.classList.add('zotero-loading-inline');
+
+	this.zotero.getPublication(itemId, this.zotero.userId, {
+		'citationStyle': citationStyle,
+		'include': ['bib'],
+		'group': false
+	}).then(item => {
+		citationEl.classList.remove('zotero-loading-inline');
+		citationEl.innerHTML = item.raw[0].bib;
+	});
+};
+
+/**
+ * Prepare a link for downloading item export
+ * @param {HTMLElement} [itemEl] - dom element containing the item
+ */
+DomWrapper.prototype.prepareExport = function (itemEl) {
+	let itemId = itemEl.getAttribute('data-item');
+	let exportEl = itemEl.querySelector('.zotero-export');
+	let exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
+	let exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
+
+	exportEl.innerHTML = '';
+	exportEl.classList.add('zotero-loading-inline');
+
+	this.zotero.getPublication(itemId, this.zotero.userId, {
+		'include': [exportFormat],
+		'group': false
+	}).then(item => {
+		let itemData = (_lodash2.default.findWhere || _lodash2.default.find)(this.data.raw, { 'key': itemId });
+		let encoded = window.btoa(unescape(encodeURIComponent(item.raw[0][exportFormat])));
+		exportEl.classList.remove('zotero-loading-inline');
+		exportEl.innerHTML = (0, _export2.default)({
+			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
+			'content': encoded,
+			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
+		});
+	});
+};
+
+/**
+ * Attach interaction handlers
+ */
+DomWrapper.prototype.addHandlers = function () {
+	let clipboard = new _clipboard2.default('.zotero-citation-copy');
+
+	clipboard.on('success', function (e) {
+		e.clearSelection();
+		e.trigger.setAttribute('aria-label', 'Copied!');
+	});
+
+	clipboard.on('error', function (e) {
+		e.trigger.setAttribute('aria-label', (0, _utils.clipboardFallbackMessage)(e.action));
+	});
+
+	this.container.addEventListener('mouseout', ev => {
+		if (ev.target.classList.contains('zotero-citation-copy')) {
+			ev.target.blur();
+			ev.target.setAttribute('aria-label', 'Copy to clipboard');
+		}
+	});
+
+	this.container.addEventListener('click', ev => {
+		var target;
+
+		target = (0, _utils.closest)(ev.target, el => el.hasAttribute && el.hasAttribute('data-trigger'));
+
+		if (target) {
+			ev.preventDefault();
+			let itemEl = (0, _utils.closest)(target, el => el.hasAttribute && el.hasAttribute('data-item'));
+			if (target.getAttribute('data-trigger') === 'details') {
+				this.toggleDetails(itemEl);
+			} else if (target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
+				(0, _utils.showTab)(target);
+			} else if (target.getAttribute('data-trigger') === 'add-to-library') {
+				if (this.zotero.config.zorgIntegration) {
+					this.saveToMyLibrary(target, itemEl);
+				}
+			} else if (target.getAttribute('data-trigger') === 'expand-authors') {
+				let creatorsEl = (0, _utils.closest)(target, el => el.classList.contains('zotero-creators'));
+				creatorsEl.classList.add('zotero-creators-expanded');
+				target.parentNode.removeChild(target);
+			}
+		}
+	});
+
+	this.container.addEventListener('change', ev => {
+		let target = (0, _utils.closest)(ev.target, el => el.hasAttribute && el.hasAttribute('data-trigger'));
+		let itemEl = (0, _utils.closest)(target, el => el.hasAttribute && el.hasAttribute('data-item'));
+		if (target.getAttribute('data-trigger') === 'cite-style-selection') {
+			this.updateCitation(itemEl);
+		} else if (target.getAttribute('data-trigger') === 'export-format-selection') {
+			this.prepareExport(itemEl);
+		}
+	});
+
+	window.addEventListener('resize', _lodash2.default.debounce(this.updateVisuals).bind(this));
+};
+
+/**
+ * Update .zotero-line to align with left border of the screen on small
+ * devices, provided that the container is no more than 30px from the
+ * border (and no less than 4px required for the actual line and 1px space)
+ */
+DomWrapper.prototype.updateVisuals = function () {
+	if (!this.zoteroLines) {
+		this.zoteroLines = this.container.querySelectorAll('.zotero-line');
+	}
+
+	_lodash2.default.each(this.zoteroLines, zoteroLineEl => {
+		let offset = `${ this.container.offsetLeft * -1 }px`;
+		if (window.innerWidth < 768 && this.container.offsetLeft <= 30 && this.container.offsetLeft > 3) {
+			zoteroLineEl.style.left = offset;
+		} else {
+			zoteroLineEl.style.left = null;
+		}
+	});
+};
+
+/**
+ * Toggle CSS class that gives a visual loading feedback. Optionally allows to explicetly specify
+ * whether to display or hide visual feedback.
+ * @param  {boolean} [activate]    - Explicitely indicate whether to add or remove visual feedback
+ */
+DomWrapper.prototype.toggleSpinner = function (activate) {
+	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
+	method.call(this.container.classList, 'zotero-loading');
+};
+
+/**
+ * Expand (if collapsed) or collapse (if expanded) item details. Optionally override to force
+ * either expand or collapse
+ * @param  {HTMLElement} itemEl 	- DOM element where item is
+ * @param  {boolean} override 		- override whether to expand or collapse details
+ */
+DomWrapper.prototype.toggleDetails = function (itemEl, override) {
+	let detailsEl = itemEl.querySelector('.zotero-details');
+	if (detailsEl) {
+		let expanded = (0, _utils.toggleCollapse)(detailsEl, override);
+		if (expanded) {
+			itemEl.classList.add('zotero-details-open');
+			if (this.zotero.userId) {
+				this.prepareExport(itemEl);
+				this.updateCitation(itemEl, this.preferredCitationStyle);
+			}
+		} else {
+			itemEl.classList.remove('zotero-details-open');
+		}
+	}
+	if (this.config.useHistory) {
+		window.history.pushState(null, null, `#${ itemEl.getAttribute('data-item') }`);
+	}
+};
+
+/**
+ * Expand item details based on the item id.
+ * @param  {string} itemId
+ */
+DomWrapper.prototype.expandDetails = function (itemId) {
+	return new Promise(resolve => {
+		let itemEl = this.container.querySelector(`[id=item-${ itemId }]`);
+		this.toggleDetails(itemEl, true);
+		(0, _utils.onTransitionEnd)(itemEl, () => {
+			itemEl.scrollIntoView();
+			resolve();
+		}, 500);
+	});
+};
+
+/**
+ * On Zotero.org adds item to currently logged-in user's library
+ * @param  {HTMLElement} triggerEl 	- DOM Element that triggered saving, usually a button
+ * @param  {HTMLElement} itemEl 	- DOM element where the item is located
+ */
+DomWrapper.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
+	let replacementEl = document.createElement('span');
+	replacementEl.innerText = 'Adding...';
+	triggerEl.parentNode.replaceChild(replacementEl, triggerEl);
+	let itemId = itemEl.getAttribute('data-item');
+	let sourceItem = (_lodash2.default.findWhere || _lodash2.default.find)(this.data.raw, { 'key': itemId });
+	let clonedItem = {};
+	let ignoredFields = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'parentItem', 'contentType', 'filename', 'tags', 'dateAdded', 'dateModified'];
+
+	_lodash2.default.forEach(sourceItem.data, (value, key) => {
+		if (!_lodash2.default.includes(ignoredFields, key)) {
+			clonedItem[key] = value;
+		}
+	});
+
+	if (!clonedItem.relations) {
+		clonedItem.relations = {};
+	}
+	clonedItem.relations = {
+		'owl:sameAs': `http://zotero.org/users/${ sourceItem.library.id }/publications/items/${ itemId }`
+	};
+
+	let writePromise = this.zotero.postItems(this.zotero.config.zorgIntegration.userID, [clonedItem], { key: this.zotero.config.zorgIntegration.apiKey });
+
+	return new Promise((resolve, reject) => {
+		writePromise.then(() => {
+			replacementEl.innerText = 'Added.';
+			resolve();
+		});
+		writePromise.catch(err => {
+			replacementEl.innerText = 'Error!';
+			setTimeout(() => {
+				replacementEl.parentNode.replaceChild(triggerEl, replacementEl);
+			}, 2000);
+			reject(err);
+		});
+	});
+};
+
+module.exports = DomWrapper;
+
+},{"./renderer.js":38,"./tpl/partial/export.tpl":41,"./utils.js":50,"clipboard":2,"lodash":26}],34:[function(require,module,exports){
 'use strict';
 
 /**
@@ -17894,7 +18194,7 @@ module.exports = {
 	'creator': 'Creator'
 };
 
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 /**
@@ -17904,7 +18204,7 @@ module.exports = {
 module.exports = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags', 'creators', 'abstractNote', //displayed separately
 'dateModified', 'dateAdded', 'accessDate', 'libraryCatalog', 'title', 'shortTitle'];
 
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var _main = require('./main.js');
@@ -17915,7 +18215,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = _main2.default;
 
-},{"./main.js":36}],36:[function(require,module,exports){
+},{"./main.js":37}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -17926,10 +18226,6 @@ exports.default = ZoteroPublications;
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
-
-var _render = require('./render.js');
-
-var _render2 = _interopRequireDefault(_render);
 
 var _api = require('./api.js');
 
@@ -17951,7 +18247,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * @param {*} [config] - Only when used as a convience function, configuration object that will selectively override
  *                     the defaults
  */
-/*global Zotero: false */
 function ZoteroPublications() {
 	if (arguments.length > 3) {
 		return Promise.reject(new Error(`ZoteroPublications takes between one and three arguments. ${ arguments.length } is too many.`));
@@ -17997,6 +18292,7 @@ function ZoteroPublications() {
  * Default configuration object
  * @type {Object}
  */
+/*global Zotero: false */
 ZoteroPublications.prototype.defaults = {
 	apiBase: 'api.zotero.org',
 	citationStyle: '',
@@ -18173,15 +18469,16 @@ ZoteroPublications.prototype.postItems = function (userId, data, params = {}) {
  * @param  {String|ZoteroData} endpointOrData - Data containung publications to be rendered
  * @param  {HTMLElement} container            - A DOM element where publications will be rendered
  * @return {Promise}                          - Resolved when rendered or rejected on error.
+ *                                              In browser, resolved with reference to the domwrapper instance
+ *                                              In node, resolved with produced html {String}
  */
 ZoteroPublications.prototype.render = function (userIdOrendpointOrData, container) {
 	return new Promise((resolve, reject) => {
 		var promise;
 
-		if (!(container instanceof HTMLElement)) {
+		if (typeof window !== 'undefined' && !(container instanceof HTMLElement)) {
 			reject(new Error('Second argument to render() method must be a DOM element'));
 		}
-		this.renderer = new _render2.default(container, this);
 
 		if (userIdOrendpointOrData instanceof _data2.default) {
 			promise = Promise.resolve(userIdOrendpointOrData);
@@ -18197,11 +18494,24 @@ ZoteroPublications.prototype.render = function (userIdOrendpointOrData, containe
 			if (this.config.group === 'type') {
 				data.groupByType(this.config.expand);
 			}
-			this.renderer.displayPublications(data);
-			if (this.config.useHistory && location.hash) {
-				this.renderer.expandDetails(location.hash.substr(1));
+
+			if (typeof window !== 'undefined') {
+				const DomWrapper = require('./dom-wrapper.js');
+				let domwrapper = new DomWrapper(container, this);
+				domwrapper.displayPublications(data);
+				if (this.config.useHistory && location.hash) {
+					domwrapper.expandDetails(location.hash.substr(1));
+				}
+				resolve(domwrapper);
+			} else {
+				const Renderer = require('./renderer.js');
+				let renderer = new Renderer(this);
+				if (data.grouped > 0) {
+					resolve(renderer.renderGroupView(data));
+				} else {
+					resolve(renderer.renderPlainView(data));
+				}
 			}
-			resolve();
 		}).catch(reject);
 	});
 };
@@ -18216,23 +18526,21 @@ ZoteroPublications.ZoteroData = _data2.default;
  * Make ZoteroRenderer publicly accessible underneath ZoteroPublications
  * @type {ZoteroRenderer}
  */
-ZoteroPublications.ZoteroRenderer = _render2.default;
+ZoteroPublications.Renderer = require('./renderer.js');
 
-},{"./api.js":30,"./data.js":32,"./render.js":37,"lodash":26}],37:[function(require,module,exports){
+/**
+ * Make DomWrapper publicly accessible underneath ZoteroPublications
+ * but only if in browser environment
+ * @type {DomWrapper}
+ */
+ZoteroPublications.DomWrapper = typeof window !== 'undefined' ? require('./dom-wrapper.js') : null;
+
+},{"./api.js":30,"./data.js":32,"./dom-wrapper.js":33,"./renderer.js":38,"lodash":26}],38:[function(require,module,exports){
 'use strict';
-
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.default = ZoteroRenderer;
 
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
-
-var _clipboard = require('clipboard');
-
-var _clipboard2 = _interopRequireDefault(_clipboard);
 
 var _item = require('./tpl/partial/item.tpl');
 
@@ -18261,10 +18569,6 @@ var _groups2 = _interopRequireDefault(_groups);
 var _branding = require('./tpl/partial/branding.tpl');
 
 var _branding2 = _interopRequireDefault(_branding);
-
-var _export = require('./tpl/partial/export.tpl');
-
-var _export2 = _interopRequireDefault(_export);
 
 var _groupView = require('./tpl/group-view.tpl');
 
@@ -18296,22 +18600,14 @@ _lodash2.default.templateSettings.variable = 'obj';
 
 /**
  * Zotero Renderer constructor
- * @param {HTMLElement} container	- A container where contents is rendered
- * @param {Object} [config]			- ZoteroPublications config
+ * @param {ZoteroPublications} [zotero]			- ZoteroPublications object
  */
-function ZoteroRenderer(container, zotero) {
-	this.container = container;
+function Renderer(zotero) {
 	this.zotero = zotero;
 	this.config = zotero.config;
 	this.fieldMap = _fieldMap2.default;
 	this.typeMap = _typeMap2.default;
 	this.hiddenFields = _hiddenFields2.default;
-	if (this.config.storeCitationPreference) {
-		this.preferredCitationStyle = localStorage.getItem('zotero-citation-preference');
-	} else {
-		this.preferredCitationStyle = '';
-	}
-	this.toggleSpinner(true);
 }
 
 /**
@@ -18319,7 +18615,7 @@ function ZoteroRenderer(container, zotero) {
  * @param  {Object} zoteroItem       - Single Zotero item data
  * @return {String}                  - Rendered markup of a Zotero item
  */
-ZoteroRenderer.prototype.renderItem = function (zoteroItem) {
+Renderer.prototype.renderItem = function (zoteroItem) {
 	return (0, _item2.default)({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
@@ -18332,7 +18628,7 @@ ZoteroRenderer.prototype.renderItem = function (zoteroItem) {
  * @param  {Object} zoteroItem       - Single Zotero item data
  * @return {String}                  - Rendered markup of a Zotero item
  */
-ZoteroRenderer.prototype.renderItemTemplated = function (zoteroItem) {
+Renderer.prototype.renderItemTemplated = function (zoteroItem) {
 	return (0, _itemTemplated2.default)({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
@@ -18345,7 +18641,7 @@ ZoteroRenderer.prototype.renderItemTemplated = function (zoteroItem) {
  * @param  {Object} zoteroItem       - Single Zotero item data
  * @return {String}                  - Rendered markup of a Zotero item
  */
-ZoteroRenderer.prototype.renderItemCitation = function (zoteroItem) {
+Renderer.prototype.renderItemCitation = function (zoteroItem) {
 	return (0, _itemCitation2.default)({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
@@ -18358,7 +18654,7 @@ ZoteroRenderer.prototype.renderItemCitation = function (zoteroItem) {
  * @param  {Object[]} zoteroItems - List of Zotero items
  * @return {String}                          - Rendered markup of a list of Zotero items
  */
-ZoteroRenderer.prototype.renderItems = function (zoteroItems) {
+Renderer.prototype.renderItems = function (zoteroItems) {
 	return (0, _items2.default)({
 		'items': zoteroItems,
 		'renderer': this
@@ -18370,7 +18666,7 @@ ZoteroRenderer.prototype.renderItems = function (zoteroItems) {
  * @param  {Object[]} items 	- List of items for this group
  * @return {String}             - Rendered markup of a group
  */
-ZoteroRenderer.prototype.renderGroup = function (items) {
+Renderer.prototype.renderGroup = function (items) {
 	return (0, _group2.default)({
 		'title': (0, _utils.formatCategoryName)(items[_constants.GROUP_TITLE]),
 		'items': items,
@@ -18384,7 +18680,7 @@ ZoteroRenderer.prototype.renderGroup = function (items) {
  * @param {Object[]} 	- List of groups to render
  * @return {String} 	- Rendered markup of groups
  */
-ZoteroRenderer.prototype.renderGroups = function (groups) {
+Renderer.prototype.renderGroups = function (groups) {
 	return (0, _groups2.default)({
 		'groups': groups,
 		'renderer': this
@@ -18396,7 +18692,7 @@ ZoteroRenderer.prototype.renderGroups = function (groups) {
  * @param {ZoteroData} 	- List of groups to render
  * @return {String} 	- Rendered markup of a complete group view
  */
-ZoteroRenderer.prototype.renderGroupView = function (data) {
+Renderer.prototype.renderGroupView = function (data) {
 	return (0, _groupView2.default)({
 		'groups': data,
 		'renderer': this
@@ -18408,7 +18704,7 @@ ZoteroRenderer.prototype.renderGroupView = function (data) {
  * @param  {ZoteroData} zoteroItems - List of Zotero items
  * @return {String} 	- Rendered markup of a complete plain view
  */
-ZoteroRenderer.prototype.renderPlainView = function (data) {
+Renderer.prototype.renderPlainView = function (data) {
 	return (0, _plainView2.default)({
 		'items': data,
 		'renderer': this
@@ -18419,7 +18715,7 @@ ZoteroRenderer.prototype.renderPlainView = function (data) {
  * Render Zotero branding
  * @return {String}
  */
-ZoteroRenderer.prototype.renderBranding = function () {
+Renderer.prototype.renderBranding = function () {
 	if (this.config.showBranding) {
 		return (0, _branding2.default)();
 	} else {
@@ -18427,265 +18723,9 @@ ZoteroRenderer.prototype.renderBranding = function () {
 	}
 };
 
-/**
- * Render Zotero publications into a DOM element
- * @param  {ZoteroData} data       - Source of publications to be rendered
- */
-ZoteroRenderer.prototype.displayPublications = function (data) {
-	var markup;
+module.exports = Renderer;
 
-	this.data = data;
-
-	if (data.grouped > 0) {
-		markup = this.renderGroupView(data);
-	} else {
-		markup = this.renderPlainView(data);
-	}
-
-	this.container.innerHTML = markup;
-	this.toggleSpinner(false);
-	this.previous = markup;
-	this.addHandlers();
-	this.updateVisuals();
-};
-
-/**
- * Update citation and store preference in memory/local storage
- * depending on configuration
- * @param  {HTMLElement} itemEl 		- dom element containing the item
- * @param  {String} citationStyle 		- optionally set the citation style
- */
-ZoteroRenderer.prototype.updateCitation = function (itemEl, citationStyle) {
-	let itemId = itemEl.getAttribute('data-item');
-	let citationEl = itemEl.querySelector('.zotero-citation');
-	let citationStyleSelectEl = itemEl.querySelector('[data-trigger="cite-style-selection"]');
-
-	if (citationStyle) {
-		citationStyleSelectEl.value = citationStyle;
-	} else {
-		citationStyle = citationStyleSelectEl.options[citationStyleSelectEl.selectedIndex].value;
-	}
-
-	this.preferredCitationStyle = citationStyle;
-	if (this.config.storeCitationPreference) {
-		localStorage.setItem('zotero-citation-preference', citationStyle);
-	}
-
-	citationEl.innerHTML = '';
-	citationEl.classList.add('zotero-loading-inline');
-
-	this.zotero.getPublication(itemId, this.zotero.userId, {
-		'citationStyle': citationStyle,
-		'include': ['bib'],
-		'group': false
-	}).then(item => {
-		citationEl.classList.remove('zotero-loading-inline');
-		citationEl.innerHTML = item.raw[0].bib;
-	});
-};
-
-/**
- * Prepare a link for downloading item export
- * @param {HTMLElement} [itemEl] - dom element containing the item
- */
-ZoteroRenderer.prototype.prepareExport = function (itemEl) {
-	let itemId = itemEl.getAttribute('data-item');
-	let exportEl = itemEl.querySelector('.zotero-export');
-	let exportFormatSelectEl = itemEl.querySelector('[data-trigger="export-format-selection"]');
-	let exportFormat = exportFormatSelectEl.options[exportFormatSelectEl.selectedIndex].value;
-
-	exportEl.innerHTML = '';
-	exportEl.classList.add('zotero-loading-inline');
-
-	this.zotero.getPublication(itemId, this.zotero.userId, {
-		'include': [exportFormat],
-		'group': false
-	}).then(item => {
-		let itemData = (_lodash2.default.findWhere || _lodash2.default.find)(this.data.raw, { 'key': itemId });
-		let encoded = window.btoa(unescape(encodeURIComponent(item.raw[0][exportFormat])));
-		exportEl.classList.remove('zotero-loading-inline');
-		exportEl.innerHTML = (0, _export2.default)({
-			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
-			'content': encoded,
-			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
-		});
-	});
-};
-
-/**
- * Attach interaction handlers
- */
-ZoteroRenderer.prototype.addHandlers = function () {
-	let clipboard = new _clipboard2.default('.zotero-citation-copy');
-
-	clipboard.on('success', function (e) {
-		e.clearSelection();
-		e.trigger.setAttribute('aria-label', 'Copied!');
-	});
-
-	clipboard.on('error', function (e) {
-		e.trigger.setAttribute('aria-label', (0, _utils.clipboardFallbackMessage)(e.action));
-	});
-
-	this.container.addEventListener('mouseout', ev => {
-		if (ev.target.classList.contains('zotero-citation-copy')) {
-			ev.target.blur();
-			ev.target.setAttribute('aria-label', 'Copy to clipboard');
-		}
-	});
-
-	this.container.addEventListener('click', ev => {
-		var target;
-
-		target = (0, _utils.closest)(ev.target, el => el.hasAttribute && el.hasAttribute('data-trigger'));
-
-		if (target) {
-			ev.preventDefault();
-			let itemEl = (0, _utils.closest)(target, el => el.hasAttribute && el.hasAttribute('data-item'));
-			if (target.getAttribute('data-trigger') === 'details') {
-				this.toggleDetails(itemEl);
-			} else if (target.getAttribute('data-trigger') === 'cite' || target.getAttribute('data-trigger') === 'export') {
-				(0, _utils.showTab)(target);
-			} else if (target.getAttribute('data-trigger') === 'add-to-library') {
-				if (this.zotero.config.zorgIntegration) {
-					this.saveToMyLibrary(target, itemEl);
-				}
-			} else if (target.getAttribute('data-trigger') === 'expand-authors') {
-				let creatorsEl = (0, _utils.closest)(target, el => el.classList.contains('zotero-creators'));
-				creatorsEl.classList.add('zotero-creators-expanded');
-				target.parentNode.removeChild(target);
-			}
-		}
-	});
-
-	this.container.addEventListener('change', ev => {
-		let target = (0, _utils.closest)(ev.target, el => el.hasAttribute && el.hasAttribute('data-trigger'));
-		let itemEl = (0, _utils.closest)(target, el => el.hasAttribute && el.hasAttribute('data-item'));
-		if (target.getAttribute('data-trigger') === 'cite-style-selection') {
-			this.updateCitation(itemEl);
-		} else if (target.getAttribute('data-trigger') === 'export-format-selection') {
-			this.prepareExport(itemEl);
-		}
-	});
-
-	window.addEventListener('resize', _lodash2.default.debounce(this.updateVisuals).bind(this));
-};
-
-/**
- * Update .zotero-line to align with left border of the screen on small
- * devices, provided that the container is no more than 30px from the
- * border (and no less than 4px required for the actual line and 1px space)
- */
-ZoteroRenderer.prototype.updateVisuals = function () {
-	if (!this.zoteroLines) {
-		this.zoteroLines = this.container.querySelectorAll('.zotero-line');
-	}
-
-	_lodash2.default.each(this.zoteroLines, zoteroLineEl => {
-		let offset = `${ this.container.offsetLeft * -1 }px`;
-		if (window.innerWidth < 768 && this.container.offsetLeft <= 30 && this.container.offsetLeft > 3) {
-			zoteroLineEl.style.left = offset;
-		} else {
-			zoteroLineEl.style.left = null;
-		}
-	});
-};
-
-/**
- * Toggle CSS class that gives a visual loading feedback. Optionally allows to explicetly specify
- * whether to display or hide visual feedback.
- * @param  {boolean} [activate]    - Explicitely indicate whether to add or remove visual feedback
- */
-ZoteroRenderer.prototype.toggleSpinner = function (activate) {
-	var method = activate === null ? this.container.classList.toggle : activate ? this.container.classList.add : this.container.classList.remove;
-	method.call(this.container.classList, 'zotero-loading');
-};
-
-/**
- * Expand (if collapsed) or collapse (if expanded) item details. Optionally override to force
- * either expand or collapse
- * @param  {HTMLElement} itemEl 	- DOM element where item is
- * @param  {boolean} override 		- override whether to expand or collapse details
- */
-ZoteroRenderer.prototype.toggleDetails = function (itemEl, override) {
-	let detailsEl = itemEl.querySelector('.zotero-details');
-	if (detailsEl) {
-		let expanded = (0, _utils.toggleCollapse)(detailsEl, override);
-		if (expanded) {
-			itemEl.classList.add('zotero-details-open');
-			if (this.zotero.userId) {
-				this.prepareExport(itemEl);
-				this.updateCitation(itemEl, this.preferredCitationStyle);
-			}
-		} else {
-			itemEl.classList.remove('zotero-details-open');
-		}
-	}
-	if (this.config.useHistory) {
-		window.history.pushState(null, null, `#${ itemEl.getAttribute('data-item') }`);
-	}
-};
-
-/**
- * Expand item details based on the item id.
- * @param  {string} itemId
- */
-ZoteroRenderer.prototype.expandDetails = function (itemId) {
-	return new Promise(resolve => {
-		let itemEl = this.container.querySelector(`[id=item-${ itemId }]`);
-		this.toggleDetails(itemEl, true);
-		(0, _utils.onTransitionEnd)(itemEl, () => {
-			itemEl.scrollIntoView();
-			resolve();
-		}, 500);
-	});
-};
-
-/**
- * On Zotero.org adds item to currently logged-in user's library
- * @param  {HTMLElement} triggerEl 	- DOM Element that triggered saving, usually a button
- * @param  {HTMLElement} itemEl 	- DOM element where the item is located
- */
-ZoteroRenderer.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
-	let replacementEl = document.createElement('span');
-	replacementEl.innerText = 'Adding...';
-	triggerEl.parentNode.replaceChild(replacementEl, triggerEl);
-	let itemId = itemEl.getAttribute('data-item');
-	let sourceItem = (_lodash2.default.findWhere || _lodash2.default.find)(this.data.raw, { 'key': itemId });
-	let clonedItem = {};
-	let ignoredFields = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'parentItem', 'contentType', 'filename', 'tags', 'dateAdded', 'dateModified'];
-
-	_lodash2.default.forEach(sourceItem.data, (value, key) => {
-		if (!_lodash2.default.includes(ignoredFields, key)) {
-			clonedItem[key] = value;
-		}
-	});
-
-	if (!clonedItem.relations) {
-		clonedItem.relations = {};
-	}
-	clonedItem.relations = {
-		'owl:sameAs': `http://zotero.org/users/${ sourceItem.library.id }/publications/items/${ itemId }`
-	};
-
-	let writePromise = this.zotero.postItems(this.zotero.config.zorgIntegration.userID, [clonedItem], { key: this.zotero.config.zorgIntegration.apiKey });
-
-	return new Promise((resolve, reject) => {
-		writePromise.then(() => {
-			replacementEl.innerText = 'Added.';
-			resolve();
-		});
-		writePromise.catch(err => {
-			replacementEl.innerText = 'Error!';
-			setTimeout(() => {
-				replacementEl.parentNode.replaceChild(triggerEl, replacementEl);
-			}, 2000);
-			reject(err);
-		});
-	});
-};
-
-},{"./constants.js":31,"./field-map.js":33,"./hidden-fields.js":34,"./tpl/group-view.tpl":38,"./tpl/partial/branding.tpl":39,"./tpl/partial/export.tpl":40,"./tpl/partial/group.tpl":41,"./tpl/partial/groups.tpl":42,"./tpl/partial/item-citation.tpl":43,"./tpl/partial/item-templated.tpl":44,"./tpl/partial/item.tpl":45,"./tpl/partial/items.tpl":46,"./tpl/plain-view.tpl":47,"./type-map":48,"./utils.js":49,"clipboard":2,"lodash":26}],38:[function(require,module,exports){
+},{"./constants.js":31,"./field-map.js":34,"./hidden-fields.js":35,"./tpl/group-view.tpl":39,"./tpl/partial/branding.tpl":40,"./tpl/partial/group.tpl":42,"./tpl/partial/groups.tpl":43,"./tpl/partial/item-citation.tpl":44,"./tpl/partial/item-templated.tpl":45,"./tpl/partial/item.tpl":46,"./tpl/partial/items.tpl":47,"./tpl/plain-view.tpl":48,"./type-map":49,"./utils.js":50,"lodash":26}],39:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18700,7 +18740,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],39:[function(require,module,exports){
+},{"lodash":26}],40:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18715,7 +18755,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],40:[function(require,module,exports){
+},{"lodash":26}],41:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18730,7 +18770,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],41:[function(require,module,exports){
+},{"lodash":26}],42:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18745,7 +18785,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],42:[function(require,module,exports){
+},{"lodash":26}],43:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18764,7 +18804,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],43:[function(require,module,exports){
+},{"lodash":26}],44:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18787,7 +18827,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"../../constants.js":31,"lodash":26}],44:[function(require,module,exports){
+},{"../../constants.js":31,"lodash":26}],45:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18960,7 +19000,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"../../constants.js":31,"lodash":26}],45:[function(require,module,exports){
+},{"../../constants.js":31,"lodash":26}],46:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -18992,7 +19032,7 @@ module.exports = function (obj) {
     __p += '\n\t\t\t\t\t';
     for (var i = 0, keys = Object.keys(obj.item.data[constants.AUTHORS_SYMBOL]); i < keys.length; i++) {
       __p += '\n\t\t\t\t\t\t<tr class="zotero-meta-item">\n\t\t\t\t\t\t\t<td class="zotero-meta-label">' + ((__t = keys[i]) == null ? '' : _.escape(__t)) + '</td>\n\t\t\t\t\t\t\t<td class="zotero-meta-value zotero-creators">\n\t\t\t\t\t\t\t\t';
-      for (var j = 0; j < obj.renderer.zotero.config.authorsListed; j++) {
+      for (var j = 0; j < Math.min(obj.renderer.zotero.config.authorsListed, obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length); j++) {
         __p += '\n\t\t\t\t\t\t\t\t\t<span class="zotero-creator">\n\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.item.data[constants.AUTHORS_SYMBOL][keys[i]][j]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t</span>\n\t\t\t\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t\t\t\t\t';
@@ -19070,7 +19110,7 @@ module.exports = function (obj) {
       __p += '>\n\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.renderer.zotero.config.citeStyleOptions[citationStyle]) == null ? '' : __t) + '\n\t\t\t\t\t\t\t\t\t</option>\n\t\t\t\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t\t<p class="zotero-citation" id="item-' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation"></p>\n\t\t\t\t\t\t\t';
-    if (!/iPhone|iPad/i.test(navigator.userAgent)) {
+    if (typeof navigator !== 'undefined' && !/iPhone|iPad/i.test(navigator.userAgent)) {
       __p += '\n\t\t\t\t\t\t\t\t<button class="zotero-btn zotero-citation-copy tooltipped tooltipped-e" data-clipboard-target="#item-' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-citation" aria-label="Copy to clipboard">Copy</button>\n\t\t\t\t\t\t\t';
     }
     __p += '\n\t\t\t\t\t\t</div>\n\t\t\t\t\t</div>\n\n\t\t\t\t\t<!-- Export -->\n\t\t\t\t\t<div role="tabpanel" class="zotero-export-container zotero-tabpanel" aria-expanded="false" aria-hidden="true" id="item-' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '-export">\n\t\t\t\t\t\t<div class="zotero-container-inner">\n\t\t\t\t\t\t\t<select class="zotero-form-control" data-trigger="export-format-selection">\n\t\t\t\t\t\t\t\t';
@@ -19083,7 +19123,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"../../constants.js":31,"lodash":26}],46:[function(require,module,exports){
+},{"../../constants.js":31,"lodash":26}],47:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19094,7 +19134,7 @@ module.exports = function (obj) {
       print = function () {
     __p += __j.call(arguments, '');
   };
-  __p += '<ul class="zotero-items" role="' + ((__t = obj.renderer.data.grouped > 0 ? 'group' : 'list') == null ? '' : _.escape(__t)) + '">\n\t';
+  __p += '<ul class="zotero-items" role="' + ((__t = obj.renderer.data && obj.renderer.data.grouped > 0 ? 'group' : 'list') == null ? '' : _.escape(__t)) + '">\n\t';
   for (var item of obj.items) {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItem(item)) == null ? '' : __t) + '\n\t';
   }
@@ -19102,7 +19142,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],47:[function(require,module,exports){
+},{"lodash":26}],48:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19117,7 +19157,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"lodash":26}],48:[function(require,module,exports){
+},{"lodash":26}],49:[function(require,module,exports){
 'use strict';
 
 /**
@@ -19163,7 +19203,7 @@ module.exports = {
 	'dictionaryEntry': 'Dictionary Entry'
 };
 
-},{}],49:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -19410,5 +19450,5 @@ function clipboardFallbackMessage() {
 	return actionMsg;
 }
 
-},{"lodash":26}]},{},[35])(35)
+},{"lodash":26}]},{},[36])(36)
 });
