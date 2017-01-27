@@ -77,13 +77,16 @@ DomWrapper.prototype.updateCitation = function(itemEl, citationStyle) {
 	citationEl.innerHTML = '';
 	citationEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getPublication(itemId, this.zotero.userId, {
-		'citationStyle': citationStyle,
-		'include': ['bib'],
-		'group': false
-	}).then(item => {
-		citationEl.classList.remove('zotero-loading-inline');
-		citationEl.innerHTML = item.raw[0].bib;
+	return new Promise((resolve, reject) => {
+		this.zotero.getPublication(itemId, this.zotero.userId, {
+			'style': citationStyle,
+			'include': ['bib'],
+			'group': false
+		}).then(item => {
+			citationEl.classList.remove('zotero-loading-inline');
+			citationEl.innerHTML = item.raw[0].bib;
+			resolve();
+		}).catch(reject);
 	});
 };
 

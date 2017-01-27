@@ -125,7 +125,7 @@ describe('Zotero Publications', function() {
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/publications\/items\/4567\/?.*$/);
 	});
 
-	it('should handle a signle item response', function(done) {
+	it('should handle a single item response', function(done) {
 		spyOn(window, 'fetch').and.returnValue(
 			Promise.resolve(
 				new Response(
@@ -518,6 +518,41 @@ describe('Zotero Publications', function() {
 			}).catch(function() {
 				done();
 			});
+		});
+	});
+
+	it('should re-request citation when upon style selection', function(done) {
+		spyOn(window, 'fetch').and.callFake(function() {
+			return Promise.resolve(
+				new Response(
+					JSON.stringify(data),
+					{ status: 200,
+					'headers': new Headers({
+						'Link': ''
+					})}
+				)
+			);
+		});
+
+		zp = new ZoteroPublications();
+		zp.ready.then(() => {
+			zp.render(123, container)
+				.then(domwrapper => {
+					let itemEl = container.querySelector('[id=item-ABCD');
+					domwrapper.updateCitation(itemEl, 'vancouver').then(() => {
+						expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/publications\/items.*?[?|&]style=vancouver.*$/);
+						done();
+					}).catch(err => {
+						fail(err);
+						done();
+					});
+				}).catch(err => {
+					fail(err);
+					done();
+				});
+		}).catch(err => {
+			fail(err);
+			done();
 		});
 	});
 });
