@@ -25,7 +25,7 @@
     var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
         return typeof obj;
     } : function (obj) {
-        return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj;
+        return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
     };
 
     function _classCallCheck(instance, Constructor) {
@@ -56,7 +56,6 @@
         /**
          * @param {Object} options
          */
-
         function ClipboardAction(options) {
             _classCallCheck(this, ClipboardAction);
 
@@ -70,120 +69,126 @@
          */
 
 
-        ClipboardAction.prototype.resolveOptions = function resolveOptions() {
-            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        _createClass(ClipboardAction, [{
+            key: 'resolveOptions',
+            value: function resolveOptions() {
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-            this.action = options.action;
-            this.emitter = options.emitter;
-            this.target = options.target;
-            this.text = options.text;
-            this.trigger = options.trigger;
+                this.action = options.action;
+                this.emitter = options.emitter;
+                this.target = options.target;
+                this.text = options.text;
+                this.trigger = options.trigger;
 
-            this.selectedText = '';
-        };
-
-        ClipboardAction.prototype.initSelection = function initSelection() {
-            if (this.text) {
-                this.selectFake();
-            } else if (this.target) {
-                this.selectTarget();
+                this.selectedText = '';
             }
-        };
-
-        ClipboardAction.prototype.selectFake = function selectFake() {
-            var _this = this;
-
-            var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
-
-            this.removeFake();
-
-            this.fakeHandler = document.body.addEventListener('click', function () {
-                return _this.removeFake();
-            });
-
-            this.fakeElem = document.createElement('textarea');
-            // Prevent zooming on iOS
-            this.fakeElem.style.fontSize = '12pt';
-            // Reset box model
-            this.fakeElem.style.border = '0';
-            this.fakeElem.style.padding = '0';
-            this.fakeElem.style.margin = '0';
-            // Move element out of screen horizontally
-            this.fakeElem.style.position = 'fixed';
-            this.fakeElem.style[isRTL ? 'right' : 'left'] = '-9999px';
-            // Move element to the same position vertically
-            this.fakeElem.style.top = (window.pageYOffset || document.documentElement.scrollTop) + 'px';
-            this.fakeElem.setAttribute('readonly', '');
-            this.fakeElem.value = this.text;
-
-            document.body.appendChild(this.fakeElem);
-
-            this.selectedText = (0, _select2.default)(this.fakeElem);
-            this.copyText();
-        };
-
-        ClipboardAction.prototype.removeFake = function removeFake() {
-            if (this.fakeHandler) {
-                document.body.removeEventListener('click');
-                this.fakeHandler = null;
+        }, {
+            key: 'initSelection',
+            value: function initSelection() {
+                if (this.text) {
+                    this.selectFake();
+                } else if (this.target) {
+                    this.selectTarget();
+                }
             }
+        }, {
+            key: 'selectFake',
+            value: function selectFake() {
+                var _this = this;
 
-            if (this.fakeElem) {
-                document.body.removeChild(this.fakeElem);
-                this.fakeElem = null;
+                var isRTL = document.documentElement.getAttribute('dir') == 'rtl';
+
+                this.removeFake();
+
+                this.fakeHandlerCallback = function () {
+                    return _this.removeFake();
+                };
+                this.fakeHandler = document.body.addEventListener('click', this.fakeHandlerCallback) || true;
+
+                this.fakeElem = document.createElement('textarea');
+                // Prevent zooming on iOS
+                this.fakeElem.style.fontSize = '12pt';
+                // Reset box model
+                this.fakeElem.style.border = '0';
+                this.fakeElem.style.padding = '0';
+                this.fakeElem.style.margin = '0';
+                // Move element out of screen horizontally
+                this.fakeElem.style.position = 'absolute';
+                this.fakeElem.style[isRTL ? 'right' : 'left'] = '-9999px';
+                // Move element to the same position vertically
+                var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+                this.fakeElem.addEventListener('focus', window.scrollTo(0, yPosition));
+                this.fakeElem.style.top = yPosition + 'px';
+
+                this.fakeElem.setAttribute('readonly', '');
+                this.fakeElem.value = this.text;
+
+                document.body.appendChild(this.fakeElem);
+
+                this.selectedText = (0, _select2.default)(this.fakeElem);
+                this.copyText();
             }
-        };
+        }, {
+            key: 'removeFake',
+            value: function removeFake() {
+                if (this.fakeHandler) {
+                    document.body.removeEventListener('click', this.fakeHandlerCallback);
+                    this.fakeHandler = null;
+                    this.fakeHandlerCallback = null;
+                }
 
-        ClipboardAction.prototype.selectTarget = function selectTarget() {
-            this.selectedText = (0, _select2.default)(this.target);
-            this.copyText();
-        };
-
-        ClipboardAction.prototype.copyText = function copyText() {
-            var succeeded = undefined;
-
-            try {
-                succeeded = document.execCommand(this.action);
-            } catch (err) {
-                succeeded = false;
+                if (this.fakeElem) {
+                    document.body.removeChild(this.fakeElem);
+                    this.fakeElem = null;
+                }
             }
+        }, {
+            key: 'selectTarget',
+            value: function selectTarget() {
+                this.selectedText = (0, _select2.default)(this.target);
+                this.copyText();
+            }
+        }, {
+            key: 'copyText',
+            value: function copyText() {
+                var succeeded = void 0;
 
-            this.handleResult(succeeded);
-        };
+                try {
+                    succeeded = document.execCommand(this.action);
+                } catch (err) {
+                    succeeded = false;
+                }
 
-        ClipboardAction.prototype.handleResult = function handleResult(succeeded) {
-            if (succeeded) {
-                this.emitter.emit('success', {
+                this.handleResult(succeeded);
+            }
+        }, {
+            key: 'handleResult',
+            value: function handleResult(succeeded) {
+                this.emitter.emit(succeeded ? 'success' : 'error', {
                     action: this.action,
                     text: this.selectedText,
                     trigger: this.trigger,
                     clearSelection: this.clearSelection.bind(this)
                 });
-            } else {
-                this.emitter.emit('error', {
-                    action: this.action,
-                    trigger: this.trigger,
-                    clearSelection: this.clearSelection.bind(this)
-                });
             }
-        };
+        }, {
+            key: 'clearSelection',
+            value: function clearSelection() {
+                if (this.target) {
+                    this.target.blur();
+                }
 
-        ClipboardAction.prototype.clearSelection = function clearSelection() {
-            if (this.target) {
-                this.target.blur();
+                window.getSelection().removeAllRanges();
             }
-
-            window.getSelection().removeAllRanges();
-        };
-
-        ClipboardAction.prototype.destroy = function destroy() {
-            this.removeFake();
-        };
-
-        _createClass(ClipboardAction, [{
+        }, {
+            key: 'destroy',
+            value: function destroy() {
+                this.removeFake();
+            }
+        }, {
             key: 'action',
             set: function set() {
-                var action = arguments.length <= 0 || arguments[0] === undefined ? 'copy' : arguments[0];
+                var action = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'copy';
 
                 this._action = action;
 
@@ -223,7 +228,7 @@
 
     module.exports = ClipboardAction;
 });
-},{"select":27}],2:[function(require,module,exports){
+},{"select":26}],2:[function(require,module,exports){
 (function (global, factory) {
     if (typeof define === "function" && define.amd) {
         define(['module', './clipboard-action', 'tiny-emitter', 'good-listener'], factory);
@@ -257,6 +262,24 @@
         }
     }
 
+    var _createClass = function () {
+        function defineProperties(target, props) {
+            for (var i = 0; i < props.length; i++) {
+                var descriptor = props[i];
+                descriptor.enumerable = descriptor.enumerable || false;
+                descriptor.configurable = true;
+                if ("value" in descriptor) descriptor.writable = true;
+                Object.defineProperty(target, descriptor.key, descriptor);
+            }
+        }
+
+        return function (Constructor, protoProps, staticProps) {
+            if (protoProps) defineProperties(Constructor.prototype, protoProps);
+            if (staticProps) defineProperties(Constructor, staticProps);
+            return Constructor;
+        };
+    }();
+
     function _possibleConstructorReturn(self, call) {
         if (!self) {
             throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
@@ -288,11 +311,10 @@
          * @param {String|HTMLElement|HTMLCollection|NodeList} trigger
          * @param {Object} options
          */
-
         function Clipboard(trigger, options) {
             _classCallCheck(this, Clipboard);
 
-            var _this = _possibleConstructorReturn(this, _Emitter.call(this));
+            var _this = _possibleConstructorReturn(this, (Clipboard.__proto__ || Object.getPrototypeOf(Clipboard)).call(this));
 
             _this.resolveOptions(options);
             _this.listenClick(trigger);
@@ -306,62 +328,71 @@
          */
 
 
-        Clipboard.prototype.resolveOptions = function resolveOptions() {
-            var options = arguments.length <= 0 || arguments[0] === undefined ? {} : arguments[0];
+        _createClass(Clipboard, [{
+            key: 'resolveOptions',
+            value: function resolveOptions() {
+                var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
 
-            this.action = typeof options.action === 'function' ? options.action : this.defaultAction;
-            this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
-            this.text = typeof options.text === 'function' ? options.text : this.defaultText;
-        };
-
-        Clipboard.prototype.listenClick = function listenClick(trigger) {
-            var _this2 = this;
-
-            this.listener = (0, _goodListener2.default)(trigger, 'click', function (e) {
-                return _this2.onClick(e);
-            });
-        };
-
-        Clipboard.prototype.onClick = function onClick(e) {
-            var trigger = e.delegateTarget || e.currentTarget;
-
-            if (this.clipboardAction) {
-                this.clipboardAction = null;
+                this.action = typeof options.action === 'function' ? options.action : this.defaultAction;
+                this.target = typeof options.target === 'function' ? options.target : this.defaultTarget;
+                this.text = typeof options.text === 'function' ? options.text : this.defaultText;
             }
+        }, {
+            key: 'listenClick',
+            value: function listenClick(trigger) {
+                var _this2 = this;
 
-            this.clipboardAction = new _clipboardAction2.default({
-                action: this.action(trigger),
-                target: this.target(trigger),
-                text: this.text(trigger),
-                trigger: trigger,
-                emitter: this
-            });
-        };
-
-        Clipboard.prototype.defaultAction = function defaultAction(trigger) {
-            return getAttributeValue('action', trigger);
-        };
-
-        Clipboard.prototype.defaultTarget = function defaultTarget(trigger) {
-            var selector = getAttributeValue('target', trigger);
-
-            if (selector) {
-                return document.querySelector(selector);
+                this.listener = (0, _goodListener2.default)(trigger, 'click', function (e) {
+                    return _this2.onClick(e);
+                });
             }
-        };
+        }, {
+            key: 'onClick',
+            value: function onClick(e) {
+                var trigger = e.delegateTarget || e.currentTarget;
 
-        Clipboard.prototype.defaultText = function defaultText(trigger) {
-            return getAttributeValue('text', trigger);
-        };
+                if (this.clipboardAction) {
+                    this.clipboardAction = null;
+                }
 
-        Clipboard.prototype.destroy = function destroy() {
-            this.listener.destroy();
-
-            if (this.clipboardAction) {
-                this.clipboardAction.destroy();
-                this.clipboardAction = null;
+                this.clipboardAction = new _clipboardAction2.default({
+                    action: this.action(trigger),
+                    target: this.target(trigger),
+                    text: this.text(trigger),
+                    trigger: trigger,
+                    emitter: this
+                });
             }
-        };
+        }, {
+            key: 'defaultAction',
+            value: function defaultAction(trigger) {
+                return getAttributeValue('action', trigger);
+            }
+        }, {
+            key: 'defaultTarget',
+            value: function defaultTarget(trigger) {
+                var selector = getAttributeValue('target', trigger);
+
+                if (selector) {
+                    return document.querySelector(selector);
+                }
+            }
+        }, {
+            key: 'defaultText',
+            value: function defaultText(trigger) {
+                return getAttributeValue('text', trigger);
+            }
+        }, {
+            key: 'destroy',
+            value: function destroy() {
+                this.listener.destroy();
+
+                if (this.clipboardAction) {
+                    this.clipboardAction.destroy();
+                    this.clipboardAction = null;
+                }
+            }
+        }]);
 
         return Clipboard;
     }(_tinyEmitter2.default);
@@ -383,19 +414,7 @@
 
     module.exports = Clipboard;
 });
-},{"./clipboard-action":1,"good-listener":25,"tiny-emitter":28}],3:[function(require,module,exports){
-var matches = require('matches-selector')
-
-module.exports = function (element, selector, checkYoSelf) {
-  var parent = checkYoSelf ? element : element.parentNode
-
-  while (parent && parent !== document) {
-    if (matches(parent, selector)) return parent;
-    parent = parent.parentNode
-  }
-}
-
-},{"matches-selector":26}],4:[function(require,module,exports){
+},{"./clipboard-action":1,"good-listener":25,"tiny-emitter":27}],3:[function(require,module,exports){
 'use strict';
 
 var assign        = require('es5-ext/object/assign')
@@ -460,8 +479,40 @@ d.gs = function (dscr, get, set/*, options*/) {
 	return !options ? desc : assign(normalizeOpts(options), desc);
 };
 
-},{"es5-ext/object/assign":7,"es5-ext/object/is-callable":10,"es5-ext/object/normalize-options":14,"es5-ext/string/#/contains":16}],5:[function(require,module,exports){
-var closest = require('closest');
+},{"es5-ext/object/assign":7,"es5-ext/object/is-callable":10,"es5-ext/object/normalize-options":14,"es5-ext/string/#/contains":16}],4:[function(require,module,exports){
+var DOCUMENT_NODE_TYPE = 9;
+
+/**
+ * A polyfill for Element.matches()
+ */
+if (Element && !Element.prototype.matches) {
+    var proto = Element.prototype;
+
+    proto.matches = proto.matchesSelector ||
+                    proto.mozMatchesSelector ||
+                    proto.msMatchesSelector ||
+                    proto.oMatchesSelector ||
+                    proto.webkitMatchesSelector;
+}
+
+/**
+ * Finds the closest parent that matches a selector.
+ *
+ * @param {Element} element
+ * @param {String} selector
+ * @return {Function}
+ */
+function closest (element, selector) {
+    while (element && element.nodeType !== DOCUMENT_NODE_TYPE) {
+        if (element.matches(selector)) return element;
+        element = element.parentNode;
+    }
+}
+
+module.exports = closest;
+
+},{}],5:[function(require,module,exports){
+var closest = require('./closest');
 
 /**
  * Delegates event to a selector.
@@ -496,7 +547,7 @@ function delegate(element, selector, type, callback, useCapture) {
  */
 function listener(element, selector, type, callback) {
     return function(e) {
-        e.delegateTarget = closest(e.target, selector, true);
+        e.delegateTarget = closest(e.target, selector);
 
         if (e.delegateTarget) {
             callback.call(element, e);
@@ -506,7 +557,7 @@ function listener(element, selector, type, callback) {
 
 module.exports = delegate;
 
-},{"closest":3}],6:[function(require,module,exports){
+},{"./closest":4}],6:[function(require,module,exports){
 'use strict';
 
 module.exports = new Function("return this")();
@@ -798,7 +849,7 @@ defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toStringTag,
 defineProperty(HiddenSymbol.prototype, SymbolPolyfill.toPrimitive,
 	d('c', SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive]));
 
-},{"./validate-symbol":23,"d":4}],23:[function(require,module,exports){
+},{"./validate-symbol":23,"d":3}],23:[function(require,module,exports){
 'use strict';
 
 var isSymbol = require('./is-symbol');
@@ -957,51 +1008,15 @@ function listenSelector(selector, type, callback) {
 module.exports = listen;
 
 },{"./is":24,"delegate":5}],26:[function(require,module,exports){
-
-/**
- * Element prototype.
- */
-
-var proto = Element.prototype;
-
-/**
- * Vendor function.
- */
-
-var vendor = proto.matchesSelector
-  || proto.webkitMatchesSelector
-  || proto.mozMatchesSelector
-  || proto.msMatchesSelector
-  || proto.oMatchesSelector;
-
-/**
- * Expose `match()`.
- */
-
-module.exports = match;
-
-/**
- * Match `el` to `selector`.
- *
- * @param {Element} el
- * @param {String} selector
- * @return {Boolean}
- * @api public
- */
-
-function match(el, selector) {
-  if (vendor) return vendor.call(el, selector);
-  var nodes = el.parentNode.querySelectorAll(selector);
-  for (var i = 0; i < nodes.length; ++i) {
-    if (nodes[i] == el) return true;
-  }
-  return false;
-}
-},{}],27:[function(require,module,exports){
 function select(element) {
     var selectedText;
 
-    if (element.nodeName === 'INPUT' || element.nodeName === 'TEXTAREA') {
+    if (element.nodeName === 'SELECT') {
+        element.focus();
+
+        selectedText = element.value;
+    }
+    else if (element.nodeName === 'INPUT' || element.nodeName === 'TEXTAREA') {
         element.focus();
         element.setSelectionRange(0, element.value.length);
 
@@ -1027,14 +1042,14 @@ function select(element) {
 
 module.exports = select;
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 function E () {
-	// Keep this empty so it's easier to inherit from
+  // Keep this empty so it's easier to inherit from
   // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
 }
 
 E.prototype = {
-	on: function (name, callback, ctx) {
+  on: function (name, callback, ctx) {
     var e = this.e || (this.e = {});
 
     (e[name] || (e[name] = [])).push({
@@ -1095,7 +1110,7 @@ E.prototype = {
 
 module.exports = E;
 
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1247,16 +1262,16 @@ function fetchUntilExhausted(url, options, jsondata) {
 					}
 				});
 			} else {
-				reject(new Error(`Unexpected status code ${ response.status } when requesting ${ url }`));
+				reject(new Error(`Unexpected status code ${response.status} when requesting ${url}`));
 			}
 		}).catch(() => {
-			reject(new Error(`Unexpected error when requesting ${ url }`));
+			reject(new Error(`Unexpected error when requesting ${url}`));
 		});
 	});
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./constants.js":30,"./utils.js":49,"es6-symbol/implement":19}],30:[function(require,module,exports){
+},{"./constants.js":29,"./utils.js":48,"es6-symbol/implement":19}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1276,7 +1291,7 @@ const AUTHORS_SYMBOL = exports.AUTHORS_SYMBOL = Symbol.for('authors');
 const FORMATTED_DATE_SYMBOL = exports.FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
 const HAS_PDF = exports.HAS_PDF = Symbol.for('hasPdf');
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1365,7 +1380,7 @@ ZoteroData.prototype[Symbol.iterator] = function* () {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./api.js":29,"./constants.js":30,"es6-symbol/implement":19}],32:[function(require,module,exports){
+},{"./api.js":28,"./constants.js":29,"es6-symbol/implement":19}],31:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1456,13 +1471,16 @@ DomWrapper.prototype.updateCitation = function (itemEl, citationStyle) {
 	citationEl.innerHTML = '';
 	citationEl.classList.add('zotero-loading-inline');
 
-	this.zotero.getPublication(itemId, this.zotero.userId, {
-		'citationStyle': citationStyle,
-		'include': ['bib'],
-		'group': false
-	}).then(item => {
-		citationEl.classList.remove('zotero-loading-inline');
-		citationEl.innerHTML = item.raw[0].bib;
+	return new Promise((resolve, reject) => {
+		this.zotero.getPublication(itemId, this.zotero.userId, {
+			'style': citationStyle,
+			'include': ['bib'],
+			'group': false
+		}).then(item => {
+			citationEl.classList.remove('zotero-loading-inline');
+			citationEl.innerHTML = item.raw[0].bib;
+			resolve();
+		}).catch(reject);
 	});
 };
 
@@ -1564,7 +1582,7 @@ DomWrapper.prototype.updateVisuals = function () {
 	}
 
 	_lodash2.default.each(this.zoteroLines, zoteroLineEl => {
-		let offset = `${ this.container.offsetLeft * -1 }px`;
+		let offset = `${this.container.offsetLeft * -1}px`;
 		if (window.innerWidth < 768 && this.container.offsetLeft <= 30 && this.container.offsetLeft > 3) {
 			zoteroLineEl.style.left = offset;
 		} else {
@@ -1604,7 +1622,7 @@ DomWrapper.prototype.toggleDetails = function (itemEl, override) {
 		}
 	}
 	if (this.config.useHistory) {
-		window.history.pushState(null, null, `#${ itemEl.getAttribute('data-item') }`);
+		window.history.pushState(null, null, `#${itemEl.getAttribute('data-item')}`);
 	}
 };
 
@@ -1614,7 +1632,7 @@ DomWrapper.prototype.toggleDetails = function (itemEl, override) {
  */
 DomWrapper.prototype.expandDetails = function (itemId) {
 	return new Promise(resolve => {
-		let itemEl = this.container.querySelector(`[id=item-${ itemId }]`);
+		let itemEl = this.container.querySelector(`[id=item-${itemId}]`);
 		this.toggleDetails(itemEl, true);
 		(0, _utils.onTransitionEnd)(itemEl, () => {
 			itemEl.scrollIntoView();
@@ -1647,7 +1665,7 @@ DomWrapper.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
 		clonedItem.relations = {};
 	}
 	clonedItem.relations = {
-		'owl:sameAs': `http://zotero.org/users/${ sourceItem.library.id }/publications/items/${ itemId }`
+		'owl:sameAs': `http://zotero.org/users/${sourceItem.library.id}/publications/items/${itemId}`
 	};
 
 	let writePromise = this.zotero.postItems(this.zotero.config.zorgIntegration.userID, [clonedItem], { key: this.zotero.config.zorgIntegration.apiKey });
@@ -1670,7 +1688,7 @@ DomWrapper.prototype.saveToMyLibrary = function (triggerEl, itemEl) {
 module.exports = DomWrapper;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./renderer.js":37,"./tpl/partial/export.tpl":40,"./utils.js":49,"clipboard":2}],33:[function(require,module,exports){
+},{"./renderer.js":36,"./tpl/partial/export.tpl":39,"./utils.js":48,"clipboard":2}],32:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1792,7 +1810,7 @@ module.exports = {
 	'creator': 'Creator'
 };
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 /**
@@ -1802,7 +1820,7 @@ module.exports = {
 module.exports = ['mimeType', 'linkMode', 'charset', 'md5', 'mtime', 'version', 'key', 'collections', 'relations', 'parentItem', 'contentType', 'filename', 'tags', 'creators', 'abstractNote', //displayed separately
 'dateModified', 'dateAdded', 'accessDate', 'libraryCatalog', 'title', 'shortTitle'];
 
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 'use strict';
 
 var _main = require('./main.js');
@@ -1813,7 +1831,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 module.exports = _main2.default;
 
-},{"./main.js":36}],36:[function(require,module,exports){
+},{"./main.js":35}],35:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -1848,7 +1866,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  */
 function ZoteroPublications() {
 	if (arguments.length > 3) {
-		return Promise.reject(new Error(`ZoteroPublications takes between one and three arguments. ${ arguments.length } is too many.`));
+		return Promise.reject(new Error(`ZoteroPublications takes between one and three arguments. ${arguments.length} is too many.`));
 	}
 
 	if (arguments.length <= 1) {
@@ -1965,8 +1983,8 @@ ZoteroPublications.prototype.get = function (url, params = {}, init = {}) {
 		params.include = params.include.join(',');
 	}
 
-	let queryParams = _lodash2.default.map(params, (value, key) => `${ key }=${ value }`).join('&');
-	url = `${ url }?${ queryParams }`;
+	let queryParams = _lodash2.default.map(params, (value, key) => `${key}=${value}`).join('&');
+	url = `${url}?${queryParams}`;
 
 	return new Promise((resolve, reject) => {
 		let promise = (0, _api.fetchUntilExhausted)(url, init);
@@ -1987,7 +2005,7 @@ ZoteroPublications.prototype.get = function (url, params = {}, init = {}) {
  * @return {Promise} 			- Fetch promise
  */
 ZoteroPublications.prototype.post = function (url, data, params = {}, init = {}) {
-	let queryParams = _lodash2.default.map(params, (value, key) => `${ key }=${ value }`).join('&');
+	let queryParams = _lodash2.default.map(params, (value, key) => `${key}=${value}`).join('&');
 	init = _lodash2.default.extend({
 		method: 'POST',
 		headers: {
@@ -1995,7 +2013,7 @@ ZoteroPublications.prototype.post = function (url, data, params = {}, init = {})
 		},
 		body: JSON.stringify(data)
 	}, init);
-	url = `${ url }?${ queryParams }`;
+	url = `${url}?${queryParams}`;
 
 	return fetch(url, init);
 };
@@ -2009,7 +2027,7 @@ ZoteroPublications.prototype.post = function (url, data, params = {}, init = {})
  */
 ZoteroPublications.prototype.getEndpoint = function (endpoint, params = {}) {
 	let apiBase = this.config.apiBase,
-	    url = `https://${ apiBase }/${ endpoint }`;
+	    url = `https://${apiBase}/${endpoint}`;
 
 	return this.get(url, params);
 };
@@ -2023,7 +2041,7 @@ ZoteroPublications.prototype.getEndpoint = function (endpoint, params = {}) {
  */
 ZoteroPublications.prototype.postEndpoint = function (endpoint, data, params = {}) {
 	let apiBase = this.config.apiBase,
-	    url = `https://${ apiBase }/${ endpoint }`;
+	    url = `https://${apiBase}/${endpoint}`;
 
 	return this.post(url, data, params);
 };
@@ -2037,7 +2055,7 @@ ZoteroPublications.prototype.postEndpoint = function (endpoint, data, params = {
  */
 ZoteroPublications.prototype.getPublications = function (userId, params = {}) {
 	this.userId = userId;
-	return this.getEndpoint(`users/${ userId }/publications/items`, params);
+	return this.getEndpoint(`users/${userId}/publications/items`, params);
 };
 
 /**
@@ -2049,7 +2067,7 @@ ZoteroPublications.prototype.getPublications = function (userId, params = {}) {
  *                       		in case of any network/response problems
  */
 ZoteroPublications.prototype.getPublication = function (itemId, userId, params = {}) {
-	return this.getEndpoint(`users/${ userId }/publications/items/${ itemId }`, params);
+	return this.getEndpoint(`users/${userId}/publications/items/${itemId}`, params);
 };
 
 /**
@@ -2060,7 +2078,7 @@ ZoteroPublications.prototype.getPublication = function (itemId, userId, params =
  * @return {Promise} 			- Fetch promise
  */
 ZoteroPublications.prototype.postItems = function (userId, data, params = {}) {
-	return this.postEndpoint(`users/${ userId }/items`, data, params);
+	return this.postEndpoint(`users/${userId}/items`, data, params);
 };
 
 /**
@@ -2135,7 +2153,7 @@ ZoteroPublications.Renderer = require('./renderer.js');
 ZoteroPublications.DomWrapper = typeof window !== 'undefined' ? require('./dom-wrapper.js') : null;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./api.js":29,"./data.js":31,"./dom-wrapper.js":32,"./renderer.js":37}],37:[function(require,module,exports){
+},{"./api.js":28,"./data.js":30,"./dom-wrapper.js":31,"./renderer.js":36}],36:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2327,7 +2345,7 @@ Renderer.prototype.renderBranding = function () {
 module.exports = Renderer;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./constants.js":30,"./field-map.js":33,"./hidden-fields.js":34,"./tpl/group-view.tpl":38,"./tpl/partial/branding.tpl":39,"./tpl/partial/group.tpl":41,"./tpl/partial/groups.tpl":42,"./tpl/partial/item-citation.tpl":43,"./tpl/partial/item-templated.tpl":44,"./tpl/partial/item.tpl":45,"./tpl/partial/items.tpl":46,"./tpl/plain-view.tpl":47,"./type-map":48,"./utils.js":49}],38:[function(require,module,exports){
+},{"./constants.js":29,"./field-map.js":32,"./hidden-fields.js":33,"./tpl/group-view.tpl":37,"./tpl/partial/branding.tpl":38,"./tpl/partial/group.tpl":40,"./tpl/partial/groups.tpl":41,"./tpl/partial/item-citation.tpl":42,"./tpl/partial/item-templated.tpl":43,"./tpl/partial/item.tpl":44,"./tpl/partial/items.tpl":45,"./tpl/plain-view.tpl":46,"./type-map":47,"./utils.js":48}],37:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2344,7 +2362,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2361,7 +2379,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],40:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2378,7 +2396,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2395,7 +2413,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],42:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2416,7 +2434,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],43:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2441,7 +2459,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../constants.js":30}],44:[function(require,module,exports){
+},{"../../constants.js":29}],43:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2616,7 +2634,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../constants.js":30}],45:[function(require,module,exports){
+},{"../../constants.js":29}],44:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2741,7 +2759,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../../constants.js":30}],46:[function(require,module,exports){
+},{"../../constants.js":29}],45:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2762,7 +2780,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],47:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2779,7 +2797,7 @@ module.exports = function (obj) {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],48:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
 'use strict';
 
 /**
@@ -2825,7 +2843,7 @@ module.exports = {
 	'dictionaryEntry': 'Dictionary Entry'
 };
 
-},{}],49:[function(require,module,exports){
+},{}],48:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -2864,12 +2882,12 @@ function formatDate(isoDate) {
 		let year = matches[1];
 		let month = months[parseInt(matches[2], 10) - 1];
 		let day = parseInt(matches[3], 10);
-		date = `${ month } ${ day }, ${ year }`;
+		date = `${month} ${day}, ${year}`;
 	}
 	if (matches.length >= 3) {
 		let year = matches[1];
 		let month = months[parseInt(matches[2], 10) - 1];
-		date = `${ month } ${ year }`;
+		date = `${month} ${year}`;
 	}
 	if (matches.length >= 2) {
 		date = matches[1];
@@ -3074,5 +3092,5 @@ function clipboardFallbackMessage() {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[35])(35)
+},{}]},{},[34])(34)
 });
