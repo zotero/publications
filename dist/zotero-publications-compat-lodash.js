@@ -21726,7 +21726,7 @@ ZoteroPublications.prototype.defaults = {
 	authorsListed: 10,
 	citeStyleOptions: {
 		'american-anthropological-association': 'American Anthropological Association',
-		'asa': 'American Psychological Association 6th edition',
+		'apa': 'American Psychological Association 6th edition',
 		'cell': 'Cell',
 		'chicago-author-date': 'Chicago Manual of Style 16th edition (author-date)',
 		'chicago-fullnote-bibliography': 'Chicago Manual of Style 16th edition (full note)',
