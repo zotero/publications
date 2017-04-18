@@ -19515,9 +19515,11 @@ module.exports = function (obj) {
   };
   __p += '';
   const constants = require('../../constants.js');
+  __p += '\n';
+  const utils = require('../../utils.js');
   __p += '\n<h3 class="zotero-item-title">\n\t';
   if (obj.item[constants.VIEW_ONLINE_URL]) {
-    __p += '\n\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t</a>\n\t';
+    __p += '\n\t<a href="' + ((__t = utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL])) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t</a>\n\t';
   } else {
     __p += '\n\t\t' + ((__t = obj.item.citation) == null ? '' : __t) + '\n\t';
   }
@@ -19525,7 +19527,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"../../constants.js":30,"lodash":26}],44:[function(require,module,exports){
+},{"../../constants.js":30,"../../utils.js":49,"lodash":26}],44:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19538,11 +19540,13 @@ module.exports = function (obj) {
   };
   __p += '';
   const constants = require('../../constants.js');
+  __p += '\n';
+  const utils = require('../../utils.js');
   __p += '\n<div class="zotero-item-header-container">\n\t';
   if (obj.data.itemType == 'book') {
     __p += '\n\t\t\t<div class="zotero-item-header">\n\t\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t\t';
     if (obj.item[constants.VIEW_ONLINE_URL]) {
-      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
+      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL])) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
       if (obj.item[constants.HAS_PDF]) {
         __p += ' [PDF]';
       }
@@ -19566,7 +19570,7 @@ module.exports = function (obj) {
   } else if (obj.data.itemType == 'thesis') {
     __p += '\n\t\t\t<div class="zotero-item-header">\n\t\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t\t';
     if (obj.item[constants.VIEW_ONLINE_URL]) {
-      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
+      __p += '\n\t\t\t\t\t\t<a href="' + ((__t = utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL])) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
       if (obj.item[constants.HAS_PDF]) {
         __p += ' [PDF]';
       }
@@ -19590,7 +19594,7 @@ module.exports = function (obj) {
   } else if (obj.data.itemType == 'journalArticle') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[constants.VIEW_ONLINE_URL]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL])) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
       if (obj.item[constants.HAS_PDF]) {
         __p += ' [PDF]';
       }
@@ -19620,7 +19624,7 @@ module.exports = function (obj) {
   } else if (obj.data.itemType == 'newspaperArticle' || obj.data.itemType == 'magazineArticle') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[constants.VIEW_ONLINE_URL]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL])) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
       if (obj.item[constants.HAS_PDF]) {
         __p += ' [PDF]';
       }
@@ -19644,7 +19648,7 @@ module.exports = function (obj) {
   } else if (obj.data.itemType == 'blogPost') {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[constants.VIEW_ONLINE_URL]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL])) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
       if (obj.item[constants.HAS_PDF]) {
         __p += ' [PDF]';
       }
@@ -19668,7 +19672,7 @@ module.exports = function (obj) {
   } else {
     __p += '\n\t\t<div class="zotero-item-header">\n\t\t\t<h3 class="zotero-item-title">\n\t\t\t\t';
     if (obj.item[constants.VIEW_ONLINE_URL]) {
-      __p += '\n\t\t\t\t\t<a href="' + ((__t = obj.item[constants.VIEW_ONLINE_URL]) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
+      __p += '\n\t\t\t\t\t<a href="' + ((__t = utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL])) == null ? '' : _.escape(__t)) + '" rel="nofollow">' + ((__t = obj.data.title) == null ? '' : _.escape(__t)) + '</a> ';
       if (obj.item[constants.HAS_PDF]) {
         __p += ' [PDF]';
       }
@@ -19698,7 +19702,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"../../constants.js":30,"lodash":26}],45:[function(require,module,exports){
+},{"../../constants.js":30,"../../utils.js":49,"lodash":26}],45:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19711,6 +19715,8 @@ module.exports = function (obj) {
   };
   __p += '';
   const constants = require('../../constants.js');
+  __p += '\n';
+  const utils = require('../../utils.js');
   __p += '\n<li class="zotero-item zotero-' + ((__t = obj.data.itemType) == null ? '' : _.escape(__t)) + '" data-item="' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" id="item-' + ((__t = obj.item.key) == null ? '' : _.escape(__t)) + '" role="listitem">\n\t<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>\n\n\t<!-- Citation -->\n\t';
   if (obj.renderer.config.useCitationStyle) {
     __p += '\n\t\t' + ((__t = obj.renderer.renderItemCitation(obj.item)) == null ? '' : __t) + '\n\t<!-- Templated -->\n\t';
@@ -19755,9 +19761,9 @@ module.exports = function (obj) {
         if (keys[i] !== 'itemType') {
           __p += '\n\t\t\t\t\t\t\t\t<tr class="zotero-meta-item">\n\t\t\t\t\t\t\t\t\t<td class="zotero-meta-label">' + ((__t = obj.renderer.fieldMap[keys[i]]) == null ? '' : _.escape(__t)) + '</td>\n\t\t\t\t\t\t\t\t\t<td class="zotero-meta-value">\n\t\t\t\t\t\t\t\t\t\t';
           if (keys[i] === 'DOI') {
-            __p += '\n\t\t\t\t\t\t\t\t\t\t\t<a href="https://doi.org/' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t';
+            __p += '\n\t\t\t\t\t\t\t\t\t\t\t<a href="https://doi.org/' + ((__t = encodeURIComponent(obj.data[keys[i]])) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t';
           } else if (keys[i] === 'url') {
-            __p += '\n\t\t\t\t\t\t\t\t\t\t\t<a href="' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t';
+            __p += '\n\t\t\t\t\t\t\t\t\t\t\t<a href="' + ((__t = utils.sanitizeURL(obj.data[keys[i]])) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t\t</a>\n\t\t\t\t\t\t\t\t\t\t';
           } else {
             __p += '\n\t\t\t\t\t\t\t\t\t\t\t' + ((__t = obj.data[keys[i]]) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t\t\t\t';
           }
@@ -19787,7 +19793,7 @@ module.exports = function (obj) {
     for (var childItem of obj.item[constants.CHILD_ATTACHMENTS]) {
       __p += '\n\t\t\t\t\t\t<li>\n\t\t\t\t\t\t\t';
       if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
-        __p += '\n\t\t\t\t\t\t\t<a href="' + ((__t = childItem.url) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t';
+        __p += '\n\t\t\t\t\t\t\t<a href="' + ((__t = utils.sanitizeURL(childItem.url)) == null ? '' : _.escape(__t)) + '" rel="nofollow">\n\t\t\t\t\t\t\t';
       }
       __p += '\n\t\t\t\t\t\t\t\t<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--\n\t\t\t\t\t\t\t\t-->' + ((__t = childItem.title) == null ? '' : _.escape(__t)) + '\n\t\t\t\t\t\t\t';
       if (childItem.url || childItem.links && childItem.links.enclosure && childItem.links.enclosure.href) {
@@ -19821,7 +19827,7 @@ module.exports = function (obj) {
   return __p;
 };
 
-},{"../../constants.js":30,"lodash":26}],46:[function(require,module,exports){
+},{"../../constants.js":30,"../../utils.js":49,"lodash":26}],46:[function(require,module,exports){
 'use strict';
 
 var _ = require("lodash");
@@ -19917,6 +19923,7 @@ exports.onTransitionEnd = onTransitionEnd;
 exports.toggleCollapse = toggleCollapse;
 exports.showTab = showTab;
 exports.clipboardFallbackMessage = clipboardFallbackMessage;
+exports.sanitizeURL = sanitizeURL;
 
 var _lodash = require('lodash');
 
@@ -20146,6 +20153,16 @@ function clipboardFallbackMessage() {
 	}
 
 	return actionMsg;
+}
+
+function sanitizeURL(url) {
+	var parser = document.createElement('a');
+	parser.href = url;
+	if (['http:', 'https:', 'ftp:'].includes(parser.protocol)) {
+		return `${parser.protocol}//${parser.hostname}${parser.port ? ':' + parser.port : ''}${parser.pathname}${parser.search}${parser.hash}`;
+	}
+
+	return '';
 }
 
 },{"lodash":26}]},{},[35])(35)
