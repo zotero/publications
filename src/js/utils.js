@@ -226,3 +226,13 @@ export function clipboardFallbackMessage() {
 
 	return actionMsg;
 }
+
+export function sanitizeURL(url) {
+	var parser = document.createElement('a');
+	parser.href = url;
+	if(['http:', 'https:', 'ftp:'].includes(parser.protocol)) {
+		return `${parser.protocol}//${parser.hostname}${parser.port ? ':' + parser.port : ''}${parser.pathname}${parser.search}${parser.hash}`;
+	}
+
+	return '';
+}
