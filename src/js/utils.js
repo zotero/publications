@@ -226,3 +226,12 @@ export function clipboardFallbackMessage() {
 
 	return actionMsg;
 }
+
+export function sanitizeURL(url) {
+	url = url.trim();
+	if(/^(https?|ftp):\/\//i.test(url)) {
+		return url;
+	} else {
+		return `http://${url}`;
+	}
+}

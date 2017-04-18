@@ -1,10 +1,11 @@
 <% const constants = require('../../constants.js'); %>
+<% const utils = require('../../utils.js'); %>
 <div class="zotero-item-header-container">
 	<% if (obj.data.itemType == 'book') { %>
 			<div class="zotero-item-header">
 				<h3 class="zotero-item-title">
 					<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-						<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+						<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 					<% } else { %>
 						<%- obj.data.title %>
 					<% } %>
@@ -22,7 +23,7 @@
 			<div class="zotero-item-header">
 				<h3 class="zotero-item-title">
 					<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-						<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+						<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 					<% } else { %>
 						<%- obj.data.title %>
 					<% } %>
@@ -40,7 +41,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -60,7 +61,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -78,7 +79,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>
@@ -96,7 +97,7 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- obj.item[constants.VIEW_ONLINE_URL] %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 				<% } else { %>
 					<%- obj.data.title %>
 				<% } %>

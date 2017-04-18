@@ -51,7 +51,7 @@ module.exports = function(config) {
 		},
 		files: [
 			'src/js/*.js',
-			'test/*.js'
+			'test/*.spec.js'
 		],
 
 		reporters: reporters,

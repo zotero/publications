@@ -176,8 +176,8 @@ function getMultiJS() {
 
 function getDemo() {
 	return merge(
-		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html', 'src/demo/local-templated.html'])
-			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html', 'tmp/local-templated.html'])),
+		gulp.src(['src/demo/index.html', 'src/demo/local-grouped.html', 'src/demo/local-ungrouped.html', 'src/demo/local-templated.html', 'src/demo/local-xss.html'])
+			.pipe(symlink(['tmp/index.html', 'tmp/local-grouped.html', 'tmp/local-ungrouped.html', 'tmp/local-templated.html', 'tmp/local-xss.html'])),
 		gulp.src('node_modules/lodash/lodash.js')
 			.pipe(symlink('tmp/lodash.js'))
 		);

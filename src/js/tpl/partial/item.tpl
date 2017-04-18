@@ -1,4 +1,5 @@
 <% const constants = require('../../constants.js'); %>
+<% const utils = require('../../utils.js'); %>
 <li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="item-<%- obj.item.key %>" role="listitem">
 	<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>
 
@@ -64,11 +65,11 @@
 									<td class="zotero-meta-label"><%- obj.renderer.fieldMap[keys[i]] %></td>
 									<td class="zotero-meta-value">
 										<% if(keys[i] === 'DOI') { %>
-											<a href="https://doi.org/<%- obj.data[keys[i]] %>" rel="nofollow">
+											<a href="https://doi.org/<%- encodeURIComponent(obj.data[keys[i]]) %>" rel="nofollow">
 												<%- obj.data[keys[i]] %>
 											</a>
 										<% } else if(keys[i] === 'url') { %>
-											<a href="<%- obj.data[keys[i]] %>" rel="nofollow">
+											<a href="<%- utils.sanitizeURL(obj.data[keys[i]]) %>" rel="nofollow">
 												<%- obj.data[keys[i]] %>
 											</a>
 										<% } else { %>
@@ -105,7 +106,7 @@
 					<% for(var childItem of obj.item[constants.CHILD_ATTACHMENTS]) { %>
 						<li>
 							<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
-							<a href="<%- childItem.url %>" rel="nofollow">
+							<a href="<%- utils.sanitizeURL(childItem.url) %>" rel="nofollow">
 							<% }%>
 								<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--
 								--><%- childItem.title %>
