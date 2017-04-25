@@ -1173,6 +1173,9 @@ function processResponse(response) {
 		}
 
 		for (let item of childItems) {
+			if (!(item.data.parentItem in index)) {
+				continue;
+			}
 			if (item.data.itemType === 'note') {
 				if (!index[item.data.parentItem][_constants.CHILD_NOTES]) {
 					index[item.data.parentItem][_constants.CHILD_NOTES] = [];

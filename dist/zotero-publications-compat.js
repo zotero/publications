@@ -3724,6 +3724,9 @@ function processResponse(response) {
 			for (var _iterator = childItems[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
 				var _item = _step.value;
 
+				if (!(_item.data.parentItem in index)) {
+					continue;
+				}
 				if (_item.data.itemType === 'note') {
 					if (!index[_item.data.parentItem][_constants.CHILD_NOTES]) {
 						index[_item.data.parentItem][_constants.CHILD_NOTES] = [];
