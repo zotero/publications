@@ -5,6 +5,7 @@ import _ from 'lodash';
 import testData from './fixtures/test-data.json';
 import testDataGrouped from './fixtures/test-data-grouped.json';
 import testDataSingle from './fixtures/test-data-single.json';
+import testDataMismatched from './fixtures/test-data-mismatched.json';
 import Renderer from '../src/js/renderer.js';
 import DomWrapper from '../src/js/dom-wrapper.js';
 import ZoteroData from '../src/js/data.js';
@@ -94,6 +95,15 @@ describe('Zotero Publications', function() {
 			Author: [ 'Yoda' ],
 			Editor: [ 'Luke Skywalker' ]
 		});
+	});
+
+	it('should discard mismatched child items', function() {
+		let dataMismatched = JSON.parse(JSON.stringify(testDataMismatched));
+		let processed = processResponse(dataMismatched);
+		expect(processed.length, 2);
+		let abcd = _.find(processed, {key: 'ABCD'});
+		expect(abcd[CHILD_NOTES].length).toEqual(1);
+		expect(abcd[CHILD_ATTACHMENTS].length).toEqual(2);
 	});
 
 	it('should extract "view online" url from the response', function() {
