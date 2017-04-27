@@ -110,7 +110,7 @@ ZoteroPublications.prototype.defaults = {
 	},
 	getQueryParamsDefault: {
 		linkwrap: '1',
-		order: 'dateModified',
+		order: 'date',
 		sort: 'desc',
 		start: '0',
 		include: ['data'],

@@ -6,6 +6,7 @@ import testData from './fixtures/test-data.json';
 import testDataGrouped from './fixtures/test-data-grouped.json';
 import testDataSingle from './fixtures/test-data-single.json';
 import testDataMismatched from './fixtures/test-data-mismatched.json';
+import testDataOrdered from './fixtures/test-data-ordered.json';
 import Renderer from '../src/js/renderer.js';
 import DomWrapper from '../src/js/dom-wrapper.js';
 import ZoteroData from '../src/js/data.js';
@@ -203,6 +204,21 @@ describe('Zotero Publications', function() {
 		zd.groupByType(['book']);
 		expect(zd.data.book[GROUP_EXPANDED_SUMBOL]).toBe(true);
 		expect(zd.data.journalArticle[GROUP_EXPANDED_SUMBOL]).toBe(false);
+	});
+
+	it('should render items sorted', function() {
+		let zd = new ZoteroData(JSON.parse(JSON.stringify(testDataOrdered)), zp.config);
+		let renderedCollection = renderer.renderPlainView(zd);
+		expect(renderedCollection).toBeDefined();
+		expect(renderedCollection).toMatch(/^^((.|\n)*)?Latest((.|\n)*)?Mid((.|\n)*)?Oldest((.|\n)*)?$/);
+	});
+
+	it('should render group of items sorted', function() {
+		let zd = new ZoteroData(JSON.parse(JSON.stringify(testDataOrdered)), zp.config);
+		zd.groupByType();
+		let renderedCollection = renderer.renderGroupView(zd);
+		expect(renderedCollection).toBeDefined();
+		expect(renderedCollection).toMatch(/^^((.|\n)*)?Mid((.|\n)*)?Latest((.|\n)*)?Oldest((.|\n)*)?$/);
 	});
 
 	it('should recursively batch-fetch all data', function(done) {

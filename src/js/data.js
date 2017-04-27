@@ -43,7 +43,7 @@ ZoteroData.prototype.groupByType = function(expand) {
 		if(!groupedData[item.data.itemType]) {
 			groupedData[item.data.itemType] = [];
 		}
-		groupedData[item.data.itemType].push(item);
+		groupedData[item.data.itemType].unshift(item);
 		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _.includes(expand, item.data.itemType);
 	}
 	this.data = groupedData;
