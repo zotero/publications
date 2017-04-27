@@ -3914,7 +3914,7 @@ ZoteroData.prototype.groupByType = function (expand) {
 		if (!groupedData[item.data.itemType]) {
 			groupedData[item.data.itemType] = [];
 		}
-		groupedData[item.data.itemType].push(item);
+		groupedData[item.data.itemType].unshift(item);
 		groupedData[item.data.itemType][_constants.GROUP_EXPANDED_SUMBOL] = expand === 'all' || _lodash2.default.includes(expand, item.data.itemType);
 	}
 	this.data = groupedData;
@@ -4680,7 +4680,7 @@ ZoteroPublications.prototype.defaults = {
 	},
 	getQueryParamsDefault: {
 		linkwrap: '1',
-		order: 'dateModified',
+		order: 'date',
 		sort: 'desc',
 		start: '0',
 		include: ['data'],
