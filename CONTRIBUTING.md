@@ -42,9 +42,8 @@ To execute tests only once.
 Build
 -----
 
-`dist` folder contains the latest build and is included in the repository. To re-build the package execute:
+`dist` folder contains the latest build and should not be included in the repository. To build the package execute:
 
     npm run build
-
-This will produce files for all build variants.
+ 
 

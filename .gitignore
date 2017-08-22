@@ -3,5 +3,6 @@ bower_components
 coverage
 tmp
 lib
+dist
 .DS_Store
 /demo
