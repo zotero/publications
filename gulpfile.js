@@ -7,12 +7,9 @@ const gulp = require('gulp');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const gutil = require('gulp-util');
-const lodash = require('lodash');
 const uglify = require('gulp-uglify-es').default;
 const rename = require('gulp-rename');
-const babelify = require('babelify');
 const symlink = require('gulp-symlink');
-const jstify = require('jstify');
 const sourcemaps = require('gulp-sourcemaps');
 const sass = require('gulp-sass');
 const autoprefixer = require('gulp-autoprefixer');
@@ -24,7 +21,6 @@ const tplCompiler = require('./gulp/tpl-compiler');
 const watchify = require('watchify');
 const runSequence = require('run-sequence');
 const merge = require('merge-stream');
-const fs = require('fs');
 
 var buildDir;
 
@@ -37,7 +33,7 @@ function onSuccess(msg) {
 }
 
 function getBrowserify(dev, version) {
-	return browserify({
+	let b = browserify({
 			cache: {},
 			packageCache: {},
 			entries: `src/js/main-${version}.js`,
@@ -56,6 +52,15 @@ function getBrowserify(dev, version) {
 			}]
 		]
 	});
+
+	b.on('log', onSuccess);
+
+	if(dev) {
+		b.plugin(watchify);
+		b.on('update', () => getJS(dev, b));
+	}
+
+	return b;
 }
 
 function getJS(dev, bundle) {
@@ -119,7 +124,7 @@ gulp.task('build', ['clean:build'], function() {
 	return merge(getJS(false, getBrowserify(false, 'compat')), getSass());
 });
 
-gulp.task('dev', ['clean:dev'], function(done) {
+gulp.task('dev', ['clean:dev'], function() {
 	buildDir = './tmp/';
 
 	connect.server({
