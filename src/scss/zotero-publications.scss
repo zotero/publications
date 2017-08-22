@@ -53,6 +53,7 @@ $border-radius-base: 4px;
 			cursor: pointer;
 		}
 
+
 		ul {
 			list-style-type: none;
 			margin: 0;
@@ -66,6 +67,10 @@ $border-radius-base: 4px;
 
 		[data-trigger] {
 			user-select: none;
+		}
+
+		.small-caps {
+			font-variant-caps: small-caps;
 		}
 	}
 

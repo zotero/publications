@@ -5,9 +5,9 @@
 			<div class="zotero-item-header">
 				<h3 class="zotero-item-title">
 					<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-						<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+						<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%= utils.escapeFormattedValue(obj.data.title) %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 					<% } else { %>
-						<%- obj.data.title %>
+						<%= utils.escapeFormattedValue(obj.data.title) %>
 					<% } %>
 				</h3>
 				<div class="zotero-item-subline">
@@ -23,9 +23,9 @@
 			<div class="zotero-item-header">
 				<h3 class="zotero-item-title">
 					<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-						<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+						<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%= utils.escapeFormattedValue(obj.data.title) %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 					<% } else { %>
-						<%- obj.data.title %>
+						<%= utils.escapeFormattedValue(obj.data.title) %>
 					<% } %>
 				</h3>
 				<div class="zotero-item-subline">
@@ -41,9 +41,9 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%= utils.escapeFormattedValue(obj.data.title) %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 				<% } else { %>
-					<%- obj.data.title %>
+					<%= utils.escapeFormattedValue(obj.data.title) %>
 				<% } %>
 			</h3>
 			<div class="zotero-item-subline">
@@ -61,9 +61,9 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%= utils.escapeFormattedValue(obj.data.title) %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 				<% } else { %>
-					<%- obj.data.title %>
+					<%= utils.escapeFormattedValue(obj.data.title) %>
 				<% } %>
 			</h3>
 			<div class="zotero-item-subline">
@@ -79,9 +79,9 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%= utils.escapeFormattedValue(obj.data.title) %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 				<% } else { %>
-					<%- obj.data.title %>
+					<%= utils.escapeFormattedValue(obj.data.title) %>
 				<% } %>
 			</h3>
 			<div class="zotero-item-subline">
@@ -97,9 +97,9 @@
 		<div class="zotero-item-header">
 			<h3 class="zotero-item-title">
 				<% if (obj.item[constants.VIEW_ONLINE_URL]) { %>
-					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%- obj.data.title %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
+					<a href="<%- utils.sanitizeURL(obj.item[constants.VIEW_ONLINE_URL]) %>" rel="nofollow"><%= utils.escapeFormattedValue(obj.data.title) %></a> <% if(obj.item[constants.HAS_PDF]) { %> [PDF]<% } %>
 				<% } else { %>
-					<%- obj.data.title %>
+					<%= utils.escapeFormattedValue(obj.data.title) %>
 				<% } %>
 			</h3>
 
