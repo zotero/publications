@@ -22,9 +22,7 @@ $zotero-red: #900;
 $border-radius-base: 4px;
 
 @import 'respond';
-@import 'node_modules/primer-css/scss/variables';
-@import 'node_modules/primer-css/scss/mixins';
-@import 'node_modules/primer-css/scss/tooltips';
+@import 'primer-tooltips/index.scss';
 
 
 // Inherits:

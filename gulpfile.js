@@ -76,7 +76,9 @@ function getSass(dev) {
 	return merge(
 		gulp.src('./src/scss/zotero-publications.scss')
 			.pipe(gulpif(dev, sourcemaps.init()))
-			.pipe(sass().on('error', onError))
+			.pipe(sass({
+				includePaths: ['node_modules']
+			}).on('error', onError))
 			.pipe(autoprefixer({
 				browsers: ['last 2 versions', 'IE 10']
 			}))
@@ -87,7 +89,9 @@ function getSass(dev) {
 			.pipe(gulpif(!dev, gulp.dest(buildDir))),
 		gulp.src('./src/scss/demo.scss')
 			.pipe(gulpif(dev, sourcemaps.init()))
-			.pipe(sass().on('error', onError))
+			.pipe(sass({
+				includePaths: ['node_modules']
+			}).on('error', onError))
 			.pipe(autoprefixer({
 				browsers: ['last 2 versions', 'IE 10']
 			}))
@@ -151,24 +155,25 @@ gulp.task('prepublish:tpl', function() {
 			.pipe(tplCompiler({
 				variable: 'obj'
 			}))
-			.pipe(babel({
-				plugins: presets['compat']
-			}))
+			.pipe(babel())
 			.pipe(rename({ extname: '.tpl' }))
-			.pipe(gulp.dest('./lib/tpl/'));
+			.pipe(gulp.dest('./lib/js/tpl/'));
 });
 
 gulp.task('prepublish:js', function() {
-	return gulp.src('./src/js/**/*.js')
-			.pipe(babel({
-				plugins: presets['compat']
-			}))
+	return gulp.src('./src/js/**/*.js', { base: 'src'})
+			.pipe(babel())
+			.pipe(gulp.dest('./lib/'));
+});
+
+gulp.task('prepublish:scss', function() {
+	return gulp.src('./src/scss/**/*.scss', { base: 'src'})
 			.pipe(gulp.dest('./lib/'));
 });
 
 
-gulp.task('prepublish', ['clean:prepublish'], function(done) {
-	runSequence('prepublish:tpl', 'prepublish:js', done);
+gulp.task('prepublish', ['clean:prepublish', 'clean:build'], function(done) {
+	runSequence('build', 'prepublish:tpl', 'prepublish:js', 'prepublish:scss', done);
 });
 
 gulp.task('postpublish', ['clean:prepublish']);

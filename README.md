@@ -20,9 +20,13 @@ This version will work in node and browserify:
 
     const ZoteroPublications = require('zotero-publications');
 
-The npm package also contains a `dist` folder with both minified and non-minified sources, which can be used in browsers directly.
+If you're using sass/scss, you can simply point your sass include-path at your node_modules directory and import it like this.
 
-JS files in `dist` folder are following the [Universal Module Definition](https://github.com/umdjs/umd) pattern which means you can also use this library in systems that use AMD (e.g. [RequireJS](http://requirejs.org/)) or CommonJS module loader mechanism.
+    @import "zotero-publications/lib/scss/zotero-publications.scss";
+
+The npm package also contains a `dist` folder with both minified and non-minified sources (js & css), which can be used in a browser directly.
+
+Javascript files in `dist` folder are following the [Universal Module Definition](https://github.com/umdjs/umd) pattern which means you can also use this library in systems that use AMD (e.g. [RequireJS](http://requirejs.org/)) or CommonJS module loader mechanism.
 
 You will need to include one *css* and one *js* file on your page. The easiest way to do that is to add css file somewhere within `<head>` on your page:
 
