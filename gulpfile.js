@@ -120,11 +120,15 @@ gulp.task('scss', function() {
 
 
 gulp.task('build', ['clean:build'], function() {
+	process.env.NODE_ENV = process.env.NODE_ENV || 'browser';
+
 	buildDir = './dist/';
 	return merge(getJS(false, getBrowserify(false, 'compat')), getSass());
 });
 
 gulp.task('dev', ['clean:dev'], function() {
+	process.env.NODE_ENV = process.env.NODE_ENV || 'development';
+
 	buildDir = './tmp/';
 
 	connect.server({

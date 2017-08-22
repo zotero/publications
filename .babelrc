@@ -3,6 +3,14 @@
     "browser": {
       "presets": [
         "es2015"
+      ],
+      "plugins": [
+        "transform-regenerator",
+        ["transform-runtime", {
+          "helpers": false,
+          "polyfill": false,
+          "regenerator": true
+        }]
       ]
     }
   },
