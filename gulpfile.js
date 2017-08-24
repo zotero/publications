@@ -32,7 +32,7 @@ function onSuccess(msg) {
 	gutil.log(gutil.colors.green('Build:'), msg);
 }
 
-function getBrowserify(dev, version) {
+function getBrowserify(dev, version, watch = dev) {
 	let b = browserify({
 			cache: {},
 			packageCache: {},
@@ -55,7 +55,7 @@ function getBrowserify(dev, version) {
 
 	b.on('log', onSuccess);
 
-	if(dev) {
+	if(watch) {
 		b.plugin(watchify);
 		b.on('update', () => getJS(dev, b));
 	}
@@ -124,6 +124,13 @@ gulp.task('build', ['clean:build'], function() {
 
 	buildDir = './dist/';
 	return merge(getJS(false, getBrowserify(false, 'compat')), getSass());
+});
+
+gulp.task('build-dev', ['clean:build'], function() {
+	process.env.NODE_ENV = process.env.NODE_ENV || 'browser';
+
+	buildDir = './dist/';
+	return merge(getJS(true, getBrowserify(true, 'compat', false)), getSass());
 });
 
 gulp.task('dev', ['clean:dev'], function() {

@@ -241,7 +241,7 @@ const formatMapping = [
 	[new RegExp(/&lt;i&gt;([\s\S]*)&lt;\/i&gt;/), '<i>$1</i>'],
 	[new RegExp(/&lt;sc&gt;([\s\S]*)&lt;\/sc&gt;/), '<span class="small-caps">$1</span>'],
 	[new RegExp(/&lt;sub&gt;([\s\S]*)&lt;\/sub&gt;/), '<sub>$1</sub>'],
-	[new RegExp(/&lt;sup&gt;([\s\S]*)&lt;\/sup&gt;/), '<sup>$1</sup>'],
+	[new RegExp(/&lt;sup&gt;([\s\S]*)&lt;\/sup&gt;/), '<sup>$1</sup>']
 ];
 
 export function escapeFormattedValue(value) {
