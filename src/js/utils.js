@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import balanced from 'balanced-match';
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
 
@@ -236,20 +237,34 @@ export function sanitizeURL(url) {
 	}
 }
 
-const formatMapping = [
-	[new RegExp(/&lt;b&gt;([\s\S]*)&lt;\/b&gt;/), '<b>$1</b>'],
-	[new RegExp(/&lt;i&gt;([\s\S]*)&lt;\/i&gt;/), '<i>$1</i>'],
-	[new RegExp(/&lt;sc&gt;([\s\S]*)&lt;\/sc&gt;/), '<span class="small-caps">$1</span>'],
-	[new RegExp(/&lt;sub&gt;([\s\S]*)&lt;\/sub&gt;/), '<sub>$1</sub>'],
-	[new RegExp(/&lt;sup&gt;([\s\S]*)&lt;\/sup&gt;/), '<sup>$1</sup>']
+const mappings = [
+	[['&lt;b&gt;', '&lt;\/b&gt;'], ['<b>', '</b>']],
+	[['&lt;i&gt;', '&lt;\/i&gt;'], ['<i>', '</i>']],
+	[['&lt;sc&gt;', '&lt;\/sc&gt;'], ['<span class="small-caps">', '</span>']],
+	[['&lt;sub&gt;', '&lt;\/sub&gt;'], ['<sub>', '</sub>']],
+	[['&lt;sup&gt;', '&lt;\/sup&gt;'], ['<sup>', '</sup>']]
 ];
+
+function recursiveBalancedMatch(mapping, value) {
+	let matches = balanced(...mapping[0], value);
+	if(matches) {
+		return [
+			recursiveBalancedMatch(mapping, matches.pre),
+			mapping[1][0],
+			recursiveBalancedMatch(mapping, matches.body),
+			mapping[1][1],
+			recursiveBalancedMatch(mapping, matches.post)
+		].join('');
+	} else {
+		return value;
+	}
+}
 
 export function escapeFormattedValue(value) {
 	let escaped = _.escape(value);
 
-	formatMapping.forEach(replacePair => {
-		escaped = escaped.replace(...replacePair);
-	});
+	return mappings.reduce((value, mapping) => {
+		return recursiveBalancedMatch(mapping, value);
+	}, escaped);
 
-	return escaped;
 }
