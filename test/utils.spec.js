@@ -47,5 +47,10 @@ describe('utils', function() {
 			expect(escapeFormattedValue('Lorem <i>some</i> and <b>ipsum</b> and <sup>dolot</sup>')).toEqual('Lorem <i>some</i> and <b>ipsum</b> and <sup>dolot</sup>');
 			expect(escapeFormattedValue('Lorem <i>some</i> and <i>ipsum</i> and <i>dolot</i>')).toEqual('Lorem <i>some</i> and <i>ipsum</i> and <i>dolot</i>');
 		});
+
+		it('should handle unbalanced tags gracefully', () => {
+			expect(escapeFormattedValue('Lorem <i>some')).toEqual('Lorem &lt;i&gt;some');
+			expect(escapeFormattedValue('<i>Lorem <i>some</i>')).toEqual('&lt;i&gt;Lorem <i>some</i>');
+		});
 	});
 });
