@@ -137,17 +137,15 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should handle a single item response', function(done) {
-		spyOn(window, 'fetch').and.returnValue(
-			Promise.resolve(
-				new Response(
-					JSON.stringify(dataSingle),
-					{ status: 200,
-					'headers': new Headers({
-						'Link': 'blah'
-					})}
-				)
+		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
+			new Response(
+				JSON.stringify(dataSingle),
+				{ status: 200,
+				'headers': new Headers({
+					'Link': 'blah'
+				})}
 			)
-		);
+		));
 
 		zp.getPublication(4567, 123).then(function(data) {
 			expect(data instanceof ZoteroData).toBe(true);
@@ -255,17 +253,15 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should render grouped, remote itmes using Zotero object and render() method', function(done) {
-		spyOn(window, 'fetch').and.returnValue(
-			Promise.resolve(
-				new Response(
-					JSON.stringify(data),
-					{ status: 200,
-					'headers': new Headers({
-						'Link': 'blah'
-					})}
-				)
+		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
+			new Response(
+				JSON.stringify(data),
+				{ status: 200,
+				'headers': new Headers({
+					'Link': 'blah'
+				})}
 			)
-		);
+		));
 
 		let promise = new ZoteroPublications({
 			'group': 'type'
@@ -295,8 +291,7 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should reject when unable to fetch remote items using render() method', function(done) {
-		spyOn(window, 'fetch').and.returnValue(
-			Promise.resolve(
+		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
 				new Response(
 					'{}',
 					{ status: 500 },
@@ -315,8 +310,7 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should render remote itmes using shortcut syntax', function(done) {
-		spyOn(window, 'fetch').and.returnValue(
-			Promise.resolve(
+		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
 				new Response(
 					JSON.stringify(data),
 					{ status: 200,
@@ -419,17 +413,15 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should expand selected item', function(done) {
-		spyOn(window, 'fetch').and.returnValue(
-			Promise.resolve(
-				new Response(
-					JSON.stringify(data),
-					{ status: 200,
-					'headers': new Headers({
-						'Link': 'blah'
-					})}
-				)
+		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
+			new Response(
+				JSON.stringify(data),
+				{ status: 200,
+				'headers': new Headers({
+					'Link': 'blah'
+				})}
 			)
-		);
+		));
 
 		let zp = new ZoteroPublications({
 			useHistory: true
@@ -454,17 +446,15 @@ describe('Zotero Publications', function() {
 	it('should pick up fragment identifier from the url', function(done) {
 		location.hash = 'EFGH';
 
-		spyOn(window, 'fetch').and.returnValue(
-			Promise.resolve(
-				new Response(
-					JSON.stringify(data),
-					{ status: 200,
-					'headers': new Headers({
-						'Link': 'blah'
-					})}
-				)
+		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
+			new Response(
+				JSON.stringify(data),
+				{ status: 200,
+				'headers': new Headers({
+					'Link': 'blah'
+				})}
 			)
-		);
+		));
 
 		let zp = new ZoteroPublications({
 			useHistory: true
@@ -510,14 +500,12 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should save to my library', function(done) {
-		spyOn(window, 'fetch').and.returnValue(
-			Promise.resolve(
-				new Response(
-					JSON.stringify({}),
-					{ status: 200 }
-				)
+		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
+			new Response(
+				JSON.stringify({}),
+				{ status: 200 }
 			)
-		);
+		));
 		window.Zotero = {
 			config: {
 				apiKey: 'lorem ipsum'
