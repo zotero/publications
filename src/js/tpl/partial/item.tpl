@@ -12,7 +12,7 @@
 	<% } %>
 
 	<div class="zotero-item-actions">
-		<a href="" data-trigger="details" aria-controls="item-<%- obj.item.key %>-details">
+		<a href="#<%- obj.item.key %>" data-trigger="details" aria-controls="item-<%- obj.item.key %>-details">
 			Details
 		</a>
 		<% if(obj.renderer.zotero.config.zorgIntegration) { %>
