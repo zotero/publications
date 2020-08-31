@@ -167,24 +167,10 @@ $border-radius-base: 4px;
 		width: 32px;
 	}
 
-	// Collapse
-	&-collapsed {
-		height: 0;
-		visibility: hidden;
-
-		&.zotero-collapsing {
-			visibility: visible;
-		}
-	}
-
-	&-collapsing {
-		transition: height .35s ease-out;
-		will-change: height;
-	}
-
-
 	&-collapsable {
-		overflow: hidden;
+		overflow:hidden;
+		transition:height 0.3s ease-out;
+		height:auto;
 	}
 
 	// Forms

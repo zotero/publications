@@ -121,42 +121,36 @@ export function onTransitionEnd(target, callback, timeout) {
 	});
 }
 
-var collapsesInProgress = {};
+function resetHeight(ev) {
+	ev.currentTarget.removeEventListener('transitionend', resetHeight);
+	ev.currentTarget.style.height = null;
+}
 
 function collapse(element) {
-	let initialHeight = getComputedStyle(element).height;
-	element.style.height = initialHeight;
-	//repaint shenanigans
-	element.offsetHeight; // eslint-disable-line no-unused-expressions
+  const sectionHeight = element.scrollHeight;
+  const elementTransition = element.style.transition;
+  element.style.transition = '';
+  element.removeEventListener('transitionend', resetHeight);
 
-	_.defer(() => {
-		element.classList.add('zotero-collapsed', 'zotero-collapsing');
-		element.style.height = null;
-		collapsesInProgress[id(element)] = onTransitionEnd(element, () => {
-			element.classList.remove('zotero-collapsing');
-			element.setAttribute('aria-hidden', 'true');
-			element.setAttribute('aria-expanded', 'false');
-			delete collapsesInProgress[id(element)];
-		}, 500);
-	});
+  requestAnimationFrame(() => {
+		element.style.height = sectionHeight + 'px';
+		element.style.transition = elementTransition;
+		requestAnimationFrame(() => {
+			element.style.height = 0 + 'px';
+		});
+  });
+
+  element.setAttribute('data-collapsed', 'true');
 }
 
 function uncollapse(element) {
-	element.classList.remove('zotero-collapsed');
-	let targetHeight = getComputedStyle(element).height;
-	element.classList.add('zotero-collapsed');
+	const sectionHeight = element.scrollHeight;
+	element.removeEventListener('transitionend', resetHeight);
 
-	_.defer(() => {
-		element.classList.add('zotero-collapsing');
-		element.style.height = targetHeight;
-		collapsesInProgress[id(element)] = onTransitionEnd(element, () => {
-			element.classList.remove('zotero-collapsed', 'zotero-collapsing');
-			element.setAttribute('aria-hidden', 'false');
-			element.setAttribute('aria-expanded', 'true');
-			element.style.height = null;
-			delete collapsesInProgress[id(element)];
-		}, 500);
-	});
+	element.addEventListener('transitionend', resetHeight);
+	element.style.height = sectionHeight + 'px';
+
+	element.setAttribute('data-collapsed', 'false');
 }
 
 /**
@@ -165,24 +159,14 @@ function uncollapse(element) {
  */
 export function toggleCollapse(element, override) {
 	if(typeof override !== 'undefined') {
-		if(collapsesInProgress[id(element)]) {
-			collapsesInProgress[id(element)]();
-		}
 		override ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
 		return override;
 	}
 
-	if(collapsesInProgress[id(element)]) {
-		collapsesInProgress[id(element)]();
-		let collapsing = !element.style.height;
-		collapsing ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
-		return collapsing;
-	}
-	else {
-		let collapsed = element.classList.contains('zotero-collapsed');
-		collapsed ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
-		return collapsed;
-	}
+	const isCollapsed = element.getAttribute('data-collapsed') === 'true';
+	isCollapsed ? uncollapse(element) : collapse(element); // eslint-disable-line no-unused-expressions
+
+	return isCollapsed;
 }
 
 export function showTab(targetTabEl) {

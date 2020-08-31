@@ -124,6 +124,12 @@ DomWrapper.prototype.prepareExport = function(itemEl) {
 DomWrapper.prototype.addHandlers = function() {
 	let clipboard = new Clipboard('.zotero-citation-copy');
 
+	Array.from(this.container.querySelectorAll('.zotero-details.zotero-collapsable'))
+		.forEach(element => {
+			element.style.height = 0 + 'px';
+			element.setAttribute('data-collapsed', 'true');
+		});
+
 	clipboard.on('success', function(e) {
 		e.clearSelection();
 		e.trigger.setAttribute('aria-label', 'Copied!');

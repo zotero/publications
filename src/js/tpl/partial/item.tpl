@@ -1,5 +1,5 @@
-<% const constants = require('../../constants.js'); %>
-<% const utils = require('../../utils.js'); %>
+<% const constants = require('../../constants'); %>
+<% const utils = require('../../utils'); %>
 <li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="item-<%- obj.item.key %>" role="listitem">
 	<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>
 
@@ -23,7 +23,7 @@
 	</div>
 
 	<!-- Details -->
-	<section class="zotero-details zotero-collapsed zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-<%- obj.item.key %>-details">
+	<section class="zotero-details zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-<%- obj.item.key %>-details">
 		<div class="zotero-details-inner">
 			<table class="zotero-meta">
 				<% if(obj.item.data['itemType']) { %>
