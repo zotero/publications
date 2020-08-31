@@ -1,2 +1,2 @@
-import ZoteroPublications from './publications.js';
+import ZoteroPublications from './publications';
 module.exports = ZoteroPublications;

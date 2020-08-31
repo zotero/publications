@@ -26,6 +26,7 @@ module.exports = function(config) {
 		},
 		browserify: {
 			debug: true,
+			extensions: ['.tpl'],
 			transform: [
 				['node-underscorify', {
 					'extensions': ['tpl'],

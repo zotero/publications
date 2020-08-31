@@ -2,8 +2,10 @@
 import _ from 'lodash';
 import {
 	fetchUntilExhausted
-} from './api.js';
-import ZoteroData from './data.js';
+} from './api';
+import ZoteroData from './data';
+import DomWrapper from './dom-wrapper';
+import Renderer from './renderer';
 /**
  * Application entry point. Alternatively can be used as a convenience function to render publications
  * into a container
@@ -269,7 +271,6 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 			}
 
 			if(typeof(window) !== 'undefined') {
-				const DomWrapper = require('./dom-wrapper.js');
 				let domwrapper = new DomWrapper(container, this)
 				domwrapper.displayPublications(data);
 				if(this.config.useHistory && location.hash) {
@@ -277,7 +278,6 @@ ZoteroPublications.prototype.render = function(userIdOrendpointOrData, container
 				}
 				resolve(domwrapper);
 			} else {
-				const Renderer = require('./renderer.js');
 				let renderer = new Renderer(this);
 				if(data.grouped > 0) {
 					resolve(renderer.renderGroupView(data));
@@ -300,11 +300,11 @@ ZoteroPublications.ZoteroData = ZoteroData;
  * Make ZoteroRenderer publicly accessible underneath ZoteroPublications
  * @type {ZoteroRenderer}
  */
-ZoteroPublications.Renderer = require('./renderer.js');
+ZoteroPublications.Renderer = Renderer
 
 /**
  * Make DomWrapper publicly accessible underneath ZoteroPublications
  * but only if in browser environment
  * @type {DomWrapper}
  */
-ZoteroPublications.DomWrapper = typeof(window) !== 'undefined' ? require('./dom-wrapper.js') : null;
+ZoteroPublications.DomWrapper = typeof(window) !== 'undefined' ? DomWrapper : null;

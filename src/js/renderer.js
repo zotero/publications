@@ -1,23 +1,23 @@
 import _ from 'lodash';
-import itemTpl from './tpl/partial/item.tpl';
-import itemTemplatedTpl from './tpl/partial/item-templated.tpl';
-import itemCitationTpl from './tpl/partial/item-citation.tpl';
-import itemsTpl from './tpl/partial/items.tpl';
-import groupTpl from './tpl/partial/group.tpl';
-import groupsTpl from './tpl/partial/groups.tpl';
-import brandingTpl from './tpl/partial/branding.tpl';
-import groupViewTpl from './tpl/group-view.tpl';
-import plainViewTpl from './tpl/plain-view.tpl';
+import itemTpl from './tpl/partial/item';
+import itemTemplatedTpl from './tpl/partial/item-templated';
+import itemCitationTpl from './tpl/partial/item-citation';
+import itemsTpl from './tpl/partial/items';
+import groupTpl from './tpl/partial/group';
+import groupsTpl from './tpl/partial/groups';
+import brandingTpl from './tpl/partial/branding';
+import groupViewTpl from './tpl/group-view';
+import plainViewTpl from './tpl/plain-view';
 import {
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE
-} from './constants.js';
+} from './constants';
 import {
 	formatCategoryName
-} from './utils.js';
-import fieldMap from './field-map.js';
+} from './utils';
+import fieldMap from './field-map';
 import typeMap from './type-map';
-import hiddenFields from './hidden-fields.js';
+import hiddenFields from './hidden-fields';
 
 _.templateSettings.variable = 'obj';
 

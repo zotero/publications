@@ -1,9 +1,10 @@
 import 'es6-symbol/implement';
+import 'cross-fetch/polyfill';
 import _ from 'lodash';
 import {
 	formatDate,
 	formatAbstract
-} from './utils.js';
+} from './utils';
 import {
 	CHILD_NOTES,
 	CHILD_ATTACHMENTS,
@@ -13,7 +14,7 @@ import {
 	FORMATTED_DATE_SYMBOL,
 	AUTHORS_SYMBOL,
 	HAS_PDF
-} from './constants.js';
+} from './constants';
 
 /**
  * Process raw API response

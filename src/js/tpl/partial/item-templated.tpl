@@ -1,5 +1,5 @@
-<% const constants = require('../../constants.js'); %>
-<% const utils = require('../../utils.js'); %>
+<% const constants = require('../../constants'); %>
+<% const utils = require('../../utils'); %>
 <div class="zotero-item-header-container">
 	<% if (obj.data.itemType == 'book') { %>
 			<div class="zotero-item-header">

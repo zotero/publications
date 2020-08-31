@@ -16,7 +16,7 @@ The easiest way to obtain the latest version is to use npm:
 
     npm i zotero-publications
 
-This version will work in node and browserify:
+This version will work in node and a browser:
 
     const ZoteroPublications = require('zotero-publications');
 

@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import Clipboard from 'clipboard';
-import ZoteroRenderer from './renderer.js';
-import exportTpl from './tpl/partial/export.tpl';
+import ZoteroRenderer from './renderer';
+import exportTpl from './tpl/partial/export';
 import {
 	closest,
 	toggleCollapse,
 	showTab,
 	clipboardFallbackMessage,
 	onTransitionEnd
-} from './utils.js';
+} from './utils';
 
 /**
  * Constructor for the Dom Wrapper

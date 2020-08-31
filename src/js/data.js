@@ -2,14 +2,14 @@ import 'es6-symbol/implement';
 import _ from 'lodash';
 import {
 	processResponse
-} from './api.js';
+} from './api';
 
 import {
 	GROUPED_NONE,
 	GROUPED_BY_TYPE,
 	GROUP_EXPANDED_SUMBOL,
 	GROUP_TITLE
-} from './constants.js';
+} from './constants';
 
 /**
  * Store, Encapsulate and Manipulate Zotero API data
