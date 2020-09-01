@@ -4,7 +4,7 @@
   "version": "0.5.3",
   "description": "Library to display \"My Publications\" from Zotero in a user friendly way.",
   "repository": "https://github.com/zotero/publications.git",
-  "main": "lib/js/zotero-publications.js",
+  "main": "lib/js/main.js",
   "browserslist": [
     "last 2 versions",
     "not dead"
