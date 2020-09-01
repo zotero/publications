@@ -432,15 +432,11 @@ describe('Zotero Publications', function() {
 		zp.render(zd, container).then(function() {
 			let domwrapper = new DomWrapper(container, zp);
 			domwrapper.expandDetails('EFGH').then(function() {
-				setTimeout(function() {
-					let itemDetailsEl = container.querySelector('[id=item-EFGH-details]');
-					let itemEl = container.querySelector('[id=item-EFGH]');
-					expect(itemEl.classList.contains('zotero-details-open')).toEqual(true);
-					expect(itemDetailsEl.classList.contains('zotero-collapsed')).toEqual(false);
-					expect(itemDetailsEl.getAttribute('aria-hidden')).toEqual('false');
-					expect(itemDetailsEl.getAttribute('aria-expanded')).toEqual('true');
-					done();
-				}, 510); //wait for the fallback transition to fire
+				let itemDetailsEl = container.querySelector('[id=item-EFGH-details]');
+				let itemEl = container.querySelector('[id=item-EFGH]');
+				expect(itemEl.classList.contains('zotero-details-open')).toEqual(true);
+				expect(itemDetailsEl.classList.contains('zotero-collapsed')).toEqual(false);
+				expect(itemDetailsEl.getAttribute('aria-expanded')).toEqual('true');
 				done();
 			});
 		});

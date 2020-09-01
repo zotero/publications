@@ -24,7 +24,7 @@ export default template`
 	</div>
 
 	<!-- Details -->
-	<section class="zotero-details zotero-collapsable" aria-hidden="true" aria-expanded="false" id="item-<%- obj.item.key %>-details">
+	<section class="zotero-details zotero-collapsable" aria-expanded="false" id="item-<%- obj.item.key %>-details">
 		<div class="zotero-details-inner">
 			<table class="zotero-meta">
 				<% if(obj.item.data['itemType']) { %>

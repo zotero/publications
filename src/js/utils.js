@@ -110,6 +110,7 @@ function collapse(element) {
   });
 
   element.setAttribute('data-collapsed', 'true');
+  element.setAttribute('aria-expanded', false);
 }
 
 function uncollapse(element) {
@@ -120,6 +121,7 @@ function uncollapse(element) {
 	element.style.height = sectionHeight + 'px';
 
 	element.setAttribute('data-collapsed', 'false');
+	element.setAttribute('aria-expanded', true);
 }
 
 /**
