@@ -11,7 +11,7 @@ var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'A
  * @return {String}         - formatted date
  */
 export function formatDate(isoDate) {
-	let matches = isoDate.match(/(\d{4})\-?(\d{2})?-?(\d{2})?/);
+	let matches = isoDate.match(/(\d{4})-?(\d{2})?-?(\d{2})?/);
 	let date = isoDate;
 
 	if(matches.length >= 4) {
@@ -88,39 +88,6 @@ export function once(target, type, listener) {
 export function id(target) {
 	target.id = target.id || _uniqueId('zotero-element-');
 	return target.id;
-}
-
-
-/**
- * Finds a correct name of a transitionend event
- * @return {String} 	- transitionend event name
- */
-export function onTransitionEnd(target, callback, timeout) {
-	var i,
-	el = document.createElement('div'),
-	eventName,
-	possibleEventNames = {
-		'transition': 'transitionend',
-		'OTransition': 'otransitionend',
-		'MozTransition': 'transitionend',
-		'WebkitTransition': 'webkitTransitionEnd'
-	};
-
-	for (i in possibleEventNames) {
-		if (possibleEventNames.hasOwnProperty(i) && el.style[i] !== undefined) {
-			eventName = possibleEventNames[i];
-		}
-	}
-
-	if(timeout) {
-		setTimeout(() => {
-			callback('timeout');
-		}, timeout);
-	}
-
-	return once(target, eventName, () => {
-		callback(eventName);
-	});
 }
 
 function resetHeight(ev) {
@@ -224,11 +191,11 @@ export function sanitizeURL(url) {
 }
 
 const mappings = [
-	[['&lt;b&gt;', '&lt;\/b&gt;'], ['<b>', '</b>']],
-	[['&lt;i&gt;', '&lt;\/i&gt;'], ['<i>', '</i>']],
-	[['&lt;sc&gt;', '&lt;\/sc&gt;'], ['<span class="small-caps">', '</span>']],
-	[['&lt;sub&gt;', '&lt;\/sub&gt;'], ['<sub>', '</sub>']],
-	[['&lt;sup&gt;', '&lt;\/sup&gt;'], ['<sup>', '</sup>']]
+	[['&lt;b&gt;', '&lt;/b&gt;'], ['<b>', '</b>']],
+	[['&lt;i&gt;', '&lt;/i&gt;'], ['<i>', '</i>']],
+	[['&lt;sc&gt;', '&lt;/sc&gt;'], ['<span class="small-caps">', '</span>']],
+	[['&lt;sub&gt;', '&lt;/sub&gt;'], ['<sub>', '</sub>']],
+	[['&lt;sup&gt;', '&lt;/sup&gt;'], ['<sup>', '</sup>']]
 ];
 
 function recursiveBalancedMatch(mapping, value) {
@@ -256,6 +223,6 @@ export function escapeFormattedValue(value) {
 }
 
 export default {
-	formatDate, formatAbstract, formatCategoryName, closest, once, id, onTransitionEnd,
-	toggleCollapse, showTab, clipboardFallbackMessage, sanitizeURL, escapeFormattedValue
+	formatDate, formatAbstract, formatCategoryName, closest, once, id, toggleCollapse, showTab,
+	clipboardFallbackMessage, sanitizeURL, escapeFormattedValue
 };

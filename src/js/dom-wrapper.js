@@ -6,7 +6,7 @@ import Clipboard from 'clipboard';
 import ZoteroRenderer from './renderer';
 import exportTpl from './tpl/partial/export';
 import constants from './constants';
-import utils, { closest, toggleCollapse, showTab, clipboardFallbackMessage, onTransitionEnd } from './utils';
+import utils, { closest, toggleCollapse, showTab, clipboardFallbackMessage } from './utils';
 
 /**
  * Constructor for the Dom Wrapper
@@ -247,10 +247,14 @@ DomWrapper.prototype.expandDetails = function(itemId) {
 	return new Promise((resolve) => {
 		let itemEl = this.container.querySelector(`[id=item-${itemId}]`);
 		this.toggleDetails(itemEl, true);
-		onTransitionEnd(itemEl, () => {
+
+		const scrollIntoView = () => {
+			itemEl.removeEventListener('transitionend', scrollIntoView);
 			itemEl.scrollIntoView();
 			resolve();
-		}, 500);
+		};
+
+		itemEl.addEventListener('transitionend', scrollIntoView);
 	});
 }
 

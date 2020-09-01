@@ -125,7 +125,7 @@ export function processResponse(response) {
  * @return {Promise}                - Resolved with complete dataset or rejected on error
  */
 export function fetchUntilExhausted(url, options, jsondata) {
-	let relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))>;\s*rel="next"/;
+	let relRegex = /<(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*))>;\s*rel="next"/;
 	jsondata = jsondata || [];
 
 	return new Promise((resolve, reject) => {
