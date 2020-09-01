@@ -1,4 +1,6 @@
-import _ from 'lodash';
+import _uniqueId from 'lodash/uniqueId';
+import _each from 'lodash/each';
+import _escape from 'lodash/escape';
 import balanced from 'balanced-match';
 var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 
@@ -84,7 +86,7 @@ export function once(target, type, listener) {
  * @return {String} 			- unique identifier
  */
 export function id(target) {
-	target.id = target.id || _.uniqueId('zotero-element-');
+	target.id = target.id || _uniqueId('zotero-element-');
 	return target.id;
 }
 
@@ -178,11 +180,11 @@ export function showTab(targetTabEl) {
 	let tabPanelsWrapper = closest(targetTabPanelEl, el => el.classList.contains('zotero-tab-content'));
 	let tabPanels = tabPanelsWrapper.querySelectorAll('.zotero-tabpanel');
 
-	_.each(tabs, tabEl => {
+	_each(tabs, tabEl => {
 		tabEl.classList.remove('zotero-tab-active');
 		tabEl.querySelector('a').setAttribute('aria-selected', false);
 	});
-	_.each(tabPanels, tabPanelEl => {
+	_each(tabPanels, tabPanelEl => {
 		tabPanelEl.classList.remove('zotero-tabpanel-open');
 		tabPanelEl.setAttribute('aria-expanded', false);
 		tabPanelEl.setAttribute('aria-hidden', true);
@@ -245,10 +247,15 @@ function recursiveBalancedMatch(mapping, value) {
 }
 
 export function escapeFormattedValue(value) {
-	let escaped = _.escape(value);
+	let escaped = _escape(value);
 
 	return mappings.reduce((value, mapping) => {
 		return recursiveBalancedMatch(mapping, value);
 	}, escaped);
 
 }
+
+export default {
+	formatDate, formatAbstract, formatCategoryName, closest, once, id, onTransitionEnd,
+	toggleCollapse, showTab, clipboardFallbackMessage, sanitizeURL, escapeFormattedValue
+};

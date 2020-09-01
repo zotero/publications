@@ -12,17 +12,16 @@
 		<h1>Zotero Publications Demo</h1>
 		<div id="container"></div>
 	</div>
+	<script src="static/zotero-publications.js"></script>
+	<script>
+		new ZoteroPublications(
+			475425,
+			document.getElementById('container'),
+			{ 
+				'group': 'type',
+				'apiBase': 'api.zotero.org'
+			}
+		);
+	</script>
 </body>
-<script src="static/lodash.min.js"></script>
-<script src="static/zotero-publications.js"></script>
-<script>
-	new ZoteroPublications(
-		475425,
-		document.getElementById('container'),
-		{ 
-			'group': 'type',
-			'apiBase': 'api.zotero.org'
-		}
-	);
-</script>
 </html>

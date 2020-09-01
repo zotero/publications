@@ -1,14 +1,12 @@
-import _ from 'lodash';
+import _find from 'lodash/find';
+import _debounce from 'lodash/debounce';
+import _each from 'lodash/each';
+import includes from 'lodash/includes';
 import Clipboard from 'clipboard';
 import ZoteroRenderer from './renderer';
 import exportTpl from './tpl/partial/export';
-import {
-	closest,
-	toggleCollapse,
-	showTab,
-	clipboardFallbackMessage,
-	onTransitionEnd
-} from './utils';
+import constants from './constants';
+import utils, { closest, toggleCollapse, showTab, clipboardFallbackMessage, onTransitionEnd } from './utils';
 
 /**
  * Constructor for the Dom Wrapper
@@ -107,13 +105,14 @@ DomWrapper.prototype.prepareExport = function(itemEl) {
 		'include': [exportFormat],
 		'group': false
 	}).then(item => {
-		let itemData = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
+		let itemData = _find(this.data.raw, {'key': itemId});
 		let encoded = window.btoa(unescape(encodeURIComponent(item.raw[0][exportFormat])));
 		exportEl.classList.remove('zotero-loading-inline');
 		exportEl.innerHTML = exportTpl({
 			'filename': itemData.data.title + '.' + this.zotero.config.exportFormats[exportFormat].extension,
 			'content': encoded,
-			'contentType': this.zotero.config.exportFormats[exportFormat].contentType
+			'contentType': this.zotero.config.exportFormats[exportFormat].contentType,
+			constants, utils
 		});
 	});
 };
@@ -180,7 +179,7 @@ DomWrapper.prototype.addHandlers = function() {
 		}
 	});
 
-	window.addEventListener('resize', _.debounce(this.updateVisuals).bind(this));
+	window.addEventListener('resize', _debounce(this.updateVisuals).bind(this));
 };
 
 /**
@@ -193,7 +192,7 @@ DomWrapper.prototype.updateVisuals = function() {
 		this.zoteroLines = this.container.querySelectorAll('.zotero-line');
 	}
 
-	_.each(this.zoteroLines, zoteroLineEl => {
+	_each(this.zoteroLines, zoteroLineEl => {
 		let offset = `${this.container.offsetLeft * -1}px`;
 		if(window.innerWidth < 768 && this.container.offsetLeft <= 30 && this.container.offsetLeft > 3) {
 			zoteroLineEl.style.left = offset;
@@ -266,7 +265,7 @@ DomWrapper.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	replacementEl.innerText = 'Adding...';
 	triggerEl.parentNode.replaceChild(replacementEl, triggerEl);
 	let itemId = itemEl.getAttribute('data-item');
-	let sourceItem = (_.findWhere || _.find)(this.data.raw, {'key': itemId});
+	let sourceItem = _find(this.data.raw, {'key': itemId});
 	let clonedItem = {};
 	let ignoredFields = [
 		'mimeType',
@@ -285,8 +284,8 @@ DomWrapper.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 		'dateModified'
 	];
 
-	_.forEach(sourceItem.data, (value, key) => {
-		if(!_.includes(ignoredFields, key)) {
+	_each(sourceItem.data, (value, key) => {
+		if(!includes(ignoredFields, key)) {
 			clonedItem[key] = value;
 		}
 	});
@@ -320,4 +319,4 @@ DomWrapper.prototype.saveToMyLibrary = function(triggerEl, itemEl) {
 	});
 }
 
-module.exports = DomWrapper;
+export default DomWrapper;

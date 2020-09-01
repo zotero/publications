@@ -11,3 +11,9 @@ export const ABSTRACT_NOTE_PROCESSED = Symbol.for('abstractNoteProcessed');
 export const AUTHORS_SYMBOL = Symbol.for('authors');
 export const FORMATTED_DATE_SYMBOL = Symbol.for('formattedDate');
 export const HAS_PDF = Symbol.for('hasPdf');
+
+export default {
+	GROUPED_NONE, GROUPED_BY_TYPE, GROUPED_BY_COLLECTION, CHILD_NOTES, CHILD_ATTACHMENTS,
+	CHILD_OTHER, GROUP_EXPANDED_SUMBOL, GROUP_TITLE, VIEW_ONLINE_URL, ABSTRACT_NOTE_PROCESSED,
+	AUTHORS_SYMBOL, FORMATTED_DATE_SYMBOL, HAS_PDF
+};

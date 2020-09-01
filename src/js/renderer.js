@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import itemTpl from './tpl/partial/item';
 import itemTemplatedTpl from './tpl/partial/item-templated';
 import itemCitationTpl from './tpl/partial/item-citation';
@@ -8,18 +7,13 @@ import groupsTpl from './tpl/partial/groups';
 import brandingTpl from './tpl/partial/branding';
 import groupViewTpl from './tpl/group-view';
 import plainViewTpl from './tpl/plain-view';
-import {
-	GROUP_EXPANDED_SUMBOL,
-	GROUP_TITLE
-} from './constants';
-import {
-	formatCategoryName
-} from './utils';
+import constants, { GROUP_EXPANDED_SUMBOL, GROUP_TITLE } from './constants';
+import utils, { formatCategoryName } from './utils';
 import fieldMap from './field-map';
 import typeMap from './type-map';
 import hiddenFields from './hidden-fields';
 
-_.templateSettings.variable = 'obj';
+// _.templateSettings.variable = 'obj';
 
 /**
  * Zotero Renderer constructor
@@ -42,7 +36,8 @@ Renderer.prototype.renderItem = function(zoteroItem) {
 	return itemTpl({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'renderer': this
+		'renderer': this,
+		constants, utils
 	});
 };
 
@@ -55,7 +50,8 @@ Renderer.prototype.renderItemTemplated = function(zoteroItem) {
 	return itemTemplatedTpl({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'renderer': this
+		'renderer': this,
+		constants, utils
 	});
 };
 
@@ -68,7 +64,8 @@ Renderer.prototype.renderItemCitation = function(zoteroItem) {
 	return itemCitationTpl({
 		'item': zoteroItem,
 		'data': zoteroItem.data,
-		'renderer': this
+		'renderer': this,
+		constants, utils
 	});
 };
 
@@ -80,7 +77,8 @@ Renderer.prototype.renderItemCitation = function(zoteroItem) {
 Renderer.prototype.renderItems = function(zoteroItems) {
 	return itemsTpl({
 		'items': zoteroItems,
-		'renderer': this
+		'renderer': this,
+		constants, utils
 	});
 };
 
@@ -94,7 +92,8 @@ Renderer.prototype.renderGroup = function(items) {
 		'title': formatCategoryName(items[GROUP_TITLE]),
 		'items': items,
 		'expand': items[GROUP_EXPANDED_SUMBOL],
-		'renderer': this
+		'renderer': this,
+		constants, utils
 	});
 };
 
@@ -106,7 +105,8 @@ Renderer.prototype.renderGroup = function(items) {
 Renderer.prototype.renderGroups = function(groups) {
 	return groupsTpl({
 		'groups': groups,
-		'renderer': this
+		'renderer': this,
+		constants, utils
 	});
 };
 
@@ -118,7 +118,8 @@ Renderer.prototype.renderGroups = function(groups) {
 Renderer.prototype.renderGroupView = function(data) {
 	return groupViewTpl({
 		'groups': data,
-		'renderer': this
+		'renderer': this,
+		constants, utils
 	});
 };
 
@@ -130,7 +131,8 @@ Renderer.prototype.renderGroupView = function(data) {
 Renderer.prototype.renderPlainView = function(data) {
 	return plainViewTpl({
 		'items': data,
-		'renderer': this
+		'renderer': this,
+		constants, utils
 	});
 };
 
@@ -140,10 +142,10 @@ Renderer.prototype.renderPlainView = function(data) {
  */
 Renderer.prototype.renderBranding = function() {
 	if(this.config.showBranding) {
-		return brandingTpl();
+		return brandingTpl({ constants, utils });
 	} else {
 		return '';
 	}
 };
 
-module.exports = Renderer;
+export default Renderer;

@@ -1,8 +1,8 @@
 /*global Zotero: false */
-import _ from 'lodash';
-import {
-	fetchUntilExhausted
-} from './api';
+import _extend from 'lodash/extend';
+import _includes from 'lodash/includes';
+import _map from 'lodash/map';
+import { fetchUntilExhausted } from './api';
 import ZoteroData from './data';
 import DomWrapper from './dom-wrapper';
 import Renderer from './renderer';
@@ -26,16 +26,16 @@ export default function ZoteroPublications() {
 	}
 
 	if(arguments.length <= 1) {
-		this.config = _.extend({}, this.defaults, arguments ? arguments[0] : {});
+		this.config = _extend({}, this.defaults, arguments ? arguments[0] : {});
 	} else {
-		this.config = _.extend({}, this.defaults, arguments[2]);
+		this.config = _extend({}, this.defaults, arguments[2]);
 	}
 
-	if(this.config.useCitationStyle && !_.includes(this.config.include, 'citation')) {
+	if(this.config.useCitationStyle && !_includes(this.config.include, 'citation')) {
 		this.config.getQueryParamsDefault.include.push('citation');
 	}
 
-	_.extend(this.config.getQueryParamsDefault, {
+	_extend(this.config.getQueryParamsDefault, {
 		style: this.config.citationStyle
 	});
 
@@ -129,8 +129,8 @@ ZoteroPublications.prototype.defaults = {
  *                             in case of any network/response problems
  */
 ZoteroPublications.prototype.get = function(url, params = {}, init = {}) {
-	params = _.extend({}, this.config.getQueryParamsDefault, params);
-	init = _.extend({
+	params = _extend({}, this.config.getQueryParamsDefault, params);
+	init = _extend({
 		headers: {
 			'Accept': 'application/json'
 		}
@@ -140,7 +140,7 @@ ZoteroPublications.prototype.get = function(url, params = {}, init = {}) {
 		params.include = params.include.join(',');
 	}
 
-	let queryParams = _.map(params, (value, key) => `${key}=${value}`).join('&');
+	let queryParams = _map(params, (value, key) => `${key}=${value}`).join('&');
 	url = `${url}?${queryParams}`;
 
 	return new Promise((resolve, reject) => {
@@ -162,8 +162,8 @@ ZoteroPublications.prototype.get = function(url, params = {}, init = {}) {
  * @return {Promise} 			- Fetch promise
  */
 ZoteroPublications.prototype.post = function(url, data, params = {}, init = {}) {
-	let queryParams = _.map(params, (value, key) => `${key}=${value}`).join('&');
-	init = _.extend({
+	let queryParams = _map(params, (value, key) => `${key}=${value}`).join('&');
+	init = _extend({
 		method: 'POST',
 		headers: {
 			'Content-Type': 'application/json'

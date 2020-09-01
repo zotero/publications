@@ -1,3 +1,6 @@
+import template from 'lodash/template';
+
+export default template`
 <div class="zotero-branding">
 	<a href="http://www.zotero.org" class="zotero-logo-link" aria-label="Zotero" rel="nofollow">
 		<svg class="zotero-logo" version="1.1" xmlns="http://www.w3.org/2000/svg" width="90" height="20">
@@ -16,4 +19,4 @@
 			</g>
 		</svg>
 	</a>
-</div>
+</div>`;

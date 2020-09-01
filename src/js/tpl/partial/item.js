@@ -1,5 +1,6 @@
-<% const constants = require('../../constants'); %>
-<% const utils = require('../../utils'); %>
+import template from 'lodash/template';
+
+export default template`
 <li class="zotero-item zotero-<%- obj.data.itemType %>" data-item="<%- obj.item.key %>" id="item-<%- obj.item.key %>" role="listitem">
 	<a href="#" class="zotero-line" aria-hidden="true" role="presentation" tabindex="-1"></a>
 
@@ -33,24 +34,24 @@
 					</tr>
 				<% } %>
 
-				<% if(obj.item.data[constants.AUTHORS_SYMBOL]) { %>
-					<% for(var i=0, keys=Object.keys(obj.item.data[constants.AUTHORS_SYMBOL]); i < keys.length; i++) { %>
+				<% if(obj.item.data[obj.constants.AUTHORS_SYMBOL]) { %>
+					<% for(var i=0, keys=Object.keys(obj.item.data[obj.constants.AUTHORS_SYMBOL]); i < keys.length; i++) { %>
 						<tr class="zotero-meta-item">
 							<td class="zotero-meta-label"><%- keys[i] %></td>
 							<td class="zotero-meta-value zotero-creators">
-								<% for(var j=0; j < Math.min(obj.renderer.zotero.config.authorsListed, obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length); j++) { %>
+								<% for(var j=0; j < Math.min(obj.renderer.zotero.config.authorsListed, obj.item.data[obj.constants.AUTHORS_SYMBOL][keys[i]].length); j++) { %>
 									<span class="zotero-creator">
-										<%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]][j] %>
+										<%- obj.item.data[obj.constants.AUTHORS_SYMBOL][keys[i]][j] %>
 									</span>
 								<% } %>
-								<% if(obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length >obj.renderer.zotero.config.authorsListed) { %>
+								<% if(obj.item.data[obj.constants.AUTHORS_SYMBOL][keys[i]].length >obj.renderer.zotero.config.authorsListed) { %>
 									<a href="" class="zotero-creator" data-trigger="expand-authors">
 										More...
 									</a>
 								<% } %>
-								<% for(var j=obj.renderer.zotero.config.authorsListed; j < obj.item.data[constants.AUTHORS_SYMBOL][keys[i]].length; j++) { %>
+								<% for(var j=obj.renderer.zotero.config.authorsListed; j < obj.item.data[obj.constants.AUTHORS_SYMBOL][keys[i]].length; j++) { %>
 									<span class="zotero-creator zotero-creator-hidden">
-										<%- obj.item.data[constants.AUTHORS_SYMBOL][keys[i]][j] %>
+										<%- obj.item.data[obj.constants.AUTHORS_SYMBOL][keys[i]][j] %>
 									</span>
 								<% } %>
 							</td>
@@ -69,7 +70,7 @@
 												<%- obj.data[keys[i]] %>
 											</a>
 										<% } else if(keys[i] === 'url') { %>
-											<a href="<%- utils.sanitizeURL(obj.data[keys[i]]) %>" rel="nofollow">
+											<a href="<%- obj.utils.sanitizeURL(obj.data[keys[i]]) %>" rel="nofollow">
 												<%- obj.data[keys[i]] %>
 											</a>
 										<% } else { %>
@@ -85,14 +86,14 @@
 			<% if (obj.data.abstractNote && obj.data.abstractNote.length) { %>
 				<h4>Abstract</h4>
 				<div class="zotero-abstract">
-					<%= obj.data[constants.ABSTRACT_NOTE_PROCESSED] %>
+					<%= obj.data[obj.constants.ABSTRACT_NOTE_PROCESSED] %>
 				</div>
 			<% } %>
 
-			<% if (obj.item[constants.CHILD_NOTES] && obj.item[constants.CHILD_NOTES].length) { %>
+			<% if (obj.item[obj.constants.CHILD_NOTES] && obj.item[obj.constants.CHILD_NOTES].length) { %>
 				<h4>Notes</h4>
 				<ul class="zotero-notes">
-					<% for(var childItem of obj.item[constants.CHILD_NOTES]) { %>
+					<% for(var childItem of obj.item[obj.constants.CHILD_NOTES]) { %>
 						<li>
 							<%= childItem.data.note %>
 						</li>
@@ -100,21 +101,21 @@
 				</ul>
 			<% } %>
 
-			<% if (obj.item[constants.CHILD_ATTACHMENTS] && obj.item[constants.CHILD_ATTACHMENTS].length) { %>
+			<% if (obj.item[obj.constants.CHILD_ATTACHMENTS] && obj.item[obj.constants.CHILD_ATTACHMENTS].length) { %>
 				<h4>Attachments</h4>
 				<ul class="zotero-attachments">
-					<% for(var childItem of obj.item[constants.CHILD_ATTACHMENTS]) { %>
+					<% for(var childItem of obj.item[obj.constants.CHILD_ATTACHMENTS]) { %>
 						<li>
 							<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
-							<a href="<%- utils.sanitizeURL(childItem.url) %>" rel="nofollow">
+							<a href="<%- obj.utils.sanitizeURL(childItem.url) %>" rel="nofollow">
 							<% }%>
 								<span class="zotero-icon zotero-icon-paperclip" role="presentation" aria-hidden="true"></span><!--
 								--><%- childItem.title %>
-							<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>	
+							<% if(childItem.url || (childItem.links && childItem.links.enclosure && childItem.links.enclosure.href)) { %>
 							</a>
 							<% }%>
 						</li>
-						
+
 					<% } %>
 				</ul>
 			<% } %>
@@ -166,4 +167,4 @@
 			<% } %>
 		</div>
 	</section>
-</li>
+</li>`;

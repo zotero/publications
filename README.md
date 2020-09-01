@@ -24,7 +24,7 @@ If you're using sass/scss, you can simply point your sass include-path at your n
 
     @import "zotero-publications/lib/scss/zotero-publications.scss";
 
-The npm package also contains a `dist` folder with both minified and non-minified sources (js & css), which can be used in a browser directly.
+The npm package also contains a `dist` folder with both minified sources (js & css), which can be used in a browser directly.
 
 Javascript files in `dist` folder are following the [Universal Module Definition](https://github.com/umdjs/umd) pattern which means you can also use this library in systems that use AMD (e.g. [RequireJS](http://requirejs.org/)) or CommonJS module loader mechanism.
 
@@ -39,16 +39,16 @@ And add js file somewhere at the end of the file but before final `</html>`:
 Usage
 -----
 
-Use the following code to fetch "My Publications" for user ID 1 and render them inside #container: 
+Use the following code to fetch "My Publications" for user ID 1234 and render them inside #container: 
 
     <script>
-         new ZoteroPublications(1, document.getElementById('container'));
+         new ZoteroPublications(1234, document.getElementById('container'));
     </script>
 
 You can also specify additional configuration by passing a config object to the constructor, for example to enable grouping by item type:
 
     <script>
-         new ZoteroPublications(1, document.getElementById('container'), {group: 'type'});
+         new ZoteroPublications(1234, document.getElementById('container'), {group: 'type'});
     </script>
 
 Please see "Config Options" below to see all accepted parameters.
@@ -57,7 +57,7 @@ Finally if you need more control over what happens while data is being retrieved
 
     <script>
          var zp = new ZoteroPublications();
-         var promise = zp.getPublications(1);
+         var promise = zp.getPublications(1234);
          //optionally do something here while data is being fetched
 
          promise.then(function(data) {
@@ -87,7 +87,7 @@ Here's an example usage in Node:
 
     var ZoteroPublications = require('zotero-publications');
     var zp = new ZoteroPublications({group: 'type'});
-    var promise = zp.render(1); // fetch "my publications" for user id 1
+    var promise = zp.render(1234); // fetch "my publications" for user id 1234
 
     promise.then(function(html) {
         console.log(html);
@@ -152,7 +152,7 @@ Browser Compatibility
 
 Chrome| EDGE | Firefox | IE | Opera | Safari
 --- | --- | --- | --- | --- | --- |
-Latest ✔ | Latest ✔ | Latest ✔ | 10+ ✔ | Latest ✔ | 6.1+ ✔ |
+Latest ✔ | Latest ✔ | Latest ✔ | 11+ ✔ | Latest ✔ | Latest ✔ |
 
 
 Development & Contributing

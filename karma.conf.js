@@ -20,38 +20,18 @@ module.exports = function(config) {
 			'source-map-support'
 		],
 		preprocessors: {
-			'src/js/*.js': ['browserify'],
+			'src/js/main.js': ['browserify'],
 			'test/*.js': ['browserify'],
-			'test/fixtures/*.html': ['browserify']
 		},
 		browserify: {
 			debug: true,
-			extensions: ['.tpl'],
 			transform: [
-				['node-underscorify', {
-					'extensions': ['tpl'],
-					'requires': [{variable: '_', module: 'lodash'}],
-					'templateSettings': {
-						variable: 'obj'
-					}
-				}],
-				['babelify', {
-					'extensions': ['.js', '.tpl'],
-					'plugins': [
-					'check-es2015-constants',
-					'transform-es2015-modules-commonjs'
-					]
-				}],
+				[ 'babelify' ],
 				[ 'browserify-istanbul', { instrumenterConfig: { embedSource: true } } ]
 			]
 		},
-		babelPreprocessor: {
-			options: {
-				sourceMap: 'inline'
-			}
-		},
 		files: [
-			'src/js/*.js',
+			'src/js/main.js',
 			'test/*.spec.js'
 		],
 
@@ -67,7 +47,7 @@ module.exports = function(config) {
 		colors: true,
 		logLevel: config.LOG_INFO,
 		autoWatch: true,
-		browsers: ['Chrome'],
+		browsers: ['Chromium'],
 		singleRun: false
 	});
 };

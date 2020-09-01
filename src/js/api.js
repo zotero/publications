@@ -1,6 +1,4 @@
-import 'es6-symbol/implement';
-import 'cross-fetch/polyfill';
-import _ from 'lodash';
+import union from 'lodash/union';
 import {
 	formatDate,
 	formatAbstract
@@ -140,12 +138,12 @@ export function fetchUntilExhausted(url, options, jsondata) {
 					if(response.headers.has('Link')) {
 						let matches = response.headers.get('Link').match(relRegex);
 						if(matches && matches.length >= 2) {
-							resolve(fetchUntilExhausted(matches[1], options, _.union(jsondata, jsonDataPart)));
+							resolve(fetchUntilExhausted(matches[1], options, union(jsondata, jsonDataPart)));
 						} else {
-							resolve(_.union(jsondata, jsonDataPart));
+							resolve(union(jsondata, jsonDataPart));
 						}
 					} else {
-						resolve(_.union(jsondata, jsonDataPart));
+						resolve(union(jsondata, jsonDataPart));
 					}
 				});
 			} else {

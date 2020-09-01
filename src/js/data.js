@@ -1,9 +1,5 @@
-import 'es6-symbol/implement';
-import _ from 'lodash';
-import {
-	processResponse
-} from './api';
-
+import { processResponse } from './api';
+import _includes from 'lodash/includes';
 import {
 	GROUPED_NONE,
 	GROUPED_BY_TYPE,
@@ -44,7 +40,7 @@ ZoteroData.prototype.groupByType = function(expand) {
 			groupedData[item.data.itemType] = [];
 		}
 		groupedData[item.data.itemType].unshift(item);
-		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _.includes(expand, item.data.itemType);
+		groupedData[item.data.itemType][GROUP_EXPANDED_SUMBOL] = expand === 'all' || _includes(expand, item.data.itemType);
 	}
 	this.data = groupedData;
 	this.grouped = GROUPED_BY_TYPE;

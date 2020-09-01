@@ -2,7 +2,7 @@
  * Map of property identifiers to user friendly names
  * @type {Object}
  */
-module.exports = {
+export default {
 	'itemType'				: 'Item Type',
 	'title'					: 'Title',
 	'dateAdded'				: 'Date Added',

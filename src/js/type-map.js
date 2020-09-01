@@ -2,7 +2,7 @@
  * Map of type identifiers to user friendly names
  * @type {Object}
  */
-module.exports = {
+export default {
 	'note'					: 'Note',
 	'attachment'			: 'Attachment',
 	'book'					: 'Book',

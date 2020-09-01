@@ -3,7 +3,7 @@ Below you can find overview on how to get up & running with development. We woul
 Requirements
 ------------
 
-* NodeJS >=5.0.0 with npm
+* Erbium LTS release of NodeJS with npm.
 
 Installation
 ------------
@@ -24,7 +24,7 @@ The following command will put build development version of the package and serv
 
     npm start
 
-While the development server is running, changes to any of the file in *src* dir will result in respecive file being rebuilt in the live development environment. Demo server supports [livereload](http://livereload.com/) but does not serve middleware (meaning you need a [plugin](https://chrome.google.com/webstore/detail/livereload/jnihajbhpnppcggbcgedagnkighmdlei)).
+While the development server is running, changes to any of the file in *src* dir will result in respecive file being rebuilt in the live development environment.
 
 Tests
 --------------
