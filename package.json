@@ -32,10 +32,10 @@
     "start": "run-p \"serve -s {@}\" \"devel -s {@}\"",
     "prepack": "run-s build dist \"lib:all\"",
     "postpack": "rimraf lib dist",
-    "test": "./node_modules/.bin/karma start",
+    "test": ".npm-run karma start start",
     "serve": "npm-run serve -l 8001 build",
     "eslint": "eslint \"src/js/**/*.js\" || true",
-    "test-once": "./node_modules/.bin/karma start --single-run || exit 0"
+    "test-once": "npm-run karma start --single-run"
   },
   "files": [
     "dist/*",

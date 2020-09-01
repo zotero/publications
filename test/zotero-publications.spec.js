@@ -415,7 +415,7 @@ describe('Zotero Publications', function() {
 	it('should expand selected item', function(done) {
 		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
 			new Response(
-				JSON.stringify(data),
+				JSON.stringify(testData),
 				{ status: 200,
 				'headers': new Headers({
 					'Link': 'blah'
@@ -427,7 +427,9 @@ describe('Zotero Publications', function() {
 			useHistory: true
 		});
 
-		zp.render(123, container).then(function() {
+		let zd = new ZoteroData(data, zp.config);
+
+		zp.render(zd, container).then(function() {
 			let domwrapper = new DomWrapper(container, zp);
 			domwrapper.expandDetails('EFGH').then(function() {
 				setTimeout(function() {
@@ -439,6 +441,7 @@ describe('Zotero Publications', function() {
 					expect(itemDetailsEl.getAttribute('aria-expanded')).toEqual('true');
 					done();
 				}, 510); //wait for the fallback transition to fire
+				done();
 			});
 		});
 	});
