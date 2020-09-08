@@ -246,15 +246,14 @@ DomWrapper.prototype.toggleDetails = function(itemEl, override) {
 DomWrapper.prototype.expandDetails = function(itemId) {
 	return new Promise((resolve) => {
 		let itemEl = this.container.querySelector(`[id=item-${itemId}]`);
-
-		this.toggleDetails(itemEl, true);
-		itemEl.addEventListener('transitionend', scrollIntoView);
-
 		const scrollIntoView = () => {
 			itemEl.removeEventListener('transitionend', scrollIntoView);
 			itemEl.scrollIntoView();
 			resolve();
 		};
+
+		itemEl.addEventListener('transitionend', scrollIntoView);
+		this.toggleDetails(itemEl, true);
 
 		setTimeout(resolve, 500);
 	});
