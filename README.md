@@ -2,8 +2,7 @@
 
 [![Build Status](https://travis-ci.org/zotero/publications.svg?branch=master)](https://travis-ci.org/zotero/publications)
 [![Coverage Status](https://coveralls.io/repos/github/zotero/publications/badge.svg?branch=master)](https://coveralls.io/github/zotero/publications?branch=master)
-[![Dependency Status](https://david-dm.org/zotero/publications.svg)](https://david-dm.org/zotero/publications)
-[![npm version](https://badge.fury.io/js/zotero-publications.svg)](https://badge.fury.io/js/zotero-publications)
+[![npm version](https://img.shields.io/npm/v/zotero-publications)](https://www.npmjs.com/package/zotero-publications)
 
 Overview
 --------
