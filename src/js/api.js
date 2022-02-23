@@ -131,21 +131,25 @@ export function fetchUntilExhausted(url, options, jsondata) {
 	return new Promise((resolve, reject) => {
 		fetch(url, options).then(response => {
 			if(response.status >= 200 && response.status < 300) {
-				response.json().then(jsonDataPart => {
-					if(!(jsonDataPart instanceof Array)) {
-						jsonDataPart = [jsonDataPart];
-					}
-					if(response.headers.has('Link')) {
-						let matches = response.headers.get('Link').match(relRegex);
-						if(matches && matches.length >= 2) {
-							resolve(fetchUntilExhausted(matches[1], options, union(jsondata, jsonDataPart)));
+				response.json()
+					.then(jsonDataPart => {
+						if(!(jsonDataPart instanceof Array)) {
+							jsonDataPart = [jsonDataPart];
+						}
+						if(response.headers.has('Link')) {
+							let matches = response.headers.get('Link').match(relRegex);
+							if(matches && matches.length >= 2) {
+								resolve(fetchUntilExhausted(matches[1], options, union(jsondata, jsonDataPart)));
+							} else {
+								resolve(union(jsondata, jsonDataPart));
+							}
 						} else {
 							resolve(union(jsondata, jsonDataPart));
 						}
-					} else {
-						resolve(union(jsondata, jsonDataPart));
-					}
-				});
+					})
+					.catch(e => {
+						reject(new Error(`Unparsable JSON when requesting ${url}: ${e}`));
+					})
 			} else {
 				reject(new Error(`Unexpected status code ${response.status} when requesting ${url}`));
 			}

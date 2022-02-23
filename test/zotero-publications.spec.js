@@ -31,7 +31,8 @@ describe('Zotero Publications', function() {
 		container,
 		data,
 		dataGrouped,
-		dataSingle;
+		dataSingle,
+		okResponse;
 
 	beforeEach(function() {
 		zp = new ZoteroPublications({
@@ -47,6 +48,7 @@ describe('Zotero Publications', function() {
 		dataGrouped[1][GROUP_TITLE] = 'Journal Article';
 		dataGrouped.grouped = 1;
 		dataSingle = JSON.parse(JSON.stringify(testDataSingle));
+		okResponse = new Response(JSON.stringify({}), { status: 200, statusText: 'OK', });
 	});
 
 	it('should render single item', function() {
@@ -116,21 +118,21 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should request data from an endpoint', function() {
-		spyOn(window, 'fetch');
+		spyOn(window, 'fetch').and.resolveTo(okResponse);
 		zp.getEndpoint('some/endpoint');
 		expect(window.fetch).toHaveBeenCalled();
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/some\/endpoint\?.*$/);
 	});
 
 	it('should request publications for a user', function() {
-		spyOn(window, 'fetch');
+		spyOn(window, 'fetch').and.resolveTo(okResponse);
 		zp.getPublications(123);
 		expect(window.fetch).toHaveBeenCalled();
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/publications\/items\?.*$/);
 	});
 
 	it('should request a single publication', function() {
-		spyOn(window, 'fetch');
+		spyOn(window, 'fetch').and.resolveTo(okResponse);
 		zp.getPublication(4567, 123);
 		expect(window.fetch).toHaveBeenCalled();
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/publications\/items\/4567\/?.*$/);
@@ -155,19 +157,19 @@ describe('Zotero Publications', function() {
 		})
 	});
 
-	it('should reject on failed requests', function(done) {
-		spyOn(window, 'fetch').and.returnValue(
-			Promise.reject('some error')
-		);
+	it('should reject on failed requests', function() {
+		spyOn(window, 'fetch').and.rejectWith(new Error('Network error'));
 
-		zp.get('some/endpoint')
-			.then(function() {
-				fail('Promise resolved when it should reject!');
-				done();
-			}).catch(function() {
-				expect(window.fetch).toHaveBeenCalled();
-				done();
-			});
+		return new Promise(resolve => {
+			zp.get('some/endpoint')
+				.then(function() {
+					fail('Promise resolved when it should reject!');
+					resolve();
+				}).catch(function() {
+					expect(window.fetch).toHaveBeenCalled();
+					resolve();
+				});
+		});
 	});
 
 	it('should move child items underneath the main item', function() {
@@ -281,7 +283,7 @@ describe('Zotero Publications', function() {
 			group: 'type'
 		});
 
-		spyOn(window, 'fetch');
+		spyOn(window, 'fetch').and.resolveTo(okResponse);
 		let zd = new ZoteroPublications.ZoteroData(data, zpGroup.config);
 		zpGroup.render(zd, container).then(function() {
 			expect(window.fetch).not.toHaveBeenCalled();
@@ -291,12 +293,11 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should reject when unable to fetch remote items using render() method', function(done) {
-		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
-				new Response(
-					'{}',
-					{ status: 500 },
-					new Headers()
-				)
+		spyOn(window, 'fetch').and.resolveTo(
+			new Response(
+				'{}',
+				{ status: 500 },
+				new Headers()
 			)
 		);
 		new ZoteroPublications().render('some/endpoint', container)
@@ -310,14 +311,13 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should render remote itmes using shortcut syntax', function(done) {
-		spyOn(window, 'fetch').and.callFake(() => Promise.resolve(
-				new Response(
-					JSON.stringify(data),
-					{ status: 200,
-					'headers': new Headers({
-						'Link': 'blah'
-					})}
-				)
+		spyOn(window, 'fetch').and.resolveTo(
+			new Response(
+				JSON.stringify(data),
+				{ status: 200,
+				'headers': new Headers({
+					'Link': 'blah'
+				})}
 			)
 		);
 
@@ -363,7 +363,7 @@ describe('Zotero Publications', function() {
 	});
 
 	it('should post items', function() {
-		spyOn(window, 'fetch');
+		spyOn(window, 'fetch').and.resolveTo(okResponse);
 		zp.postItems(123, {a: 'b'}, {query: 'param'});
 		expect(window.fetch.calls.mostRecent().args[0]).toMatch(/^.*api\.zotero\.org\/users\/123\/items\?.*?query=param.*$/);
 		expect(Object.keys(window.fetch.calls.mostRecent().args[1])).toContain('method');

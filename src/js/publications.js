@@ -144,12 +144,12 @@ ZoteroPublications.prototype.get = function(url, params = {}, init = {}) {
 	url = `${url}?${queryParams}`;
 
 	return new Promise((resolve, reject) => {
-		let promise = fetchUntilExhausted(url, init);
-		promise.then(responseJson => {
-			let data = new ZoteroData(responseJson, this.config);
-			resolve(data);
-		});
-		promise.catch(reject);
+		fetchUntilExhausted(url, init)
+			.then(responseJson => {
+				let data = new ZoteroData(responseJson, this.config);
+				resolve(data);
+			})
+			.catch(reject);
 	});
 };
 
