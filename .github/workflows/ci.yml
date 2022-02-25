@@ -1,0 +1,22 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+      - name: Install xvfb
+        if: env.ACT != 'true'
+        run: sudo apt update && sudo apt install -y xvfb
+      - name: Install packages for act
+        if: env.ACT == 'true'
+        run: apt update && apt install -y zstd xvfb dbus-x11 libgtk-3-0 libx11-xcb1 libdbus-glib-1-2 libxt6
+      - run: npm install
+      - run: npm run build
+      - run: xvfb-run npm test
+      - run: npm run lint
+  

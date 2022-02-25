@@ -1,13 +1,12 @@
 /*eslint-env node */
 module.exports = function(config) {
-	var reporters = process.env.TRAVIS ? ['dots', 'coverage', 'coveralls'] : ['dots', 'coverage'];
+	var reporters = process.env.TRAVIS ? ['dots', 'coverage'] : ['dots', 'coverage'];
 
 	config.set({
 		basePath: '',
 		plugins: [
 			'karma-jasmine',
 			'karma-coverage',
-			'karma-coveralls',
 			'karma-chrome-launcher',
 			'karma-firefox-launcher',
 			'karma-source-map-support',

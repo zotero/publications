@@ -32,10 +32,10 @@
     "start": "run-p \"serve -s {@}\" \"devel -s {@}\"",
     "prepack": "run-s build dist \"lib:all\"",
     "postpack": "rimraf lib dist",
-    "test": "karma start",
+    "test": "karma start --single-run",
+    "test-listen": "karma start",
     "serve": "serve -l 8001 build",
-    "eslint": "eslint \"src/js/**/*.js\" || true",
-    "test-once": "karma start --single-run"
+    "lint": "eslint \"src/js/**/*.js\" || true"
   },
   "files": [
     "dist/*",
@@ -67,7 +67,6 @@
     "karma-browserify": "^8.1.0",
     "karma-chrome-launcher": "^3.1.0",
     "karma-coverage": "^2.2.0",
-    "karma-coveralls": "^2.1.0",
     "karma-firefox-launcher": "^2.1.2",
     "karma-jasmine": "^4.0.1",
     "karma-jasmine-matchers": "^5.0.0",
