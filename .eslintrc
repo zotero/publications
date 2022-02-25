@@ -1,6 +1,6 @@
 {
   "globals": {},
-  "parser": "babel-eslint",
+  "parser": "@babel/eslint-parser",
   "env": {
     "browser": true,
     "node": true,
@@ -8,10 +8,7 @@
   },
   "parserOptions": {
     "ecmaVersion": 8,
-    "sourceType": "module",
-    "ecmaFeatures": {
-      "jsx": true
-    }
+    "sourceType": "module"
   },
   "extends": [
     "eslint:recommended"
