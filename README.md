@@ -1,6 +1,6 @@
 # Zotero Publications
 
-[![Build Status](https://travis-ci.org/zotero/publications.svg?branch=master)](https://travis-ci.org/zotero/publications)
+[![CI](https://github.com/zotero/publications/actions/workflows/ci.yml/badge.svg)](https://github.com/zotero/publications/actions/workflows/ci.yml)
 [![Coverage Status](https://coveralls.io/repos/github/zotero/publications/badge.svg?branch=master)](https://coveralls.io/github/zotero/publications?branch=master)
 [![npm version](https://img.shields.io/npm/v/zotero-publications)](https://www.npmjs.com/package/zotero-publications)
 
