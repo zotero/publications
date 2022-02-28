@@ -10,7 +10,6 @@ module.exports = function(config) {
 			'karma-chrome-launcher',
 			'karma-firefox-launcher',
 			'karma-source-map-support',
-			'karma-babel-preprocessor',
 			'karma-browserify'
 		],
 		frameworks: [
@@ -19,23 +18,25 @@ module.exports = function(config) {
 			'source-map-support'
 		],
 		preprocessors: {
-			'src/js/main.js': ['browserify'],
+			'src/js/**/*.js': ['browserify'],
 			'test/*.js': ['browserify'],
 		},
 		browserify: {
 			debug: true,
 			transform: [
-				[ 'babelify' ],
-				[ 'browserify-istanbul', { instrumenterConfig: { embedSource: true } } ]
+				[ 'babelify' ]
 			]
 		},
 		files: [
-			'src/js/main.js',
+			'src/js/**/*.js',
 			'test/*.spec.js'
 		],
 
 		reporters: reporters,
 		coverageReporter: {
+			instrumenterOptions: {
+				istanbul: { noCompact: true }
+			},
 			reporters: [
 				{ type: 'lcov', dir: 'coverage/' },
 				{ type: 'html' },

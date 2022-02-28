@@ -6,4 +6,13 @@ const plugins = [
 	["./scripts/babel-lodash-precompile.cjs", { "variable": "obj" }]
 ];
 
-module.exports = { presets, plugins };
+
+module.exports = {
+	presets,
+	plugins,
+	"env": {
+		"test": {
+			"plugins": [ "istanbul" ]
+		}
+	}
+};
