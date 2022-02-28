@@ -6,7 +6,7 @@
 
 Overview
 --------
-This library will pull items from Zotero API and display them in a user friendly way. It is intended to be easily embeddable on your own page. We're offering variety of builds to maximize potential use cases. Basic usage documentation and description of available builds are included below. For advanced usage please see examples and comments in the code.
+This library will pull "My Publications" items from Zotero API and display them in a user friendly way. It is intended to be easily embeddable on your own page. We're offering variety of builds to maximize potential use cases. Basic usage documentation and description of available builds are included below. For advanced usage please see examples and comments in the code.
 
 Getting The Library
 -------------------
