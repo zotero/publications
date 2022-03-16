@@ -5,12 +5,14 @@
 
 /* Variables */
 
+@use "sass:math";
+
 $text-color: #444;
 $link-color: #38c;
 $font-size-base: 14px;
-$line-height-base: 24 / 14;
+$line-height-base: math.div(24, 14);
 
-$font-size-h1: 2em * 4 / 3;
+$font-size-h1: math.div(2em * 4, 3);
 
 $screen-sm-min: 768px;
 $screen-md-min: 970px;
@@ -36,7 +38,7 @@ body {
 }
 
 h1 {
-	font-size: 2em * 4 / 3;
+	font-size: math.div(2em * 4, 3);
 	font-weight: bold;
 	letter-spacing: -0.025em;
 	line-height: 1.3;
