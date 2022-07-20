@@ -78,7 +78,7 @@
     "rimraf": "^3.0.2",
     "run-sequence": "^2.2.1",
     "serve": "^13.0.2",
-    "terser": "^5.12.1",
+    "terser": "^5.14.2",
     "uglifyify": "^5.0.2",
     "watchify": "^4.0.0"
   }
